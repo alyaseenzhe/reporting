@@ -10,7 +10,7 @@ class ListSalesCollections extends Component
     public function render()
     {
 
-        dd($this->collected('10252', '2023-06-01 00:00:00', '2023-06-07 23:59:59'));
+        dd($this->collected('0200018', '2023-07-01 00:00:00', '2023-07-07 23:59:59'));
 //        $collected = FAExtra::join('StudentMast', 'FAExtra.Student', 'StudentMast.NodeNo')
 //            ->where('StudentMast.Code', '10041')
 //            ->where(function ($query) {
@@ -97,10 +97,13 @@ class ListSalesCollections extends Component
         return view('livewire.list-sales-collections');
     }
 
-    public function collected($emp_code, $start_date, $end_date) {
+    public function collected($customer_code, $start_date, $end_date) {
 
         $collected_vouchers = FAExtra::join('StudentMast', 'FAExtra.Student', 'StudentMast.NodeNo')
-            ->where('StudentMast.Code', $emp_code)
+            ->join('accmast', 'FAExtra.AccountNo', 'accmast.NodeNo')
+            ->where('accmast.Code', $customer_code)
+//            ->where('AccountNo', $customer_no)
+//            ->where('StudentMast.Code', $emp_code)
             ->where(function ($query) {
                 $query->orWhere('FAExtra.VoucherNo', 'like',  '030%')
                     ->orWhere('FAExtra.VoucherNo', 'like',  '040%')
@@ -115,7 +118,10 @@ class ListSalesCollections extends Component
         $collectedReverse = [];
         if (count($collected_vouchers) > 0) {
             $collectedReverse = FAExtra::join('StudentMast', 'FAExtra.Student', 'StudentMast.NodeNo')
-                ->where('StudentMast.Code', $emp_code)
+                ->join('accmast', 'FAExtra.AccountNo', 'accmast.NodeNo')
+                ->where('accmast.Code', $customer_code)
+//                ->where('AccountNo', $customer_no)
+//                ->where('StudentMast.Code', $emp_code)
                 ->where(function ($query) {
                     $query->orWhere('VoucherNo', 'like', '031%')
                         ->orWhere('VoucherNo', 'like', '041%')
@@ -131,7 +137,10 @@ class ListSalesCollections extends Component
         // if there is a reverse
         if (count($collectedReverse) > 0) {
             $collected = FAExtra::join('StudentMast', 'FAExtra.Student', 'StudentMast.NodeNo')
-                ->where('StudentMast.Code', $emp_code)
+                ->join('accmast', 'FAExtra.AccountNo', 'accmast.NodeNo')
+                ->where('accmast.Code', $customer_code)
+//                ->where('AccountNo', $customer_no)
+//                ->where('StudentMast.Code', $emp_code)
                 ->whereNotIn('VoucherNo', [$collectedReverse])
                 ->whereNotIn('VField9', [$collectedReverse])
 //                ->where(function ($query) use ($collectedReverse){
@@ -140,26 +149,36 @@ class ListSalesCollections extends Component
 //                })
                 ->where('VoucherDate', '>=', $start_date)
                 ->where('VoucherDate', '<=', $end_date)
+//                ->select('VoucherNo', 'VoucherDate', 'Value', 'VField9', 'Area', 'AccountNo')
                 ->sum('Value');
 //            ->get();
-            dd($collected);
+//            dd($collected);
         }
         else {
             $collected = FAExtra::join('StudentMast', 'FAExtra.Student', 'StudentMast.NodeNo')
-                ->where('StudentMast.Code', $emp_code)
+                ->join('accmast', 'FAExtra.AccountNo', 'accmast.NodeNo')
+                ->where('accmast.Code', $customer_code)
+//                ->where('AccountNo', $customer_no)
+//                ->where('StudentMast.Code', $emp_code)
 //                ->where(function ($query) use ($collectedReverse){
 //                    $query->whereNotIn('VoucherNo', [$collectedReverse])
 //                        ->whereNotIn('VField9', [$collectedReverse]);
 //                })
                 ->where('VoucherDate', '>=', $start_date)
                 ->where('VoucherDate', '<=', $end_date)
+//                ->select('VoucherNo', 'VoucherDate', 'Value', 'VField9', 'Area', 'AccountNo')
                 ->sum('Value');
 //            ->get();
+//            dd($collected .' - '. $customer_no);
         }
 
         return $collected;
 
 
+    }
+
+    public function cash($customer_no, $start_date, $end_date) {
+        
     }
 
 

@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,8 +152,8 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feature/sales-collections",
-    "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/alyass-reporting/public/css",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/reporting",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -198,6 +198,7 @@
       <workItem from="1685947959868" duration="16647000" />
       <workItem from="1687069379436" duration="8559000" />
       <workItem from="1687241103227" duration="29473000" />
+      <workItem from="1689230322914" duration="4148000" />
     </task>
     <servers />
   </component>
