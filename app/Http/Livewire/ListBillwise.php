@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Billwise;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -11,6 +12,13 @@ class ListBillwise extends Component
 {
     use WithPagination;
 
+    public function booted() {
+        if ((Auth::user()->user_group && in_array('list.non-paid-vouchers', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
     public function render()
     {
 

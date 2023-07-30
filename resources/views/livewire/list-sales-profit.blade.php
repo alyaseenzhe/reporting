@@ -14,18 +14,42 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار الفرع</option>
-                        <option value="3">فرع الاحساء</option>
-                        <option value="10">فرع جدة</option>
-                        <option value="7">فرع الرياض</option>
-                        <option value="13">فرع وادي الدواسر</option>
-                        <option value="4">فرع الجوف</option>
-                        <option value="6">فرع الدمام</option>
-                        <option value="5">فرع الخرج</option>
-                        <option value="12">فرع نجران</option>
-                        <option value="11">فرع حائل</option>
-                        <option value="9">فرع تبوك</option>
-                        <option value="8">فرع القصيم</option>
-                        <option value="505">فرع ساجر</option>
+                        @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="3">فرع الاحساء</option>
+                        @endif
+                        @if(in_array("10", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="10">فرع جدة</option>
+                        @endif
+                        @if(in_array("7", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="7">فرع الرياض</option>
+                        @endif
+                        @if(in_array("13", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="13">فرع وادي الدواسر</option>
+                        @endif
+                        @if(in_array("4", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="4">فرع الجوف</option>
+                        @endif
+                        @if(in_array("6", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="6">فرع الدمام</option>
+                        @endif
+                        @if(in_array("5", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="5">فرع الخرج</option>
+                        @endif
+                        @if(in_array("12", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="12">فرع نجران</option>
+                        @endif
+                        @if(in_array("11", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="11">فرع حائل</option>
+                        @endif
+                        @if(in_array("9", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="9">فرع تبوك</option>
+                        @endif
+                        @if(in_array("8", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="8">فرع القصيم</option>
+                        @endif
+                        @if(in_array("505", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="505">فرع ساجر</option>
+                        @endif
                     </select>
                     @error('area_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
@@ -65,16 +89,16 @@
                     <th style="border-left: 2px solid black;" colspan="2" class="border p-2 whitespace-nowrap">
                         <div class="text-sm">بيانات الموظف</div>
                     </th>
-                    <th style="border-left: 2px solid black;" colspan="3" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">اصناف مميز 0</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" colspan="3" class="border p-2 whitespace-nowrap">
+                    <th style="border-left: 2px solid black;" @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a') colspan="3" @else colspan="1" @endif class="border p-2 whitespace-nowrap">
                         <div class="text-sm">اصناف مميز 1</div>
                     </th>
-                    <th style="border-left: 2px solid black;" colspan="3" class="border p-2 whitespace-nowrap">
+                    <th style="border-left: 2px solid black;" @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a') colspan="3" @else colspan="1" @endif class="border p-2 whitespace-nowrap">
                         <div class="text-sm">اصناف مميز 2</div>
                     </th>
-                    <th colspan="3" class="border p-2 whitespace-nowrap">
+                    <th style="border-left: 2px solid black;" @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a') colspan="3" @else colspan="1" @endif class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">اصناف مميز 0</div>
+                    </th>
+                    <th @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a') colspan="3" @else colspan="1" @endif class="border p-2 whitespace-nowrap">
                         <div class="text-sm">اجماليات</div>
                     </th>
                 </tr>
@@ -86,42 +110,50 @@
                         <div class="text-sm">الاسم</div>
                     </th>
                     <th class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">مبيعات م0</div>
-                    </th>
-                    <th class="border p-2">
-                        <div class="text-sm">كلفة م0</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-sm">هامش م0</div>
-                    </th>
-                    <th class="border p-2 whitespace-nowrap">
                         <div class="text-sm">مبيعات م1</div>
                     </th>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                     <th class="border p-2">
                         <div class="text-sm">كلفة م1</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-sm">هامش م1</div>
                     </th>
+                    @endif
                     <th class="border p-2 whitespace-nowrap">
                         <div class="text-sm">مبيعات م2</div>
                     </th>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                     <th class="border p-2">
                         <div class="text-sm">كلفة م2</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-sm">هامش م2</div>
                     </th>
+                    @endif
+                    <th class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">مبيعات م0</div>
+                    </th>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <th class="border p-2">
+                            <div class="text-sm">كلفة م0</div>
+                        </th>
+                        <th style="border-left: 2px solid black;" class="border p-2">
+                            <div class="text-sm">هامش م0</div>
+                        </th>
+                    @endif
 
                     <th class="border p-2">
                         <div class="text-sm">اجمالي مبيعات</div>
                     </th>
-                    <th class="border p-2">
-                        <div class="text-sm">اجمالي كلفة</div>
-                    </th>
-                    <th class="border p-2">
-                        <div class="text-sm">اجمالي الهامش</div>
-                    </th>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <th class="border p-2">
+                            <div class="text-sm">اجمالي كلفة</div>
+                        </th>
+                        <th class="border p-2">
+                            <div class="text-sm">اجمالي الهامش</div>
+                        </th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
@@ -142,120 +174,235 @@
                 @foreach($result_tbl2 as $result2)
                     @if(number_format(floatval($result2['Spl0Value'])) == 0 && number_format(floatval($result2['Spl1Value'])) == 0 && number_format(floatval($result2['Spl2Value'])) == 0 && number_format(floatval($result2['Spl0cost'])) == 0 && number_format(floatval($result2['Spl1Cost'])) == 0 && number_format(floatval($result2['Spl2Cost'])) == 0)
                     @else
-                        <tr>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
-                                </div>
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-right text-gray-800 text-sm">{{$result2 ? $result2['Employeename'] : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                </div>
-                            </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
+                            <tr>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
+                                    </div>
+                                </td>
+                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-gray-800 text-sm text-center">{{$result2 ? $result2['Employeename'] : ""}}</div>
+                                    </div>
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                @endif
 
 
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value'])) : ""}}</div>
-                                </div>
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost'])) : ""}}</div>
-                                </div>
-                            </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+                            </tr>
 
-                            <td class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                </div>
-                            </td>
-                        </tr>
+                                <?php $s0 += ($result2 ? floatval($result2['Spl0Value']) : 0) ?>
+                                <?php $c0 += ($result2 ? floatval($result2['Spl0cost']) : 0) ?>
+                                <?php $p0 += ($result2 ? floatval($result2['Spl0Value'] - $result2['Spl0cost']) : 0) ?>
+
+                                <?php $s1 += ($result2 ? floatval($result2['Spl1Value']) : 0) ?>
+                                <?php $c1 += ($result2 ? floatval($result2['Spl1Cost']) : 0) ?>
+                                <?php $p1 += ($result2 ? floatval($result2['Spl1Value'] - $result2['Spl1Cost']) : 0) ?>
+
+                                <?php $s2 += ($result2 ? floatval($result2['Spl2Value']) : 0) ?>
+                                <?php $c2 += ($result2 ? floatval($result2['Spl2Cost']) : 0) ?>
+                                <?php $p2 += ($result2 ? floatval($result2['Spl2Value'] - $result2['Spl2Cost']) : 0) ?>
+
+                                <?php $s_total += ($result2 ? floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value']) : 0) ?>
+                                <?php $c_total += ($result2 ? floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost']) : 0) ?>
+                                <?php $p_total += ($result2 ? (floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : 0) ?>
+                        @elseif(($result2 && $result2['Employeecode'] == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
+                            <tr>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
+                                    </div>
+                                </td>
+                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-gray-800 text-sm text-center">{{$result2 ? $result2['Employeename'] : ""}}</div>
+                                    </div>
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                @endif
+
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                    </div>
+                                </td>
+                                @endif
+                            </tr>
+                                <?php $s0 += ($result2 ? floatval($result2['Spl0Value']) : 0) ?>
+                                <?php $c0 += ($result2 ? floatval($result2['Spl0cost']) : 0) ?>
+                                <?php $p0 += ($result2 ? floatval($result2['Spl0Value'] - $result2['Spl0cost']) : 0) ?>
+
+                                <?php $s1 += ($result2 ? floatval($result2['Spl1Value']) : 0) ?>
+                                <?php $c1 += ($result2 ? floatval($result2['Spl1Cost']) : 0) ?>
+                                <?php $p1 += ($result2 ? floatval($result2['Spl1Value'] - $result2['Spl1Cost']) : 0) ?>
+
+                                <?php $s2 += ($result2 ? floatval($result2['Spl2Value']) : 0) ?>
+                                <?php $c2 += ($result2 ? floatval($result2['Spl2Cost']) : 0) ?>
+                                <?php $p2 += ($result2 ? floatval($result2['Spl2Value'] - $result2['Spl2Cost']) : 0) ?>
+
+                                <?php $s_total += ($result2 ? floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value']) : 0) ?>
+                                <?php $c_total += ($result2 ? floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost']) : 0) ?>
+                                <?php $p_total += ($result2 ? (floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : 0) ?>
+                        @endif
                     @endif
-                        <?php $s0 += ($result2 ? floatval($result2['Spl0Value']) : 0) ?>
-                        <?php $c0 += ($result2 ? floatval($result2['Spl0cost']) : 0) ?>
-                        <?php $p0 += ($result2 ? floatval($result2['Spl0Value'] - $result2['Spl0cost']) : 0) ?>
-
-                        <?php $s1 += ($result2 ? floatval($result2['Spl1Value']) : 0) ?>
-                        <?php $c1 += ($result2 ? floatval($result2['Spl1Cost']) : 0) ?>
-                        <?php $p1 += ($result2 ? floatval($result2['Spl1Value'] - $result2['Spl1Cost']) : 0) ?>
-
-                        <?php $s2 += ($result2 ? floatval($result2['Spl2Value']) : 0) ?>
-                        <?php $c2 += ($result2 ? floatval($result2['Spl2Cost']) : 0) ?>
-                        <?php $p2 += ($result2 ? floatval($result2['Spl2Value'] - $result2['Spl2Cost']) : 0) ?>
-
-                        <?php $s_total += ($result2 ? floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value']) : 0) ?>
-                        <?php $c_total += ($result2 ? floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost']) : 0) ?>
-                        <?php $p_total += ($result2 ? (floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : 0) ?>
-
-
-
                 @endforeach
                 </tbody>
                 <tfoot>
                 <tr style="background-color: papayawhip; border: 2px solid black; font-weight: bold">
                     <td colspan="2" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">المجموع</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($s0) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c0) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p0) }}</td>
 
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($s1) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c1) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p1) }}</td>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c1) }}</td>
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p1) }}</td>
+                    @endif
 
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($s2) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c2) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p2) }}</td>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c2) }}</td>
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p2) }}</td>
+                    @endif
+
+                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($s0) }}</td>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c0) }}</td>
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p0) }}</td>
+                    @endif
 
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($s_total) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c_total) }}</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p_total) }}</td>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($c_total) }}</td>
+                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($p_total) }}</td>
+                    @endif
 
                 </tr>
                 </tfoot>

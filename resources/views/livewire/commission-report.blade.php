@@ -10,18 +10,42 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار الفرع</option>
-                        <option value="3">فرع الاحساء</option>
-                        <option value="10">فرع جدة</option>
-                        <option value="7">فرع الرياض</option>
-                        <option value="13">فرع وادي الدواسر</option>
-                        <option value="4">فرع الجوف</option>
-                        <option value="6">فرع الدمام</option>
-                        <option value="5">فرع الخرج</option>
-                        <option value="12">فرع نجران</option>
-                        <option value="11">فرع حائل</option>
-                        <option value="9">فرع تبوك</option>
-                        <option value="8">فرع القصيم</option>
-                        <option value="505">فرع ساجر</option>
+                        @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="3">فرع الاحساء</option>
+                        @endif
+                        @if(in_array("10", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="10">فرع جدة</option>
+                        @endif
+                        @if(in_array("7", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="7">فرع الرياض</option>
+                        @endif
+                        @if(in_array("13", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="13">فرع وادي الدواسر</option>
+                        @endif
+                        @if(in_array("4", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="4">فرع الجوف</option>
+                        @endif
+                        @if(in_array("6", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="6">فرع الدمام</option>
+                        @endif
+                        @if(in_array("5", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="5">فرع الخرج</option>
+                        @endif
+                        @if(in_array("12", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="12">فرع نجران</option>
+                        @endif
+                        @if(in_array("11", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="11">فرع حائل</option>
+                        @endif
+                        @if(in_array("9", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="9">فرع تبوك</option>
+                        @endif
+                        @if(in_array("8", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="8">فرع القصيم</option>
+                        @endif
+                        @if(in_array("505", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="505">فرع ساجر</option>
+                        @endif
                     </select>
                     @error('area_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
@@ -190,189 +214,376 @@
 
 
             @foreach($result_tbl2 as $result2)
-                <tr>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['EmployeeName'] : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-{{--                            {{$result2 ? $result2->role : ""}}--}}
-
-                            @if($result2['role'] == "area_manager")
-                                <span>مدير منطقة</span>
-                            @elseif($result2['role'] == "store_manager")
-                                <span>مدير معرض</span>
-                            @elseif($result2['role'] == "sales_manager")
-                                <span>مدير مبيعات</span>
-                            @elseif($result2['role'] == "mat_dev_manager1")
-                                <span>تطوير مواد 1</span>
-                            @elseif($result2['role'] == "mat_dev_manager2")
-                                <span>تطوير مواد 2</span>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_profit'])) : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['percentage_area_employee'])) : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_postponed'])) : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{ $result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? number_format(floatval($result2['employee_postponed_due'])) . " (%".number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100).")" : 0}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">{{$result2 ?  ($result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? \Carbon\Carbon::parse($result2['oldest_voucher'])->format('Y-m-d')." (". \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) ." يوم)" : "-") : ""}}</div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        @if(floatval(number_format($result2['employee_postponed'])) == 0)
-                            @if( \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                <span style="font-weight: bold; color: green">نعم</span>
-                                <?php $pay = true; ?>
-                            @else
-                                <span style="font-weight: bold; color: red">لا</span>
-                                <?php $pay = false; ?>
-                            @endif
-                        @else
-                            @if(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                <span style="font-weight: bold; color: green">نعم</span>
-                                <?php $pay = true; ?>
-                            @else
-                                <span style="font-weight: bold; color: red">لا</span>
-                                <?php $pay = false; ?>
-                            @endif
-                        @endif
-
-{{--                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
-{{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
-{{--                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
-{{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
-{{--                            @else--}}
-{{--                                <span style="font-weight: bold; color: red">لا</span>--}}
-{{--                            @endif--}}
-
-
-
-{{--                        <div class="text-center text-gray-800 text-lg">{{$result2 ?--}}
-{{--                             (($result2['days'] <= 240 && ((!is_null(number_format(floatval($result2['postponed_partial']))) && number_format(floatval($result2['postponed_partial'])) != 0 && !is_null(number_format(floatval($result2['postponed_total']))) && number_format(floatval($result2['postponed_total'])) != 0))? (number_format(floatval($result2['postponed_partial']))/number_format(floatval($result2['postponed_total']))) : 0 <= 20)? "نعم" : "لا" : ""}}</div>--}}
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
-                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
-                            @else
-                                <span>0</span>
-                            @endif
-
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
-                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
-                            @else
-                                <span>0</span>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
-                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
-                            @else
-                                <span>0</span>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
-                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
-                            @else
-                                <span>0</span>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
-                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
-                            @else
-                                <span>0</span>
-                            @endif
-                        </div>
-                    </div>
-                </td>
-                <td class="border p-2 whitespace-nowrap">
-                    <div>
-                        <div class="text-center text-gray-800 text-sm">
-                            <div class="text-center text-gray-800 text-sm">
-                                @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                    {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
-                                @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
-                                    {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
-                                @else
-                                    <span>0</span>
-                                @endif
+                @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
+                    <tr>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
                             </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <?php $employee_profit += ($result2 ? floatval($result2['employee_profit']) : 0) ?>
-            <?php $percentage_area_employee += ($result2 ? floatval($result2['percentage_area_employee']) : 0) ?>
-            <?php $employee_postponed += ($result2 ? floatval($result2['employee_postponed']) : 0) ?>
-            <?php $employee_postponed_due += ($result2 ? floatval($result2['employee_postponed_due']) : 0) ?>
-            <?php $employee_postponed_due_percentage =  $employee_postponed == 0? 0 : ($employee_postponed_due/$employee_postponed)*100 ?>
-            <?php //$employee_commission += ($result2 ? (((floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240) || (number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)) ? floatval($result2['employee_commission']) : 0) : 0) ?>
-            <?php $employee_commission += ($result2 && $pay? floatval($result2['employee_commission']) : 0) ?>
-            <?php $calc_sales_manager += ($result2 && $pay? floatval($result2['calc_sales_manager']) : 0) ?>
-            <?php $calc_area_manager += ($result2 && $pay? floatval($result2['calc_area_manager']) : 0) ?>
-            <?php $calc_store_manager += ($result2 && $pay? floatval($result2['calc_store_manager']) : 0) ?>
-            <?php $calc_mat_dev1 += ($result2 && $pay? floatval($result2['calc_mat_dev1']) : 0) ?>
-            <?php $calc_mat_dev2 += ($result2 && $pay? floatval($result2['calc_mat_dev2']) : 0) ?>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['EmployeeName'] : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    {{--                            {{$result2 ? $result2->role : ""}}--}}
+
+                                    @if($result2['role'] == "area_manager")
+                                        <span>مدير منطقة</span>
+                                    @elseif($result2['role'] == "store_manager")
+                                        <span>مدير معرض</span>
+                                    @elseif($result2['role'] == "sales_manager")
+                                        <span>مدير مبيعات</span>
+                                    @elseif($result2['role'] == "mat_dev_manager1")
+                                        <span>تطوير مواد 1</span>
+                                    @elseif($result2['role'] == "mat_dev_manager2")
+                                        <span>تطوير مواد 2</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_profit'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['percentage_area_employee'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_postponed'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{ $result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? number_format(floatval($result2['employee_postponed_due'])) . " (%".number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100).")" : 0}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ?  ($result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? \Carbon\Carbon::parse($result2['oldest_voucher'])->format('Y-m-d')." (". \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) ." يوم)" : "-") : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                @if(floatval(number_format($result2['employee_postponed'])) == 0)
+                                    @if( \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        <span style="font-weight: bold; color: green">نعم</span>
+                                            <?php $pay = true; ?>
+                                    @else
+                                        <span style="font-weight: bold; color: red">لا</span>
+                                            <?php $pay = false; ?>
+                                    @endif
+                                @else
+                                    @if(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        <span style="font-weight: bold; color: green">نعم</span>
+                                            <?php $pay = true; ?>
+                                    @else
+                                        <span style="font-weight: bold; color: red">لا</span>
+                                            <?php $pay = false; ?>
+                                    @endif
+                                @endif
+
+                                {{--                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
+                                {{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
+                                {{--                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
+                                {{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
+                                {{--                            @else--}}
+                                {{--                                <span style="font-weight: bold; color: red">لا</span>--}}
+                                {{--                            @endif--}}
+
+
+
+                                {{--                        <div class="text-center text-gray-800 text-lg">{{$result2 ?--}}
+                                {{--                             (($result2['days'] <= 240 && ((!is_null(number_format(floatval($result2['postponed_partial']))) && number_format(floatval($result2['postponed_partial'])) != 0 && !is_null(number_format(floatval($result2['postponed_total']))) && number_format(floatval($result2['postponed_total'])) != 0))? (number_format(floatval($result2['postponed_partial']))/number_format(floatval($result2['postponed_total']))) : 0 <= 20)? "نعم" : "لا" : ""}}</div>--}}
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    <div class="text-center text-gray-800 text-sm">
+                                        @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
+                                        @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
+                                        @else
+                                            <span>0</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                        <?php $employee_profit += ($result2 ? floatval($result2['employee_profit']) : 0) ?>
+                        <?php $percentage_area_employee += ($result2 ? floatval($result2['percentage_area_employee']) : 0) ?>
+                        <?php $employee_postponed += ($result2 ? floatval($result2['employee_postponed']) : 0) ?>
+                        <?php $employee_postponed_due += ($result2 ? floatval($result2['employee_postponed_due']) : 0) ?>
+                        <?php $employee_postponed_due_percentage =  $employee_postponed == 0? 0 : ($employee_postponed_due/$employee_postponed)*100 ?>
+                        <?php //$employee_commission += ($result2 ? (((floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240) || (number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)) ? floatval($result2['employee_commission']) : 0) : 0) ?>
+                        <?php $employee_commission += ($result2 && $pay? floatval($result2['employee_commission']) : 0) ?>
+                        <?php $calc_sales_manager += ($result2 && $pay? floatval($result2['calc_sales_manager']) : 0) ?>
+                        <?php $calc_area_manager += ($result2 && $pay? floatval($result2['calc_area_manager']) : 0) ?>
+                        <?php $calc_store_manager += ($result2 && $pay? floatval($result2['calc_store_manager']) : 0) ?>
+                        <?php $calc_mat_dev1 += ($result2 && $pay? floatval($result2['calc_mat_dev1']) : 0) ?>
+                        <?php $calc_mat_dev2 += ($result2 && $pay? floatval($result2['calc_mat_dev2']) : 0) ?>
+                @elseif(($result2 && $result2['Employeecode'] == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1') || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                    <tr>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['Employeecode'] : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['EmployeeName'] : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    {{--                            {{$result2 ? $result2->role : ""}}--}}
+
+                                    @if($result2['role'] == "area_manager")
+                                        <span>مدير منطقة</span>
+                                    @elseif($result2['role'] == "store_manager")
+                                        <span>مدير معرض</span>
+                                    @elseif($result2['role'] == "sales_manager")
+                                        <span>مدير مبيعات</span>
+                                    @elseif($result2['role'] == "mat_dev_manager1")
+                                        <span>تطوير مواد 1</span>
+                                    @elseif($result2['role'] == "mat_dev_manager2")
+                                        <span>تطوير مواد 2</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_profit'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['percentage_area_employee'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['employee_postponed'])) : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{ $result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? number_format(floatval($result2['employee_postponed_due'])) . " (%".number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100).")" : 0}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">{{$result2 ?  ($result2['employee_postponed_due'] &&  $result2['employee_postponed']  && floatval(number_format($result2['employee_postponed'])) != 0? \Carbon\Carbon::parse($result2['oldest_voucher'])->format('Y-m-d')." (". \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) ." يوم)" : "-") : ""}}</div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                @if(floatval(number_format($result2['employee_postponed'])) == 0)
+                                    @if( \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        <span style="font-weight: bold; color: green">نعم</span>
+                                            <?php $pay = true; ?>
+                                    @else
+                                        <span style="font-weight: bold; color: red">لا</span>
+                                            <?php $pay = false; ?>
+                                    @endif
+                                @else
+                                    @if(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        <span style="font-weight: bold; color: green">نعم</span>
+                                            <?php $pay = true; ?>
+                                    @else
+                                        <span style="font-weight: bold; color: red">لا</span>
+                                            <?php $pay = false; ?>
+                                    @endif
+                                @endif
+
+                                {{--                            @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
+                                {{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
+                                {{--                            @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)--}}
+                                {{--                                <span style="font-weight: bold; color: green">نعم</span>--}}
+                                {{--                            @else--}}
+                                {{--                                <span style="font-weight: bold; color: red">لا</span>--}}
+                                {{--                            @endif--}}
+
+
+
+                                {{--                        <div class="text-center text-gray-800 text-lg">{{$result2 ?--}}
+                                {{--                             (($result2['days'] <= 240 && ((!is_null(number_format(floatval($result2['postponed_partial']))) && number_format(floatval($result2['postponed_partial'])) != 0 && !is_null(number_format(floatval($result2['postponed_total']))) && number_format(floatval($result2['postponed_total'])) != 0))? (number_format(floatval($result2['postponed_partial']))/number_format(floatval($result2['postponed_total']))) : 0 <= 20)? "نعم" : "لا" : ""}}</div>--}}
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['employee_commission'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_area_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
+                                    @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}
+                                    @else
+                                        <span>0</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            <div>
+                                <div class="text-center text-gray-800 text-sm">
+                                    <div class="text-center text-gray-800 text-sm">
+                                        @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
+                                        @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
+                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}
+                                        @else
+                                            <span>0</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                        <?php $employee_profit += ($result2 ? floatval($result2['employee_profit']) : 0) ?>
+                        <?php $percentage_area_employee += ($result2 ? floatval($result2['percentage_area_employee']) : 0) ?>
+                        <?php $employee_postponed += ($result2 ? floatval($result2['employee_postponed']) : 0) ?>
+                        <?php $employee_postponed_due += ($result2 ? floatval($result2['employee_postponed_due']) : 0) ?>
+                        <?php $employee_postponed_due_percentage =  $employee_postponed == 0? 0 : ($employee_postponed_due/$employee_postponed)*100 ?>
+                        <?php //$employee_commission += ($result2 ? (((floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240) || (number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)) ? floatval($result2['employee_commission']) : 0) : 0) ?>
+                        <?php $employee_commission += ($result2 && $pay? floatval($result2['employee_commission']) : 0) ?>
+                        <?php $calc_sales_manager += ($result2 && $pay? floatval($result2['calc_sales_manager']) : 0) ?>
+                        <?php $calc_area_manager += ($result2 && $pay? floatval($result2['calc_area_manager']) : 0) ?>
+                        <?php $calc_store_manager += ($result2 && $pay? floatval($result2['calc_store_manager']) : 0) ?>
+                        <?php $calc_mat_dev1 += ($result2 && $pay? floatval($result2['calc_mat_dev1']) : 0) ?>
+                        <?php $calc_mat_dev2 += ($result2 && $pay? floatval($result2['calc_mat_dev2']) : 0) ?>
+                @endif
+
 
 {{--                @if((floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240) || (number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240))--}}
 {{--                    {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}--}}

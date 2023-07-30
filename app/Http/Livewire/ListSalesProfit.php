@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -25,6 +26,14 @@ class ListSalesProfit extends Component
         'area_id.not_in' => "مطلوب",
         'selected_date.required' => "مطلوب",
     ];
+
+    public function booted() {
+        if ((Auth::user()->user_group && in_array('list.sales-profit', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
 
     public function render()
     {

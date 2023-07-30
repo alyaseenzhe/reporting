@@ -28,6 +28,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'branches',
+        'group'
     ];
 
     /**
@@ -59,4 +61,8 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function user_group() {
+        return $this->belongsTo(UserGroup::class, 'group');
+    }
 }
