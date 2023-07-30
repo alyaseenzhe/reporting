@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\PDO;
 use Livewire\Component;
@@ -27,6 +28,14 @@ class CommissionReport extends Component
         'area_id.not_in' => "مطلوب",
         'selected_date.required' => "مطلوب",
     ];
+
+    public function booted() {
+        if ((Auth::user()->user_group && in_array('commission-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
 
     public function render()
     {

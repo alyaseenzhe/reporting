@@ -6,14 +6,24 @@
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="w-full">
+                <label class="block font-bold mb-2">الرقم الوظيفي
+                    <span class="text-red-500">*</span>
+                </label>
+                <input type="text" wire:model="emp_code" class="form-input w-full @error('emp_code') border-red-300 @enderror">
+                @error('emp_code')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+            <div class="w-full">
                 <label class="block font-bold mb-2">نوع المستخدم
                     <span class="text-red-500">*</span>
                 </label>
                 <select name="user_type" wire:model="role"
                         class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                         style="@error('role') border: solid 1px #fda4af; @enderror">
-                    <option value="u">إداري</option>
-                    <option value="a">مدير</option>
+                    <option value="e">مهندسين فروع</option>
+                    <option value="m">مدراء مبيعات</option>
+                    <option value="u">الإدارة العليا</option>
+                    <option value="a">IT</option>
                 </select>
             </div>
 
@@ -39,7 +49,7 @@
             </div>
         </div>
     </div>
-    <div class="mb-6">
+    <div class="mb-10">
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="w-full">
                 <label class="block font-bold mb-2">كلمة المرور
@@ -58,6 +68,80 @@
                 <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="w-full">
+                <label class="block font-bold mb-2">الصلاحية</label>
+                <select id="group_id" name="group_id" wire:model="group_id"
+                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                    <option value="-1">الرجاء اختيار الصلاحية</option>
+                    @foreach($groups as $group)
+                        <option value="{{ $group->id }}">{{ $group->name }}</option>
+                    @endforeach
+                </select>
+                @error('group_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+            </div>
+        </div>
+    </div>
+
+    <hr style="color: #cbd5e1;border: 2px solid;">
+    <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
+    <div>
+
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاحساء</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="default-checkbox" class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جدة</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الرياض</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">وادي الدواسر</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الجوف</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدمام</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الخرج</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نجران</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حائل</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تبوك</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">القصيم</label>
+        </div>
+        <div class="flex items-center mb-4">
+            <input wire:model="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ساجر</label>
+        </div>
+
+        @error('branches')
+        <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
     </div>
 
     <div class="mt-8 text-center">

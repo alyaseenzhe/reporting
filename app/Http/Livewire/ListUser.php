@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,6 +13,7 @@ class ListUser extends Component
 
     public function render()
     {
+//        dd(json_decode(Auth::user()->user_group->report_type));
         $users = User::orderBy('created_at', 'DESC')->paginate(20);
 
         return view('livewire.list-user', compact('users'))

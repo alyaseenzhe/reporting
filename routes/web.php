@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,4 +45,8 @@ Route::middleware([
     Route::get('/create-user', \App\Http\Livewire\CreatUser::class)->name('create.user');
     Route::get('/edit-user/{id}',\App\Http\Livewire\EditUser::class)->name('edit.user');
     Route::get('/list-users', \App\Http\Livewire\ListUser::class)->name('list.users');
+
+    Route::get('/create-group', \App\Http\Livewire\CreateUserGroup::class)->name('create.group');
+    Route::get('/list-groups', \App\Http\Livewire\ListUserGroups::class)->name('list.groups');
+    Route::get('/edit-group/{id}', \App\Http\Livewire\EditUserGroups::class)->name('edit.group');
 });

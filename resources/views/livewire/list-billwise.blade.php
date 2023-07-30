@@ -49,38 +49,73 @@
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
             @foreach($records as $record)
-                <tr>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{$record->employee_code}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{$record->employee_name}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{$record->customer_code}}
-                    </td>
-                    <td class="border p-2">
-                        {{$record->customer_name}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{$record->voucherno}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{ \Carbon\Carbon::parse($record->voucherdate)->format('Y-m-d') }}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{number_format($record->Total, 2)}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{number_format(abs($record->paid), 2)}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{number_format($record->DueAmount, 2)}}
-                    </td>
-                    <td class="border p-2 whitespace-nowrap">
-                        {{$record->days}}
-                    </td>
-                </tr>
+                @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
+                    <tr>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->employee_code}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->employee_name}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->customer_code}}
+                        </td>
+                        <td class="border p-2">
+                            {{$record->customer_name}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->voucherno}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($record->voucherdate)->format('Y-m-d') }}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format($record->Total, 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format(abs($record->paid), 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format($record->DueAmount, 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->days}}
+                        </td>
+                    </tr>
+                @elseif(($record && $record->employee_code == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
+                    <tr>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->employee_code}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->employee_name}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->customer_code}}
+                        </td>
+                        <td class="border p-2">
+                            {{$record->customer_name}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->voucherno}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($record->voucherdate)->format('Y-m-d') }}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format($record->Total, 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format(abs($record->paid), 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format($record->DueAmount, 2)}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record->days}}
+                        </td>
+                    </tr>
+                @endif
             @endforeach
             </tbody>
         </table>
