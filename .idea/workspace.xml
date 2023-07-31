@@ -5,33 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateUserGroup.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/EditUserGroups.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/ListUserGroups.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Models/UserGroup.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2023_07_24_093028_add_branches_to_users_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2023_07_25_094946_create_user_groups_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2023_07_25_132848_add_group_to_users_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2023_07_27_083225_add_emp_code_to_users_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-user-groups.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Actions/Fortify/CreateNewUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Actions/Fortify/CreateNewUser.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreatUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreatUser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/EditUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/EditUser.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListBillwise.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListBillwise.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListUser.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/UserDashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/UserDashboard.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/creat-user.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/creat-user.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-billwise.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-billwise.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-profit.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-profit.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/fortify.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/fortify.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/auth/login.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/auth/login.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/auth/register.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/auth/register.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -173,21 +157,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/permissions&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ibrah/Documents/projects/reporting&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "feature/registrations",
+    "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/reporting",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\css" />
