@@ -13,6 +13,11 @@ class ListBillwise extends Component
     use WithPagination;
 
     public function booted() {
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
         if ((Auth::user()->user_group && in_array('list.non-paid-vouchers', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
             return;
         } else {

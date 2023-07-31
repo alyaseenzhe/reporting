@@ -28,13 +28,16 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-sales-profit', \App\Http\Livewire\ListSalesProfit::class)->name('list.sales-profit');
     Route::get('/list-sales-collections', \App\Http\Livewire\ListSalesCollections::class)->name('list.sales-collections');
 
+
+    Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
+
 });
 
 Route::middleware([
     'admin',
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified'
+    'verified',
 ])->group(function () {
 
 //    Route::get('/dashboard',\App\Http\Livewire\UserDashboard::class)->name('dashboard');

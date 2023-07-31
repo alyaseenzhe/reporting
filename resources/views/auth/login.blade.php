@@ -42,6 +42,12 @@
                 <x-jet-button class="mr-4">
                     {{ __('تسجيل الدخول') }}
                 </x-jet-button>
+
+                    <div class="mr-4 text-sm" style="background-color: #2452f3; padding: 5px; text-align: center; color: white;">
+                        <a href="{{ route('register') }}" style="padding-right: 10px; padding-left: 10px;">
+                            {{ __('تسجيل جديد') }}
+                        </a>
+                    </div>
             </div>
         </form>
     </x-jet-authentication-card>

@@ -29,7 +29,9 @@ class User extends Authenticatable
         'password',
         'role',
         'branches',
-        'group'
+        'group',
+        'emp_code',
+        'is_active'
     ];
 
     /**
