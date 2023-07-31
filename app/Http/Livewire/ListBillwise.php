@@ -12,6 +12,16 @@ class ListBillwise extends Component
 {
     use WithPagination;
 
+    public $loadData = false;
+    public $records = [];
+
+    public function init()
+    {
+//        $this->loadData = true;
+        $this->load_data();
+
+    }
+
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -27,16 +37,23 @@ class ListBillwise extends Component
     public function render()
     {
 
-        // حسب العميل
-        $records = Billwise::join('accmast', 'billwise.customerno', 'accmast.nodeno')
-            ->join('WarrentyInfo', 'WarrentyInfo.AccountNo' , 'accmast.NodeNo')
-            ->join('SInvoice', 'BillWise.VoucherNo' , 'SInvoice.SInvoiceNo')
+            // حسب العميل
+
+        return view('livewire.list-billwise'/*, compact('records')*/)
+            ->layout('layouts.dashboard');
+    }
+
+    public function load_data() {
+
+        $this->records = Billwise::join('accmast', 'billwise.customerno', 'accmast.nodeno')
+            ->join('WarrentyInfo', 'WarrentyInfo.AccountNo', 'accmast.NodeNo')
+            ->join('SInvoice', 'BillWise.VoucherNo', 'SInvoice.SInvoiceNo')
             ->join('StudentMast', 'WarrentyInfo.SalesEmployee', 'StudentMast.NodeNo')
             ->where('WarrentyInfo.AccountStatus', 'عملاء نشيطين لدى الفرع')
             ->where('billwise.type', 'N')
             ->where(DB::raw('(total+paid)'), '>', 0.01)
-            ->where('VoucherNo' , 'like', '210%')
-            ->where(DB::raw('DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'), '>=', 240)
+            ->where('VoucherNo', 'like', '210%')
+            ->where(DB::raw('DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'), '>=', 0)
             ->whereIn('accmast.Type', [9, 10])
             ->select(DB::raw('accmast.Code as customer_code, accmast.Arabic_Name as customer_name, voucherno, WarrentyInfo.SalesEmployee as employee_code, StudentMast.Arabic_Name as employee_name, voucherdate, Total, paid, (total+paid) as DueAmount, DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1 AS [days]'))
             ->groupBy(DB::raw('accmast.Code, accmast.Arabic_Name, voucherno, WarrentyInfo.SalesEmployee, StudentMast.Arabic_Name, voucherdate, Total, paid, (total+paid), DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'))
@@ -62,7 +79,8 @@ class ListBillwise extends Component
 
 
 //        dd($records);
-        return view('livewire.list-billwise', compact('records'))
-            ->layout('layouts.dashboard');
+
+        $this->emit('show-data');
+
     }
 }

@@ -6,17 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Actions/Fortify/CreateNewUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Actions/Fortify/CreateNewUser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListBillwise.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListBillwise.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/UserDashboard.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/UserDashboard.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/fortify.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/fortify.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/auth/login.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/auth/login.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/auth/register.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/auth/register.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-billwise.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-billwise.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +153,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feature/registrations",
+    "git-widget-placeholder": "updates/list-non-paid-voucher",
     "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/reporting",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

@@ -1,4 +1,4 @@
-<div>
+<div wire:init="init">
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
         <div class="w-full">الفواتير المُستحقة</div>
@@ -8,7 +8,9 @@
             ملاحظة:
         </p>
         <p style="color: #23547c;" class="font-bold">
-            الفواتير الموجودة في الجدول هي الفواتير المُستحقة منذ 240 يوم
+            الفواتير الموجودة في الجدول هي الفواتير المُستحقة منذ
+            <input type="text" id="min" name="min" value="240">
+            يوم
         </p>
     </div>
     <div wire:loading.remove wire:target="fetch_data" class="overflow-x-auto w-full">
@@ -122,7 +124,7 @@
     </div>
 {{--    {{ $records->links() }}--}}
 
-    <div  wire:loading wire:target="fetch_data" class="w-full">
+    <div  wire:loading wire:target="load_data" class="w-full">
         <div class="w-full" style="border: solid 1px grey;">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
                 <rect x="17.5" y="30" width="15" height="40" fill="#e15b64">
@@ -164,133 +166,165 @@
     <script>
         $(document).ready( function () {
 
-            var collapsedGroups = {};
+            Livewire.on('show-data', () => {
+                var collapsedGroups = {};
 
-            $('#voucherTable').DataTable(
-                {
-                    dom: 'lBfrtip',
-                    "language": {
-                        "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
-                        "sLoadingRecords": "جارٍ التحميل...",
-                        "sProcessing": "جارٍ التحميل...",
-                        "sLengthMenu": "أظهر _MENU_ مدخلات",
-                        "sZeroRecords": "لم يعثر على أية سجلات",
-                        "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
-                        "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
-                        "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
-                        "sInfoPostFix": "",
-                        "sSearch": "ابحث:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "الأول",
-                            "sPrevious": "السابق",
-                            "sNext": "التالي",
-                            "sLast": "الأخير"
+                $('#voucherTable').DataTable(
+                    {
+                        dom: 'lBfrtip',
+                        "language": {
+                            "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                            "sLoadingRecords": "جارٍ التحميل...",
+                            "sProcessing": "جارٍ التحميل...",
+                            "sLengthMenu": "أظهر _MENU_ مدخلات",
+                            "sZeroRecords": "لم يعثر على أية سجلات",
+                            "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                            "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                            "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                            "sInfoPostFix": "",
+                            "sSearch": "ابحث:",
+                            "sUrl": "",
+                            "oPaginate": {
+                                "sFirst": "الأول",
+                                "sPrevious": "السابق",
+                                "sNext": "التالي",
+                                "sLast": "الأخير"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                                "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                            }
                         },
-                        "oAria": {
-                            "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-                            "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                        buttons: [
+                            {extend: 'copy', text: 'نسخ'},
+                            {extend: 'excel', text: 'تصدير إلى اكسل'},
+                        ],
+                        // start of row group section
+                        // paging: false,
+                        order: [
+                            [2, 'asc']
+                        ],
+                        columnDefs: [ { orderable: false, targets: [0, 1] }],
+                        rowGroup: {
+                            startRender: null,
+                            endRender: function (rows, group) {
+
+
+                                var customer_name = rows
+                                    .data()
+                                    .pluck(3)[0];
+
+
+                                var voucherTotal = rows
+                                    .data()
+                                    .pluck(6)
+                                    .reduce(function (a, b) {
+                                        console.log(b);
+                                        return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                    }, 0);
+
+                                var paidAmount = rows
+                                    .data()
+                                    .pluck(7)
+                                    .reduce(function (a, b) {
+                                        console.log(b);
+                                        return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                    }, 0);
+
+                                var dueAmount = rows
+                                    .data()
+                                    .pluck(8)
+                                    .reduce(function (a, b) {
+                                        console.log(b);
+                                        return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                    }, 0);
+
+                                // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );
+
+                                // var ageAvg = rows
+                                //     .data()
+                                //     .pluck(3)
+                                //     .reduce( function (a, b) {
+                                //         return a + b*1;
+                                //     }, 0) / rows.count();
+
+                                return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')
+                                    .append('<td style="border: 1px solid;" colspan="6">المجموع لـ '+ customer_name + "(" + group + ")" + '</td>')
+                                    .append('<td style="border: 1px solid;" >' + voucherTotal.toLocaleString("en-US") + '</td>')
+                                    .append('<td style="border: 1px solid;" >' + paidAmount.toLocaleString("en-US") + '</td>')
+                                    .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>')
+                                    .append('<td style="border: 1px solid;" />');
+                            },
+                            dataSrc: 2
                         }
-                    },
-                    buttons: [
-                        {extend: 'copy', text: 'نسخ'},
-                        {extend: 'excel', text: 'تصدير إلى اكسل'},
-                    ],
-                    // start of row group section
-                    // paging: false,
-                    order: [
-                        [2, 'asc']
-                    ],
-                    columnDefs: [ { orderable: false, targets: [0, 1] }],
-                    rowGroup: {
-                        startRender: null,
-                        endRender: function (rows, group) {
+                        //         rowGroup: {
+                        //             // Uses the 'row group' plugin
+                        //             dataSrc: 2,
+                        //             startRender: function(rows, group) {
+                        //                 var collapsed = !!collapsedGroups[group];
+                        //
+                        //                 rows.nodes().each(function (r) {
+                        //                     r.style.display = 'none';
+                        //                     if (collapsed) {
+                        //                         r.style.display = '';
+                        //                     }});
+                        //
+                        //                 // Add category name to the <tr>. NOTE: Hardcoded colspan
+                        //                 return $('<tr/>')
+                        //                     .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
+                        //                     .attr('data-name', group)
+                        //                     .toggleClass('collapsed', collapsed);
+                        //             }
+                        //         }
+                        //     }
+                        // );
+                        //
+                        // // $('#voucherTable tbody').on('click', 'tr.group-start', function() {
+                        // //     alert('test');
+                        // //     var name = $(this).data('name');
+                        // //     collapsedGroups[name] = !collapsedGroups[name];
+                        // //     table.draw(false);
+                        // // });
+                        //
+                        // $('#voucherTable tbody').on('click', function() {
+                        //     alert('test');
+                        //     console.log(collapsedGroups);
+                        //     var name = $(this).data('name');
+                        //     collapsedGroups[name] = !collapsedGroups[name];
+                        //     table.draw(false);
+                        // });
+                    });
 
 
-                            var customer_name = rows
-                                .data()
-                                .pluck(3)[0];
+                // filtering
+                const minEl = document.querySelector('#min');
 
+// Custom range filtering function
+                DataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let min = parseInt(minEl.value, 10);
+                    let days = parseFloat(data[9]) || 0; // use data for the age column
+                    console.log(days);
 
-                            var voucherTotal = rows
-                                .data()
-                                .pluck(6)
-                                .reduce(function (a, b) {
-                                    console.log(b);
-                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
-                                }, 0);
-
-                            var paidAmount = rows
-                                .data()
-                                .pluck(7)
-                                .reduce(function (a, b) {
-                                    console.log(b);
-                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
-                                }, 0);
-
-                            var dueAmount = rows
-                                .data()
-                                .pluck(8)
-                                .reduce(function (a, b) {
-                                    console.log(b);
-                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
-                                }, 0);
-
-                            // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );
-
-                            // var ageAvg = rows
-                            //     .data()
-                            //     .pluck(3)
-                            //     .reduce( function (a, b) {
-                            //         return a + b*1;
-                            //     }, 0) / rows.count();
-
-                            return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')
-                                .append('<td style="border: 1px solid;" colspan="6">المجموع لـ '+ customer_name + "(" + group + ")" + '</td>')
-                                .append('<td style="border: 1px solid;" >' + voucherTotal.toLocaleString("en-US") + '</td>')
-                                .append('<td style="border: 1px solid;" >' + paidAmount.toLocaleString("en-US") + '</td>')
-                                .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>')
-                                .append('<td style="border: 1px solid;" />');
-                        },
-                        dataSrc: 2
+                    if (isNaN(min) || min <= days) {
+                        return true;
                     }
-                    //         rowGroup: {
-                    //             // Uses the 'row group' plugin
-                    //             dataSrc: 2,
-                    //             startRender: function(rows, group) {
-                    //                 var collapsed = !!collapsedGroups[group];
-                    //
-                    //                 rows.nodes().each(function (r) {
-                    //                     r.style.display = 'none';
-                    //                     if (collapsed) {
-                    //                         r.style.display = '';
-                    //                     }});
-                    //
-                    //                 // Add category name to the <tr>. NOTE: Hardcoded colspan
-                    //                 return $('<tr/>')
-                    //                     .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
-                    //                     .attr('data-name', group)
-                    //                     .toggleClass('collapsed', collapsed);
-                    //             }
-                    //         }
-                    //     }
-                    // );
-                    //
-                    // // $('#voucherTable tbody').on('click', 'tr.group-start', function() {
-                    // //     alert('test');
-                    // //     var name = $(this).data('name');
-                    // //     collapsedGroups[name] = !collapsedGroups[name];
-                    // //     table.draw(false);
-                    // // });
-                    //
-                    // $('#voucherTable tbody').on('click', function() {
-                    //     alert('test');
-                    //     console.log(collapsedGroups);
-                    //     var name = $(this).data('name');
-                    //     collapsedGroups[name] = !collapsedGroups[name];
-                    //     table.draw(false);
-                    // });
+
+                    return false;
                 });
+
+
+                const table = new DataTable('#voucherTable');
+                table.draw();
+
+// Changes to the inputs will trigger a redraw to update the table
+                minEl.addEventListener('input', function () {
+                    table.draw();
+                });
+
+            })
+
+            // const table = new DataTable('#voucherTable');
+            // table.draw();
         });
     </script>
 @stop
