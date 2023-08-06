@@ -86,11 +86,20 @@
                     </button>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div id="report-btn" wire:loading.remove wire:target="generateReport" class="hide printable">
+{{-- filtering --}}
+        <div style="margin-bottom: 30px; padding: 20px; background-color: #f1f1f1;" class="w-full flex flex-row">
+            <label class="block font-bold mb-2 w-full">نوع التقرير
+                <select id="report_type" name="report_type"
+                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <option value="show">مختصر</option>
+                    <option value="hide">تفصيلي</option>
+                </select>
+            </label>
+        </div>
         {{-- table 2 (details) --}}
         <div id="tbl2-container" class="overflow-x-auto">
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
@@ -122,6 +131,9 @@
                     </th>
                     <th class="border p-2 whitespace-nowrap">
                         <div class="text-sm">المستحق</div>
+                    </th>
+                    <th class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">الحالة</div>
                     </th>
                 </tr>
                 </thead>
@@ -169,13 +181,13 @@
                                     <td class="border p-2">
                                         {{$record['emp_name']}}
                                     </td>
-                                    <td class="border p-2 whitespace-nowrap">
+                                    <td @if($record['collected'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                         {{number_format($record['collected'], 2)}}
                                     </td>
-                                    <td class="border p-2 whitespace-nowrap">
+                                    <td @if($record['cash'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                         {{number_format($record['cash'], 2)}}
                                     </td>
-                                    <td class="border p-2 whitespace-nowrap">
+                                    <td @if($record['postponed_sales'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                         {{number_format($record['postponed_sales'], 2)}}
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
@@ -183,6 +195,9 @@
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
                                         {{number_format($record['postponed_due_amount'], 2)}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{ number_format($record['collected'], 2) == '0.00' && number_format($record['cash'], 2) == '0.00' && number_format($record['postponed_sales'], 2) == '0.00' ? "hide" : "show" }}
                                     </td>
                                 </tr>
                             @endif
@@ -284,6 +299,13 @@
 
     <script>
         Livewire.on('show-container', () => {
+
+
+            if ( $.fn.dataTable.isDataTable('#tbl2') ) {
+                $('#tbl2').DataTable().destroy();
+                $('#tbl2').empty();
+            }
+
             div = document.getElementById("report-btn");
             div_title = document.getElementById("report_title");
             area = document.getElementById("area_id");
@@ -295,286 +317,203 @@
 
             var collapsedGroups = {};
 
+            $('#tbl2').DataTable(
+                {
+                    dom: 'lBfrtip',
+                    "lengthMenu": [ 100, 200, 300, 400 ],
+                    "pageLength": 300,
+                    "language": {
+                        "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                        "sLoadingRecords": "جارٍ التحميل...",
+                        "sProcessing": "جارٍ التحميل...",
+                        "sLengthMenu": "أظهر _MENU_ مدخلات",
+                        "sZeroRecords": "لم يعثر على أية سجلات",
+                        "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                        "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                        "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                        "sInfoPostFix": "",
+                        "sSearch": "ابحث:",
+                        "sUrl": "",
+                        "oPaginate": {
+                            "sFirst": "الأول",
+                            "sPrevious": "السابق",
+                            "sNext": "التالي",
+                            "sLast": "الأخير"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                            "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                        }
+                    },
+                    buttons: [
+                        {extend: 'copy', text: 'نسخ'},
+                        {extend: 'excel', text: 'تصدير إلى اكسل'},
+                    ],
+                    // start of row group section
+                    // paging: false,
+                    order: [
+                        [3, 'asc']
+                    ],
+                    columnDefs: [ { orderable: false, targets: [0, 1] } , { target: 9, visible: false }],
+                    rowGroup: {
+                        startRender: null,
+                        endRender: function (rows, group) {
 
 
-            // if ( $.fn.dataTable.isDataTable( '#tbl2' ) ) {
-            //     table.destroy();
-            // }
-            //$('#tbl2').empty();
-            // $('#tbl2').load(' #tbl2');
+                            var customer_name = rows
+                                .data()
+                                .pluck(3)[0];
 
-            // table = $('#tbl2').DataTable(
-            //     {
-            //         destroy: true,
-            //         dom: 'lBfrtip',
-            //         "language": {
-            //             "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
-            //             "sLoadingRecords": "جارٍ التحميل...",
-            //             "sProcessing": "جارٍ التحميل...",
-            //             "sLengthMenu": "أظهر _MENU_ مدخلات",
-            //             "sZeroRecords": "لم يعثر على أية سجلات",
-            //             "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
-            //             "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
-            //             "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
-            //             "sInfoPostFix": "",
-            //             "sSearch": "ابحث:",
-            //             "sUrl": "",
-            //             "oPaginate": {
-            //                 "sFirst": "الأول",
-            //                 "sPrevious": "السابق",
-            //                 "sNext": "التالي",
-            //                 "sLast": "الأخير"
-            //             },
-            //             "oAria": {
-            //                 "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
-            //                 "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
-            //             }
-            //         },
-            //         buttons: [
-            //             {extend: 'copy', text: 'نسخ'},
-            //             {extend: 'excel', text: 'تصدير إلى اكسل'},
-            //         ],
-            //         // start of row group section
-            //         // paging: false,
-            //         order: [
-            //             [2, 'asc']
-            //         ],
-            //         columnDefs: [ { orderable: false, targets: [0, 1] }],
-            //         rowGroup: {
-            //             startRender: null,
-            //             endRender: function (rows, group) {
-            //
-            //
-            //                 var customer_name = rows
-            //                     .data()
-            //                     .pluck(3)[0];
-            //
-            //
-            //                 var voucherTotal = rows
-            //                     .data()
-            //                     .pluck(6)
-            //                     .reduce(function (a, b) {
-            //                         console.log(b);
-            //                         return a + parseFloat(b.replace(/\,/g,'')) * 1;
-            //                     }, 0);
-            //
-            //                 var paidAmount = rows
-            //                     .data()
-            //                     .pluck(7)
-            //                     .reduce(function (a, b) {
-            //                         console.log(b);
-            //                         return a + parseFloat(b.replace(/\,/g,'')) * 1;
-            //                     }, 0);
-            //
-            //                 var dueAmount = rows
-            //                     .data()
-            //                     .pluck(8)
-            //                     .reduce(function (a, b) {
-            //                         console.log(b);
-            //                         return a + parseFloat(b.replace(/\,/g,'')) * 1;
-            //                     }, 0);
-            //
-            //                 // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );
-            //
-            //                 // var ageAvg = rows
-            //                 //     .data()
-            //                 //     .pluck(3)
-            //                 //     .reduce( function (a, b) {
-            //                 //         return a + b*1;
-            //                 //     }, 0) / rows.count();
-            //
-            //                 return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')
-            //                     .append('<td style="border: 1px solid;" colspan="6">المجموع لـ '+ customer_name + "(" + group + ")" + '</td>')
-            //                     .append('<td style="border: 1px solid;" >' + voucherTotal.toLocaleString("en-US") + '</td>')
-            //                     .append('<td style="border: 1px solid;" >' + paidAmount.toLocaleString("en-US") + '</td>')
-            //                     .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>')
-            //                     .append('<td style="border: 1px solid;" />');
-            //             },
-            //             dataSrc: 2
-            //         }
-            //         //         rowGroup: {
-            //         //             // Uses the 'row group' plugin
-            //         //             dataSrc: 2,
-            //         //             startRender: function(rows, group) {
-            //         //                 var collapsed = !!collapsedGroups[group];
-            //         //
-            //         //                 rows.nodes().each(function (r) {
-            //         //                     r.style.display = 'none';
-            //         //                     if (collapsed) {
-            //         //                         r.style.display = '';
-            //         //                     }});
-            //         //
-            //         //                 // Add category name to the <tr>. NOTE: Hardcoded colspan
-            //         //                 return $('<tr/>')
-            //         //                     .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
-            //         //                     .attr('data-name', group)
-            //         //                     .toggleClass('collapsed', collapsed);
-            //         //             }
-            //         //         }
-            //         //     }
-            //         // );
-            //         //
-            //         // // $('#voucherTable tbody').on('click', 'tr.group-start', function() {
-            //         // //     alert('test');
-            //         // //     var name = $(this).data('name');
-            //         // //     collapsedGroups[name] = !collapsedGroups[name];
-            //         // //     table.draw(false);
-            //         // // });
-            //         //
-            //         // $('#voucherTable tbody').on('click', function() {
-            //         //     alert('test');
-            //         //     console.log(collapsedGroups);
-            //         //     var name = $(this).data('name');
-            //         //     collapsedGroups[name] = !collapsedGroups[name];
-            //         //     table.draw(false);
-            //         // });
-            //     });
-            //
+                            var collected_amount = rows
+                                .data()
+                                .pluck(4)
+                                .reduce(function (a, b) {
+                                    // console.log(b);
+                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                }, 0);
+
+                            var cash_sales = rows
+                                .data()
+                                .pluck(5)
+                                .reduce(function (a, b) {
+                                    // console.log(b);
+                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                }, 0);
+
+                            var postponed_sales = rows
+                                .data()
+                                .pluck(6)
+                                .reduce(function (a, b) {
+                                    // console.log(b);
+                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                }, 0);
+
+
+                            var postponed_total = rows
+                                .data()
+                                .pluck(7)
+                                .reduce(function (a, b) {
+                                    // console.log(b);
+                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                }, 0);
+
+                            var dueAmount = rows
+                                .data()
+                                .pluck(8)
+                                .reduce(function (a, b) {
+                                    // console.log(b);
+                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;
+                                }, 0);
+
+                            // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );
+
+                            // var ageAvg = rows
+                            //     .data()
+                            //     .pluck(3)
+                            //     .reduce( function (a, b) {
+                            //         return a + b*1;
+                            //     }, 0) / rows.count();
+
+                            return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')
+                                .append('<td style="border: 1px solid;" colspan="4">المجموع لـ '+ group + '</td>')
+                                .append('<td style="border: 1px solid;" >' + collected_amount.toLocaleString("en-US") + '</td>')
+                                .append('<td style="border: 1px solid;" >' + cash_sales.toLocaleString("en-US") + '</td>')
+                                .append('<td style="border: 1px solid;" >' + postponed_sales.toLocaleString("en-US") + '</td>')
+                                .append('<td style="border: 1px solid;" >' + postponed_total.toLocaleString("en-US") + '</td>')
+                                .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>');
+                        },
+                        dataSrc: [2, 3]
+                    }
+                    //         rowGroup: {
+                    //             // Uses the 'row group' plugin
+                    //             dataSrc: 2,
+                    //             startRender: function(rows, group) {
+                    //                 var collapsed = !!collapsedGroups[group];
+                    //
+                    //                 rows.nodes().each(function (r) {
+                    //                     r.style.display = 'none';
+                    //                     if (collapsed) {
+                    //                         r.style.display = '';
+                    //                     }});
+                    //
+                    //                 // Add category name to the <tr>. NOTE: Hardcoded colspan
+                    //                 return $('<tr/>')
+                    //                     .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')
+                    //                     .attr('data-name', group)
+                    //                     .toggleClass('collapsed', collapsed);
+                    //             }
+                    //         }
+                    //     }
+                    // );
+                    //
+                    // // $('#voucherTable tbody').on('click', 'tr.group-start', function() {
+                    // //     alert('test');
+                    // //     var name = $(this).data('name');
+                    // //     collapsedGroups[name] = !collapsedGroups[name];
+                    // //     table.draw(false);
+                    // // });
+                    //
+                    // $('#voucherTable tbody').on('click', function() {
+                    //     alert('test');
+                    //     console.log(collapsedGroups);
+                    //     var name = $(this).data('name');
+                    //     collapsedGroups[name] = !collapsedGroups[name];
+                    //     table.draw(false);
+                    // });
+                });
 
 
 
-        })
+            // filtering
+            const report_typeEl = document.querySelector('#report_type');
+            report_typeEl.selectedIndex = 0;
+
+
+            if (report_typeEl.value == "show") {
+                // Custom range filtering function
+                DataTable.ext.search.push(function (settings, data, dataIndex) {
+                    let reportType = data[9]; // use data for the status column
+                    // console.log(reportType);
+                    // console.log(report_typeEl.value);
+                    if (report_typeEl.value == reportType) {
+                        return true
+                    }
+
+                    return false;
+                });
+
+            }
+            else {
+               DataTable.ext.search.pop();
+            }
+
+            const table = new DataTable('#tbl2');
+            table.draw();
+
+// Changes to the inputs will trigger a redraw to update the table
+            report_typeEl.addEventListener('change', function () {
+                if (report_typeEl.value == "show") {
+                    // Custom range filtering function
+                    DataTable.ext.search.push(function (settings, data, dataIndex) {
+                        let reportType = data[9]; // use data for the status column
+
+                        if (report_typeEl.value == reportType) {
+                            return true
+                        }
+
+                        return false;
+                    });
+                }
+                else {
+                    DataTable.ext.search.pop();
+                }
+                table.draw();
+            });
+        });
+
+
 
     </script>
-    {{--    <script src="{{ asset('js/jquery.min.js') }}"></script>--}}
-    {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
-    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
-    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
-    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
-    {{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
-
-    {{--    <script>--}}
-    {{--        $(document).ready( function () {--}}
-
-    {{--            var collapsedGroups = {};--}}
-
-    {{--            $('#tbl2').DataTable(--}}
-    {{--                {--}}
-    {{--                    dom: 'lBfrtip',--}}
-    {{--                    "language": {--}}
-    {{--                        "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",--}}
-    {{--                        "sLoadingRecords": "جارٍ التحميل...",--}}
-    {{--                        "sProcessing": "جارٍ التحميل...",--}}
-    {{--                        "sLengthMenu": "أظهر _MENU_ مدخلات",--}}
-    {{--                        "sZeroRecords": "لم يعثر على أية سجلات",--}}
-    {{--                        "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",--}}
-    {{--                        "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",--}}
-    {{--                        "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",--}}
-    {{--                        "sInfoPostFix": "",--}}
-    {{--                        "sSearch": "ابحث:",--}}
-    {{--                        "sUrl": "",--}}
-    {{--                        "oPaginate": {--}}
-    {{--                            "sFirst": "الأول",--}}
-    {{--                            "sPrevious": "السابق",--}}
-    {{--                            "sNext": "التالي",--}}
-    {{--                            "sLast": "الأخير"--}}
-    {{--                        },--}}
-    {{--                        "oAria": {--}}
-    {{--                            "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",--}}
-    {{--                            "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"--}}
-    {{--                        }--}}
-    {{--                    },--}}
-    {{--                    buttons: [--}}
-    {{--                        {extend: 'copy', text: 'نسخ'},--}}
-    {{--                        {extend: 'excel', text: 'تصدير إلى اكسل'},--}}
-    {{--                    ],--}}
-    {{--                    // start of row group section--}}
-    {{--                    // paging: false,--}}
-    {{--                    order: [--}}
-    {{--                        [2, 'asc']--}}
-    {{--                    ],--}}
-    {{--                    columnDefs: [ { orderable: false, targets: [0, 1] }],--}}
-    {{--                    rowGroup: {--}}
-    {{--                        startRender: null,--}}
-    {{--                        endRender: function (rows, group) {--}}
-
-
-    {{--                            var customer_name = rows--}}
-    {{--                                .data()--}}
-    {{--                                .pluck(3)[0];--}}
-
-
-    {{--                            var voucherTotal = rows--}}
-    {{--                                .data()--}}
-    {{--                                .pluck(6)--}}
-    {{--                                .reduce(function (a, b) {--}}
-    {{--                                    console.log(b);--}}
-    {{--                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-    {{--                                }, 0);--}}
-
-    {{--                            var paidAmount = rows--}}
-    {{--                                .data()--}}
-    {{--                                .pluck(7)--}}
-    {{--                                .reduce(function (a, b) {--}}
-    {{--                                    console.log(b);--}}
-    {{--                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-    {{--                                }, 0);--}}
-
-    {{--                            var dueAmount = rows--}}
-    {{--                                .data()--}}
-    {{--                                .pluck(8)--}}
-    {{--                                .reduce(function (a, b) {--}}
-    {{--                                    console.log(b);--}}
-    {{--                                    return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-    {{--                                }, 0);--}}
-
-    {{--                            // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );--}}
-
-    {{--                            // var ageAvg = rows--}}
-    {{--                            //     .data()--}}
-    {{--                            //     .pluck(3)--}}
-    {{--                            //     .reduce( function (a, b) {--}}
-    {{--                            //         return a + b*1;--}}
-    {{--                            //     }, 0) / rows.count();--}}
-
-    {{--                            return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')--}}
-    {{--                                .append('<td style="border: 1px solid;" colspan="6">المجموع لـ '+ customer_name + "(" + group + ")" + '</td>')--}}
-    {{--                                .append('<td style="border: 1px solid;" >' + voucherTotal.toLocaleString("en-US") + '</td>')--}}
-    {{--                                .append('<td style="border: 1px solid;" >' + paidAmount.toLocaleString("en-US") + '</td>')--}}
-    {{--                                .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>')--}}
-    {{--                                .append('<td style="border: 1px solid;" />');--}}
-    {{--                        },--}}
-    {{--                        dataSrc: 2--}}
-    {{--                    }--}}
-    {{--                    //         rowGroup: {--}}
-    {{--                    //             // Uses the 'row group' plugin--}}
-    {{--                    //             dataSrc: 2,--}}
-    {{--                    //             startRender: function(rows, group) {--}}
-    {{--                    //                 var collapsed = !!collapsedGroups[group];--}}
-    {{--                    //--}}
-    {{--                    //                 rows.nodes().each(function (r) {--}}
-    {{--                    //                     r.style.display = 'none';--}}
-    {{--                    //                     if (collapsed) {--}}
-    {{--                    //                         r.style.display = '';--}}
-    {{--                    //                     }});--}}
-    {{--                    //--}}
-    {{--                    //                 // Add category name to the <tr>. NOTE: Hardcoded colspan--}}
-    {{--                    //                 return $('<tr/>')--}}
-    {{--                    //                     .append('<td colspan="8">' + group + ' (' + rows.count() + ')</td>')--}}
-    {{--                    //                     .attr('data-name', group)--}}
-    {{--                    //                     .toggleClass('collapsed', collapsed);--}}
-    {{--                    //             }--}}
-    {{--                    //         }--}}
-    {{--                    //     }--}}
-    {{--                    // );--}}
-    {{--                    //--}}
-    {{--                    // // $('#voucherTable tbody').on('click', 'tr.group-start', function() {--}}
-    {{--                    // //     alert('test');--}}
-    {{--                    // //     var name = $(this).data('name');--}}
-    {{--                    // //     collapsedGroups[name] = !collapsedGroups[name];--}}
-    {{--                    // //     table.draw(false);--}}
-    {{--                    // // });--}}
-    {{--                    //--}}
-    {{--                    // $('#voucherTable tbody').on('click', function() {--}}
-    {{--                    //     alert('test');--}}
-    {{--                    //     console.log(collapsedGroups);--}}
-    {{--                    //     var name = $(this).data('name');--}}
-    {{--                    //     collapsedGroups[name] = !collapsedGroups[name];--}}
-    {{--                    //     table.draw(false);--}}
-    {{--                    // });--}}
-    {{--                });--}}
-    {{--        });--}}
-    {{--    </script>--}}
 @stop
 @section('css-scripts')
     <style>
