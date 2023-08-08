@@ -89,7 +89,6 @@
 
         </div>
     </div>
-
     <div id="report-btn" wire:loading.remove wire:target="generateReport" class="hide printable">
         {{-- table 2 (details) --}}
         <div id="tbl2-container" class="overflow-x-auto">

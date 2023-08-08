@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-non-paid-vouchers', \App\Http\Livewire\ListBillwise::class)->name('list.non-paid-vouchers');
     Route::get('/list-sales-profit', \App\Http\Livewire\ListSalesProfit::class)->name('list.sales-profit');
     Route::get('/list-sales-collections', \App\Http\Livewire\ListSalesCollections::class)->name('list.sales-collections');
+    Route::get('/list-postponed-by-customers', \App\Http\Livewire\ListPostponedByCustomer::class)->name('list.postponed-by-customers');
 
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
