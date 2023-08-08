@@ -88,7 +88,6 @@
             </div>
         </div>
     </div>
-
     <div id="report-btn" wire:loading.remove wire:target="generateReport" class="hide printable">
 {{-- filtering --}}
         <div style="margin-bottom: 30px; padding: 20px; background-color: #f1f1f1;" class="w-full flex flex-row">

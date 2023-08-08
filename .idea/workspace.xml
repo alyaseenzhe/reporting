@@ -5,9 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +168,7 @@
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\css" />
@@ -200,6 +206,7 @@
       <workItem from="1687069379436" duration="8559000" />
       <workItem from="1687241103227" duration="29473000" />
       <workItem from="1689230322914" duration="4148000" />
+      <workItem from="1691298946999" duration="12456000" />
     </task>
     <servers />
   </component>

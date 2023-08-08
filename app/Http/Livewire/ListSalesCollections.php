@@ -250,7 +250,7 @@ class ListSalesCollections extends Component
             ->whereRaw('LEN(accmast.Code) > 3')
             ->where('accmast.Code', 'like',  $this->area_id.'%')
             ->select('accmast.NodeNo as customer_nodeno', 'accmast.Code as customer_code', 'accmast.Arabic_Name as customer_name', 'StudentMast.Code as emp_code','StudentMast.Arabic_Name as emp_name')
-            ->orderBy('accmast.Code')
+            ->orderBy('StudentMast.Code')
             ->get();
 
         return $records;
