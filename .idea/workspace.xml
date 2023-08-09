@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" afterDir="false" />
+    <list default="true" id="d44284e2-18d7-4cfe-96d8-c48ba1d3f4e9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" afterDir="false" />
@@ -20,17 +18,10 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
-    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+  <component name="ComposerSettings">
     <execution />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP 8.1">
+  <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/brick/math" />
       <path value="$PROJECT_DIR$/vendor/dragonmantank/cron-expression" />
@@ -149,68 +140,18 @@
       <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
     </include_path>
   </component>
-  <component name="ProjectId" id="2PmeQN7pBwykfJ1iFeHJ8sdjTFo" />
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "update/list-sales-collection",
-    "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/reporting",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+    "git-widget-placeholder": "feature/customer-cash-statement",
+    "node.js.selected.package.tslint": "(autodetect)"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\css" />
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public" />
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\resources\views\layouts" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
-      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\images" />
-    </key>
-  </component>
+}]]></component>
   <component name="RunManager">
-    <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-      <TestRunner scope="XML" />
+    <configuration default="true" type="ComposerRunConfigurationType" factoryName="Composer Script">
       <method v="2" />
     </configuration>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="" />
-      <created>1684066666480</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1684066666480</updated>
-      <workItem from="1684066669022" duration="1012000" />
-      <workItem from="1684067740602" duration="1251000" />
-      <workItem from="1684069674269" duration="2823000" />
-      <workItem from="1684131218289" duration="3091000" />
-      <workItem from="1684135185415" duration="37883000" />
-      <workItem from="1684655342544" duration="123582000" />
-      <workItem from="1685798656741" duration="16574000" />
-      <workItem from="1685947959868" duration="16647000" />
-      <workItem from="1687069379436" duration="8559000" />
-      <workItem from="1687241103227" duration="29473000" />
-      <workItem from="1689230322914" duration="4148000" />
-      <workItem from="1691298946999" duration="12456000" />
-    </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
 </project>
