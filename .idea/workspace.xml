@@ -6,10 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="d44284e2-18d7-4cfe-96d8-c48ba1d3f4e9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesProfit.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/NonActiveUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/NonActiveUser.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
@@ -142,7 +141,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "git-widget-placeholder": "feature/customer-cash-statement",
+    "git-widget-placeholder": "main",
     "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
