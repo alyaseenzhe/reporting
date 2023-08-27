@@ -82,7 +82,7 @@ class ListProductsTargets extends Component
 //		BaseUnits
 //      ,[Department]
 //	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision) ELSE SUM(Taget) END) as 'Actual_Target'
-//	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision)*MAX(MaxDiscount) ELSE SUM(Taget)*MAX(MaxDiscount) END) as 'Value'";
+//	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision)*MAX(WholeSale) ELSE SUM(Taget)*MAX(WholeSale) END) as 'Value'";
 //
 //            foreach ($year as $month) {
 //                $month_stmt .= ", MAX((CASE WHEN [month] = ". $month ." THEN Taget END)) as tmonth".$month_counter;
@@ -106,7 +106,7 @@ class ListProductsTargets extends Component
 //      ,[ProductNo]
 //      ,[Taget]
 //      ,[Revision]
-//	  , MaxDiscount
+//	  , WholeSale
 //	  ,ProductsTarget.Date, ROW_NUMBER() OVER (PARTITION BY
 // Arabic_Name,BaseUnits,[Department], month, year, ProductNo ORDER BY ProductsTarget.Date) AS row_number
 // FROM [AccountsC5].[dbo].[ProductsTarget], ProductMast
@@ -136,12 +136,12 @@ class ListProductsTargets extends Component
 		Arabic_Name,
 		BaseUnits
       ,[Department]
-      ,MaxDiscount
+      ,WholeSale
       , VendorNo
 	  , (ISNULL((select Code from accmast where NodeNo = tbl.VendorNo) , '-')) as 'vendor_code'
 	  , (ISNULL((select Arabic_Name from accmast where NodeNo = tbl.VendorNo) , '-')) as 'vendor_name'
 	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision) ELSE SUM(Taget) END) as 'Actual_Target'
-	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision)*MAX(MaxDiscount) ELSE SUM(Taget)*MAX(MaxDiscount) END) as 'Value'";
+	  , (CASE WHEN SUM(Revision) > 0 THEN SUM(Revision)*MAX(WholeSale) ELSE SUM(Taget)*MAX(WholeSale) END) as 'Value'";
 
         foreach ($this->list as $year_key => $year) {
 
@@ -168,7 +168,7 @@ FROM (
       ,[ProductNo]
       ,[Taget]
       ,[Revision]
-	  , MaxDiscount
+	  , WholeSale
 	  ,ProductsTarget.Date
 	  , VendorNo
 	  , ROW_NUMBER() OVER (PARTITION BY
@@ -184,7 +184,7 @@ WHERE t.row_number = 1
 		Arabic_Name,
 		BaseUnits
       ,[Department]
-      ,MaxDiscount
+      ,WholeSale
 	  , VendorNo
 	  Order by VendorNo, Code";
 
