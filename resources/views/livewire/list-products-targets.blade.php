@@ -14,21 +14,21 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار المخزن</option>
-                            <option value="3">الاحساء</option>
+                        <option value="3">الاحساء</option>
                         <option value="509">منطقة القرية العليا</option>
                         <option value="10">جدة</option>
                         <option value="510">منطقة المدينة المنورة</option>
                         <option value="7">الرياض</option>
                         <option value="13">وادي الدواسر</option>
-                            <option value="4">الجوف</option>
+                        <option value="4">الجوف</option>
                         <option value="6">الدمام</option>
-                            <option value="5">الخرج</option>
+                        <option value="5">الخرج</option>
                         <option value="12">نجران</option>
                         <option value="515">منطقة الباحة</option>
                         <option value="11">حائل</option>
                         <option value="9">تبوك</option>
                         <option value="8">القصيم</option>
-                            <option value="505">ساجر</option>
+                        <option value="505">ساجر</option>
 
 
                     </select>
@@ -86,58 +86,58 @@
                     </th>
                     @foreach ($list as $year_key => $year)
                         @foreach ($year as $month)
-{{--                            <th class="border p-2">--}}
-{{--                                <div class="text-sm">{{ $year_key."_".$month."_T" }}</div>--}}
-{{--                            </th>--}}
-{{--                            <th class="border p-2">--}}
-{{--                                <div class="text-sm">{{ $year_key."_".$month."_R" }}</div>--}}
-{{--                            </th>--}}
-                            <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                            {{--                            <th class="border p-2">--}}
+                            {{--                                <div class="text-sm">{{ $year_key."_".$month."_T" }}</div>--}}
+                            {{--                            </th>--}}
+                            {{--                            <th class="border p-2">--}}
+                            {{--                                <div class="text-sm">{{ $year_key."_".$month."_R" }}</div>--}}
+                            {{--                            </th>--}}
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">{{ $year_key."-".$month }}</div>
                             </th>
                         @endforeach
                     @endforeach
                 </tr>
-                <tr style="position: sticky;top: 39.5px;">
-                    <th class="fixed-header col-id-no" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black; width: 50%">T</th>
-                    <th class="fixed-header" style="border: 2px solid black; width: 50%">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                    <th class="fixed-header" style="border: 2px solid black;">T</th>
-                    <th class="fixed-header" style="border: 2px solid black;">R</th>
-                </tr>
+{{--                <tr style="position: sticky;top: 39.5px;">--}}
+{{--                    <th class="fixed-header col-id-no" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black; width: 50%">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black; width: 50%">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">T</th>--}}
+{{--                    <th class="fixed-header" style="border: 2px solid black;">R</th>--}}
+{{--                </tr>--}}
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
 
                 @if($results)
-                    <?php
+                        <?php
                         $grand_value_total = 0;
 //                        dd($results[0][0]['VendorNo']);
                         $vendor_id = "*";
 
-                    ?>
+                        ?>
 
                     @foreach($results[0] as $record)
                         @if($record['VendorNo'] != $vendor_id)
-                            <?php $vendor_id = $record['VendorNo'] ?>
+                                <?php $vendor_id = $record['VendorNo'] ?>
                             <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                 <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['vendor_code'] }}</td>
                                 <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-first-name" scope="row">{{ $record['vendor_name'] }}</td>
@@ -156,22 +156,22 @@
                                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
                                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
                                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
                                 {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
                             </tr>
                         @endif
-                        <?php $vendor_id = $record['VendorNo'] ?>
+                            <?php $vendor_id = $record['VendorNo'] ?>
                         <tr>
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                 <div>
@@ -190,7 +190,7 @@
                             </td>
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <?php
+                                        <?php
                                         $total_target = 0;
                                         $total_target +=$record['rmonth1'] > 0 ? $record['rmonth1'] : $record['tmonth1'] ;
                                         $total_target +=$record['rmonth2'] > 0 ? $record['rmonth2'] : $record['tmonth2'] ;
@@ -205,165 +205,106 @@
                                         $total_target +=$record['rmonth11'] > 0 ? $record['rmonth11'] : $record['tmonth11'] ;
                                         $total_target +=$record['rmonth12'] > 0 ? $record['rmonth12'] : $record['tmonth12'] ;
 
-                                    ?>
+                                        ?>
                                     <div class="text-center text-gray-800 text-sm">{{ number_format($total_target) }}</div>
-{{--                                    <div class="text-center text-gray-800 text-sm">{{ number_format($record['tmonth1']+$record['tmonth2']+$record['tmonth3']+$record['tmonth4']+$record['tmonth5']+$record['tmonth6']+$record['tmonth7']+$record['tmonth8']+$record['tmonth9']+$record['tmonth10']+$record['tmonth11']+$record['tmonth12']) }}</div>--}}
-{{--                                    <div class="text-center text-gray-800 text-sm">{{ number_format($record['total_target']) }}</div>--}}
+                                    {{--                                    <div class="text-center text-gray-800 text-sm">{{ number_format($record['tmonth1']+$record['tmonth2']+$record['tmonth3']+$record['tmonth4']+$record['tmonth5']+$record['tmonth6']+$record['tmonth7']+$record['tmonth8']+$record['tmonth9']+$record['tmonth10']+$record['tmonth11']+$record['tmonth12']) }}</div>--}}
+                                    {{--                                    <div class="text-center text-gray-800 text-sm">{{ number_format($record['total_target']) }}</div>--}}
                                 </div>
                             </td>
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div>
                                     <div class="text-center text-gray-800 text-sm">
-                                        <?php
+                                            <?php
                                             $total_value = 0;
-                                            $total_value +=$record['rmonth1'] > 0 ? $record['rmonth1']*$record['MaxDiscount'] : $record['tmonth1']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth2'] > 0 ? $record['rmonth2']*$record['MaxDiscount'] : $record['tmonth2']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth3'] > 0 ? $record['rmonth3']*$record['MaxDiscount'] : $record['tmonth3']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth4'] > 0 ? $record['rmonth4']*$record['MaxDiscount'] : $record['tmonth4']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth5'] > 0 ? $record['rmonth5']*$record['MaxDiscount'] : $record['tmonth5']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth6'] > 0 ? $record['rmonth6']*$record['MaxDiscount'] : $record['tmonth6']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth7'] > 0 ? $record['rmonth7']*$record['MaxDiscount'] : $record['tmonth7']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth8'] > 0 ? $record['rmonth8']*$record['MaxDiscount'] : $record['tmonth8']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth9'] > 0 ? $record['rmonth9']*$record['MaxDiscount'] : $record['tmonth9']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth10'] > 0 ? $record['rmonth10']*$record['MaxDiscount'] : $record['tmonth10']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth11'] > 0 ? $record['rmonth11']*$record['MaxDiscount'] : $record['tmonth11']*$record['MaxDiscount'] ;
-                                            $total_value +=$record['rmonth12'] > 0 ? $record['rmonth12']*$record['MaxDiscount'] : $record['tmonth12']*$record['MaxDiscount'] ;
+                                            $total_value +=$record['rmonth1'] > 0 ? $record['rmonth1']*$record['WholeSale'] : $record['tmonth1']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth2'] > 0 ? $record['rmonth2']*$record['WholeSale'] : $record['tmonth2']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth3'] > 0 ? $record['rmonth3']*$record['WholeSale'] : $record['tmonth3']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth4'] > 0 ? $record['rmonth4']*$record['WholeSale'] : $record['tmonth4']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth5'] > 0 ? $record['rmonth5']*$record['WholeSale'] : $record['tmonth5']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth6'] > 0 ? $record['rmonth6']*$record['WholeSale'] : $record['tmonth6']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth7'] > 0 ? $record['rmonth7']*$record['WholeSale'] : $record['tmonth7']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth8'] > 0 ? $record['rmonth8']*$record['WholeSale'] : $record['tmonth8']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth9'] > 0 ? $record['rmonth9']*$record['WholeSale'] : $record['tmonth9']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth10'] > 0 ? $record['rmonth10']*$record['WholeSale'] : $record['tmonth10']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth11'] > 0 ? $record['rmonth11']*$record['WholeSale'] : $record['tmonth11']*$record['WholeSale'] ;
+                                            $total_value +=$record['rmonth12'] > 0 ? $record['rmonth12']*$record['WholeSale'] : $record['tmonth12']*$record['WholeSale'] ;
                                             $grand_value_total += $total_value;
-                                        ?>
+                                            ?>
                                         {{ number_format($total_value, 2) }}
-{{--                                        {{ number_format($record['Value'], 2) }}--}}
+                                        {{--                                        {{ number_format($record['Value'], 2) }}--}}
                                     </div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth1']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth1'] > 0 ? number_format($record['rmonth1']) :  number_format($record['tmonth1']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth1']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth2']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth2']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth2'] > 0 ? number_format($record['rmonth2']) :  number_format($record['tmonth2']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth3']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth3'] > 0 ? number_format($record['rmonth3']) :  number_format($record['tmonth3']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth3']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth4']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth4']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth4'] > 0 ? number_format($record['rmonth4']) :  number_format($record['tmonth4']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth5']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth5'] > 0 ? number_format($record['rmonth5']) :  number_format($record['tmonth5']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth5']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth6']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth6']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth6'] > 0 ? number_format($record['rmonth6']) :  number_format($record['tmonth6']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth7']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth7'] > 0 ? number_format($record['rmonth7']) :  number_format($record['tmonth7']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth7']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth8']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth8']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth8'] > 0 ? number_format($record['rmonth8']) :  number_format($record['tmonth8']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth9']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth9'] > 0 ? number_format($record['rmonth9']) :  number_format($record['tmonth9']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth9']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth10']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth10']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth10'] > 0 ? number_format($record['rmonth10']) :  number_format($record['tmonth10']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth11']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth11'] > 0 ? number_format($record['rmonth11']) :  number_format($record['tmonth11']) }}</div>
                                 </div>
                             </td>
                             <td style="border: 2px solid black; background-color: #faebd7" class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth11']) }}</div>
+                                    <div class="w-10 text-center text-gray-800 text-sm">{{ $record['rmonth12'] > 0 ? number_format($record['rmonth12']) :  number_format($record['tmonth12']) }}</div>
                                 </div>
                             </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['tmonth12']) }}</div>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black; background-color: #ffffe0" class="border p-2 whitespace-nowrap">
-                                <div>
-                                    <div class="w-10 text-center text-gray-800 text-sm">{{ number_format($record['rmonth12']) }}</div>
-                                </div>
-                            </td>
+
                         </tr>
                     @endforeach
                 @endif
                 </tbody>
                 <tfoot>
                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
-{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
-{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+                    {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+                    {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+                    {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
                     <td colspan="4" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع القيمة</td>
                     <td  style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ isset($grand_value_total)? number_format($grand_value_total) : 0 }}</td>
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
@@ -378,19 +319,19 @@
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
-                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>
 {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+{{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
+                    {{--                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">-</td>--}}
                 </tr>
                 </tfoot>
             </table>
