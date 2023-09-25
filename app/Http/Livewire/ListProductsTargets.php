@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\ProductTarget;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -188,10 +189,8 @@ WHERE t.row_number = 1
 	  , VendorNo
 	  Order by VendorNo, Code";
 
-
-        //            dd($month_stmt);
-
         $query = DB::connection('sqlsrv')->select($month_stmt);
+
         $fetch_query = json_decode(json_encode($query), true);
 
         array_push($this->results, $fetch_query);
