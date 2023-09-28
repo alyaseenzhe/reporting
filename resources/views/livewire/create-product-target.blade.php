@@ -1,4 +1,11 @@
 <div>
+    <div class="mb-4">
+        <a href="{{ route('list.my-product-target') }}">
+            <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
+        متابعة المستهدف
+        </span>
+        </a>
+    </div>
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
         <div class="w-full">إضافة مستهدف جديد</div>
@@ -17,11 +24,11 @@
                         @foreach($branches as $branch)
                             @if($branch == "3")
                                 <option value="3">الاحساء</option>
-                            @elseif($branch == "509")
+{{--                            @elseif($branch == "509")--}}
                                 <option value="509">منطقة القرية العليا</option>
                             @elseif($branch == "10")
                                 <option value="10">جدة</option>
-                            @elseif($branch == "510")
+{{--                            @elseif($branch == "510")--}}
                                 <option value="510">منطقة المدينة المنورة</option>
                             @elseif($branch == "7")
                                 <option value="7">الرياض</option>
@@ -35,7 +42,7 @@
                                 <option value="5">الخرج</option>
                             @elseif($branch == "12")
                                 <option value="12">نجران</option>
-                            @elseif($branch == "515")
+{{--                            @elseif($branch == "515")--}}
                                 <option value="515">منطقة الباحة</option>
                             @elseif($branch == "11")
                                 <option value="11">حائل</option>

@@ -57,6 +57,7 @@ class ListMyProductTarget extends Component
             $this->users = User::select('id', 'name')
                 ->whereNotNull('group')
                 ->where('role', 'u')
+                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
                 ->distinct()
                 ->get();
         }
@@ -64,6 +65,7 @@ class ListMyProductTarget extends Component
             $this->users = User::where('branches', 'LIKE' ,'%"'.$value.'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
+                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
                 ->select('id', 'name')
                 ->distinct()
                 ->get();

@@ -15,10 +15,10 @@ class CreateProductTargetsTable extends Migration
     {
         Schema::create('product_targets', function (Blueprint $table) {
             $table->id();
-            $table->text('product_id');
+            $table->string('product_id', 25);
             $table->integer('month');
             $table->integer('year');
-            $table->text('branch');
+            $table->string('branch', 15);
             $table->integer('target');
 
             $table->bigInteger('user_id')->unsigned()->nullable();
