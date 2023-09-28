@@ -1,7 +1,16 @@
 <div>
+    <div class="mb-4">
+        <a href="{{ route('create.product-target') }}">
+            <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
+        اضافة مستهدف جديد
+        </span>
+        </a>
+    </div>
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">متابعة المستهدف</div>
+        <div class="w-full">
+            متابعة المستهدف
+        </div>
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
@@ -14,22 +23,46 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار المخزن</option>
-                        <option value="all">جميع المخازن</option>
-                        <option value="3">الاحساء</option>
-                        <option value="509">منطقة القرية العليا</option>
-                        <option value="10">جدة</option>
-                        <option value="510">منطقة المدينة المنورة</option>
-                        <option value="7">الرياض</option>
-                        <option value="13">وادي الدواسر</option>
-                        <option value="4">الجوف</option>
-                        <option value="6">الدمام</option>
-                        <option value="5">الخرج</option>
-                        <option value="12">نجران</option>
-                        <option value="515">منطقة الباحة</option>
-                        <option value="11">حائل</option>
-                        <option value="9">تبوك</option>
-                        <option value="8">القصيم</option>
-                        <option value="505">ساجر</option>
+{{--                        <option value="all">جميع المخازن</option>--}}
+                        @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="3">الاحساء</option>
+                            <option value="509">منطقة القرية العليا</option>
+                        @endif
+                        @if(in_array("10", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="10">جدة</option>
+                            <option value="510">منطقة المدينة المنورة</option>
+                        @endif
+                        @if(in_array("7", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="7">الرياض</option>
+                        @endif
+                        @if(in_array("13", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="13">وادي الدواسر</option>
+                        @endif
+                        @if(in_array("4", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="4">الجوف</option>
+                        @endif
+                        @if(in_array("6", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="6">الدمام</option>
+                        @endif
+                        @if(in_array("5", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="5">الخرج</option>
+                        @endif
+                        @if(in_array("12", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="12">نجران</option>
+                            <option value="515">منطقة الباحة</option>
+                        @endif
+                        @if(in_array("11", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="11">حائل</option>
+                        @endif
+                        @if(in_array("9", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="9">تبوك</option>
+                        @endif
+                        @if(in_array("8", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="8">القصيم</option>
+                        @endif
+                        @if(in_array("505", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
+                            <option value="505">ساجر</option>
+                        @endif
 
 
                     </select>
@@ -44,7 +77,7 @@
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('item_id') border: solid 1px #fda4af; @enderror">
                             <option value="-1">الرجاء اختيار المهندس</option>
-                            <option value="all">جميع المهندسين</option>
+{{--                            <option value="all">جميع المهندسين</option>--}}
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
