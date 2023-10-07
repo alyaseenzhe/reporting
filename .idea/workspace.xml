@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d44284e2-18d7-4cfe-96d8-c48ba1d3f4e9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListCashStatement.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListCashStatement.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +151,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "fix/postponed-by-customer",
+    "git-widget-placeholder": "fix/list-cash-statement",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
