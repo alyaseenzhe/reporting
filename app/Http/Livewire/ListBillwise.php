@@ -45,20 +45,27 @@ class ListBillwise extends Component
 
     public function load_data() {
 
+        $branches = json_decode(Auth::user()->branches);
+
+
         $this->records = Billwise::join('accmast', 'billwise.customerno', 'accmast.nodeno')
             ->join('WarrentyInfo', 'WarrentyInfo.AccountNo', 'accmast.NodeNo')
             ->join('SInvoice', 'BillWise.VoucherNo', 'SInvoice.SInvoiceNo')
             ->join('StudentMast', 'WarrentyInfo.SalesEmployee', 'StudentMast.NodeNo')
             ->where('WarrentyInfo.AccountStatus', 'عملاء نشيطين لدى الفرع')
             ->where('billwise.type', 'N')
+            ->whereIn('accmast.Accmast_Department', $branches)
             ->where(DB::raw('(total+paid)'), '>', 0.01)
             ->where('VoucherNo', 'like', '210%')
             ->where(DB::raw('DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'), '>=', 0)
             ->whereIn('accmast.Type', [9, 10])
-            ->select(DB::raw('accmast.Code as customer_code, accmast.Arabic_Name as customer_name, voucherno, WarrentyInfo.SalesEmployee as employee_code, StudentMast.Arabic_Name as employee_name, voucherdate, Total, paid, (total+paid) as DueAmount, DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1 AS [days]'))
-            ->groupBy(DB::raw('accmast.Code, accmast.Arabic_Name, voucherno, WarrentyInfo.SalesEmployee, StudentMast.Arabic_Name, voucherdate, Total, paid, (total+paid), DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'))
+//            ->select(DB::raw('accmast.Code as customer_code, accmast.Arabic_Name as customer_name, voucherno, WarrentyInfo.SalesEmployee as employee_code, StudentMast.Arabic_Name as employee_name, voucherdate, Total, paid, (total+paid) as DueAmount, DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1 AS [days]'))
+            ->select(DB::raw('accmast.Code as customer_code, accmast.Arabic_Name as customer_name, voucherno, StudentMast.Code as employee_code, StudentMast.Arabic_Name as employee_name, voucherdate, Total, paid, (total+paid) as DueAmount, DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1 AS [days]'))
+            ->groupBy(DB::raw('accmast.Code, accmast.Arabic_Name, voucherno, StudentMast.Code, StudentMast.Arabic_Name, voucherdate, Total, paid, (total+paid), DATEDIFF(day, VoucherDate, CAST(GETDATE() AS Date))+1'))
             ->orderBy('accmast.Code')
             ->get();
+
+
 
 
         // حسب الفاتورة

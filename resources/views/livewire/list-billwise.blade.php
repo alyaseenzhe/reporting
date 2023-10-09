@@ -84,7 +84,7 @@
                             {{$record->days}}
                         </td>
                     </tr>
-                @elseif(($record && $record->employee_code == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
+                @elseif(($record && /*$record->employee_code == \Illuminate\Support\Facades\Auth::user()->emp_code &&*/ \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
                     <tr>
                         <td class="border p-2 whitespace-nowrap">
                             {{$record->employee_code}}
