@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\ProductTarget;
+use App\Models\ProductTargetLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,11 @@ class CreateProductTarget extends Component
     public $target;
     public $diff;
     public $current_target = [];
+    public $current_target_to_edit = [];
+    public $current_start_selected_month_exploded;
+    public $current_end_selected_month_exploded;
+    public $btn_generate = true;
+    public $btn_save = false;
 
     protected $rules = [
         'dept_id' => 'required|not_in:-1',
@@ -31,11 +37,29 @@ class CreateProductTarget extends Component
         'selected_month.required' => "مطلوب",
     ];
 
+    public function booted() {
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+
+        if (Auth::user()->user_group->write_product_target == '1'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
+
     public function render()
     {
+        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+
 
 //        $fromDate = Carbon::now();
-//        $toDate = Carbon::parse("2021-08-20");
+//        $toDate = Carbon::parse("2023-06-30");
+//        dd($toDate);
+//        dd($fromDate->lt($toDate));
 //
 //        $months = $fromDate->diffInMonths($toDate, false);
 //        dd($months);
@@ -47,11 +71,22 @@ class CreateProductTarget extends Component
             ->layout('layouts.dashboard');
     }
 
+    public function updatedDeptId($value) {
+        $this->btn_generate = true;
+        $this->btn_save = false;
+    }
+
+    public function updatedSelectedMonth($value) {
+        $this->btn_generate = true;
+        $this->btn_save = false;
+    }
     public function generateReport()
     {
         $this->reset('target');
         $this->validate();
         $this->emit('show-container');
+        $this->btn_generate = false;
+        $this->btn_save = true;
 
         // target data from reporting
         $this->current_target = ProductTarget::where('user_id', Auth::id())
@@ -147,6 +182,57 @@ class CreateProductTarget extends Component
 
 //        dd($this->results);
 
+        // get the current targets
+        $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
+        $current_end_selected_month = Carbon::parse($this->selected_month)->addMonths(12)->format('Y-m-d');
+
+        $this->current_start_selected_month_exploded = explode('-', $current_start_selected_month);
+        $this->current_end_selected_month_exploded = explode('-', $current_end_selected_month);
+
+//        dd($current_end_selected_month_exploded[0]);
+
+
+        $this->current_target_to_edit = [];
+        if (count($this->current_year_list) == 1) {
+            $this->current_target_to_edit = ProductTarget::where('user_id', Auth::id())
+                ->where('branch', $this->dept_id)
+                ->where(function ($query) {
+                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+                        ->where('branch', $this->dept_id)
+                        ->where('user_id', Auth::id())
+//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+                })
+                ->get();
+        }
+        elseif (count($this->current_year_list) > 1) {
+            $this->current_target_to_edit = ProductTarget::where('user_id', Auth::id())
+                ->where('branch', $this->dept_id)
+                ->where(function ($query) {
+                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+                        ->where('branch', $this->dept_id)
+                        ->where('user_id', Auth::id())
+//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+                    ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+                })
+                ->orWhere(function ($query) {
+                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
+                        ->where('branch', $this->dept_id)
+                        ->where('user_id', Auth::id())
+//                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
+//                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
+                })
+                ->get();
+        }
+
+//        dd($this->current_year_list[array_key_first($this->current_year_list)]);
+//        dd(count($this->current_year_list));
+//        dd($this->current_target_to_edit);
+//
+//        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
+
+
     }
 
     public function processData()
@@ -199,6 +285,15 @@ class CreateProductTarget extends Component
                                     'target' => $target
                                 ]);
                             }
+
+                            $record = ProductTargetLog::create([
+                                'product_id' => $product_key,
+                                'month' => $month,
+                                'year' => $year,
+                                'branch' => $this->dept_id,
+                                'user_id' => Auth::id(),
+                                'target' => $target
+                            ]);
                         }
                     }
                 }
@@ -206,6 +301,7 @@ class CreateProductTarget extends Component
 
             $this->emit('msg');
             $this->reset('target');
+            $this->generateReport();
         }
 
     }
@@ -229,6 +325,9 @@ class CreateProductTarget extends Component
         $diff_value = 0;
         if (floatval($this->results[0][$search_key]['month' . $month]) > 0) {
             $diff_value = number_format(floatval($value) / floatval($this->results[0][$search_key]['month' . $month]) * 100, 2);
+        }
+        elseif (number_format(floatval($this->results[0][$search_key]['month' . $month])) == "0") {
+            $diff_value = 100;
         }
 
         $diff_key = str_replace('.', '--', $diff_key);

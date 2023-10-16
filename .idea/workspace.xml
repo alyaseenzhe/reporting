@@ -5,12 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d44284e2-18d7-4cfe-96d8-c48ba1d3f4e9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/Models/ProductTargetLog.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/old/2023_10_14_070447_create_product_target_logs_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreateUserGroup.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateUserGroup.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/EditUserGroups.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/EditUserGroups.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2023_09_11_053518_create_product_targets_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2023_09_11_053518_create_product_targets_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ShowMyProductsTargets.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ShowMyProductsTargets.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_000000_create_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2014_10_12_000000_create_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_100000_create_password_resets_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2014_10_12_100000_create_password_resets_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2014_10_12_200000_add_two_factor_columns_to_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2014_10_12_200000_add_two_factor_columns_to_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_08_19_000000_create_failed_jobs_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2019_08_19_000000_create_failed_jobs_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2019_12_14_000001_create_personal_access_tokens_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_05_14_124750_create_sessions_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_05_14_124750_create_sessions_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_05_24_085721_add_role_to_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_05_24_085721_add_role_to_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_07_24_093028_add_branches_to_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_07_24_093028_add_branches_to_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_07_25_094946_create_user_groups_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_07_25_094946_create_user_groups_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_07_25_132848_add_group_to_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_07_25_132848_add_group_to_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_07_27_083225_add_emp_code_to_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_07_27_083225_add_emp_code_to_users_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2023_09_11_053518_create_product_targets_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/old/2023_09_11_053518_create_product_targets_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-my-product-target.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-my-product-target.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-postponed-by-customer.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,11 +182,10 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
-    <configuration default="true" type="ComposerRunConfigurationType" factoryName="Composer Script">
-      <option name="pathToComposerJson" value="$PROJECT_DIR$/composer.json" />
-      <method v="2" />
-    </configuration>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Ibrah\Documents\projects\reporting\database\migrations\old" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -178,6 +196,7 @@
       <option name="presentableId" value="Default" />
       <updated>1695275433043</updated>
       <workItem from="1695275434979" duration="21846000" />
+      <workItem from="1697347884187" duration="32959000" />
     </task>
     <servers />
   </component>

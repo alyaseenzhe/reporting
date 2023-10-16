@@ -23,6 +23,7 @@ class ListMyProductTarget extends Component
     public $diff;
     public $keys = [];
     public $new_targets = [];
+    public $employee_ids_in_my_branch = [];
 
     protected $rules = [
         'dept_id' => 'required|not_in:-1',
@@ -37,15 +38,47 @@ class ListMyProductTarget extends Component
         'selected_month.required' => "مطلوب",
     ];
 
+    public function booted() {
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
+
+    public function mount() {
+        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+    }
+//    public function boot() {
+//        $branches = json_decode(Auth::user()->branches);
+//        if (count($branches) == 1) {
+//            $this->dept_id = $branches[0];
+//        }
+//    }
     public function render()
     {
-//        $this->users = User::where('role', 'u')
-//            ->where('is_active', 1)
-//            ->orderBy('name')
-//            ->select('id','name')
-//            ->get();
 
-//        dd($users);
+        $branches = json_decode(Auth::user()->branches);
+
+        foreach ($branches as $branch) {
+            $emps = User::join('user_groups', 'user_groups.id', 'users.group')
+                ->where('branches', 'like', '%"'.$branch.'"%')
+                ->where('write_product_target', '1')
+                ->select('users.id')
+                ->get();
+            foreach ($emps as $emp) {
+                array_push($this->employee_ids_in_my_branch, $emp->id);
+            }
+        }
+
+//        dd($branches);
+//        dd($emps);
+
         return view('livewire.list-my-product-target')
             ->layout('layouts.dashboard');
     }
@@ -53,20 +86,55 @@ class ListMyProductTarget extends Component
     public function updatedDeptId($value) {
         $this->reset(['user_id', 'selected_month', 'show_msg']);
 
+//        dd('xxxx');
+        $branches = json_decode(Auth::user()->branches);
+//        if (count($branches) == 1) {
+//            $this->dept_id = $branches[0];
+//        }
+//
+//        if (Auth::user()->user_group->read_type == '1') {
+////            $this->user_id =
+//        }
+
         if ($value == "all") {
-            $this->users = User::select('id', 'name')
+
+            $emp_codes = [];
+
+            $branches = json_decode(Auth::user()->branches);
+
+            foreach ($branches as $branch) {
+                $emps = User::join('user_groups', 'user_groups.id', 'users.group')
+                    ->where('write_product_target', '1')
+                    ->where('branches', 'like', '%"'.$branch.'"%')->get();
+                foreach ($emps as $emp) {
+                    array_push($emp_codes, $emp->emp_code);
+                }
+            }
+
+            $emp_codes = array_unique($emp_codes);
+//            dd($emp_codes);
+
+            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
+                ->where('write_product_target', '1')
+                ->select('users.id', 'users.name')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
+//                ->whereNotIn('users.id', [1,13,14,15,16,18,21,38])
+                ->whereIn('emp_code', $emp_codes)
                 ->distinct()
                 ->get();
+
         }
         else {
-            $this->users = User::where('branches', 'LIKE' ,'%"'.$value.'"%')
+            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
+                ->where('branches', 'LIKE' ,'%"'.$value.'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
-                ->select('id', 'name')
+                ->where('write_product_target', '1')
+//                ->where('group', '!=', 4)
+//                ->where('group', '!=', 5)
+//                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
+                ->select('users.id', 'users.name')
                 ->distinct()
                 ->get();
         }
@@ -76,6 +144,11 @@ class ListMyProductTarget extends Component
 
     public function updatedUserId($value) {
         $this->reset(['selected_month', 'show_msg']);
+        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+    }
+
+    public function updatedSelectedMonth($value) {
+        $this->reset(['show_msg']);
     }
 
     public function generateReport() {
@@ -118,137 +191,214 @@ class ListMyProductTarget extends Component
 //        dd(array_keys($this->list));
 
         $this->keys = array_keys($this->list);
-        if (count($this->keys) > 1) {
+//        if (count($this->keys) > 1) {
             if ($this->dept_id == "all") {
                 // all department
                 if ($this->user_id == "all") {
+//                    dd('nnnb');
                     // all employees
-                    $this->new_targets = ProductTarget::where(function ($query) {
-                        $query->where('year', $this->keys[0])
+                    // if 2 year
+                    if (count($this->keys) == 1) {
+                        $this->new_targets = ProductTarget::whereIn('user_id', $this->employee_ids_in_my_branch)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
 //                            ->where('branch', $this->dept_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                        ->orWhere(function ($query) {
-                            $query->where('year', $this->keys[1])
-//                            ->where('branch', $this->dept_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                        })
-                        ->selectRaw('product_id, month, year, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year')
-                        ->get();
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->selectRaw('product_id, month, year, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year')
+                            ->get();
 //                    dd($this->new_targets);
+                    }
+                    elseif (count($this->keys) > 1) {
+                        $this->new_targets = ProductTarget::whereIn('user_id', $this->employee_ids_in_my_branch)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+//                            ->where('branch', $this->dept_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->orWhere(function ($query) {
+                                $query->where('year', $this->keys[1])
+//                            ->where('branch', $this->dept_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[1]]));
+                            })
+                            ->selectRaw('product_id, month, year, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year')
+                            ->get();
+//                    dd($this->new_targets);
+                    }
                 }
                 else {
                     // specific employee
-
-                    $this->new_targets = ProductTarget::where('user_id', $this->user_id)
-                        ->where(function ($query) {
-                        $query->where('year', $this->keys[0])
-                            ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                        ->orWhere(function ($query) {
-                            $query->where('year', $this->keys[1])
-                                ->where('user_id', $this->user_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                        })
-                        ->selectRaw('product_id, month, year, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year')
-                        ->get();
+//                    dd('rtt');
+                    if (count($this->keys) == 1) {
+                        $this->new_targets = ProductTarget::where('user_id', $this->user_id)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->selectRaw('product_id, month, year, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year')
+                            ->get();
+                    }
+                    elseif (count($this->keys) > 1) {
+                        $this->new_targets = ProductTarget::where('user_id', $this->user_id)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->orWhere(function ($query) {
+                                $query->where('year', $this->keys[1])
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[1]]));
+                            })
+                            ->selectRaw('product_id, month, year, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year')
+                            ->get();
 //                    dd("kk");
+                    }
                 }
             }
             else {
                 // for specific department
                 if ($this->user_id == "all") {
                     // all employees
-//                    dd('dd');
-                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
-//                ->where('user_id', Auth::id())
-                        ->where(function ($query) {
-                            $query->where('year', $this->keys[0])
-                                ->where('branch', $this->dept_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                        })
-                        ->orWhere(function ($query) {
-                            $query->where('year', $this->keys[1])
-                                ->where('branch', $this->dept_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                        })
-                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year', 'branch')
-                        ->get();
+                    $emp_ids = [];
 
+                    $branches = json_decode(Auth::user()->branches);
+
+                    foreach ($branches as $branch) {
+                        $emps = User::where('branches', 'like', '%"'.$branch.'"%')->get();
+                        foreach ($emps as $emp) {
+                            array_push($emp_ids, $emp->id);
+                        }
+                    }
+
+                    $emp_ids = array_unique($emp_ids);
+
+                    if (count($this->keys) == 1) {
+                        //                    dd('dd');
+//                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+                        $this->new_targets = ProductTarget::where('user_id', $emp_ids)
+//                ->where('user_id', Auth::id())
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('branch', $this->dept_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year', 'branch')
+                            ->get();
+                    }
+                    elseif (count($this->keys) > 1) {
+                        //                    dd('dd');
+//                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+                        $this->new_targets = ProductTarget::where('user_id', $emp_ids)
+//                ->where('user_id', Auth::id())
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('branch', $this->dept_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->orWhere(function ($query) {
+                                $query->where('year', $this->keys[1])
+                                    ->where('branch', $this->dept_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[1]]));
+                            })
+                            ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year', 'branch')
+                            ->get();
+                    }
                 }
                 else {
                     // specific employees
 //                    dd('ss');
-                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
-                        ->where('user_id', $this->user_id)
-                        ->where(function ($query) {
-                            $query->where('year', $this->keys[0])
-                                ->where('branch', $this->dept_id)
-                                ->where('user_id', $this->user_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                        })
-                        ->orWhere(function ($query) {
-                            $query->where('year', $this->keys[1])
-                                ->where('branch', $this->dept_id)
-                                ->where('user_id', $this->user_id)
-                                ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                        })
-                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year', 'branch')
-                        ->get();
+
+                    if (count($this->keys) == 1) {
+                        $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+                            ->where('user_id', $this->user_id)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('branch', $this->dept_id)
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year', 'branch')
+                            ->get();
 //                    dd($this->new_targets);
+                    }
+                    elseif (count($this->keys) > 1) {
+                        $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+                            ->where('user_id', $this->user_id)
+                            ->where(function ($query) {
+                                $query->where('year', $this->keys[0])
+                                    ->where('branch', $this->dept_id)
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+                            })
+                            ->orWhere(function ($query) {
+                                $query->where('year', $this->keys[1])
+                                    ->where('branch', $this->dept_id)
+                                    ->where('user_id', $this->user_id)
+                                    ->whereIn('month', array_values($this->list[$this->keys[1]]));
+                            })
+                            ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+                            ->groupBy('product_id', 'month', 'year', 'branch')
+                            ->get();
+//                    dd($this->new_targets);
+                    }
+
                 }
             }
-        }
-        else {
-
-            if ($this->dept_id == "all") {
-
-                if ($this->user_id == "all") {
+//        }
+//        else {
+//
+//            if ($this->dept_id == "all") {
+//
+//                if ($this->user_id == "all") {
 //                    dd('bb');
-                    $this->new_targets = ProductTarget::where('year', $this->keys[0])
-                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
-                        ->selectRaw('product_id, month, year, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year')
-                        ->get();
-                }
-                else {
+//                    $this->new_targets = ProductTarget::where('year', $this->keys[0])
+//                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
+//                        ->selectRaw('product_id, month, year, SUM(target) as target')
+//                        ->groupBy('product_id', 'month', 'year')
+//                        ->get();
+//                }
+//                else {
 //                    dd('nn');
-                    $this->new_targets = ProductTarget::where('year', $this->keys[0])
-                        ->where('user_id', $this->user_id)
-                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
-                        ->selectRaw('product_id, month, year, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year')
-                        ->get();
-                }
-            }
-            else {
-                if ($this->user_id == "all") {
+//                    $this->new_targets = ProductTarget::where('year', $this->keys[0])
+//                        ->where('user_id', $this->user_id)
+//                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
+//                        ->selectRaw('product_id, month, year, SUM(target) as target')
+//                        ->groupBy('product_id', 'month', 'year')
+//                        ->get();
+//                }
+//            }
+//            else {
+//                if ($this->user_id == "all") {
 //                    dd('ppp');
-                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
-//                ->where('user_id', Auth::id())
-                        ->where('year', $this->keys[0])
-                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
-                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year', 'branch')
-                        ->get();
-                }
-                else {
+//                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+////                ->where('user_id', Auth::id())
+//                        ->where('year', $this->keys[0])
+//                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
+//                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                        ->groupBy('product_id', 'month', 'year', 'branch')
+//                        ->get();
+//                }
+//                else {
 //                    dd('vvv');
-                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
-                        ->where('user_id', $this->user_id)
-                        ->where('year', $this->keys[0])
-                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
-                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                        ->groupBy('product_id', 'month', 'year', 'branch')
-                        ->get();
-                }
-            }
-        }
+//                    $this->new_targets = ProductTarget::where('branch', $this->dept_id)
+//                        ->where('user_id', $this->user_id)
+//                        ->where('year', $this->keys[0])
+//                        ->whereIn('month', array_values($this->list[$this->keys[0]]))
+//                        ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                        ->groupBy('product_id', 'month', 'year', 'branch')
+//                        ->get();
+//                }
+//            }
+//        }
 
         $arr_new_targets = $this->new_targets->toArray();
         $product_codes = "";
