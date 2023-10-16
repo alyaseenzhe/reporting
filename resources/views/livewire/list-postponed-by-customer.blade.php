@@ -32,7 +32,6 @@
                 </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
-
                 @foreach($postponed as $record)
                         @if(strlen($record->Code ) == 7 || strlen($record->Code ) == 9)
                             <tr>
@@ -75,7 +74,12 @@
                                 <td class="border p-2 whitespace-nowrap">
                                     <?php
                                         $id = array_search($record->Code, array_column($this->posponed_due_amount, 'Code'));
-                                        $due = $this->posponed_due_amount[$id]['due_amount'];
+                                        if ($id) {
+                                            $due = $this->posponed_due_amount[$id]['due_amount'];
+                                        }
+                                        else {
+                                            $due = 0;
+                                        }
                                     ?>
                                     @if($id)
                                         {{number_format($due, 2)}}
@@ -91,7 +95,7 @@
                                     @endif
                                 </td>
                                 <td class="border p-2 whitespace-nowrap">
-                                    {{ $record->EmpCode }}
+                                    {{ $record->EmpName }}
                                 </td>
                             </tr>
                         @endif

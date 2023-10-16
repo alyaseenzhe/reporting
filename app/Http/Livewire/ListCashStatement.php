@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\AccMast;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -58,6 +59,17 @@ class ListCashStatement extends Component
     }
 
     public function proccess_report() {
+
+        $branches = json_decode(Auth::user()->branches);
+
+        $customer = AccMast::where('Code', $this->customer_code)
+            ->whereIn('Accmast_Department', $branches)
+            ->count();
+
+        if ($customer < 1) {
+            $this->results = [];
+            return $this->results;
+        }
 
         $start_date = date($this->start_date . ' 00:00:00');
         $end_date = $this->end_date . ' 23:59:59';
