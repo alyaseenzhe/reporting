@@ -47,6 +47,7 @@ class ShowMyProductsTargets extends Component
     }
 
     public function generateReport() {
+        set_time_limit(2000);
         $this->validate();
         $this->emit('show-container');
 

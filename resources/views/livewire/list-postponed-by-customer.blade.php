@@ -89,11 +89,7 @@
                                 </td>
                                 <td class="border p-2 whitespace-nowrap">
                                     @if($id)
-                                        @if($record->due_amount != 0)
-                                            %{{number_format(($due/$record->due_amount*100))}}
-                                        @else
-                                            %0
-                                        @endif
+                                        % {{$record->due_amount == 0 ? 0 : number_format(($due/$record->due_amount*100)) }}
                                     @else
                                         %0
                                     @endif

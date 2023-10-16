@@ -1,11 +1,13 @@
 <div>
-    <div class="mb-4">
-        <a href="{{ route('create.product-target') }}">
-            <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
-        اضافة مستهدف جديد
-        </span>
-        </a>
-    </div>
+    @if (Auth::user()->user_group->write_product_target == '1')
+        <div class="mb-4">
+            <a href="{{ route('create.product-target') }}">
+                <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
+            اضافة مستهدف جديد
+            </span>
+            </a>
+        </div>
+    @endif
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
         <div class="w-full">
@@ -14,7 +16,7 @@
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
-            <div class="w-full flex flex-row gap-4">
+            <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
                     <label class="block font-bold mb-2">المخزن
                         <span class="text-red-500">*</span>
@@ -23,7 +25,9 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار المخزن</option>
-{{--                        <option value="all">جميع المخازن</option>--}}
+                        @if(count(json_decode(Auth::user()->branches)) > 1)
+                            <option value="all">جميع المخازن</option>
+                        @endif
                         @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
                             <option value="3">الاحساء</option>
                             <option value="509">منطقة القرية العليا</option>
@@ -77,9 +81,15 @@
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('item_id') border: solid 1px #fda4af; @enderror">
                             <option value="-1">الرجاء اختيار المهندس</option>
-{{--                            <option value="all">جميع المهندسين</option>--}}
+                            @if(count($users) > 1)
+                                <option value="all">جميع المهندسين</option>
+                            @endif
                             @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+{{--                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->read_type == "1" && \Illuminate\Support\Facades\Auth::id() == $user->id)--}}
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+{{--                                @elseif(\Illuminate\Support\Facades\Auth::user()->user_group->read_type == "0")--}}
+{{--                                    <option value="{{ $user->id }}">{{ $user->name }}</option>--}}
+{{--                                @endif--}}
                             @endforeach
                         </select>
                         @error('user_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -96,7 +106,7 @@
                         @error('selected_month') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                 @endif
-                @if($selected_month)
+                @if($selected_month && $user_id != '-1' && $dept_id != '-1')
                     <div class="mt-8 text-center w-full">
                         <button wire:click.prevent="generateReport" wire:loading.attr="disabled"
                                 style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -117,168 +127,174 @@
 
 
     @if($show_msg)
-        <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
-            <tbody class="text-sm divide-y divide-gray-100">
+        <div id="report-btn" wire:loading.remove wire:target="generateReport" class="overflow-x-auto w-full">
             @if($results)
-                    <?php
-                    $vendor_id = "*";
-                    ?>
-                @foreach($results[0] as $record)
-                    @if($record['VendorNo'] != $vendor_id)
-                            <?php $vendor_id = $record['VendorNo'] ?>
-                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
-                            <td colspan="15" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
-                        </tr>
-                    @endif
-                        <?php $vendor_id = $record['VendorNo'] ?>
-                    <tr>
-                        <th colspan="16" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
-                            <div class="flex flex-row">
-                                <div class="w-full text-sm text-center">رقم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
-                                <div class="w-full text-sm text-center">اسم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
-                                <div class="w-full text-sm text-center">الوحدة</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
-                                <div class="w-full text-sm text-center">التميز</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
-                                <div class="w-full text-sm text-center">المورد</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                            </div>
-                        </th>
-                    </tr>
-                    <tr>
-                            <?php $new_tr = []; ?>
-                            <?php $total_new_tr = 0; ?>
-                            <?php $old_tr = []; ?>
-                            <?php $total_old_tr = 0; ?>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الشهر</div>
-                        </th>
-                        @foreach ($list as $year_key => $year)
-                            @foreach ($year as $month)
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $year_key."-".$month }}</div>
+                <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
+                <tbody class="text-sm divide-y divide-gray-100">
+{{--                    @if($results)--}}
+                            <?php
+                            $vendor_id = "*";
+                            ?>
+                        @foreach($results[0] as $record)
+                            @if($record['VendorNo'] != $vendor_id)
+                                    <?php $vendor_id = $record['VendorNo'] ?>
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                    <td colspan="15" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                </tr>
+                            @endif
+                                <?php $vendor_id = $record['VendorNo'] ?>
+                            <tr>
+                                <th colspan="16" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div class="w-full text-sm text-center">رقم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
+                                        <div class="w-full text-sm text-center">اسم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                        <div class="w-full text-sm text-center">الوحدة</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                        <div class="w-full text-sm text-center">التميز</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                        <div class="w-full text-sm text-center">المورد</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                    </div>
                                 </th>
-                            @endforeach
-                        @endforeach
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">السعر</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">مجموع كمية</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">مجموع قيمة</div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المستهدف</div>
-                        </th>
-                        @foreach ($list as $year_key => $year)
-                            @foreach ($year as $month)
+                            </tr>
+                            <tr>
+                                    <?php $new_tr = []; ?>
+                                    <?php $total_new_tr = 0; ?>
+                                    <?php $old_tr = []; ?>
+                                    <?php $total_old_tr = 0; ?>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
-                                        <?php
-                                        if ($dept_id == "all") {
-                                            $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first(): 0;
-                                        }
-                                        else {
-                                            $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->first(): 0;
-                                        }
-                                        ?>
-                                        <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                    {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                    <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
-                                        <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
-                                    @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
-
-                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
-                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
+                                    <div class="text-sm">الشهر</div>
                                 </th>
-                            @endforeach
+                                @foreach ($list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $year_key."-".$month }}</div>
+                                        </th>
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">السعر</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">مجموع كمية</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">مجموع قيمة</div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">المستهدف</div>
+                                </th>
+                                @foreach ($list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
+
+                                                <?php
+                                                if ($dept_id == "all") {
+                                                    $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first(): 0;
+                                                }
+                                                else {
+                                                    $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->first(): 0;
+                                                }
+                                                ?>
+                                                <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
+                                            {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
+                                            <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
+                                                <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
+                                            @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
+
+                                            {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
+                                            {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
+                                        </th>
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $total_new_tr }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $total_new_tr*$record['MaxDiscount'] }}</div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">مبيعات</div>
+                                </th>
+                                {{--                    @php $target_counter = 1; @endphp--}}
+                                {{--                    @foreach ($list as $year_key => $year)--}}
+                                {{--                        @foreach ($year as $month)--}}
+                                {{--                            @php $target_counter++; @endphp--}}
+                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                                {{--                                <div class="text-sm">{{ number_format($record['month'.$target_counter]) }}</div>--}}
+                                {{--                                <?php array_push($old_tr, (number_format($record['month'.$target_counter])) ) ?>--}}
+                                {{--                            </th>--}}
+                                {{--                        @endforeach--}}
+                                {{--                    @endforeach--}}
+
+                                @for($i = 1; $i <= 12; $i++)
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ number_format($record['month'.$i]) }}</div>
+                                            <?php array_push($old_tr, (number_format($record['month'.$i])) ) ?>
+                                        @php $total_old_tr += intval(number_format($record['month'.$i])); @endphp
+
+                                    </th>
+                                @endfor
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $total_old_tr }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $total_old_tr*$record['MaxDiscount'] }}</div>
+                                </th>
+
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الفرق %</div>
+                                </th>
+                                {{--                    @foreach ($list as $year_key => $year)--}}
+                                {{--                        @foreach ($year as $month)--}}
+                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                                {{--                                <div class="text-sm">{{ $old_tr[$loop->iteration-1] == 0? $new_tr[$loop->iteration-1] == 0 ? 0 : "100": number_format(intval($new_tr[$loop->iteration-1])/intval($old_tr[$loop->iteration-1])*100) }}</div>--}}
+                                {{--                            </th>--}}
+                                {{--                        @endforeach--}}
+                                {{--                    @endforeach--}}
+                                @for($i = 1; $i <= 12; $i++)
+                                    @php $data = $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : 100: number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100); @endphp
+                                    <th style="border: 2px solid black; z-index: 10; @if($data <= 0) background-color: #ffe4e4; @else background-color: #e4ffea; @endif" class="border p-2">
+                                        <div class="text-sm">{{ $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : "100": number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100) }}</div>
+                                    </th>
+                                @endfor
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $total_new_tr + $total_old_tr }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ ($total_new_tr + $total_old_tr)*$record['MaxDiscount'] }}</div>
+                                </th>
+                            </tr>
+
                         @endforeach
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $total_new_tr }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $total_new_tr*$record['MaxDiscount'] }}</div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">مبيعات</div>
-                        </th>
-                        {{--                    @php $target_counter = 1; @endphp--}}
-                        {{--                    @foreach ($list as $year_key => $year)--}}
-                        {{--                        @foreach ($year as $month)--}}
-                        {{--                            @php $target_counter++; @endphp--}}
-                        {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-                        {{--                                <div class="text-sm">{{ number_format($record['month'.$target_counter]) }}</div>--}}
-                        {{--                                <?php array_push($old_tr, (number_format($record['month'.$target_counter])) ) ?>--}}
-                        {{--                            </th>--}}
-                        {{--                        @endforeach--}}
-                        {{--                    @endforeach--}}
-
-                        @for($i = 1; $i <= 12; $i++)
-                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <div class="text-sm">{{ number_format($record['month'.$i]) }}</div>
-                                    <?php array_push($old_tr, (number_format($record['month'.$i])) ) ?>
-                                @php $total_old_tr += intval(number_format($record['month'.$i])); @endphp
-
-                            </th>
-                        @endfor
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $total_old_tr }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $total_old_tr*$record['MaxDiscount'] }}</div>
-                        </th>
-
-                    </tr>
-                    <tr>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الفرق %</div>
-                        </th>
-                        {{--                    @foreach ($list as $year_key => $year)--}}
-                        {{--                        @foreach ($year as $month)--}}
-                        {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-                        {{--                                <div class="text-sm">{{ $old_tr[$loop->iteration-1] == 0? $new_tr[$loop->iteration-1] == 0 ? 0 : "100": number_format(intval($new_tr[$loop->iteration-1])/intval($old_tr[$loop->iteration-1])*100) }}</div>--}}
-                        {{--                            </th>--}}
-                        {{--                        @endforeach--}}
-                        {{--                    @endforeach--}}
-                        @for($i = 1; $i <= 12; $i++)
-                            @php $data = $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : 100: number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100); @endphp
-                            <th style="border: 2px solid black; z-index: 10; @if($data <= 0) background-color: #ffe4e4; @else background-color: #e4ffea; @endif" class="border p-2">
-                                <div class="text-sm">{{ $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : "100": number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100) }}</div>
-                            </th>
-                        @endfor
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $total_new_tr + $total_old_tr }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ ($total_new_tr + $total_old_tr)*$record['MaxDiscount'] }}</div>
-                        </th>
-                    </tr>
-
-                @endforeach
+{{--                    @else--}}
+{{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
+{{--                    @endif--}}
+                </tbody>
+            </table>
             @else
                 <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>
             @endif
-            </tbody>
-        </table>
+        </div>
     @endif
     <div wire:loading wire:target="generateReport" class="w-full">
         <div class="w-full" style="border: solid 1px grey;">
