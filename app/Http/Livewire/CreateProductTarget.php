@@ -19,6 +19,7 @@ class CreateProductTarget extends Component
     public $current_year_list = [];
     public $target;
     public $diff;
+    public $show_msg = false;
     public $current_target = [];
     public $current_target_to_edit = [];
     public $current_start_selected_month_exploded;
@@ -53,7 +54,7 @@ class CreateProductTarget extends Component
 
     public function render()
     {
-        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+//        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
 
 
 //        $fromDate = Carbon::now();
@@ -72,11 +73,13 @@ class CreateProductTarget extends Component
     }
 
     public function updatedDeptId($value) {
+        $this->reset(['show_msg']);
         $this->btn_generate = true;
         $this->btn_save = false;
     }
 
     public function updatedSelectedMonth($value) {
+        $this->reset(['show_msg']);
         $this->btn_generate = true;
         $this->btn_save = false;
     }
@@ -232,6 +235,7 @@ class CreateProductTarget extends Component
 //
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
+        $this->show_msg = true;
 
     }
 

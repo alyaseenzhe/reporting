@@ -601,7 +601,7 @@
         @endif
     </div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.products-targets', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('list.my-product-target') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">

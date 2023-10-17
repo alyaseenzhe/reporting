@@ -139,7 +139,7 @@
                 <tbody class="text-sm divide-y divide-gray-100">
 
                 @foreach($final_results as $record)
-                    @if($record['collected'] == 0 && $record['cash'] == 0 && $record['postponed_sales'] == 0 && $record['postponed_amount'] == "0" && $record['postponed_due_amount'] == "0")
+                    @if($record['collected'] == 0 && $record['cash'] == 0 && $record['postponed_sales'] == 0 && floatval($record['postponed_amount']) == 0 && floatval($record['postponed_due_amount']) == 0)
                     @else
                         @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
                             @if(strlen($record['customer_code'] ) == 7 || strlen($record['customer_code'] ) == 9)

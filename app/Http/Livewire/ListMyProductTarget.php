@@ -62,7 +62,6 @@ class ListMyProductTarget extends Component
 //    }
     public function render()
     {
-
         $branches = json_decode(Auth::user()->branches);
 
         foreach ($branches as $branch) {
