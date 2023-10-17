@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2e3dc191-2aa8-4e89-ade3-4975047f5476" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListPostponedByCustomer.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListSalesCollections.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-sales-collections.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
