@@ -108,7 +108,8 @@
         <!-- Notification container -->
     </div>
 
-    <div class="overflow-x-auto w-full">
+    @if($show_msg)
+        <div class="overflow-x-auto w-full">
         <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
             <tbody class="text-sm divide-y divide-gray-100">
             @if($results)
@@ -164,8 +165,6 @@
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-//                                        dd($current_target_to_edit->where('product_id', "220004")->where('month', "2")->where('year', "2024")->count());
-//                                        dd($current_target_to_edit->where('product_id', "220004")->where('month', "2")->where('year', "20245")->first()['target']);
                                     @endphp
                                     {{--                                @if($diff < 3)--}}
                                     @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))
@@ -239,6 +238,7 @@
             </tbody>
         </table>
     </div>
+    @endif
     <div wire:loading wire:target="generateReport" class="w-full">
         <div class="w-full" style="border: solid 1px grey;">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">

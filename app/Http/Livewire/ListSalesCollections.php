@@ -105,12 +105,14 @@ class ListSalesCollections extends Component
             ->where('accmast.Code', 'like',  $this->area_id.'%')
             ->pluck('accmast.Code as customer_code');
 
+//                dd($customers_code);
+
         $customer_details = $this->customer_details();
         $collected = $this->collected2($customers_code, $this->start_date, $this->end_date);
         $cash = $this->cash2($customers_code, $this->start_date, $this->end_date);
         $postponed_sales = $this->postponed_sales2($customers_code, $this->start_date, $this->end_date);
         $postponed_amount = $this->postponed_amount2($customers_code, $this->end_date);
-        $postponed_due_amount = $this->postponed_due_amount2($customers_code, $this->end_date, 120);
+        $postponed_due_amount = $this->postponed_due_amount2($customers_code, $this->end_date, 119);
 
 //        dd($customers_code);
 //        dd($cash);
@@ -178,15 +180,20 @@ class ListSalesCollections extends Component
                 $record['postponed_due_amount'] = 0;
             }
 
-            array_push($this->final_results, $record);
+//            if ($record['postponed_due_amount'] !== 0 && $record['postponed_amount'] !== 0 && $record['postponed_sales'] !== 0 && $record['cash'] !== 0 && $record['collected'] !== 0) {
+//                dd('dddddd');
+                array_push($this->final_results, $record);
+//            }
         }
 
 //        dd($this->final_results);
 //        foreach ($this->final_results as $a) {
-//            if ($a['customer_code'] == "0300345") {
+//            if ($a['customer_code'] == "0600427") {
 //                dd($a);
 //            }
 //        }
+//        dd($this->final_results);
+
         return $this->final_results;
     }
 
