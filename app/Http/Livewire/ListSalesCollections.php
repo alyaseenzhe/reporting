@@ -46,6 +46,21 @@ class ListSalesCollections extends Component
 
     public function render()
     {
+//        $a = [
+//            ["Code" => "0600621", "Name" => "ابراهيم احمد تركي ال مرهون", "DueAmount" => "8280.0"],
+//            ["Code" => "0600479", "Name" => "عبدالله مرهون مكي العبد رب الحسن", "DueAmount" => "600.62000000000012"],
+//            ["Code" => "0600592", "Name" => "سعيد حبيب عبدالله المغاسله", "DueAmount" => "9772.0799999999999"],
+//            ["Code" => "0600431", "Name" => "محمد سلمان جبر علي آل جبر", "DueAmount" => "15380.099999999999"],
+//            ["Code" => "0600485", "Name" => "جاسم حمود حسين الفضل", "DueAmount" => "1316.5100000000002"],
+//            ["Code" => "0600496", "Name" => "حسين سلمان احمد السعيدي", "DueAmount" => "10499.5"],
+//            ["Code" => "0600523", "Name" => "محمد بدر عبدالله  آل نصيف", "DueAmount" => "21667.700000000001"],
+//            ["Code" => "0600420", "Name" => "مزرعة علي عيسى المرزوق للزراعة", "DueAmount" => "73658.0"],
+//        ];
+//
+//        $postponed_due_amount_index = array_search("0600621", array_column($a, 'Code'));
+//        $b = $a[$postponed_due_amount_index]['DueAmount'];
+//
+//        dd($b);
 
 //        dd($this->collected2(['1200016'], date('2023-01-01 00:00:00'), date('2023-31-31 23:59:59')));
         return view('livewire.list-sales-collections')
@@ -55,6 +70,7 @@ class ListSalesCollections extends Component
     public function proccess_report() {
 
 //        $this->postponed_sales2('0100986', '27');
+//        dd($this->postponed_due_amount2(["0600621"], $this->end_date, 120));
 
         set_time_limit(2000);
         $customers_code = AccMast::join('WarrentyInfo', 'accmast.NodeNo','WarrentyInfo.AccountNo')
@@ -105,6 +121,8 @@ class ListSalesCollections extends Component
             ->where('accmast.Code', 'like',  $this->area_id.'%')
             ->pluck('accmast.Code as customer_code');
 
+//                dd($customers_code);
+
         $customer_details = $this->customer_details();
         $collected = $this->collected2($customers_code, $this->start_date, $this->end_date);
         $cash = $this->cash2($customers_code, $this->start_date, $this->end_date);
@@ -112,6 +130,7 @@ class ListSalesCollections extends Component
         $postponed_amount = $this->postponed_amount2($customers_code, $this->end_date);
         $postponed_due_amount = $this->postponed_due_amount2($customers_code, $this->end_date, 120);
 
+//        dd($postponed_due_amount);
 //        dd($customers_code);
 //        dd($cash);
 
@@ -168,25 +187,30 @@ class ListSalesCollections extends Component
             }
 
             $postponed_due_amount_index = array_search($customer->customer_code, array_column($postponed_due_amount, 'Code'));
+//            $postponed_due_amount_index = array_search("0600621", array_column($postponed_due_amount, 'Code'));
 //            dd($postponed_due_amount);
 //            $postponed_due_amount_index = array_search('0300345', array_column($postponed_due_amount, 'Code'));
 
-            if ($postponed_due_amount_index) {
+            if ($postponed_due_amount_index != false) {
                 $record['postponed_due_amount'] = $postponed_due_amount[$postponed_due_amount_index]['DueAmount'];
             }
             else {
                 $record['postponed_due_amount'] = 0;
             }
 
-            array_push($this->final_results, $record);
+            if ($record['postponed_due_amount'] != 0 || $record['postponed_amount'] != 0 || $record['postponed_sales'] != 0 || $record['cash'] != 0 || $record['collected'] != 0) {
+                array_push($this->final_results, $record);
+            }
         }
 
 //        dd($this->final_results);
 //        foreach ($this->final_results as $a) {
-//            if ($a['customer_code'] == "0300345") {
+//            if ($a['customer_code'] == "0600621") {
 //                dd($a);
 //            }
 //        }
+//        dd($this->final_results);
+
         return $this->final_results;
     }
 

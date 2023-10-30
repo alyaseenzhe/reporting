@@ -1,11 +1,18 @@
 <div>
+    <div class="mb-4">
+        <a href="{{ route('list.my-product-target') }}">
+            <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
+        متابعة المستهدف
+        </span>
+        </a>
+    </div>
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
         <div class="w-full">إضافة مستهدف جديد</div>
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
-            <div class="w-full flex flex-row gap-4">
+            <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
                     <label class="block font-bold mb-2">المخزن
                         <span class="text-red-500">*</span>
@@ -17,11 +24,11 @@
                         @foreach($branches as $branch)
                             @if($branch == "3")
                                 <option value="3">الاحساء</option>
-                            @elseif($branch == "509")
+{{--                            @elseif($branch == "509")--}}
                                 <option value="509">منطقة القرية العليا</option>
                             @elseif($branch == "10")
                                 <option value="10">جدة</option>
-                            @elseif($branch == "510")
+{{--                            @elseif($branch == "510")--}}
                                 <option value="510">منطقة المدينة المنورة</option>
                             @elseif($branch == "7")
                                 <option value="7">الرياض</option>
@@ -35,7 +42,7 @@
                                 <option value="5">الخرج</option>
                             @elseif($branch == "12")
                                 <option value="12">نجران</option>
-                            @elseif($branch == "515")
+{{--                            @elseif($branch == "515")--}}
                                 <option value="515">منطقة الباحة</option>
                             @elseif($branch == "11")
                                 <option value="11">حائل</option>
@@ -61,33 +68,37 @@
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('selected_month') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div class="mt-8 text-center w-full">
-                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"
-                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                @if($btn_generate)
+                    <div class="mt-8 text-center w-full">
+                        <button wire:click.prevent="generateReport" wire:loading.attr="disabled"
+                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                             <span></span>
                             <span>إنشاء تقرير</span>
                         </span>
-                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
+                            <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
                         <span></span>
                         <span>الرجاء الانتظار</span>
                         </span>
-                    </button>
-                </div>
+                        </button>
+                    </div>
+                @endif
                 @if($results)
-                    <div class="mt-8 text-center w-full">
-                    <button wire:click.prevent="processData" wire:loading.attr="disabled"
-                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                    @if($btn_save)
+                        <div class="mt-8 text-center w-full">
+                            <button wire:click.prevent="processData" wire:loading.attr="disabled"
+                                    style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="processData">
                             <span></span>
                             <span>حفظ</span>
                         </span>
-                        <span class="mr-2 font-bold" wire:loading wire:target="processData">
+                                <span class="mr-2 font-bold" wire:loading wire:target="processData">
                         <span></span>
                         <span>الرجاء الانتظار</span>
                         </span>
-                    </button>
-                </div>
+                            </button>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -97,131 +108,137 @@
         <!-- Notification container -->
     </div>
 
-    <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
-        <tbody class="text-sm divide-y divide-gray-100">
-        @if($results)
-            <?php
-            $vendor_id = "*";
-            ?>
-            @foreach($results[0] as $record)
-                @if($record['VendorNo'] != $vendor_id)
+    @if($show_msg)
+        <div class="overflow-x-auto w-full">
+        <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
+            <tbody class="text-sm divide-y divide-gray-100">
+            @if($results)
+                    <?php
+                    $vendor_id = "*";
+                    ?>
+                @foreach($results[0] as $record)
+                    @if($record['VendorNo'] != $vendor_id)
+                            <?php $vendor_id = $record['VendorNo'] ?>
+                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                            <td colspan="15" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                        </tr>
+                    @endif
                         <?php $vendor_id = $record['VendorNo'] ?>
-                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
-                        <td colspan="15" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                    <tr>
+                        <th colspan="13" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                            <div class="flex flex-row">
+                                <div class="w-full text-sm text-center">رقم الصنف</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
+                                <div class="w-full text-sm text-center">اسم الصنف</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                <div class="w-full text-sm text-center">الوحدة</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                <div class="w-full text-sm text-center">التميز</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                <div class="w-full text-sm text-center">المورد</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                            </div>
+                        </th>
                     </tr>
-                @endif
-                <?php $vendor_id = $record['VendorNo'] ?>
-                <tr>
-                    <th colspan="13" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
-                        <div class="flex flex-row">
-                            <div class="w-full text-sm text-center">رقم الصنف</div>
-                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
-                            <div class="w-full text-sm text-center">اسم الصنف</div>
-                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
-                            <div class="w-full text-sm text-center">الوحدة</div>
-                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
-                            <div class="w-full text-sm text-center">التميز</div>
-                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
-                            <div class="w-full text-sm text-center">المورد</div>
-                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                        </div>
-                    </th>
-                </tr>
-                <tr>
-                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                        <div class="text-sm">الشهر</div>
-                    </th>
-                    @foreach ($current_year_list as $year_key => $year)
-                        @foreach ($year as $month)
-                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <div class="text-sm">{{ $year_key."-".$month }}</div>
-                            </th>
+                    <tr>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">الشهر</div>
+                        </th>
+                        @foreach ($current_year_list as $year_key => $year)
+                            @foreach ($year as $month)
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $year_key."-".$month }}</div>
+                                </th>
+                            @endforeach
                         @endforeach
-                    @endforeach
-                </tr>
-                <tr>
-                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                        <div class="text-sm">المستهدف</div>
-                    </th>
-                    @php $target_counter =1; $arr_tar = []; @endphp
-                    @foreach ($current_year_list as $year_key => $year)
-                        @foreach ($year as $month_key => $month)
-                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                @php    $fromDate = \Carbon\Carbon::now();
+                    </tr>
+                    <tr>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">المستهدف</div>
+                        </th>
+                        @php $target_counter =1; $arr_tar = []; @endphp
+                        @foreach ($current_year_list as $year_key => $year)
+                            @foreach ($year as $month_key => $month)
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-//                                        $current = $current_target->where('product_id', '220004')->where('month', 9)->where('year', 2023)->first();
-                                @endphp
-                                @if($diff < 3)
-                                    {{ $current ? $current->target : "-" }}
-                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp
-{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-                                @else
-                                    <input min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="form-input w-full">
-                                @endif
-                                @php $target_counter++; @endphp
+                                    @endphp
+                                    {{--                                @if($diff < 3)--}}
+                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))
+{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                        {{ $current ? $current->target : "-" }}
+                                        @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp
+                                        {{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                    @else
+                                        <input min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">
+                                    @endif
+                                    @php $target_counter++; @endphp
+                                </th>
+                            @endforeach
+                        @endforeach
+                    </tr>
+                    <tr>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">مبيعات تاريخية</div>
+                        </th>
+                        {{--                    @foreach ($list as $year_key => $year)--}}
+                        {{--                        @foreach ($year as $month)--}}
+                        @php $sales = []; @endphp
+                        @for($i = 1; $i <= 12; $i++)
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format($record['month'.$i]) }}</div>
+                                @php array_push($sales, $record['month'.$i]); @endphp
                             </th>
-                        @endforeach
-                    @endforeach
-                </tr>
-                <tr>
-                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                        <div class="text-sm">مبيعات تاريخية</div>
-                    </th>
-{{--                    @foreach ($list as $year_key => $year)--}}
-{{--                        @foreach ($year as $month)--}}
-                    @php $sales = []; @endphp
-                    @for($i = 1; $i <= 12; $i++)
+                        @endfor
+                        {{--{{--                        @endforeach--}}
+                        {{--                    @endforeach--}}
+                    </tr>
+                    <tr>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format($record['month'.$i]) }}</div>
-                            @php array_push($sales, $record['month'.$i]); @endphp
+                            <div class="text-sm">الفرق %</div>
                         </th>
-                    @endfor
-{{--{{--                        @endforeach--}}
-{{--                    @endforeach--}}
-                </tr>
-                <tr>
-                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                        <div class="text-sm">الفرق %</div>
-                    </th>
-                    @php $target_counter2 =1; @endphp
-                    @foreach ($current_year_list as $year_key => $year)
-                        @foreach ($year as $month)
-{{--                    @for($i = 1; $i <= 12; $i++)--}}
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            @php
-                                $fromDate = \Carbon\Carbon::now();
-                                $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                                $diff = $fromDate->diffInMonths($toDate, false);
+                        @php $target_counter2 =1; @endphp
+                        @foreach ($current_year_list as $year_key => $year)
+                            @foreach ($year as $month)
+                                {{--                    @for($i = 1; $i <= 12; $i++)--}}
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    @php
+                                        $fromDate = \Carbon\Carbon::now();
+                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                        $diff = $fromDate->diffInMonths($toDate, false);
 
-                            @endphp
-                            @if($diff < 3)
+                                    @endphp
+{{--                                    @if($diff < 3)--}}
+                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))
 
-                                @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))
-                                    @php $res = $sales[$target_counter2-1] == 0? 0 :  $arr_tar[$target_counter2-1] / $sales[$target_counter2-1]*100;  @endphp
-                                    <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>
-                                @else
-                                    <div style="color: #fd162c">-</div>
-                                @endif
-                            @else
-                                <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>
-                            @endif
-{{--                                <span id="x" class="w-full">--}}
+                                        @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))
+                                            @php $res = $sales[$target_counter2-1] == 0? 0 :  $arr_tar[$target_counter2-1] / $sales[$target_counter2-1]*100;  @endphp
+                                            <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>
+                                        @else
+                                            <div style="color: #fd162c">-</div>
+                                        @endif
+                                    @else
+                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>
+                                    @endif
+                                    {{--                                <span id="x" class="w-full">--}}
 
-{{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
-                        </th>
-{{--                    @endfor--}}
-                            @php $target_counter2++; @endphp
+                                    {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
+                                </th>
+                                {{--                    @endfor--}}
+                                @php $target_counter2++; @endphp
+                            @endforeach
                         @endforeach
-                    @endforeach
-                </tr>
+                    </tr>
 
-            @endforeach
-        @endif
-        </tbody>
-    </table>
+                @endforeach
+            @endif
+            </tbody>
+        </table>
+    </div>
+    @endif
     <div wire:loading wire:target="generateReport" class="w-full">
         <div class="w-full" style="border: solid 1px grey;">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">

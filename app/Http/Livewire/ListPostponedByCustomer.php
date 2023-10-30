@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Billwise;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,19 @@ class ListPostponedByCustomer extends Component
         $end_date = Carbon::now()->format('Y-m-d');
         $day = $days;
 
+        $emp_codes = [];
+
+        $branches = json_decode(Auth::user()->branches);
+
+        foreach ($branches as $branch) {
+            $emps = User::where('branches', 'like', '%"'.$branch.'"%')->get();
+            foreach ($emps as $emp) {
+                array_push($emp_codes, $emp->emp_code);
+            }
+        }
+
+        $emp_codes = array_unique($emp_codes);
+
         $this->employees = Billwise::join('accmast', 'billwise.customerno', 'accmast.nodeno')
             ->join('WarrentyInfo', 'WarrentyInfo.AccountNo', 'accmast.NodeNo')
             ->join('SInvoice', 'BillWise.VoucherNo', 'SInvoice.SInvoiceNo')
@@ -66,9 +80,10 @@ class ListPostponedByCustomer extends Component
             ->pluck('employee_name', 'customer_code')
             ->toArray();
 
-        $this->postponed = DB::connection('sqlsrv')->select("select EmpCode, Code, Arabic_Name, SUM(DueAmount) as due_amount from (
+        $postponed_stmt = "select EmpCode, EmpName, Code, Arabic_Name, SUM(DueAmount) as due_amount from (
 select *, DATEDIFF(day, VoucherDate, :end_date_time1) as days from (
-select isnull((select top 1 StudentMast.Arabic_Name from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpCode
+select isnull((select top 1 StudentMast.Code from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpCode,
+       isnull((select top 1 StudentMast.Arabic_Name from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpName
 ,accmast.code,accmast.Name,accmast.Arabic_Name,voucherno,voucherdate,Total,isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
 and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time2),0.00) as paid,
 total+
@@ -91,7 +106,22 @@ and voucherdate <=:end_date_time7
 and (accmast.Code like '0%' or accmast.Code like '1%')
 ) as tbl
 ) as tbl2
-group by EmpCode, Code, Arabic_Name",
+group by EmpCode, EmpName, Code, Arabic_Name";
+
+            $postponed_stmt .= " having EmpCode in ";
+            foreach ($emp_codes as $key => $emp_code) {
+                if ($key === array_key_first($emp_codes)) {
+                    $postponed_stmt .= "('".$emp_code."', ";
+                }
+                elseif ($key === array_key_last($emp_codes)) {
+                    $postponed_stmt .= "'".$emp_code."')";
+                }
+                else {
+                    $postponed_stmt .= "'".$emp_code."',";
+                }
+            }
+
+        $this->postponed = DB::connection('sqlsrv')->select($postponed_stmt,
             [
                 'end_date_time1' => $end_date . " 23:59:23",
                 'end_date_time2' => $end_date . " 23:59:23",
@@ -102,7 +132,8 @@ group by EmpCode, Code, Arabic_Name",
                 'end_date_time7' => $end_date . " 23:59:23",
             ]);
 
-        $postponed_due = DB::connection('sqlsrv')->select("select Code, SUM(DueAmount) as due_amount from (
+
+        $postponed_due_stmt = "select Code, SUM(DueAmount) as due_amount from (
 select *, DATEDIFF(day, VoucherDate, :end_date_time1) as days from (
 select isnull((select top 1 StudentMast.Code from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpCode
 ,accmast.code,accmast.Name,accmast.Arabic_Name,voucherno,voucherdate,Total,isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
@@ -127,8 +158,23 @@ and voucherdate <=:end_date_time7
 and (accmast.Code like '0%' or accmast.Code like '1%')
 ) as tbl
 where DATEDIFF(day, VoucherDate, :end_date_time8) >= :day
-) as tbl2
-group by Code",
+and EmpCode in ";
+
+        foreach ($emp_codes as $key => $emp_code) {
+            if ($key === array_key_first($emp_codes)) {
+                $postponed_due_stmt .= "('".$emp_code."', ";
+            }
+            elseif ($key === array_key_last($emp_codes)) {
+                $postponed_due_stmt .= "'".$emp_code."')";
+            }
+            else {
+                $postponed_due_stmt .= "'".$emp_code."',";
+            }
+        }
+
+        $postponed_due_stmt .= ") as tbl2 group by Code";
+
+        $postponed_due = DB::connection('sqlsrv')->select($postponed_due_stmt,
             [
                 'end_date_time1' => $end_date . " 23:59:23",
                 'end_date_time2' => $end_date . " 23:59:23",

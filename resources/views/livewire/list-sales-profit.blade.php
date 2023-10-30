@@ -274,7 +274,7 @@
                                 <?php $s_total += ($result2 ? floatval($result2['Spl0Value'] + $result2['Spl1Value'] + $result2['Spl2Value']) : 0) ?>
                                 <?php $c_total += ($result2 ? floatval($result2['Spl0cost'] + $result2['Spl1Cost'] + $result2['Spl2Cost']) : 0) ?>
                                 <?php $p_total += ($result2 ? (floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : 0) ?>
-                        @elseif(($result2 && $result2['Employeecode'] == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
+                        @elseif(($result2 && /*$result2['Employeecode'] == \Illuminate\Support\Facades\Auth::user()->emp_code &&*/ \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
                             <tr>
                                 <td class="border p-2 whitespace-nowrap">
                                     <div>

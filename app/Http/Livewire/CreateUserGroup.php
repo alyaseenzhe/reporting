@@ -10,6 +10,7 @@ class CreateUserGroup extends Component
     public $name;
     public $cost = 0;
     public $read_type = 1;
+    public $write_product_target = false;
     public $report_type = [];
 
     protected $rules = [
@@ -35,6 +36,7 @@ class CreateUserGroup extends Component
             'report_type' => json_encode($this->report_type),
             'cost' => $this->cost,
             'read_type' => $this->read_type,
+            'write_product_target' => $this->read_type == true ? '1' : '0',
         ]);
 
         if($record) {

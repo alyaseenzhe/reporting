@@ -139,7 +139,7 @@
                 <tbody class="text-sm divide-y divide-gray-100">
 
                 @foreach($final_results as $record)
-                    @if($record['collected'] == 0 && $record['cash'] == 0 && $record['postponed_sales'] == 0 && $record['postponed_amount'] == "0" && $record['postponed_due_amount'] == "0")
+                    @if($record['collected'] == 0 && $record['cash'] == 0 && $record['postponed_sales'] == 0 && floatval($record['postponed_amount']) == 0 && floatval($record['postponed_due_amount']) == 0)
                     @else
                         @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
                             @if(strlen($record['customer_code'] ) == 7 || strlen($record['customer_code'] ) == 9)
@@ -200,7 +200,7 @@
                                     </td>
                                 </tr>
                             @endif
-                        @elseif(($record && $record['emp_code'] == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
+                        @elseif(($record && /*$record['emp_code'] == \Illuminate\Support\Facades\Auth::user()->emp_code &&*/ \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
                             @if(strlen($record['customer_code'] ) == 7 || strlen($record['customer_code'] ) == 9)
                                 <tr>
                                 <td class="border p-2 whitespace-nowrap">
@@ -239,13 +239,13 @@
                                 <td class="border p-2">
                                     {{$record['emp_name']}}
                                 </td>
-                                <td class="border p-2 whitespace-nowrap">
+                                <td @if($record['collected'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                     {{number_format($record['collected'], 2)}}
                                 </td>
-                                <td class="border p-2 whitespace-nowrap">
+                                <td @if($record['cash'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                     {{number_format($record['cash'], 2)}}
                                 </td>
-                                <td class="border p-2 whitespace-nowrap">
+                                <td @if($record['postponed_sales'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
                                     {{number_format($record['postponed_sales'], 2)}}
                                 </td>
                                 <td class="border p-2 whitespace-nowrap">
@@ -253,6 +253,9 @@
                                 </td>
                                 <td class="border p-2 whitespace-nowrap">
                                     {{number_format($record['postponed_due_amount'], 2)}}
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    {{ number_format($record['collected'], 2) == '0.00' && number_format($record['cash'], 2) == '0.00' && number_format($record['postponed_sales'], 2) == '0.00' ? "hide" : "show" }}
                                 </td>
                             </tr>
                             @endif
