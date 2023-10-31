@@ -1307,7 +1307,7 @@ and ". $cus_code ."
 ) as tbl
 --where EmpCode = '10259'
 --where Code in (:customer_code1)
-group by Code, Name", [
+group by Code, Name having SUM(DueAmount) > 0", [
             'end_date_time1' => $end_date . ' 23:59:25',
             'end_date_time2' => $end_date . ' 23:59:25',
             'end_date_time3' => $end_date . ' 23:59:25',
