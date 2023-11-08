@@ -14,7 +14,8 @@ class EditUserGroups extends Component
     public $name;
     public $cost = 0;
     public $read_type = 1;
-    public $write_product_target = false;
+    public $write_product_target;
+    public $calculate_all_product_target;
     public $report_type = [];
 
     protected $rules = [
@@ -35,7 +36,8 @@ class EditUserGroups extends Component
             $this->report_type = json_decode($this->record->report_type);
             $this->cost = $this->record->cost;
             $this->read_type = $this->record->read_type;
-            $this->write_product_target = $this->record->write_product_target == '1' ? true : false;
+            $this->write_product_target = $this->record->write_product_target ? $this->record->write_product_target : 0;
+            $this->calculate_all_product_target = $this->record->calculate_all_product_target ? $this->record->calculate_all_product_target : 0;
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذه المجموعة غير موجودة');
@@ -63,7 +65,8 @@ class EditUserGroups extends Component
             $record->report_type = json_encode($this->report_type);
             $record->cost = $this->cost;
             $record->read_type = $this->read_type;
-            $record->write_product_target = $this->write_product_target == true ? '1' : '0';
+            $record->write_product_target = $this->write_product_target? $this->write_product_target : '0';
+            $record->calculate_all_product_target = $this->calculate_all_product_target;
 
 
             if($record->save()) {

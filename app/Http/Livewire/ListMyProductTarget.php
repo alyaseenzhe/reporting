@@ -67,7 +67,7 @@ class ListMyProductTarget extends Component
         foreach ($branches as $branch) {
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')
                 ->where('branches', 'like', '%"'.$branch.'"%')
-                ->where('write_product_target', '1')
+                ->whereIn('write_product_target', ['1', '2'])
                 ->select('users.id')
                 ->get();
             foreach ($emps as $emp) {
@@ -103,7 +103,7 @@ class ListMyProductTarget extends Component
 
             foreach ($branches as $branch) {
                 $emps = User::join('user_groups', 'user_groups.id', 'users.group')
-                    ->where('write_product_target', '1')
+                    ->whereIn('write_product_target', ['1', '2'])
                     ->where('branches', 'like', '%"'.$branch.'"%')->get();
                 foreach ($emps as $emp) {
                     array_push($emp_codes, $emp->emp_code);
@@ -114,7 +114,7 @@ class ListMyProductTarget extends Component
 //            dd($emp_codes);
 
             $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-                ->where('write_product_target', '1')
+                ->whereIn('write_product_target', ['1', '2'])
                 ->select('users.id', 'users.name')
                 ->whereNotNull('group')
                 ->where('role', 'u')
@@ -129,7 +129,7 @@ class ListMyProductTarget extends Component
                 ->where('branches', 'LIKE' ,'%"'.$value.'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->where('write_product_target', '1')
+                ->whereIn('write_product_target', ['1', '2'])
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
