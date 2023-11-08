@@ -207,9 +207,11 @@
                 </tfoot>
             </table>
         </div>
-        <div style="margin-top: 20px; margin-right: 22px; text-decoration: underline;">
-            <ul style="list-style-type: disc;">
-                <li>ملاحظة: جميع أرقام المبيعات الموجودة في الجدول غير شاملة الضريبة.</li>
+        <div style="margin-top: 20px; margin-right: 22px;">
+            <span style="font-weight: bold; margin-bottom: 20px">ملاحظات:</span>
+            <ul style="list-style-type: disc; text-decoration: underline">
+                <li style="margin-top: 10px;">جميع أرقام المبيعات الموجودة في الجدول غير شاملة الضريبة.</li>
+                <li>جميع الأرقام المالية الموجودة في الجدول هي بالآلاف.</li>
             </ul>
         </div>
     </div>
