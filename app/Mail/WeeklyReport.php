@@ -82,7 +82,10 @@ class WeeklyReport extends Mailable
             $branch_name = 'فرع ساجر';
         }
 
-        return $this->subject('ملخص مبيعات ' . $branch_name)
+        $subject_txt = "تقرير ملخص مبيعات " . $branch_name ."({$this->start_date} إلى {$this->end_date})";
+
+//        return $this->subject('ملخص مبيعات ' . $branch_name)
+        return $this->subject($subject_txt)
             ->view('mails.weekly-report-email')
             ->with(['data' => $this->data, 'branch' => $branch_name, 'start_date' => $this->start_date, 'end_date' => $this->end_date, 'emp_codes' => $this->emp_codes, 'customer_purchased' => $this->customer_purchased, 'visits' => $this->visits]);
 

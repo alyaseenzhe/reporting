@@ -609,9 +609,8 @@ class ListWeeklyReport extends Component
         $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'yasser.salah@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'sayed.alhaj@alyaseenagri.com'];
         $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.sajer@alyaseenagri.com', 'abdulaziz.sharqawi@alyaseenagri.com'];
 
-        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+//        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
 
-        /*
         if ($this->area_id == '01') {
             Mail::to($ahsa_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
@@ -648,8 +647,6 @@ class ListWeeklyReport extends Component
         elseif ($this->area_id == '12') {
             Mail::to($sajer_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
-
-        */
 
         return 0;
     }
@@ -2175,8 +2172,9 @@ group by Code, Name", [
 //            ->where('is_branch_visit', '!=', 'N')
 //            ->where('type','a-00')
             ->where('added_using', 'W')
-            ->whereNotIn('customer_id', ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
-            ->whereIn('place_id',['0101', '0102', '0103', '0104', '0105', '0106', '0107', '0108', '0109', '0110', '0111', '0112'])
+            ->whereNotIn('customer_id', ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000', '0109999'])
+//            ->whereIn('place_id',['0101', '01011', '0102', '0103', '0104', '0105', '0106', '0107', '0108', '0109', '0110', '0111', '0112'])
+            ->whereIn('place_id',['0001', '0020', '0099', '0101', '01011', '0102', '01021', '01023', '0103', '01031', '0104', '0105', '0106', '0107', '0108', '01081', '0109', '0110', '0111', '0112', '0202', '0203'])
             ->select('author', DB::raw('COUNT(DISTINCT customer_id) as num_of_visits'))
             ->groupBy('author')
             ->pluck('num_of_visits', 'author')->toArray();
@@ -2189,8 +2187,9 @@ group by Code, Name", [
 //            ->where('is_branch_visit', '!=', 'N')
 //            ->where('type','a-00')
             ->where('added_using', 'W')
-            ->whereIn('customer_id', ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
-            ->whereIn('place_id',['0101', '0102', '0103', '0104', '0105', '0106', '0107', '0108', '0109', '0110', '0111', '0112'])
+            ->whereIn('customer_id', ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000', '0109999'])
+            ->whereIn('place_id',['0001', '0020', '0099', '0101', '01011', '0102', '01021', '01023', '0103', '01031', '0104', '0105', '0106', '0107', '0108', '01081', '0109', '0110', '0111', '0112', '0202', '0203'])
+//            ->whereIn('place_id',['0101', '01011', '0102', '0103', '0104', '0105', '0106', '0107', '0108', '0109', '0110', '0111', '0112'])
             ->select('author', DB::raw('COUNT(customer_id) as num_of_visits'))
             ->groupBy('author')
             ->pluck('num_of_visits', 'author')->toArray();
