@@ -1,5 +1,5 @@
 <div>
-    @if (Auth::user()->user_group->write_product_target == '1')
+    @if (Auth::user()->user_group->write_product_target == '1' || Auth::user()->user_group->write_product_target == '2')
         <div class="mb-4">
             <a href="{{ route('create.product-target') }}">
                 <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">

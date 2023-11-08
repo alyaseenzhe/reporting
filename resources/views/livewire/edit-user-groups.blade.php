@@ -114,12 +114,38 @@
 
                 <div class="flex flex-row">
                     <div class="flex items-center mb-4 w-full">
-                        <input wire:model="write_product_target" type="checkbox" name="write_product_target" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم اضافة مستهدف للأصناف</label>
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم اضافة مستهدف للأصناف لنفسه فقط</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="2" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم اضافة مستهدف للأصناف لجميع موظفين الفروع التابع لهم</label>
                     </div>
                 </div>
 
                 @error('write_product_target')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية توزيع نسب مستهدف الأصناف</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="calculate_all_product_target" type="radio" name="calculate_all_product_target" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">لا يستطيع المستخدم توزيع نسب مستهدف الأصناف على جميع موظفي فرعه</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="calculate_all_product_target" type="radio" name="calculate_all_product_target" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم توزيع نسب مستهدف الأصناف على جميع موظفي فرعه</label>
+                    </div>
+                </div>
+
+                @error('calculate_all_product_target')
                 <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
