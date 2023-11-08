@@ -4,6 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+    <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/ListWeeklyReport.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Mail/WeeklyReport.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-weekly-report.blade.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-weekly-report.blade2.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/views/mails/weekly-report-email.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     <list default="true" id="2e3dc191-2aa8-4e89-ade3-4975047f5476" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/app/Models/ProductMast.php" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/database/migrations/2023_11_08_053231_add_calculate_all_product_target_table.php" afterDir="false" />
@@ -157,6 +167,27 @@
     </configuration>
   </component>
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="" />
+      <created>1684066666480</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1684066666480</updated>
+      <workItem from="1684066669022" duration="1012000" />
+      <workItem from="1684067740602" duration="1251000" />
+      <workItem from="1684069674269" duration="2823000" />
+      <workItem from="1684131218289" duration="3091000" />
+      <workItem from="1684135185415" duration="37883000" />
+      <workItem from="1684655342544" duration="123582000" />
+      <workItem from="1685798656741" duration="16574000" />
+      <workItem from="1685947959868" duration="16647000" />
+      <workItem from="1687069379436" duration="8559000" />
+      <workItem from="1687241103227" duration="29473000" />
+      <workItem from="1688472031628" duration="10323000" />
+      <workItem from="1691652006338" duration="15271000" />
+      <workItem from="1691846683913" duration="14691000" />
+      <workItem from="1698126290839" duration="27410000" />
+    </task>
     <servers />
   </component>
 </project>
