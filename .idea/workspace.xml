@@ -15,18 +15,7 @@
       <change beforePath="$PROJECT_DIR$/config/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/database.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     <list default="true" id="2e3dc191-2aa8-4e89-ade3-4975047f5476" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Models/ProductMast.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2023_11_08_053231_add_calculate_all_product_target_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateProductTarget.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CreateUserGroup.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CreateUserGroup.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/EditUserGroups.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/EditUserGroups.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/AccMast.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/AccMast.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-product-target.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/create-user-group.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/list-my-product-target.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/list-my-product-target.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

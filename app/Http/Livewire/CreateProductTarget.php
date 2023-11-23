@@ -5,7 +5,11 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetEmpPercent;
 use App\Models\ProductTargetLog;
+use App\Models\ScribeProductTarget;
+use App\Models\Setting;
+use App\Models\SpecialProduct;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +20,7 @@ class CreateProductTarget extends Component
 {
     public $dept_id = -1;
     public $selected_month;
+    public $old_targets = [];
     public $filter_type = "vendor";
     public $vendor_list = [];
     public $vendor_id = -1;
@@ -39,6 +44,11 @@ class CreateProductTarget extends Component
     public $emps = [];
     public $user_ids = [];
     public $emps_percentage;
+    public $dist_days;
+    public $write_product_target;
+    public $special_product_id;
+    public $choose_special_product;
+    public $edit_special_product;
 
     protected $listeners = ['targets-entered' => 'test'];
 
@@ -110,6 +120,29 @@ class CreateProductTarget extends Component
 
     public function render()
     {
+//        $test = ScribeProductTarget::where('Department', $this->dept_id)
+//            ->where('PriceList', '1')
+//            ->where('Year', '2024')
+//            ->where('month', '10')
+//            ->where('ProductNo', '867')
+//            ->where(function ($query) {
+//                $query->where('Taget', '<>', 0)
+//                    ->orWhere('Revision', '<>', 0);
+//            })
+//            ->orderBy('Date', 'desc')
+//            ->get();
+//
+
+//        dd($this->old_targets);
+
+
+//        dd($test ? $test->Taget : null);
+//        $now = Carbon::now();
+//        $month_days = Carbon::parse('2024-02-01')->daysInMonth;
+//        dd($month_days);
+//        dd($now->year."-".$now->month."-01");
+//        dd(Carbon::parse($now->year."-".$now->month."-01")->subDay()->diffInDays('2023-12-30', false));
+//        dd(Carbon::parse($now->year."-".$now->month."-01")->diffInMonths('2024-02-'.$month_days, false)+1);
 //        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
 
 
@@ -120,6 +153,11 @@ class CreateProductTarget extends Component
 //
 //        $months = $fromDate->diffInMonths($toDate, false);
 //        dd($months);
+        $settings_record = Setting::first();
+        $this->dist_days = $settings_record->dist_days;
+        $this->write_product_target = Auth::user()->user_group->write_product_target;
+        $this->choose_special_product = Auth::user()->user_group->choose_special_product;
+        $this->edit_special_product = Auth::user()->user_group->edit_special_product;
 
         $branches = json_decode($this->query->branches);
 
@@ -141,6 +179,7 @@ class CreateProductTarget extends Component
     }
     public function generateReport()
     {
+//        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
         $this->reset('target');
         if ($this->filter_type == 'vendor') {
@@ -155,6 +194,12 @@ class CreateProductTarget extends Component
                 'dept_id' => 'required|not_in:-1',
                 'selected_month' => 'required',
                 'prod_id' => 'required'
+            ]);
+        }
+        else {
+            $this->validate([
+                'dept_id' => 'required|not_in:-1',
+                'selected_month' => 'required',
             ]);
         }
 
@@ -186,11 +231,166 @@ class CreateProductTarget extends Component
             $this->user_ids = $results;
 //            dd($this->user_ids);
         }
+        if ($this->query->user_group->write_product_target == '1') {
+            $this->emps = User::join('user_groups', 'users.group', 'user_groups.id')
+                ->where('branches', 'LIKE' ,'%"'.$this->dept_id.'"%')
+                ->whereNotNull('group')
+                ->where('role', 'u')
+                ->where('users.id', Auth::id())
+                ->whereIn('write_product_target', ['1', '2'])
+//                ->where('group', '!=', 4)
+//                ->where('group', '!=', 5)
+//                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
+                ->select('users.id', 'users.name', 'emp_code')
+                ->distinct()
+                ->get();
+
+            foreach ($this->emps as $emp) {
+                $e[$emp->emp_code] = $emp->id;
+                array_push($this->user_ids, [$emp->emp_code => $emp->id]);
+            }
+//            $this->user_ids = array_merge(...array_values($this->user_ids));
+
+            $results = [];
+            array_walk_recursive($this->user_ids, function ($item, $key) use (&$results){$results[$key] = $item;});
+            $this->user_ids = $results;
+//            dd($this->user_ids);
+        }
+
+        // old data from Scribe
+        $this->list = [];
+        $this->keys = [];
+        $this->old_targets = [];
+
+        for ($i = 0; $i < 12; $i++) {
+
+            $month = Carbon::parse($this->selected_month)->addMonth($i)->format('n');
+            $year = Carbon::parse($this->selected_month)->addMonth($i)->format('Y');
+
+            $this->list[$year][] = $month;
+        }
+//        dd($this->list);
+
+        $this->keys = array_keys($this->list);
+        if (count($this->keys) > 1) {
+
+//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
+//                ->where('PriceList', '1')
+//                ->whereNotNull('ProductNo')
+//                ->where(function ($query) {
+//                    $query->where('Taget', '<>', 0)
+//                        ->orWhere('Revision', '<>', 0);
+//                })
+//                ->where(function ($query) {
+//                    $query->where('Year', $this->keys[0])
+//                        ->where('Department', $this->dept_id)
+//                        ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                })
+//                ->orWhere(function ($query) {
+//                    $query->where('Year', $this->keys[1])
+//                        ->where('Department', $this->dept_id)
+//                        ->whereIn('month', array_values($this->list[$this->keys[1]]));
+//                })
+//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
+//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
+////                ->orderBy('Date', 'desc')
+////                ->limit(70)
+//                ->get();
+
+//            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
+//                        FROM ProductsTarget, ProductMast
+//                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
+//                        and ((Year = '".$this->keys[1]."' and month in (1, 2,3,4,5,6,7,8,9,10)) or (Year = '".$this->keys[0]."' and month in (11, 12)))
+//                        and Department = 6
+//                        and ProductMast.[Pricelist] = 1
+//                        and (Taget <> 0 or Revision <> 0)
+//                        order by Date desc";
+
+//            dd($this->list[$this->keys[0]]);
+            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
+                        FROM ProductsTarget, ProductMast
+                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
+                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
+                        and Department = ". $this->dept_id ."
+                        and ProductMast.[Pricelist] = 1
+                        and (Taget <> 0 or Revision <> 0)
+                        order by Date desc";
+
+//            dd($stmt);
+//
+            $query = DB::connection('sqlsrv')->select($stmt);
+//            $this->old_targets = collect($query);
+
+//            dd($this->old_targets[0]);
+//        dd(collect($query));
+            $fetch_query = json_decode(json_encode($query), true);
+            $this->old_targets = collect($fetch_query);
+//            $this->old_targets = $fetch_query;
+//            dd($this->old_targets->where('Code', '170966')->where('month', '11')->where('Year', '2023')->count());
+//            dd($this->old_targets);
+//            dd($this->old_targets->where('ProductNo', '10144')->where('month', '12')->where('Year', '2024')->count());// > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
+//            $old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
+//            dd($this->old_targets->where('ProductNo', '10297')->count());
+//            dd($this->old_targets->where('ProductNo', '10297')->first()['Taget']);
+////
+//        dd(collect($fetch_query));
+//            array_push($this->old_targets, $fetch_query);
+//            dd($this->old_targets);
+
+
+
+        }
+        else {
+
+//            dd('nono');
+//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
+//                ->where('PriceList', '1')
+//                ->whereNotNull('ProductNo')
+//                ->where('Year', $this->keys[0])
+//                ->whereIn('month', array_values($this->list[$this->keys[0]]))
+//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
+//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
+////                ->where(function ($query) {
+////                    $query->where('Taget', '<>', 0)
+////                        ->orWhere('Revision', '<>', 0);
+////                })
+////                ->orderBy('Date', 'desc')
+//                ->get();
+
+            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
+                        FROM ProductsTarget, ProductMast
+                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
+                        and (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))
+                        and Department = ". $this->dept_id ."
+                        and ProductMast.[Pricelist] = 1
+                        and (Taget <> 0 or Revision <> 0)
+                        order by Date desc";
+//            dd($stmt);
+
+            $query = DB::connection('sqlsrv')->select($stmt);
+//            $this->old_targets = collect($query);
+
+//            dd($this->old_targets[0]);
+//        dd(collect($query));
+            $fetch_query = json_decode(json_encode($query), true);
+            $this->old_targets = collect($fetch_query);
+//            dd($this->old_targets);
+
+        }
+
+        // End of getting old data from Scribe
 
         // target data from reporting
         $this->current_target = ProductTarget::where('user_id', Auth::id())
             ->where('branch', $this->dept_id)
             ->get();
+
+        $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
+            ->where('branch', $this->dept_id)
+            ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
+            ->get();
+
+        $this->special_product_id = SpecialProduct::all();
 
         $month_stmt = '';
         $this->list = [];
@@ -232,8 +432,8 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, WholeSale FROM (
-            SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, WholeSale  FROM (
+        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale FROM (
+            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale  FROM (
             SELECT ProductNo";
 
 
@@ -248,28 +448,17 @@ class CreateProductTarget extends Component
             }
         }
 
-        // for all products
-//        $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department = " . $this->dept_id .
-//            " group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department = " . $this->dept_id .
-//            " group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            ORDER BY VendorNo";
+        $current_dept_id = $this->dept_id;
+
+        if ($this->dept_id == "3") {
+            $current_dept_id = "3 , 509";
+        }
+        elseif ($this->dept_id == "10") {
+            $current_dept_id = "10, 510";
+        }
+        elseif ($this->dept_id == "12") {
+            $current_dept_id = "12, 515";
+        }
 
         if ($this->filter_type == 'vendor') {
 
@@ -278,15 +467,15 @@ class CreateProductTarget extends Component
               FROM [AccountsC5].[dbo].[SInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department = " . $this->dept_id .
-                " group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
             union all
             SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[PInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department = " . $this->dept_id .
-                " group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
             ) as tbl
             group by ProductNo) as tbl2
             RIGHT JOIN ProductMast
@@ -302,15 +491,15 @@ class CreateProductTarget extends Component
               FROM [AccountsC5].[dbo].[SInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department = " . $this->dept_id .
-                " group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
             union all
             SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[PInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department = " . $this->dept_id .
-                " group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
             ) as tbl
             group by ProductNo) as tbl2
             RIGHT JOIN ProductMast
@@ -319,6 +508,204 @@ class CreateProductTarget extends Component
             LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
             WHERE ProductCode = '" . $this->prod_id . "'
             ORDER BY VendorNo";
+        }
+        else if ($this->filter_type == 'sp0') {
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE SpecialityCode = '0'
+            ORDER BY VendorNo";
+        }
+        else if ($this->filter_type == 'sp1') {
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE SpecialityCode = '1'
+            ORDER BY VendorNo";
+        }
+        else if ($this->filter_type == 'sp2') {
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE SpecialityCode = '2'
+            ORDER BY VendorNo";
+        }
+        else if($this->filter_type == 'bathoor') {
+
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE (ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%')
+            ORDER BY VendorNo";
+
+        }
+        else if($this->filter_type == 'mobedat') {
+
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE (ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%')
+            ORDER BY VendorNo";
+
+        }
+        else if($this->filter_type == 'asmedah') {
+
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE (ProductCode like '17%')
+            ORDER BY VendorNo";
+
+        }
+        else if($this->filter_type == 'other') {
+            $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE (ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%')
+            ORDER BY VendorNo";
+        }
+        else if($this->filter_type == "all") {
+            // for all products
+            $month_stmt .= " FROM (
+                SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+                  FROM [AccountsC5].[dbo].[SInvoice], accmast
+                where partyno=nodeno and accmast.[type]=10
+                and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+                and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+                union all
+                SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+                  FROM [AccountsC5].[dbo].[PInvoice], accmast
+                where partyno=nodeno and accmast.[type]=10
+                and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+                and Department in (" . $current_dept_id .
+                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+                ) as tbl
+                group by ProductNo) as tbl2
+                RIGHT JOIN ProductMast
+                on tbl2.ProductNo = ProductMast.NodeNo
+                WHERE ProductMast.Pricelist = 1) as tbl3
+                LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+                ORDER BY VendorNo";
         }
 
 //        dd($month_stmt);
@@ -331,6 +718,8 @@ class CreateProductTarget extends Component
         array_push($this->results, $fetch_query);
 
 //        dd($this->results);
+//        dd(array_values($this->results));
+
 
         // get the current targets
         $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
@@ -385,7 +774,6 @@ class CreateProductTarget extends Component
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
-
     }
 
     public function processData()
@@ -501,8 +889,81 @@ class CreateProductTarget extends Component
     }
 
     // function to save the data
-    public function test($targets) {
+    public function test($targets, $emps_percents, $products_codes) {
+//        dd($products_codes);
+//        dd($emps_percents);
+//        dd($this->emps_percentage);
 //        dd($targets);
+
+
+        if ($emps_percents) {
+            foreach ($emps_percents as $emp) {
+                $txt = explode('|', $emp);
+                $details = $txt[0];
+                $percent_num = trim($txt[1]);
+                $details = explode('--', $details);
+
+                $emp_code_percent = $details[1];
+
+
+
+                $user_record = User::where('emp_code', $emp_code_percent)->first();
+                $user = ProductTargetEmpPercent::where('user_id', $user_record->id)->first();
+
+                if ($user) {
+                    $record = ProductTargetEmpPercent::where('user_id', $user_record->id)
+                        ->update([
+                            'emp_percentage' => $percent_num,
+                            'branch' => $this->dept_id,
+                            'added_by' => Auth::id()
+                        ]);
+                }
+                else {
+                    $record = ProductTargetEmpPercent::create([
+                            'user_id' => $user_record->id,
+                            'emp_percentage' => $percent_num,
+                            'branch' => $this->dept_id,
+                            'added_by' => Auth::id()
+                        ]);
+                }
+            }
+        }
+
+        if ($products_codes) {
+
+            foreach ($products_codes as $code) {
+                $txt = explode('|', $code);
+                $details = $txt[0];
+                $product_bool_val = $txt[1];
+//                dd($product_bool_val);
+                $details = explode('--', $details);
+
+                $product_code_val = $details[1];
+
+                $record = SpecialProduct::where('product_id', $product_code_val)->first();
+
+                if ($record) {
+                    if ($product_bool_val == 'true') {
+                        $record = SpecialProduct::where('product_id', $product_code_val)
+                            ->update([
+                                'product_id' => $product_code_val,
+                                'added_by' => Auth::id(),
+                            ]);
+                    }
+                    else {
+                        $record = SpecialProduct::where('product_id', $product_code_val)->delete();
+                    }
+                }
+                else {
+                  if ($product_bool_val == 'true') {
+                      $record = SpecialProduct::create([
+                          'product_id' => $product_code_val,
+                          'added_by' => Auth::id(),
+                      ]);
+                  }
+                }
+            }
+        }
 
         if ($targets) {
 
@@ -560,6 +1021,7 @@ class CreateProductTarget extends Component
             $this->reset('target', 'emps_percentage', 'emp_target');
             $this->generateReport();
         }
+
     }
 
     public function clear_btn() {

@@ -135,17 +135,17 @@
                             <?php
                             $vendor_id = "*";
                             ?>
-                        @foreach($results[0] as $record)
+                        @foreach($items[0] as $record)
                             @if($record['VendorNo'] != $vendor_id)
                                     <?php $vendor_id = $record['VendorNo'] ?>
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
-                                    <td colspan="15" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                    <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                 </tr>
                             @endif
                                 <?php $vendor_id = $record['VendorNo'] ?>
                             <tr>
-                                <th colspan="16" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div class="w-full text-sm text-center">رقم الصنف</div>
                                         <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
@@ -161,128 +161,373 @@
                                 </th>
                             </tr>
                             <tr>
-                                    <?php $new_tr = []; ?>
-                                    <?php $total_new_tr = 0; ?>
-                                    <?php $old_tr = []; ?>
-                                    <?php $total_old_tr = 0; ?>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">الشهر</div>
                                 </th>
                                 @foreach ($list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
                                             <div class="text-sm">{{ $year_key."-".$month }}</div>
                                         </th>
                                     @endforeach
                                 @endforeach
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">السعر</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">مجموع كمية</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">مجموع قيمة</div>
                                 </th>
                             </tr>
+
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">المستهدف</div>
-                                </th>
+
                                 @foreach ($list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                            {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
-                                                <?php
-                                                if ($dept_id == "all") {
-                                                    $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first(): 0;
-                                                }
-                                                else {
-                                                    $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->first(): 0;
-                                                }
-                                                ?>
-                                                <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                            {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                            <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
-                                                <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
-                                            @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
-
-                                            {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
-                                            {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
+                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                            <div class="text-sm">S</div>
+                                        </th>
+                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                            <div class="text-sm">F</div>
                                         </th>
                                     @endforeach
                                 @endforeach
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                    <div class="text-sm">S</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $total_new_tr }}</div>
+                                    <div class="text-sm">F</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $total_new_tr*$record['MaxDiscount'] }}</div>
+                                    <div class="text-sm">S</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">F</div>
                                 </th>
                             </tr>
+                            <?php $new_tr = []; ?>
+                            <?php $new_sales = []; ?>
+                            <?php $total_new_tr = 0; ?>
+                            <?php $total_new_sales = 0; ?>
+                            <?php $old_tr = []; ?>
+                            <?php $total_old_tr = 0; ?>
+                            <?php $total_s1 = 0; $total_f1 = 0; ?>
+                            <?php $total_s2 = 0; $total_f2 = 0;?>
+                            <?php $total_s3 = 0; $total_f3 = 0;?>
+                            <?php $total_s4 = 0; $total_f4 = 0;?>
+                            <?php $total_s5 = 0; $total_f5 = 0;?>
+                            <?php $total_s6 = 0; $total_f6 = 0;?>
+                            <?php $total_s7 = 0; $total_f7 = 0;?>
+                            <?php $total_s8 = 0; $total_f8 = 0;?>
+                            <?php $total_s9 = 0; $total_f9 = 0;?>
+                            <?php $total_s10 = 0; $total_f10 = 0;?>
+                            <?php $total_s11 = 0; $total_f11 = 0;?>
+                            <?php $total_s12 = 0; $total_f12 = 0;?>
+                            <?php $total_s_qty = 0; $total_f_qty = 0;?>
+                            <?php $total_s_value = 0; $total_f_value = 0;?>
+
+
+                            @foreach($users as $emp)
+                                <?php $total_new_tr = 0; ?>
+                                <?php $total_new_sales = 0; ?>
+
+                                <tr>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ $emp->name }}</div>
+                                    </th>
+                                    <?php $month_counter = 1; ?>
+                                    @foreach ($list as $year_key => $year)
+                                        @foreach ($year as $month)
+                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                                {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
+
+                                                    <?php
+                                                    $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
+                                                    $month_num = "month".$month_counter;
+                                                    ?>
+                                                    <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
+                                                {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
+                                                <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
+                                                    <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
+                                                @php $total_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
+                                                @switch($month_counter)
+                                                    @case(1)
+                                                        @php $total_s1 = $total_s1 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(2)
+                                                        @php $total_s2 = $total_s2 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(3)
+                                                        @php $total_s3 = $total_s3 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(4)
+                                                        @php $total_s4 = $total_s4 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(5)
+                                                        @php $total_s5 = $total_s5 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(6)
+                                                        @php $total_s6 = $total_s6 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(7)
+                                                        @php $total_s7 = $total_s7 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(8)
+                                                        @php $total_s8 = $total_s8 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(9)
+                                                        @php $total_s9 = $total_s9 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(10)
+                                                        @php $total_s10 = $total_s10 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(11)
+                                                        @php $total_s11 = $total_s11 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                    @case(12)
+                                                        @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                        @break
+                                                @endswitch
+
+                                                {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
+                                                {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
+                                            </th>
+                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                                {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
+
+                                                    <?php
+                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', $emp->id)->first(): 0;
+                                                    ?>
+                                                    <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
+                                                {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
+                                                <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
+                                                    <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
+                                                @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
+                                                @switch($month_counter)
+                                                    @case(1)
+                                                        @php $total_f1 = $total_f1 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(2)
+                                                        @php $total_f2 = $total_f2 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(3)
+                                                        @php $total_f3 = $total_f3 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(4)
+                                                        @php $total_f4 = $total_f4 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(5)
+                                                        @php $total_f5 = $total_f5 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(6)
+                                                        @php $total_f6 = $total_f6 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(7)
+                                                        @php $total_f7 = $total_f7 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(8)
+                                                        @php $total_f8 = $total_f8 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(9)
+                                                        @php $total_s9 = $total_f9 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(10)
+                                                        @php $total_f10 = $total_f10 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(11)
+                                                        @php $total_f11 = $total_f11 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                    @case(12)
+                                                        @php $total_f12 = $total_f12 + ($new_result ? $new_result->target : 0); @endphp
+                                                        @break
+                                                @endswitch
+                                            </th>
+                                            @php $month_counter++; @endphp
+                                        @endforeach
+                                    @endforeach
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ number_format($total_new_sales) }}</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ number_format($total_new_tr) }}</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ number_format($total_new_sales*$record['MaxDiscount']) }}</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-sm">{{ number_format($total_new_tr*$record['MaxDiscount']) }}</div>
+                                    </th>
+                                </tr>
+                                @php
+                                    $total_s_qty = $total_s_qty + $total_new_sales;
+                                    $total_f_qty = $total_f_qty + $total_new_tr;
+
+                                    $total_s_value = $total_s_value + $total_new_sales*$record['MaxDiscount'];
+                                    $total_f_value = $total_f_value + $total_new_tr*$record['MaxDiscount'];
+                                @endphp
+                            @endforeach
                             <tr>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">مبيعات</div>
+                                    <div class="text-sm">مجموع الفرع</div>
                                 </th>
-                                {{--                    @php $target_counter = 1; @endphp--}}
-                                {{--                    @foreach ($list as $year_key => $year)--}}
-                                {{--                        @foreach ($year as $month)--}}
-                                {{--                            @php $target_counter++; @endphp--}}
-                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-                                {{--                                <div class="text-sm">{{ number_format($record['month'.$target_counter]) }}</div>--}}
-                                {{--                                <?php array_push($old_tr, (number_format($record['month'.$target_counter])) ) ?>--}}
-                                {{--                            </th>--}}
-                                {{--                        @endforeach--}}
-                                {{--                    @endforeach--}}
-
-                                @for($i = 1; $i <= 12; $i++)
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($record['month'.$i]) }}</div>
-                                            <?php array_push($old_tr, (number_format($record['month'.$i])) ) ?>
-                                        @php $total_old_tr += intval(number_format($record['month'.$i])); @endphp
-
-                                    </th>
-                                @endfor
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s1 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f1 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s2 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f2 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s3 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f3 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s4 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f4 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s5 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f5 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s6 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f6 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s7 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f7 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s8 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f8 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s9 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f9 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s10 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f10 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s11 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f11 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_s12 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">{{ $total_f12 }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
                                     <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $total_old_tr }}</div>
+                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                    <div class="text-sm">{{ number_format($total_s_qty) }}</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                    <div class="text-sm">{{ number_format($total_f_qty) }}</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $total_old_tr*$record['MaxDiscount'] }}</div>
+                                    <div class="text-sm">{{ number_format($total_s_value) }}</div>
                                 </th>
-
+                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                    <div class="text-sm">{{ number_format($total_f_value) }}</div>
+                                </th>
                             </tr>
+
+
                             <tr>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">الفرق %</div>
                                 </th>
-                                {{--                    @foreach ($list as $year_key => $year)--}}
-                                {{--                        @foreach ($year as $month)--}}
-                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-                                {{--                                <div class="text-sm">{{ $old_tr[$loop->iteration-1] == 0? $new_tr[$loop->iteration-1] == 0 ? 0 : "100": number_format(intval($new_tr[$loop->iteration-1])/intval($old_tr[$loop->iteration-1])*100) }}</div>--}}
-                                {{--                            </th>--}}
-                                {{--                        @endforeach--}}
-                                {{--                    @endforeach--}}
-                                @for($i = 1; $i <= 12; $i++)
-                                    @php $data = $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : 100: number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100); @endphp
-                                    <th style="border: 2px solid black; z-index: 10; @if($data <= 0) background-color: #ffe4e4; @else background-color: #e4ffea; @endif" class="border p-2">
-                                        <div class="text-sm">{{ $old_tr[$i-1] == 0? $new_tr[$i-1] == 0 ? 0 : "100": number_format(intval($new_tr[$i-1])/intval($old_tr[$i-1])*100) }}</div>
-                                    </th>
-                                @endfor
+                                @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100)}}</div>
+                                </th>
+                                @php $a = floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100)}}</div>
+                                </th>
+                                @php $a = floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                </th>
+                                @php $a = floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100) @endphp
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $total_new_tr + $total_old_tr }}</div>
+                                @php $a = floatval($total_f_qty) == 0 ? 0 : ceil((($total_s_qty/$total_f_qty)*100) - 100) @endphp
+                                <th colspan="4" style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                    <div class="text-sm">{{ floatval($total_f_qty) == 0 ? 0 : ceil((($total_s_qty/$total_f_qty)*100) - 100)}}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ ($total_new_tr + $total_old_tr)*$record['MaxDiscount'] }}</div>
-                                </th>
+                                @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
+{{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
+{{--                                    <div class="text-sm">{{ floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100)}}</div>--}}
+{{--                                </th>--}}
                             </tr>
 
                         @endforeach

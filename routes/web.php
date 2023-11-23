@@ -59,4 +59,6 @@ Route::middleware([
     Route::get('/create-group', \App\Http\Livewire\CreateUserGroup::class)->name('create.group');
     Route::get('/list-groups', \App\Http\Livewire\ListUserGroups::class)->name('list.groups');
     Route::get('/edit-group/{id}', \App\Http\Livewire\EditUserGroups::class)->name('edit.group');
+
+    Route::get('/settings', \App\Http\Livewire\ListSettings::class)->name('list.settings');
 });
