@@ -14,13 +14,23 @@
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
+                    <label class="block font-bold mb-2">الشهر الإبتدائي
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input id="date" type="month" name="selected_month" wire:model="selected_month"
+                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                           style="@error('selected_month') border: solid 1px #fda4af; @enderror">
+                    @error('selected_month') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="w-full">
                     <label class="block font-bold mb-2">الفرع
                         <span class="text-red-500">*</span>
                     </label>
-                    <select id="dept_id" name="dept_id" wire:model="dept_id"
+                    <div wire:ignore>
+                        <select id="dept_id" name="dept_id"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
-                        <option value="-1">الرجاء اختيار الفرع</option>
+                            style="@error('dept_id') border: solid 1px #fda4af; @enderror">
+                            <option value="-1">الرجاء اختيار الفرع</option>
                         @foreach($branches as $branch)
                             @if($branch == "3")
                                 <option value="3">الاحساء</option>
@@ -57,81 +67,74 @@
 
 
                     </select>
+                    </div>
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-2">الشهر الإبتدائي
+                    <label class="block font-bold mb-2">نوع المواد
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="date" type="month" name="selected_month" wire:model="selected_month"
-                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
-                    @error('selected_month') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <div wire:ignore>
+                        <select id="cat_type" name="cat_type" multiple="multiple"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
+                            <option value="cat_all" selected>الكل</option>
+                            <option value="bathoor">بذور</option>
+                            <option value="asmedah">اسمدة</option>
+                            <option value="mobedat">مبيدات</option>
+                            <option value="other">اخرى</option>
+                        </select>
+                    </div>
+                    @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-2">نوع العرض
+                    <label class="block font-bold mb-2">نوع المميز
                         <span class="text-red-500">*</span>
                     </label>
-                    <select id="filter_type" name="filter_type" wire:model="filter_type"
-                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            style="@error('filter_type') border: solid 1px #fda4af; @enderror">
-                        <option value="all">جميع الاصناف</option>
-                        <option value="vendor">عرض الاصناف بالمورد</option>
-                        <option value="product">عرض الاصناف برقم الصنف</option>
-                        <option value="sp0">مميز 0</option>
-                        <option value="sp1">مميز 1</option>
-                        <option value="sp2">مميز 2</option>
-                        <option value="bathoor">بذور</option>
-                        <option value="asmedah">اسمدة</option>
-                        <option value="mobedat">مبيدات</option>
-                        <option value="other">اخرى</option>
-                    </select>
-                    @error('filter_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
-                </div>
-                @if($filter_type == 'vendor')
-                    <div class="w-full">
-                        <label class="block font-bold mb-2">الموردين
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <div wire:ignore>
-                            <select id="vendor_id" name="vendor_id" wire:model="vendor_id"
-                                    class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                    style="@error('vendor_id') border: solid 1px #fda4af; @enderror">
-                                <option value="-1">اختر المورد</option>
-                                @foreach($vendor_list as $vendor)
-                                    <option value="{{ $vendor->NodeNo }}">{{ $vendor->Arabic_Name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @error('vendor_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <div wire:ignore>
+                        <select id="sp_type" name="sp_type" multiple="multiple"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('sp_type') border: solid 1px #fda4af; @enderror">
+                            <option value="sp_all" selected>الكل</option>
+                            <option value="0">مميز 0</option>
+                            <option value="1">مميز 1</option>
+                            <option value="2">مميز 2</option>
+                        </select>
                     </div>
-                @endif
-                @if($filter_type == 'product')
-                    <div class="w-full">
-                    <label class="block font-bold mb-2">رقم الصنف
+                    @error('sp_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="w-full">
+                    <label class="block font-bold mb-2">الموردين
                         <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="prod_id" name="prod_id" wire:model="prod_id"
-                            class="block text-gray-900 w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded"
-                            style="@error('prod_id') border: solid 1px #fda4af; @enderror">
-                    @error('prod_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <div wire:ignore>
+                        <select id="vendor_type" name="vendor_type"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
+                            <option value="vendor_all" selected>الكل</option>
+                            @foreach($vendor_list as $vendor)
+                                <option value="{{ $vendor->NodeNo }}">{{ $vendor->Arabic_Name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                @endif
 
 {{--                @if($btn_generate)--}}
-                    <div class="mt-8 text-center w-full">
-                        <button wire:click.prevent="generateReport" wire:loading.attr="disabled"
-                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                <div class="mt-8 text-center w-full">
+{{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
+{{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+                    <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
-                            <span></span>
-                            <span>عرض الأصناف</span>
-                        </span>
-                            <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
                         <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                        </button>
-                    </div>
+                        <span>عرض الأصناف</span>
+                    </span>
+                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
+                    <span></span>
+                    <span>الرجاء الانتظار</span>
+                    </span>
+                    </button>
+                </div>
 {{--                @endif--}}
                 @if($results)
                     @if($btn_save)
@@ -269,23 +272,23 @@
             <tbody class="text-sm divide-y divide-gray-100">
             @if($results)
                     <?php
-                    $vendor_id = "*";
+                    $vendor_type = "*";
                     ?>
                 @foreach($results[0] as $record)
-                    @if($record['VendorNo'] != $vendor_id)
-                            <?php $vendor_id = $record['VendorNo'] ?>
+                    @if($record['VendorNo'] != $vendor_type)
+                            <?php $vendor_type = $record['VendorNo'] ?>
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
 {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                 <div class="flex items-center justify-center w-full">
-                                    <input id="vendor--{{ $vendor_id }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
+                                    <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
                                 </div>
                             </td>
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
                             <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                         </tr>
                     @endif
-                        <?php $vendor_id = $record['VendorNo'] ?>
+                        <?php $vendor_type = $record['VendorNo'] ?>
                     <tr>
                         <th colspan="14" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                             <div class="flex flex-row">
@@ -360,7 +363,7 @@
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        $lead_time = ceil((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $current_month = $now->year."-".$now->month."-01";
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
@@ -419,7 +422,7 @@
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
                                         $current_month = $now->year."-".$now->month."-01";
-                                        $lead_time = ceil((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
                                         $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
@@ -459,7 +462,7 @@
                             $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                             $diff = $fromDate->diffInMonths($toDate, false);
                             $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                            $lead_time = ceil((intval($record['LeadTime'])+intval($dist_days))/30);
+                            $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                             $current_month = $now->year."-".$now->month."-01";
                             $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                             $target_month = $year_key."-".$month."-".$month_days;
@@ -482,7 +485,7 @@
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
                                         $current_month = $now->year."-".$now->month."-01";
-                                        $lead_time = ceil((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
                                         $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
@@ -709,7 +712,7 @@
                 // console.log("#sales--"+txt);
                 // console.log('sales: ' + sales);
                 // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
-                // $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100)-100 : null);
+                // $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100 : null);
                 //
                 total_count = 0;
                 $(`[id ^='totaltarget--${product_id}']`).each(function () {
@@ -744,8 +747,9 @@
                     // console.log(target_entered);
                     // $("#target--"+txt+"--"+element).val(target_entered);
                     // $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100))).change();
-                    $("#target--"+txt+"--"+element).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
-                    target_total += Math.ceil(parseFloat(target_entered)*(percent/100));
+                    $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
+                    // target_total += Math.round(parseFloat(target_entered)*(percent/100));
+                    target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                     total_count = 0;
                     $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
@@ -771,7 +775,7 @@
                 });
 
                 $(`[id ^='totaltarget--${product_id}--${month}--']`).val(total_target);
-                $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.ceil((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
+                $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
 
 
                 //
@@ -804,7 +808,7 @@
                 // $(".emps_percentage_readonly").text(100-total);
 
 
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
             $('.target').on('keyup change', function () {
@@ -838,7 +842,7 @@
                 var sales = $(sales_txt).text();
                 console.log(sales_txt);
                 console.log('sales: ' + sales);
-                $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(total)/parseFloat(sales))*100)).change();
+                $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(total)/parseFloat(sales))*100)).change();
 
                 total_count = 0;
                 console.log('holllllllla');
@@ -896,7 +900,7 @@
                 //
                 // $(".emps_percentage_readonly").text(100-total);
 
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
             $('.emptarget').on('keyup change', function () {
@@ -913,7 +917,7 @@
                 sales_txt= "#sales--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 diff_txt= "#diff--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
 
-                $(diff_txt).val(parseFloat($(this).val())? Math.ceil(((parseFloat($(this).val())/parseFloat($(sales_txt).text()))*100)-100) : 0);
+                $(diff_txt).val(parseFloat($(this).val())? Math.round(((parseFloat($(this).val())/parseFloat($(sales_txt).text()))*100)-100) : 0);
 
                 // console.log(txt);
                 // console.log(totaltarget_txt);
@@ -932,7 +936,7 @@
                 // var sales = $(sales_txt).text();
                 // console.log(sales_txt);
                 // console.log('sales: ' + sales);
-                // $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(total)/parseFloat(sales))*100)).change();
+                // $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(total)/parseFloat(sales))*100)).change();
                 //
                 total_count = 0;
                 console.log('holllllllla');
@@ -993,7 +997,7 @@
                 // $(".emps_percentage_readonly").text(100-total);
 
                 console.log("KK#total-diff-emp--"+product_id);
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-emp--'+product_id+'--'+txt_original[4]).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-emp--'+product_id+'--'+txt_original[4]).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
             $('#recalculate-btn').on('click', function () {
@@ -1031,8 +1035,8 @@
                                     var sales = $("#sales--"+txt).text();
                                     console.log("#sales--"+txt);
                                     console.log('sales: ' + sales);
-                                    // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100));
-                                    $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100)-100);
+                                    // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
+                                    $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
 
                                     max_percent = 0;
                                     max_percent_emp = 0;
@@ -1059,11 +1063,11 @@
                                         console.log("#target--"+txt+"--"+element);
                                         // console.log(target_entered);
                                         // $("#target--"+txt+"--"+element).val(target_entered);
-                                        $("#target--"+txt+"--"+element).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
+                                        $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
                                         // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
                                         // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
                                         // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                                        target_total += Math.ceil(parseFloat(target_entered)*(percent/100));
+                                        target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
@@ -1090,7 +1094,7 @@
 
                             });
 
-                            $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                         }
                     }
                 });
@@ -1132,8 +1136,8 @@
                                     var sales = $("#sales--"+txt).text();
                                     console.log("#sales--"+txt);
                                     console.log('sales: ' + sales);
-                                    // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100));
-                                    $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100)-100);
+                                    // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
+                                    $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
 
                                     max_percent = 0;
                                     max_percent_emp = 0;
@@ -1160,11 +1164,11 @@
                                         console.log("#target--"+txt+"--"+element);
                                         // console.log(target_entered);
                                         // $("#target--"+txt+"--"+element).val(target_entered);
-                                        $("#target--"+txt+"--"+element).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
+                                        $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
                                         // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
                                         // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
                                         // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                                        target_total += Math.ceil(parseFloat(target_entered)*(percent/100));
+                                        target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
@@ -1191,7 +1195,7 @@
 
                             });
 
-                            $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                         }
                     }
                 });
@@ -1232,8 +1236,8 @@
                                 var sales = $("#sales--"+txt).text();
                                 console.log("#sales--"+txt);
                                 console.log('sales: ' + sales);
-                                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100));
-                                $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.ceil((parseFloat(target_entered)/parseFloat(sales))*100)-100);
+                                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
+                                $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
 
                                 console.log('');
 
@@ -1264,9 +1268,9 @@
                                     // $("#target--"+txt+"--"+element).val(target_entered);
 
                                     // good
-                                    $("#target--"+txt+"--"+element).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
+                                    $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
 
-                                    // $(`input:not([disabled])[id ^='target--${txt}--${element}']`).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
+                                    // $(`input:not([disabled])[id ^='target--${txt}--${element}']`).val(Math.round(parseFloat(target_entered)*(percent/100)));
                                     //
                                     //
                                     // console.log('length');
@@ -1285,13 +1289,13 @@
                                     //     // $(`input:disabled:empty[id ^='target--${product_id}--${month_txt}']`)
                                     //     console.log('===== cocka ======');
                                     //     console.log(`target--${txt}--${element}`);
-                                    //     $(`input:disabled:empty[id ^='target--${txt}--${element}']`).val(Math.ceil(parseFloat(target_entered)*(percent/100)));
+                                    //     $(`input:disabled:empty[id ^='target--${txt}--${element}']`).val(Math.round(parseFloat(target_entered)*(percent/100)));
                                     // }
 
                                     // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
                                     // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
                                     // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                                    target_total += Math.ceil(parseFloat(target_entered)*(percent/100));
+                                    target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                     total_count = 0;
                                     $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
@@ -1319,7 +1323,7 @@
 
                         });
 
-                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.ceil((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                     }
                 });
             });
@@ -1511,8 +1515,8 @@
                                 console.log("#sales--"+txt);
                                 console.log('sales: ' + sales);
                                 console.log('element: ' + element.id);
-                                $("#"+element.id).val(Math.ceil(parseFloat(sales)*(1+(parseFloat(result.value)/100)))).change();
-                                // $("#"+element.id).val(Math.ceil(parseFloat(sales)*(parseFloat(result.value)/100))).change();
+                                $("#"+element.id).val(Math.round(parseFloat(sales)*(1+(parseFloat(result.value)/100)))).change();
+                                // $("#"+element.id).val(Math.round(parseFloat(sales)*(parseFloat(result.value)/100))).change();
                                 // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
 
                                 // max_percent = 0;
@@ -1629,6 +1633,124 @@
         //     var data = $('#vendor_id').select2("val");
         //     @this.set('vendor_id', data);
         // });
+
+
+        $(document).ready(function () {
+
+            $('#dept_id').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+            $('#cat_type').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+            $('#sp_type').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+            $('#vendor_type').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+
+            var prev_depts = $('#dept_id').select2("val");
+            var prev_cats = $('#cat_type').select2("val");
+            var prev_sps = $('#sp_type').select2("val");
+            var prev_vendors = $('#vendor_type').select2("val");
+
+            $('#dept_id').on('change', function (e) {
+                var data = $('#dept_id').select2("val");
+
+                if (prev_depts && prev_depts.includes('dept_all') == false && data.includes('dept_all') == true && prev_depts.length != data.length) {
+                    $("#dept_id option").prop('selected', false);
+                    $("#dept_id option[value='dept_all']").prop('selected', true);
+
+                    prev_depts = $(this).val();
+                    $('#dept_id').change();
+                }
+                else {
+
+                    if (prev_depts && prev_depts.length != data.length) {
+                        $("#dept_id option[value='dept_all']").removeAttr('selected');
+                        prev_depts = $(this).val();
+
+                        $("#dept_id").change();
+                    }
+                }
+            });
+
+            $('#cat_type').on('change', function (e) {
+                var data = $('#cat_type').select2("val");
+
+                if (prev_cats && prev_cats.includes('cat_all') == false && data.includes('cat_all') == true && prev_cats.length != data.length) {
+                    $("#cat_type option").prop('selected', false);
+                    $("#cat_type option[value='cat_all']").prop('selected', true);
+
+                    prev_cats = $(this).val();
+                    $('#cat_type').change();
+                }
+                else {
+                    if (prev_cats && prev_cats.length != data.length) {
+                        $("#cat_type option[value='cat_all']").removeAttr('selected');
+                        prev_cats = $(this).val();
+                        $("#cat_type").change();
+                    }
+                }
+            });
+
+            $('#sp_type').on('change', function (e) {
+                var data = $('#sp_type').select2("val");
+
+                if (prev_sps && prev_sps.includes('sp_all') == false && data.includes('sp_all') == true && prev_sps.length != data.length) {
+                    $("#sp_type option").prop('selected', false);
+                    $("#sp_type option[value='sp_all']").prop('selected', true);
+
+                    prev_sps = $(this).val();
+                    $('#sp_type').change();
+                }
+                else {
+                    if (prev_sps && prev_sps.length != data.length) {
+                        $("#sp_type option[value='sp_all']").removeAttr('selected');
+                        prev_sps = $(this).val();
+                        $("#sp_type").change();
+                    }
+                }
+
+            });
+
+            $('#vendor_type').on('change', function (e) {
+                var data = $('#vendor_type').select2("val");
+
+                if (prev_vendors && prev_vendors.includes('vendor_all') == false && data.includes('vendor_all') == true && prev_vendors.length != data.length) {
+                    $("#vendor_type option").prop('selected', false);
+                    $("#vendor_type option[value='vendor_all']").prop('selected', true);
+
+                    prev_vendors = $(this).val();
+                    $('#vendor_type').change();
+                }
+                else {
+                    if (prev_vendors && prev_vendors.length != data.length) {
+                        $("#vendor_type option[value='vendor_all']").removeAttr('selected');
+                        prev_vendors = $(this).val();
+                        $("#vendor_type").change();
+                    }
+                }
+
+            });
+
+            $('#gen-report').on('click', function () {
+
+                var dept_id = $('#dept_id').select2("val");
+                var cat_type = $('#cat_type').select2("val");
+                var sp_type = $('#sp_type').select2("val");
+                var vendor_type = $('#vendor_type').select2("val");
+
+                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+            });
+        });
 
 
         function sendNotification(type, text) {
