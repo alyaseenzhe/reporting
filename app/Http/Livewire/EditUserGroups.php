@@ -15,6 +15,8 @@ class EditUserGroups extends Component
     public $cost = 0;
     public $read_type = 1;
     public $write_product_target;
+    public $choose_special_product;
+    public $edit_special_product;
     public $calculate_all_product_target;
     public $report_type = [];
 
@@ -38,6 +40,8 @@ class EditUserGroups extends Component
             $this->read_type = $this->record->read_type;
             $this->write_product_target = $this->record->write_product_target ? $this->record->write_product_target : 0;
             $this->calculate_all_product_target = $this->record->calculate_all_product_target ? $this->record->calculate_all_product_target : 0;
+            $this->choose_special_product = $this->record->choose_special_product;
+            $this->edit_special_product = $this->record->edit_special_product;
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذه المجموعة غير موجودة');
@@ -67,6 +71,8 @@ class EditUserGroups extends Component
             $record->read_type = $this->read_type;
             $record->write_product_target = $this->write_product_target? $this->write_product_target : '0';
             $record->calculate_all_product_target = $this->calculate_all_product_target;
+            $record->choose_special_product = $this->choose_special_product;
+            $record->edit_special_product = $this->edit_special_product;
 
 
             if($record->save()) {
