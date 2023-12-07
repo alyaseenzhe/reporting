@@ -8,7 +8,7 @@
     </div>
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">إضافة مستهدف جديد</div>
+        <div class="w-full">المستهدف</div>
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
@@ -27,10 +27,10 @@
                         <span class="text-red-500">*</span>
                     </label>
                     <div wire:ignore>
-                        <select id="dept_id" name="dept_id"
+                        <select id="dept_id" name="dept_id" multiple="multiple"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('dept_id') border: solid 1px #fda4af; @enderror">
-                            <option value="-1">الرجاء اختيار الفرع</option>
+                            <option value="-1" selected>الكل</option>
                         @foreach($branches as $branch)
                             @if($branch == "3")
                                 <option value="3">الاحساء</option>
@@ -125,11 +125,11 @@
 {{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
 {{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
+                        <span class="mr-2 font-bold">
                         <span></span>
                         <span>عرض الأصناف</span>
                     </span>
-                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
+                        <span class="mr-2 font-bold">
                     <span></span>
                     <span>الرجاء الانتظار</span>
                     </span>
@@ -201,7 +201,7 @@
     </div>
     <button class="back-to-top" type="button"></button>
     @if($show_msg)
-        @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2')
+        @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '3' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0')
             <div id="percentage-container" class="mb-6">
                 <div style="background-color: whitesmoke; padding: 30px" class="overflow-x-auto w-full">
                     <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
@@ -267,338 +267,671 @@
     </div>
 
     @if($show_msg)
-        <div id="table-container" class="overflow-x-auto w-full">
-            <table id="tbl2" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
-            <tbody class="text-sm divide-y divide-gray-100">
-            @if($results)
-                    <?php
-                    $vendor_type = "*";
-                    ?>
-                @foreach($results[0] as $record)
-                    @if($record['VendorNo'] != $vendor_type)
-                            <?php $vendor_type = $record['VendorNo'] ?>
-                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
-                                <div class="flex items-center justify-center w-full">
-                                    <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
-                                </div>
-                            </td>
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
-                            <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
-                        </tr>
-                    @endif
-                        <?php $vendor_type = $record['VendorNo'] ?>
-                    <tr>
-                        <th colspan="14" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
-                            <div class="flex flex-row">
-                                <div style="margin: auto;" class="w-full text-sm text-center">
-                                    <div class="flex items-center justify-center w-full">
-                                        <input id="item--{{ $record['ProductCode'] }}--{{ $record['VendorNo'] }}" name="item_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($special_product_id->where('product_id', $record['ProductCode'])->first()) checked @endif @if($choose_special_product == 0) disabled @endif>
-                                    </div>
-                                </div>
-                                <div class="w-full text-sm text-center">رقم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
-                                <div class="w-full text-sm text-center">اسم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
-                                <div class="w-full text-sm text-center">الوحدة</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
-                                <div class="w-full text-sm text-center">التميز</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
-                                <div class="w-full text-sm text-center">المورد</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
-                                <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
-                                <div class="w-full text-sm text-center">
-                                    @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2') )
-                                        <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
-                                    @endif
-                                </div>
-                            </div>
-                        </th>
-                    </tr>
-                    <tr>
-{{--                        @if(Auth::user()->user_group->write_product_target == '2')--}}
-{{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--                                <div class="text-sm">الموظف</div>--}}
-{{--                            </th>--}}
-{{--                        @endif--}}
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الشهر</div>
-                        </th>
-                        @foreach ($current_year_list as $year_key => $year)
-                            @foreach ($year as $month)
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $year_key."-".$month }}</div>
-                                </th>
-                            @endforeach
-                        @endforeach
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المجموع</div>
-                        </th>
-                    </tr>
-                    @if(Auth::user()->user_group->write_product_target == '2')
-                        <tr style="background-color: #e9e9e9">
-                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <div class="text-xs">مستهدف الفرع</div>
-                                <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
-                                    </svg>
-                                </div>
-                            </th>
-                            @php
-                                $target_counter =1;
-                                $arr_tar = [];
-                                $now = \Carbon\Carbon::now();
-                                $grand_total_target = 0;
-                                $grand_emp_total_target = 0;
-                            @endphp
-                            @foreach ($current_year_list as $year_key => $year)
-                                @foreach ($year as $month_key => $month)
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        @php    $fromDate = \Carbon\Carbon::now();
-                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                                        $diff = $fromDate->diffInMonths($toDate, false);
-                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
-                                        $current_month = $now->year."-".$now->month."-01";
-                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
-                                        $target_month = $year_key."-".$month."-".$month_days;
-                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-
-                                        @endphp
-                                        {{--                                @if($diff < 3)--}}
-{{--                                        @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-{{--                                            --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-{{--                                            {{ $current ? $current->target : "-" }}--}}
-{{--                                            @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-{{--                                            --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-{{--                                        @else--}}
-                                            <?php
-//                                                $x = $old_targets->where('Code', '170224')->where('month', 12)->where('Year', 2023)->first()['Revision'];
-//                                                dd($x);
-
-                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
-                                                $grand_total_target += $val == null ? 0 : $val;
-//                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
-                                            ?>
-{{--                                            <div>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null) }}</div>--}}
-{{--                                            <div>{{$record['ProductCode']}} | {{$year_key."-".$month}} | {{ $val }}</div>--}}
-{{--                                        {{ \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target }}--}}
-                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="<?php echo $val;  ?>" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0)) disabled="disabled" @endif>
-{{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="<?php echo $val;  ?>" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-{{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-{{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('ProductNo', $record['ProductNo'])/*->where('month', $month)->where('Year', $year_key)*/->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-{{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="total-target form-input w-full">--}}
-{{--                                        @endif--}}
-                                        @php $target_counter++; @endphp
-                                    </th>
-                                @endforeach
-                            @endforeach
-                            <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-{{--                                <span id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs" style="text-align: center;">{{ $grand_total_target }}</span>--}}
-{{--                                    <input type="number" id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs w-16" style="text-align: center;">--}}
-{{--                                    </span>--}}
-                                <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
-                            </th>
-                        </tr>
-                        @foreach($emps as $emp)
-
+        @if(count($dept_id) == 1)
+            <div id="table-container" class="overflow-x-auto w-full">
+                <table id="tbl2" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                    <tbody class="text-sm divide-y divide-gray-100">
+                    @if($results)
+                            <?php
+                            $vendor_type = "*";
+                            ?>
+                        @foreach($results[0] as $record)
+                            @if($record['VendorNo'] != $vendor_type)
+                                    <?php $vendor_type = $record['VendorNo'] ?>
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
+                                        <div class="flex items-center justify-center w-full">
+                                            <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
+                                        </div>
+                                    </td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                    <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                </tr>
+                            @endif
+                                <?php $vendor_type = $record['VendorNo'] ?>
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $emp->name }}</div>
+                                <th colspan="14" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div style="margin: auto;" class="w-full text-sm text-center">
+                                            <div class="flex items-center justify-center w-full">
+                                                <input id="item--{{ $record['ProductCode'] }}--{{ $record['VendorNo'] }}" name="item_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($special_product_id->where('product_id', $record['ProductCode'])->first()) checked @endif @if($choose_special_product == 0) disabled @endif>
+                                            </div>
+                                        </div>
+                                        <div class="w-full text-sm text-center">رقم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
+                                        <div class="w-full text-sm text-center">اسم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                        <div class="w-full text-sm text-center">الوحدة</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                        <div class="w-full text-sm text-center">التميز</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                        <div class="w-full text-sm text-center">المورد</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
+                                        <div class="w-full text-sm text-center">
+                                            @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2') )
+                                                <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </th>
-                                @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                            </tr>
+                            <tr>
+                                {{--                        @if(Auth::user()->user_group->write_product_target == '2')--}}
+                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                                {{--                                <div class="text-sm">الموظف</div>--}}
+                                {{--                            </th>--}}
+                                {{--                        @endif--}}
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الشهر</div>
+                                </th>
                                 @foreach ($current_year_list as $year_key => $year)
-                                    @foreach ($year as $month_key => $month)
-                                        @php    $fromDate = \Carbon\Carbon::now();
-                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                                        $diff = $fromDate->diffInMonths($toDate, false);
-                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-
-                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
-                                        $target_month = $year_key."-".$month."-".$month_days;
-                                        $current_month = $now->year."-".$now->month."-01";
-                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
-                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
-
-                                        @endphp
-                                        <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
-                                            {{--                                @if($diff < 3)--}}
-{{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-{{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-{{--                                                {{ $current ? $current->target : "-" }}--}}
-{{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-{{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-{{--                                            @else--}}
-                                                <div>
-{{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
-{{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
-{{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first())) disabled="disabled" @endif>
-                                                </div>
-{{--                                            @endif--}}
-                                            @php $target_counter++; @endphp
+                                    @foreach ($year as $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $year_key."-".$month }}</div>
                                         </th>
                                     @endforeach
                                 @endforeach
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                    <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">المجموع</div>
                                 </th>
                             </tr>
-                        @endforeach
-                    @else
-                        @php
-                            $target_counter =1;
-                            $arr_tar = [];
-                            $now = \Carbon\Carbon::now();
-                            $grand_total_target = 0;
-                            $grand_emp_total_target = 0;
-                            $fromDate = \Carbon\Carbon::now();
-                            $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                            $diff = $fromDate->diffInMonths($toDate, false);
-                            $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                            $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
-                            $current_month = $now->year."-".$now->month."-01";
-                            $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
-                            $target_month = $year_key."-".$month."-".$month_days;
-                            $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-
-                        @endphp
-                        @foreach($emps as $emp)
-                                <tr>
+                            @if(Auth::user()->user_group->write_product_target == '2')
+                                <tr style="background-color: #e9e9e9">
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">المستهدف</div>
+                                        <div class="text-xs">مستهدف الفرع</div>
+                                        <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                                            </svg>
+                                        </div>
                                     </th>
-                                    @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                    @php
+                                        $target_counter =1;
+                                        $arr_tar = [];
+                                        $now = \Carbon\Carbon::now();
+                                        $grand_total_target = 0;
+                                        $grand_emp_total_target = 0;
+                                    @endphp
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month_key => $month)
-                                            @php    $fromDate = \Carbon\Carbon::now();
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                                @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $current_month = $now->year."-".$now->month."-01";
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
-                                        $current_month = $now->year."-".$now->month."-01";
-                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
-                                            @endphp
-                                            <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                @endphp
                                                 {{--                                @if($diff < 3)--}}
-                                                {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-                                                {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-                                                {{--                                                {{ $current ? $current->target : "-" }}--}}
-                                                {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-                                                {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-                                                {{--                                            @else--}}
-                                                <div>
-                                                    {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
-                                                    {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
-                                                    {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || \Illuminate\Support\Facades\Auth::user()->emp_code != $emp->emp_code) disabled="disabled" @endif>
-                                                </div>
-                                                {{--                                            @endif--}}
+                                                {{--                                        @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                {{--                                            --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                {{--                                            {{ $current ? $current->target : "-" }}--}}
+                                                {{--                                            @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                {{--                                            --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                {{--                                        @else--}}
+                                                    <?php
+//                                                $x = $old_targets->where('Code', '170224')->where('month', 12)->where('Year', 2023)->first()['Revision'];
+//                                                dd($x);
+
+                                                    $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                    $grand_total_target += $val == null ? 0 : $val;
+//                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                    ?>
+                                                {{--                                            <div>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null) }}</div>--}}
+                                                {{--                                            <div>{{$record['ProductCode']}} | {{$year_key."-".$month}} | {{ $val }}</div>--}}
+                                                {{--                                        {{ \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target }}--}}
+                                                <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="<?php echo $val;  ?>" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0)) disabled="disabled" @endif>
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="<?php echo $val;  ?>" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('ProductNo', $record['ProductNo'])/*->where('month', $month)->where('Year', $year_key)*/->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="total-target form-input w-full">--}}
+                                                {{--                                        @endif--}}
                                                 @php $target_counter++; @endphp
                                             </th>
                                         @endforeach
                                     @endforeach
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                    <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
+                                        {{--                                <span id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs" style="text-align: center;">{{ $grand_total_target }}</span>--}}
+                                        {{--                                    <input type="number" id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs w-16" style="text-align: center;">--}}
+                                        {{--                                    </span>--}}
+                                        <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
                                     </th>
                                 </tr>
-                        @endforeach
-                    @endif
-                    <tr>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-xs">مبيعات تاريخية</div>
-                        </th>
-                        {{--                    @foreach ($list as $year_key => $year)--}}
-                        {{--                        @foreach ($year as $month)--}}
-                        @php $sales = []; @endphp
-                        @php $target_counter =1; @endphp
-{{--                        @for($i = 1; $i <= 12; $i++)--}}
-                        @foreach ($current_year_list as $year_key => $year)
-                            @foreach ($year as $month_key => $month)
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>
-                                    @php array_push($sales, $record['month'.$target_counter]); @endphp
-                                </th>
-                                @php $target_counter++; @endphp
-                            @endforeach
-                        @endforeach
-                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                            <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) }}</div>
-                        </th>
-{{--                        @endfor--}}
-                        {{--{{--                        @endforeach--}}
-                        {{--                    @endforeach--}}
-                    </tr>
-                    <tr>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الفرق %</div>
-                            <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
-                                </svg>
-                            </div>
-                        </th>
-                        @php $target_counter2 =1; @endphp
-                        @foreach ($current_year_list as $year_key => $year)
-                            @foreach ($year as $month)
-                                {{--                    @for($i = 1; $i <= 12; $i++)--}}
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    @php
-                                        $fromDate = \Carbon\Carbon::now();
+                                @foreach($emps as $emp)
+
+                                    <tr>
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $emp->name }}</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
-//                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
-                                        $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
-                                        $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
-//                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
 
-                                    @endphp
-{{--                                    @if($diff < 3)--}}
-{{--                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                        $target_month = $year_key."-".$month."-".$month_days;
+                                        $current_month = $now->year."-".$now->month."-01";
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
-{{--                                        @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))--}}
-{{--                                            @php $res = $sales[$target_counter2-1] == 0? 0 :  number_format(floatval($arr_tar[$target_counter2-1]) / floatval($sales[$target_counter2-1])*100, '0', '', '');  @endphp--}}
-{{--                                            <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>--}}
-{{--                                        @else--}}
-{{--                                            <div style="color: #fd162c">-</div>--}}
-{{--                                        @endif--}}
-{{--                                    @else--}}
-{{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
-{{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
-{{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
-                                        <input style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: $old_diff_value}}" class="w-full form-input" disabled="disabled">
-{{--                                    @endif--}}
-                                    {{--                                <span id="x" class="w-full">--}}
+                                                @endphp
+                                                <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                @if($diff < 3)--}}
+                                                    {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                    {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                    {{--                                                {{ $current ? $current->target : "-" }}--}}
+                                                    {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                    {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                    {{--                                            @else--}}
+                                                    <div>
+                                                        {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                        <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first())) disabled="disabled" @endif>
+                                                    </div>
+                                                    {{--                                            @endif--}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
+                                            @endforeach
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @else
+                                @php
+                                    $target_counter =1;
+                                    $arr_tar = [];
+                                    $now = \Carbon\Carbon::now();
+                                    $grand_total_target = 0;
+                                    $grand_emp_total_target = 0;
+                                    $fromDate = \Carbon\Carbon::now();
+                                    $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                    $diff = $fromDate->diffInMonths($toDate, false);
+                                    $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+                                    $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                    $current_month = $now->year."-".$now->month."-01";
+                                    $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                    $target_month = $year_key."-".$month."-".$month_days;
+                                    $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
 
-                                    {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
+                                @endphp
+                                @foreach($emps as $emp)
+                                    <tr>
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">المستهدف</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
+                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                        $diff = $fromDate->diffInMonths($toDate, false);
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+
+                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                        $target_month = $year_key."-".$month."-".$month_days;
+                                        $current_month = $now->year."-".$now->month."-01";
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
+
+                                                @endphp
+                                                <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                @if($diff < 3)--}}
+                                                    {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                    {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                    {{--                                                {{ $current ? $current->target : "-" }}--}}
+                                                    {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                    {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                    {{--                                            @else--}}
+                                                    <div>
+                                                        {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                        <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || \Illuminate\Support\Facades\Auth::user()->emp_code != $emp->emp_code) disabled="disabled" @endif>
+                                                    </div>
+                                                    {{--                                            @endif--}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
+                                            @endforeach
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-xs">مبيعات تاريخية</div>
                                 </th>
-                                {{--                    @endfor--}}
-                                @php $target_counter2++; @endphp
-                            @endforeach
-                        @endforeach
-                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-{{--                            <div>good: {{ array_sum($sales) }} - total: {{ $grand_emp_total_target }}</div>--}}
-                            <div id="total-diff-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) == 0 ? "*" : number_format((($grand_emp_total_target/array_sum($sales))*100)-100, 0, '', '') }}</div>
-                        </th>
-                    </tr>
+                                {{--                    @foreach ($list as $year_key => $year)--}}
+                                {{--                        @foreach ($year as $month)--}}
+                                @php $sales = []; @endphp
+                                @php $target_counter =1; @endphp
+                                {{--                        @for($i = 1; $i <= 12; $i++)--}}
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month_key => $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>
+                                            @php array_push($sales, $record['month'.$target_counter]); @endphp
+                                        </th>
+                                        @php $target_counter++; @endphp
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) }}</div>
+                                </th>
+                                {{--                        @endfor--}}
+                                {{--{{--                        @endforeach--}}
+                                {{--                    @endforeach--}}
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الفرق %</div>
+                                    <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                        </svg>
+                                    </div>
+                                </th>
+                                @php $target_counter2 =1; @endphp
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        {{--                    @for($i = 1; $i <= 12; $i++)--}}
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            @php
+                                                $fromDate = \Carbon\Carbon::now();
+                                                $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                                $diff = $fromDate->diffInMonths($toDate, false);
+        //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
+                                                $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
+                                                $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
+        //                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
 
-                @endforeach
-            @endif
-            </tbody>
-        </table>
-        </div>
-    </div>
+                                            @endphp
+                                            {{--                                    @if($diff < 3)--}}
+                                            {{--                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+
+                                            {{--                                        @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))--}}
+                                            {{--                                            @php $res = $sales[$target_counter2-1] == 0? 0 :  number_format(floatval($arr_tar[$target_counter2-1]) / floatval($sales[$target_counter2-1])*100, '0', '', '');  @endphp--}}
+                                            {{--                                            <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>--}}
+                                            {{--                                        @else--}}
+                                            {{--                                            <div style="color: #fd162c">-</div>--}}
+                                            {{--                                        @endif--}}
+                                            {{--                                    @else--}}
+                                            {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
+                                            {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
+                                            {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
+                                            <input style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: $old_diff_value}}" class="w-full form-input" disabled="disabled">
+                                            {{--                                    @endif--}}
+                                            {{--                                <span id="x" class="w-full">--}}
+
+                                            {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
+                                        </th>
+                                        {{--                    @endfor--}}
+                                        @php $target_counter2++; @endphp
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    {{--                            <div>good: {{ array_sum($sales) }} - total: {{ $grand_emp_total_target }}</div>--}}
+                                    <div id="total-diff-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) == 0 ? "*" : number_format((($grand_emp_total_target/array_sum($sales))*100)-100, 0, '', '') }}</div>
+                                </th>
+                            </tr>
+
+                        @endforeach
+                    @endif
+                    </tbody>
+                </table>
+            </div>
+        @elseif(count($dept_id) > 1)
+            <div id="table-container" class="overflow-x-auto w-full">
+                <table id="tbl2" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                    <tbody class="text-sm divide-y divide-gray-100">
+                    @if($results)
+                            <?php
+                            $vendor_type = "*";
+                            ?>
+                        @foreach($results[0] as $record)
+                            @if($record['VendorNo'] != $vendor_type)
+                                    <?php $vendor_type = $record['VendorNo'] ?>
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
+                                        <div class="flex items-center justify-center w-full">
+                                            <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
+                                        </div>
+                                    </td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                    <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                </tr>
+                            @endif
+                                <?php $vendor_type = $record['VendorNo'] ?>
+                            <tr>
+                                <th colspan="14" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div style="margin: auto;" class="w-full text-sm text-center">
+                                            <div class="flex items-center justify-center w-full">
+                                                <input id="item--{{ $record['ProductCode'] }}--{{ $record['VendorNo'] }}" name="item_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($special_product_id->where('product_id', $record['ProductCode'])->first()) checked @endif @if($choose_special_product == 0) disabled @endif>
+                                            </div>
+                                        </div>
+                                        <div class="w-full text-sm text-center">رقم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
+                                        <div class="w-full text-sm text-center">اسم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                        <div class="w-full text-sm text-center">الوحدة</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                        <div class="w-full text-sm text-center">التميز</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                        <div class="w-full text-sm text-center">المورد</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
+                                        <div class="w-full text-sm text-center">
+                                            @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2') )
+                                                <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr>
+                                {{--                        @if(Auth::user()->user_group->write_product_target == '2')--}}
+                                {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                                {{--                                <div class="text-sm">الموظف</div>--}}
+                                {{--                            </th>--}}
+                                {{--                        @endif--}}
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الشهر</div>
+                                </th>
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $year_key."-".$month }}</div>
+                                        </th>
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">المجموع</div>
+                                </th>
+                            </tr>
+                            @if(Auth::user()->user_group->write_product_target == '2')
+                                <tr style="background-color: #e9e9e9">
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-xs">مستهدف الفرع</div>
+                                        <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    @php
+                                        $target_counter =1;
+                                        $arr_tar = [];
+                                        $now = \Carbon\Carbon::now();
+                                        $grand_total_target = 0;
+                                        $grand_emp_total_target = 0;
+                                    @endphp
+                                    @foreach ($current_year_list as $year_key => $year)
+                                        @foreach ($year as $month_key => $month)
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                                @php    $fromDate = \Carbon\Carbon::now();
+                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                        $diff = $fromDate->diffInMonths($toDate, false);
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $current_month = $now->year."-".$now->month."-01";
+                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                        $target_month = $year_key."-".$month."-".$month_days;
+                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+
+                                                @endphp
+                                                {{--                                @if($diff < 3)--}}
+                                                {{--                                        @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                {{--                                            --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                {{--                                            {{ $current ? $current->target : "-" }}--}}
+                                                {{--                                            @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                {{--                                            --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                {{--                                        @else--}}
+                                                    <?php
+//                                                $x = $old_targets->where('Code', '170224')->where('month', 12)->where('Year', 2023)->first()['Revision'];
+//                                                dd($x);
+
+                                                    $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                    $grand_total_target += $val == null ? 0 : $val;
+//                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                    ?>
+                                                {{--                                            <div>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null) }}</div>--}}
+                                                {{--                                            <div>{{$record['ProductCode']}} | {{$year_key."-".$month}} | {{ $val }}</div>--}}
+                                                {{--                                        {{ \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target }}--}}
+                                                <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="<?php echo $val;  ?>" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0)) disabled="disabled" @endif>
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="<?php echo $val;  ?>" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('ProductNo', $record['ProductNo'])/*->where('month', $month)->where('Year', $year_key)*/->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="total-target form-input w-full">--}}
+                                                {{--                                        @endif--}}
+                                                @php $target_counter++; @endphp
+                                            </th>
+                                        @endforeach
+                                    @endforeach
+                                    <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
+                                        {{--                                <span id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs" style="text-align: center;">{{ $grand_total_target }}</span>--}}
+                                        {{--                                    <input type="number" id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs w-16" style="text-align: center;">--}}
+                                        {{--                                    </span>--}}
+                                        <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
+                                    </th>
+                                </tr>
+                                @foreach($emps as $emp)
+
+                                    <tr>
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $emp->name }}</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
+                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                        $diff = $fromDate->diffInMonths($toDate, false);
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+
+                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                        $target_month = $year_key."-".$month."-".$month_days;
+                                        $current_month = $now->year."-".$now->month."-01";
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
+
+                                                @endphp
+                                                <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                @if($diff < 3)--}}
+                                                    {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                    {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                    {{--                                                {{ $current ? $current->target : "-" }}--}}
+                                                    {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                    {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                    {{--                                            @else--}}
+                                                    <div>
+                                                        {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                        <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first())) disabled="disabled" @endif>
+                                                    </div>
+                                                    {{--                                            @endif--}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
+                                            @endforeach
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @else
+                                @php
+                                    $target_counter =1;
+                                    $arr_tar = [];
+                                    $now = \Carbon\Carbon::now();
+                                    $grand_total_target = 0;
+                                    $grand_emp_total_target = 0;
+                                    $fromDate = \Carbon\Carbon::now();
+                                    $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                    $diff = $fromDate->diffInMonths($toDate, false);
+                                    $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+                                    $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                    $current_month = $now->year."-".$now->month."-01";
+                                    $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                    $target_month = $year_key."-".$month."-".$month_days;
+                                    $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+
+                                @endphp
+                                @foreach($emps as $emp)
+                                    <tr>
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">المستهدف</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
+                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                        $diff = $fromDate->diffInMonths($toDate, false);
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
+
+                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                        $target_month = $year_key."-".$month."-".$month_days;
+                                        $current_month = $now->year."-".$now->month."-01";
+                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
+
+                                                @endphp
+                                                <th wire:key="key--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                @if($diff < 3)--}}
+                                                    {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                    {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                    {{--                                                {{ $current ? $current->target : "-" }}--}}
+                                                    {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                    {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                    {{--                                            @else--}}
+                                                    <div>
+                                                        {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
+                                                        {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                        <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || \Illuminate\Support\Facades\Auth::user()->emp_code != $emp->emp_code) disabled="disabled" @endif>
+                                                    </div>
+                                                    {{--                                            @endif--}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
+                                            @endforeach
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-xs">مبيعات تاريخية</div>
+                                </th>
+                                {{--                    @foreach ($list as $year_key => $year)--}}
+                                {{--                        @foreach ($year as $month)--}}
+                                @php $sales = []; @endphp
+                                @php $target_counter =1; @endphp
+                                {{--                        @for($i = 1; $i <= 12; $i++)--}}
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month_key => $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>
+                                            @php array_push($sales, $record['month'.$target_counter]); @endphp
+                                        </th>
+                                        @php $target_counter++; @endphp
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) }}</div>
+                                </th>
+                                {{--                        @endfor--}}
+                                {{--{{--                        @endforeach--}}
+                                {{--                    @endforeach--}}
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الفرق %</div>
+                                    <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                                        </svg>
+                                    </div>
+                                </th>
+                                @php $target_counter2 =1; @endphp
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        {{--                    @for($i = 1; $i <= 12; $i++)--}}
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            @php
+                                                $fromDate = \Carbon\Carbon::now();
+                                                $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                                $diff = $fromDate->diffInMonths($toDate, false);
+        //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
+                                                $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
+                                                $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
+        //                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
+
+                                            @endphp
+                                            {{--                                    @if($diff < 3)--}}
+                                            {{--                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+
+                                            {{--                                        @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))--}}
+                                            {{--                                            @php $res = $sales[$target_counter2-1] == 0? 0 :  number_format(floatval($arr_tar[$target_counter2-1]) / floatval($sales[$target_counter2-1])*100, '0', '', '');  @endphp--}}
+                                            {{--                                            <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>--}}
+                                            {{--                                        @else--}}
+                                            {{--                                            <div style="color: #fd162c">-</div>--}}
+                                            {{--                                        @endif--}}
+                                            {{--                                    @else--}}
+                                            {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
+                                            {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
+                                            {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
+                                            <input style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: $old_diff_value}}" class="w-full form-input" disabled="disabled">
+                                            {{--                                    @endif--}}
+                                            {{--                                <span id="x" class="w-full">--}}
+
+                                            {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
+                                        </th>
+                                        {{--                    @endfor--}}
+                                        @php $target_counter2++; @endphp
+                                    @endforeach
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    {{--                            <div>good: {{ array_sum($sales) }} - total: {{ $grand_emp_total_target }}</div>--}}
+                                    <div id="total-diff-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) == 0 ? "*" : number_format((($grand_emp_total_target/array_sum($sales))*100)-100, 0, '', '') }}</div>
+                                </th>
+                            </tr>
+
+                        @endforeach
+                    @endif
+                    </tbody>
+                </table>
+            </div>
+        @endif
     @endif
     <div wire:loading wire:target="generateReport" class="w-full">
             <div class="w-full" style="border: solid 1px grey;">

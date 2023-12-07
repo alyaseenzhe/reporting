@@ -1,13 +1,13 @@
 <div>
-    @if (Auth::user()->user_group->write_product_target == '1' || Auth::user()->user_group->write_product_target == '2')
+{{--    @if (Auth::user()->user_group->write_product_target == '1' || Auth::user()->user_group->write_product_target == '2')--}}
         <div class="mb-4">
             <a href="{{ route('create.product-target') }}">
                 <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
-            اضافة مستهدف جديد
+           المستهدف
             </span>
             </a>
         </div>
-    @endif
+{{--    @endif--}}
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
         <div class="w-full">

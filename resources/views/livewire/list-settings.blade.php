@@ -55,6 +55,32 @@
         </div>
     </div>
 
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">اسعار الاصناف</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input checked wire:model="item_price" type="radio" name="item_price" value="MaxDiscount" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">أقل سعر</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="item_price" type="radio" name="item_price" value="WholeSale" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">سعر المؤسسات</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="item_price" type="radio" name="item_price" value="Retail" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">سعر التجزئة</label>
+                    </div>
+                </div>
+
+                @error('item_price')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
     <div class="mt-8 text-center">
         <button wire:click.prevent="save" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <span class="mr-2 font-bold" wire:loading.remove wire:target="save">حفظ</span>
