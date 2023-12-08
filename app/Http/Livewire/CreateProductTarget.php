@@ -52,6 +52,7 @@ class CreateProductTarget extends Component
     public $special_product_id;
     public $choose_special_product;
     public $edit_special_product;
+    public $items;
 
     protected $listeners = ['targets-entered' => 'test', 'create-report' => 'create_report'];
 
@@ -212,8 +213,10 @@ class CreateProductTarget extends Component
     {
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
-        $this->reset('target');
+        $this->reset('target', 'results', 'current_year_list', 'current_target', 'current_target_to_edit', 'old_targets');
         $this->validate();
+//        $this->results = [];
+//        $current_year_list = [];
 
         if (count($this->dept_id) == 1 && $this->dept_id[0] == "-1") {
             $this->dept_id = $this->user_branches;
@@ -470,8 +473,8 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale FROM (
-            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale  FROM (
+        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
             SELECT ProductNo";
 
 
@@ -1625,10 +1628,11 @@ class CreateProductTarget extends Component
 
         $query = DB::connection('sqlsrv')->select($month_stmt);
 //        dd($query);
-        $fetch_query = json_decode(json_encode($query), true);
+//        $fetch_query = json_decode(json_encode($query), true);
 
-//        dd($fetch_query);
-        array_push($this->results, $fetch_query);
+        $this->results = collect($query);
+//        dd($query);
+//        array_push($this->results, $fetch_query);
 
 //        dd($this->results);
 //        dd(array_values($this->results));
@@ -1656,6 +1660,8 @@ class CreateProductTarget extends Component
 //                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
                         ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
                 })
+                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+                ->groupBy('product_id', 'month', 'year', 'branch')
                 ->get();
         }
         elseif (count($this->current_year_list) > 1) {
@@ -1677,8 +1683,12 @@ class CreateProductTarget extends Component
 //                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
                         ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
                 })
+                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+                ->groupBy('product_id', 'month', 'year', 'branch')
                 ->get();
         }
+
+        $this->items = $this->filtered_products($this->cat_type, $this->sp_type, $this->vendor_type);
 
 //        dd($this->current_year_list[array_key_first($this->current_year_list)]);
 //        dd(count($this->current_year_list));
@@ -1940,6 +1950,86 @@ class CreateProductTarget extends Component
     public function clear_btn() {
         $this->reset(['emps_percentage', 'target', 'emp_target']);
         $this->emit('clear-btn');
+    }
+
+    public function filtered_products($cats, $sps, $vendors) {
+
+        $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
+        $asmedah = "Code like '17%' ";
+        $mobedat = "Code like '10%' or Code like '11%' or Code like '12%' or Code like '13%' or Code like '14%' or Code like '15%' or Code like '16%' ";
+        $other = "(Code not like '20%' and Code not like '21%' and Code not like '22%' and Code not like '10%' and Code not like '11%' and Code not like '12%' and Code not like '13%' and Code not like '14%' and Code not like '15%' and Code not like '16%' and Code not like '17%') ";
+
+        $cat_stmt = "AND (";
+        foreach ($cats as $key => $cat) {
+            if ($key === array_key_first($cats)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= $bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= $asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= $mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= $other;
+                }
+            }
+            elseif ($key === array_key_last($cats)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= ' or '.$bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= ' or '.$asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= ' or '.$mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= 'or '.$other;
+                }
+            }
+            else {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= " or " . $bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= " or " . $asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= " or " . $mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= " or " . $other;
+                }
+            }
+        }
+
+        $cat_stmt .= ") ";
+
+        $stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, accmast.Code, accmast.Arabic_name as VendorName FROM ProductMast, accmast
+WHERE ProductMast.VendorNo = accmast.NodeNo
+AND Pricelist = 1 ";
+        if ($vendors != 'vendor_all') {
+            $stmt .= "AND VendorNo = '". $vendors ."' ";
+        }
+        if (in_array('sp_all', $sps) == false) {
+            $stmt .= "AND SpecialityCode in (". implode(',', $sps).") ";
+        }
+        if (in_array('cat_all', $cats) == false) {
+            $stmt .= $cat_stmt;
+        }
+
+        $products_query = DB::connection('sqlsrv')->select($stmt);
+        $fetch_products_query = json_decode(json_encode($products_query), true);
+//        array_push($this->items, $fetch_item_query);
+//        dd($fetch_products_query);
+
+//        $results = [];
+//        array_walk_recursive($fetch_products_query, function ($item, $key) use (&$results){array_push($results, $item);});
+
+//        dd($results);
+        return $fetch_products_query;
     }
 
 }
