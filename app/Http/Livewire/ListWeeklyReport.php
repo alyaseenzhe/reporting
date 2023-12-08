@@ -606,46 +606,46 @@ class ListWeeklyReport extends Component
         $najran_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'wael.badr@alyaseenagri.com', 'omar.mohammed@alyaseenagri.com', 'sales.najran@alyaseenagri.com'];
         $hail_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ahmed.elzekely@alyaseenagri.com', 'mohammed.majdi@alyaseenagri.com'];
         $tabouk_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mosaad.dahshan@alyaseenagri.com', 'mahmoud.hashem@alyaseenagri.com', 'ahmed.khaled@alyaseenagri.com', 'sales.tabuk@alyaseenagri.com'];
-        $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'yasser.salah@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'sayed.alhaj@alyaseenagri.com'];
+        $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'yasser.salah@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'hisham.najeh@alyaseenagri.com'];
         $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.sajer@alyaseenagri.com', 'abdulaziz.sharqawi@alyaseenagri.com'];
 
 //        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
 
         if ($this->area_id == '01') {
-            Mail::to($ahsa_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($ahsa_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '02') {
-            Mail::to($jeddah_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($jeddah_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '03') {
-            Mail::to($riyadh_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($riyadh_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '04') {
-            Mail::to($wadi_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($wadi_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '05') {
-            Mail::to($jouf_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($jouf_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '06') {
-            Mail::to($dammam_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($dammam_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '07') {
-            Mail::to($kharaj_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($kharaj_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '08') {
-            Mail::to($najran_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($najran_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '09') {
-            Mail::to($hail_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($hail_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '10') {
-            Mail::to($tabouk_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($tabouk_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '11') {
-            Mail::to($qaseem_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($qaseem_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
         elseif ($this->area_id == '12') {
-            Mail::to($sajer_branch)->cc(['mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($sajer_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
         }
 
         return 0;
