@@ -213,8 +213,10 @@ class CreateProductTarget extends Component
     {
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
-        $this->reset('target');
+        $this->reset('target', 'results', 'current_year_list', 'current_target', 'current_target_to_edit', 'old_targets');
         $this->validate();
+//        $this->results = [];
+//        $current_year_list = [];
 
         if (count($this->dept_id) == 1 && $this->dept_id[0] == "-1") {
             $this->dept_id = $this->user_branches;
@@ -471,8 +473,8 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale FROM (
-            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale  FROM (
+        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
             SELECT ProductNo";
 
 
