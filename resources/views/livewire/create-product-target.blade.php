@@ -954,19 +954,18 @@
                                     $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record['MaxDiscount']);
 
                                     if (!array_key_exists($dept, $all_total_dept_sales)) {
-                                        $all_total_dept_sales[$dept] = $total_dept_s_value;
+                                        $all_total_dept_sales[$dept] = $dept_sales*$record['MaxDiscount'];
                                     }
                                     else {
-                                        $all_total_dept_sales[$dept] += $total_dept_s_value;
+                                        $all_total_dept_sales[$dept] += $dept_sales*$record['MaxDiscount'];
                                     }
 
                                     if (!array_key_exists($dept, $all_total_dept_tr)) {
-                                        $all_total_dept_tr[$dept] = $total_dept_f_value;
+                                        $all_total_dept_tr[$dept] = $dept_forecast*$record['MaxDiscount'];
                                     }
                                     else {
-                                        $all_total_dept_tr[$dept] += $total_dept_f_value;
+                                        $all_total_dept_tr[$dept] += $dept_forecast*$record['MaxDiscount'];
                                     }
-
                                 @endphp
                             @endforeach
                             <tr>
@@ -1141,19 +1140,62 @@
                     <tbody class="text-sm divide-y divide-gray-100">
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الموظف</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">S</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">F</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
                     </tr>
-                        <?php $total_sum_val = 0; ?>
+                        <?php $total_dept_sum_s = 0; ?>
+                        <?php $total_dept_sum_f = 0; ?>
                     @foreach($depts as $dept)
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                            <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $dept }}</td>
-                            <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $all_total_dept_sales[$dept] }}</td>
-                            <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $all_total_dept_tr[$dept] }}</td>
+                            <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
+                                @if($dept == '3')
+                                    الاحساء
+                                @elseif($dept == '10')
+                                    جدة
+                                @elseif($dept == '7')
+                                    الرياض
+                                @elseif($dept == '13')
+                                    وادي الدواسر
+                                @elseif($dept == '4')
+                                    الجوف
+                                @elseif($dept == '6')
+                                    الدمام
+                                @elseif($dept == '5')
+                                    الخرج
+                                @elseif($dept == '12')
+                                    نجران
+                                @elseif($dept == '11')
+                                    حائل
+                                @elseif($dept == '9')
+                                    تبوك
+                                @elseif($dept == '8')
+                                    القصيم
+                                @elseif($dept == '505')
+                                    ساجر
+                                @else
+                                    {{ $dept }}
+                                @endif
+                            </td>
+                            <td style="border: 2px solid black; background-color: #fffacd;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_sales[$dept]) }}</td>
+                            <td style="border: 2px solid black; background-color: #e4fdf7;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_tr[$dept]) }}</td>
+                            <?php $total_dept_diff = $all_total_dept_tr[$dept] == 0 ? 0 : number_format((($all_total_dept_sales[$dept]/$all_total_dept_tr[$dept])*100)-100); ?>
+                            <td style="border: 2px solid black;@if(floatval($total_dept_diff) > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $total_dept_diff }}</td>
+                            @php
+                                $total_dept_sum_s += $all_total_dept_sales[$dept];
+                                $total_dept_sum_f += $all_total_dept_tr[$dept];
+                            @endphp
                         </tr>
                     @endforeach
+                    <tr>
+                        <td style="border: 2px solid black;background-color: #dcdcdc; font-weight: bold;" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
+                        <td style="border: 2px solid black; font-weight: bold; background-color: #fff6a1;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_s) }}</td>
+                        <td style="border: 2px solid black; font-weight: bold; background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_f) }}</td>
+                        <?php $grand_total_dept_diff = $total_dept_sum_f == 0 ? 0 : number_format((($total_dept_sum_s/$total_dept_sum_f)*100)-100); ?>
+                        <td style="border: 2px solid black; font-weight: bold;@if(floatval($grand_total_dept_diff) > 0) background-color: #cfffbd; @else background-color: #ffdcdc; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $grand_total_dept_diff }}</td>
+                    </tr>
 {{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
 {{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
 {{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>--}}
@@ -1400,6 +1442,8 @@
                 sales_txt= "#sales--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 diff_txt= "#diff--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 item_price_txt = "#item-price-"+product_id;
+                total_all_emp_val = "#total-emp-val--"+product_id+"--";
+                total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
 
                 console.log(txt);
                 console.log(totaltarget_txt);
@@ -1427,6 +1471,17 @@
                     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+txt_original[4]);
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
                 });
+
+                total_emp_val_count= 0;
+                $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
+                    total_emp_val_count = total_emp_val_count + parseFloat($(this).val() ? $(this).val() : 0);
+                });
+
+                $(total_emp_val).text(total_count*$(item_price_txt).text());
+                console.log("-----------target----------");
+                console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
 
                 total_count = 0;
@@ -1479,8 +1534,6 @@
                 // });
                 //
                 // $(".emps_percentage_readonly").text(100-total);
-
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
             $('.emptarget').on('keyup change', function () {
