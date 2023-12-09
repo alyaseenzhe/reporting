@@ -203,6 +203,8 @@
     @if($show_msg)
             <?php $all_total_emp_sales = []; ?>
             <?php $all_total_emp_tr = []; ?>
+            <?php $all_total_dept_sales = []; ?>
+            <?php $all_total_dept_tr = []; ?>
             <?php $total_historical = 0; ?>
 
         @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '3' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0')
@@ -950,6 +952,21 @@
 
                                     $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record['MaxDiscount']);
                                     $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record['MaxDiscount']);
+
+                                    if (!array_key_exists($dept, $all_total_dept_sales)) {
+                                        $all_total_dept_sales[$dept] = $total_dept_s_value;
+                                    }
+                                    else {
+                                        $all_total_dept_sales[$dept] += $total_dept_s_value;
+                                    }
+
+                                    if (!array_key_exists($dept, $all_total_dept_tr)) {
+                                        $all_total_dept_tr[$dept] = $total_dept_f_value;
+                                    }
+                                    else {
+                                        $all_total_dept_tr[$dept] += $total_dept_f_value;
+                                    }
+
                                 @endphp
                             @endforeach
                             <tr>
@@ -1115,6 +1132,40 @@
                     {{--                    @else--}}
                     {{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
                     {{--                    @endif--}}
+                    </tbody>
+                </table>
+            </div>
+            <div id="summary-container2" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
+                <div class="text-2xl bold mb-4">مجاميع القيم</div>
+                <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                    <tbody class="text-sm divide-y divide-gray-100">
+                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الموظف</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">S</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">F</td>
+                    </tr>
+                        <?php $total_sum_val = 0; ?>
+                    @foreach($depts as $dept)
+                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $dept }}</td>
+                            <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $all_total_dept_sales[$dept] }}</td>
+                            <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $all_total_dept_tr[$dept] }}</td>
+                        </tr>
+                    @endforeach
+{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
+{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>--}}
+{{--                            <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>--}}
+{{--                        <td style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
+{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>--}}
+{{--                        <td colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>--}}
+{{--                    </tr>--}}
                     </tbody>
                 </table>
             </div>
