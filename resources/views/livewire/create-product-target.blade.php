@@ -1307,7 +1307,7 @@
 
             console.log(employee_code);
 
-            $('.total-target').on('focusout change', function () {
+            $('.total-target').on('focusout', function () {
                 // console.log('kaka');
                 // console.log($(this).val());
                 // console.log($(this).attr('id'));
@@ -1428,7 +1428,7 @@
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
-            $('.target').on('focusout change', function () {
+            $('.target').on('focusout', function () {
                 console.log('kaka');
                 console.log($(this).val());
                 console.log($(this).attr('id'));
@@ -1472,13 +1472,26 @@
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
                 });
 
-                total_emp_val_count= 0;
-                $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
-                    total_emp_val_count = total_emp_val_count + parseFloat($(this).val() ? $(this).val() : 0);
-                });
+                var total_emp_val_count= 0;
+                // console.log(document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`));
+                // total_emp_val_elements = document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`);
+                // total_emp_val_elements.forEach(function (element) {
+                //     total_emp_val_count = total_emp_val_count + parseFloat(element.innerHTML);
+                //     console.log('value:'+total_emp_val_count);
+                // });
 
                 $(total_emp_val).text(total_count*$(item_price_txt).text());
+
+                $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
+                    console.log("------val:"+$(this).text());
+                    console.log("------product:"+product_id);
+
+                    total_emp_val_count = total_emp_val_count + parseFloat($(this).text() ? $(this).text() : 0);
+                });
+                
                 console.log("-----------target----------");
+                console.log("total_emp_val_count:"+total_emp_val_count);
+                console.log("'#total-sales-emp--'+product_id:"+$('#total-sales-emp--'+product_id).text());
                 console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                 // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
@@ -1536,7 +1549,7 @@
                 // $(".emps_percentage_readonly").text(100-total);
             });
 
-            $('.emptarget').on('keyup change', function () {
+            $('.emptarget').on('focusout', function () {
                 // console.log('kaka');
                 // console.log($(this).val());
                 // console.log($(this).attr('id'));
