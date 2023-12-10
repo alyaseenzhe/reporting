@@ -664,9 +664,9 @@
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
-                        <td id="summary-grand-total-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>
+                        <td id="summary-grand-total-emp-val" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>
                         <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>
-                        <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>
+                        <td id="summary-grand-total-emp-diff" style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>
                     </tr>
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
@@ -1413,7 +1413,11 @@
                     summary_total_all += emp_total;
                 });
 
-                $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                summary_total_all_diff = Math.round(((summary_total_all/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+
+                // $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                $("#summary-grand-total-emp-val").text(summary_total_all.toLocaleString());
+                $("#summary-grand-total-emp-diff").text(summary_total_all_diff.toLocaleString());
 
 
                 //
@@ -1579,7 +1583,7 @@
 
                 old_value = old_qty*parseFloat($(item_price_txt).text().replace(/,/g, ""));
                 old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
-                old_summary_emp_grand_total = parseFloat($("#summary-grand-total-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+                old_summary_emp_grand_total = parseFloat($("#summary-grand-total-emp-val").text().replace(/,/g, ""));
 
                 new_summary_value = (old_summary_emp_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
                 new_summary_diff = ((new_summary_value/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
@@ -1595,8 +1599,8 @@
                 $("#summary-emp-val-"+txt_original[4]).text(new_summary_value.toLocaleString());
                 $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
 
-                $("#summary-grand-total-emp-val-"+txt_original[4]).text(new_summary_emp_grand_total.toLocaleString());
-                $("#summary-grand-total-emp-diff-"+txt_original[4]).text(Math.round(new_summary_emp_grand_diff).toLocaleString());
+                $("#summary-grand-total-emp-val").text(new_summary_emp_grand_total.toLocaleString());
+                $("#summary-grand-total-emp-diff").text(Math.round(new_summary_emp_grand_diff).toLocaleString());
 
 
             });
