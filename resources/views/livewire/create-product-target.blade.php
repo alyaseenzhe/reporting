@@ -1373,6 +1373,8 @@
                         total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
                         console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
                         $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        total_val_price = parseFloat(total_count)*parseFloat($(item_price_txt).text().replace(/,/g, ""));
+                        $("#total-emp-val--"+product_id+"--"+element).text(total_val_price.toLocaleString());
                     });
 
 
@@ -1393,6 +1395,25 @@
 
                 $(`[id ^='totaltarget--${product_id}--${month}--']`).val(total_target);
                 $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
+
+
+                var summary_total_all = 0;
+                employee_code.forEach(function (element, idx, array) {
+                    emp_total = 0;
+                    $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                        emp_total = emp_total + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                        console.log('single-emp'+element+':'+ $(this).text());
+                        // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                    });
+                    console.log('total-emp'+element+':'+ emp_total);
+                    $("#summary-emp-val-"+element).text(emp_total.toLocaleString());
+                    emp_total_diff = Math.round(((emp_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+                    $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+
+                    summary_total_all += emp_total;
+                });
+
+                $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
 
 
                 //
