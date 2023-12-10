@@ -152,7 +152,6 @@
     </div>
 
     @if($show_msg)
-
             @php $all_total_emp_sales = []; @endphp
             @php $all_total_emp_tr = []; @endphp
             @php $all_total_dept_sales = []; @endphp
@@ -179,20 +178,19 @@
                 @if($results && $dept_id && count($dept_id) == 1)
                     <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
                         <tbody class="text-sm divide-y divide-gray-100">
-                        {{--                    @if($results)--}}
                             <?php
-                            $vendor_id = "*";
+                                $vendor_id = "*";
                             ?>
                         @foreach($items[0] as $record)
                             <div>
                                 @if($record['VendorNo'] != $vendor_id)
-                                        <?php $vendor_id = $record['VendorNo'] ?>
+                                        <?php $vendor_id = $record['VendorNo']; ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
                                         <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                     </tr>
                                 @endif
-                                    <?php $vendor_id = $record['VendorNo'] ?>
+                                <?php $vendor_id = $record['VendorNo']; ?>
                                 <tr>
                                     <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
@@ -206,7 +204,7 @@
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                            <div class="w-full text-sm text-center">
+                                            <div class="w-full text-sm text-center mr-1">
                                                 @if($item_price == "WholeSale")
                                                     سعر مؤسسات
                                                 @elseif($item_price == "Retail")
@@ -241,13 +239,12 @@
                                         <div class="text-sm">مجموع قيمة</div>
                                     </th>
                                 </tr>
-
                                 <tr>
 
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                                <div class="text-sm">S</div>
+                                                <div class="text-sm">SC</div>
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                                 <div class="text-sm">T</div>
@@ -255,13 +252,13 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">S</div>
+                                        <div class="text-sm">SC</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">S</div>
+                                        <div class="text-sm">SC</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
@@ -288,7 +285,6 @@
                                     <?php $total_s_qty = 0; $total_f_qty = 0;?>
                                     <?php $total_s_value = 0; $total_f_value = 0;?>
 
-
                                 @foreach($users as $emp)
                                         <?php $total_new_tr = 0; ?>
                                         <?php $total_new_sales = 0; ?>
@@ -301,14 +297,10 @@
                                         @foreach ($list as $year_key => $year)
                                             @foreach ($year as $month)
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
-                                                    {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
                                                         <?php
                                                         $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
                                                         $month_num = "month".$month_counter;
                                                         ?>
-                                                        <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                    {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
                                                         <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                     @php $total_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
@@ -350,18 +342,11 @@
                                                             @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
                                                             @break
                                                     @endswitch
-
-                                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
-                                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
                                                 </th>
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
-                                                    {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
                                                         <?php
                                                         $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id[0])->where('user_id', $emp->id)->first(): 0;
                                                         ?>
-                                                        <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                    {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
                                                         <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
@@ -440,7 +425,6 @@
                                             else {
                                                 $all_total_emp_tr[$emp->emp_code] += $total_new_tr*$record[$item_price];
                                             }
-                                        ?>
                                     @endphp
                                 @endforeach
                                 <tr>
@@ -588,16 +572,9 @@
                                     <th colspan="4" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                         <div class="text-sm">{{ floatval($total_f_qty) == 0 ? 0 : ceil((($total_s_qty/$total_f_qty)*100) - 100)}}</div>
                                     </th>
-                                    @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
-                                    {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
-                                    {{--                                    <div class="text-sm">{{ floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100)}}</div>--}}
-                                    {{--                                </th>--}}
                                 </tr>
                             </div>
                         @endforeach
-                        {{--                    @else--}}
-                        {{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
-                        {{--                    @endif--}}
                         </tbody>
                     </table>
                     <div id="summary-container" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
@@ -605,9 +582,8 @@
                             <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                                 <tbody class="text-sm divide-y divide-gray-100">
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الموظف</td>
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">S</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SC</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">T</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
                                 </tr>
@@ -615,7 +591,6 @@
                                     <?php $total_sum_f = 0; ?>
                                 @foreach($users as $emp)
                                     <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                         <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
                                             <?php $total_sum_s += $all_total_emp_sales[$emp->emp_code]; ?>
                                         <td id="summary-emp-sales-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
@@ -633,18 +608,12 @@
                                         <?php $total_emp_diff = $total_sum_f == 0? 0 :  number_format((($total_sum_s/$total_sum_f)*100)-100); ?>
                                     <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($total_emp_diff > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_emp_diff) }}</td>
                                 </tr>
-{{--                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
-{{--                                    --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-{{--                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>--}}
-{{--                                    <td id="historical-grand-total-sales" colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>--}}
-{{--                                </tr>--}}
                                 </tbody>
                             </table>
                         </div>
                 @elseif($results && $dept_id && count($dept_id) > 1)
                     <table id="tbl2" style="border: 2px solid black;" class="table-container w-full border text-center">
                         <tbody class="text-sm divide-y divide-gray-100">
-                        {{--                    @if($results)--}}
                             <?php
                             $vendor_id = "*";
                             ?>
@@ -671,7 +640,17 @@
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                            <div class="w-full text-sm text-center">السعر</div>
+                                            <div class="w-full text-sm text-center mr-1">
+                                                @if($item_price == "WholeSale")
+                                                    سعر مؤسسات
+                                                @elseif($item_price == "Retail")
+                                                    سعر تجزئة
+                                                @elseif($item_price == "MaxDiscount")
+                                                    أقل سعر
+                                                @else
+                                                    السعر
+                                                @endif
+                                            </div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
                                         </div>
                                     </th>
@@ -702,7 +681,7 @@
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                                <div class="text-sm">S</div>
+                                                <div class="text-sm">SC</div>
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                                 <div class="text-sm">T</div>
@@ -710,13 +689,13 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">S</div>
+                                        <div class="text-sm">SC</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">S</div>
+                                        <div class="text-sm">SC</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
@@ -742,14 +721,12 @@
                                     <?php $total_s12 = 0; $total_f12 = 0;?>
                                     <?php $total_dept_s_qty = 0; $total_dept_f_qty = 0;?>
                                     <?php $total_dept_s_value = 0; $total_dept_f_value = 0;?>
-                                    <?php //$depts =  $results->where('ProductCode', $record['ProductCode']); ?>
                                     <?php $depts =  $dept_id ?>
 
                                 @foreach($depts as $dept)
                                         <?php $dept_sales = 0; $dept_forecast = 0; ?>
                                     <tr class="department">
                                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                            {{--                                            <div class="text-sm">{{ $dept->Department }}</div>--}}
                                             @if($dept == '3')
                                                 <div class="text-sm">الاحساء</div>
                                             @elseif($dept == '10')
@@ -782,15 +759,10 @@
                                         @foreach ($list as $year_key => $year)
                                             @foreach ($year as $month)
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
-                                                    {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
                                                         <?php
-//                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept->Department)->first(): 0;
                                                         $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
                                                         $month_num = "month".$month_counter;
                                                         ?>
-                                                        <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                    {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
                                                         <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                         <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>
@@ -833,19 +805,11 @@
                                                             @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
                                                             @break
                                                     @endswitch
-
-                                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
-                                                    {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
                                                 </th>
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
-                                                    {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
-
                                                         <?php
-//                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept->Department)->first(): 0;
                                                         $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
                                                         ?>
-                                                        <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                    {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
                                                         <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                         <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
@@ -1075,16 +1039,9 @@
                                     <th colspan="4" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                         <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
                                     </th>
-                                    @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
-                                    {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
-                                    {{--                                    <div class="text-sm">{{ floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100)}}</div>--}}
-                                    {{--                                </th>--}}
                                 </tr>
                             </div>
                         @endforeach
-                        {{--                    @else--}}
-                        {{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
-                        {{--                    @endif--}}
                         </tbody>
                     </table>
                     <div id="summary-container" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
@@ -1092,9 +1049,8 @@
                             <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                                 <tbody class="text-sm divide-y divide-gray-100">
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">S</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SC</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">T</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
                                 </tr>
@@ -1105,7 +1061,6 @@
 
                                 @foreach($depts as $dept)
                                     <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                         <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                             @if($dept == '3')
                                                 الاحساء
@@ -1152,11 +1107,6 @@
                                         <?php $total_dept_diff = $summary_grand_total_dept_f == 0? 0 :  number_format((($summary_grand_total_dept_s/$summary_grand_total_dept_f)*100)-100); ?>
                                     <td id="summary-grand-total-emp-diff-{{$dept}}" style="border: 2px solid black;@if($total_dept_diff > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_diff) }}</td>
                                 </tr>
-                                {{--                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
-                                {{--                                    --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                                {{--                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>--}}
-                                {{--                                    <td id="historical-grand-total-sales" colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>--}}
-                                {{--                                </tr>--}}
                                 </tbody>
                             </table>
                         </div>
