@@ -362,15 +362,13 @@
                                     {{--                            </th>--}}
                                     {{--                        @endif--}}
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm" style="background-color: #dcdcdc;">الشهر</div>
+                                        <div class="text-sm">الشهر</div>
                                     </th>
-                                    <?php $loop_counter = 0; ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
-                                            <th style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 <div class="text-sm">{{ $year_key."-".$month }}</div>
                                             </th>
-                                        <?php $loop_counter++; ?>
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -758,44 +756,46 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm" style="background-color: #dcdcdc;">الشهر</div>
+                                <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">الشهر</div>
                                 </th>
+                                    <?php $loop_counter = 0; ?>
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                        <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">
                                             <div class="text-sm">{{ $year_key."-".$month }}</div>
                                         </th>
+                                            <?php $loop_counter++; ?>
                                     @endforeach
                                 @endforeach
-                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #d2dafa;" class="border p-2">
                                     <div class="text-sm">مجموع كمية</div>
                                 </th>
-                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
                                     <div class="text-sm">مجموع قيمة</div>
                                 </th>
                             </tr>
                             <tr>
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                             <div class="text-sm">SH</div>
                                         </th>
-                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                             <div class="text-sm">F</div>
                                         </th>
                                     @endforeach
                                 @endforeach
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                     <div class="text-sm">SH</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                     <div class="text-sm">F</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                     <div class="text-sm">SH</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                     <div class="text-sm">F</div>
                                 </th>
                             </tr>
@@ -858,7 +858,7 @@
                                         <?php $month_counter = 1; ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
-                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                            <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
                                                 {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
@@ -914,7 +914,7 @@
                                                 {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
                                                 {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
                                             </th>
-                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                            <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
                                                 {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
@@ -970,16 +970,16 @@
                                             @php $month_counter++; @endphp
                                         @endforeach
                                     @endforeach
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_sales) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_forecast) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_sales*$record[$item_price]) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
                                 </tr>
@@ -1006,98 +1006,98 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">مجموع الفرع</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">المجموع</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s1 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f1 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s2 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f2 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s3 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f3 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s4 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f4 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s5 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f5 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s6 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f6 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s7 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f7 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s8 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f8 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s9 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f9 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s10 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f10 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s11 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f11 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s12 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f12 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_qty) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_qty) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_value) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_value) }}</div>
                                 </th>
                             </tr>
 
 
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                     <div class="text-sm">الفرق %</div>
                                 </th>
                                 @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
@@ -1149,7 +1149,7 @@
                                     <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                 </th>
                                 @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
-                                <th colspan="4" style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th colspan="4" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                     <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
                                 </th>
                                 @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp

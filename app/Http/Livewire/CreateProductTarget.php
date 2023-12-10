@@ -58,7 +58,7 @@ class CreateProductTarget extends Component
     protected $listeners = ['targets-entered' => 'test', 'create-report' => 'create_report'];
 
     protected $rules = [
-        'dept_id' => 'required|not_in:-1',
+        'dept_id' => 'required|array|min:1|not_in:-1',
         'selected_month' => 'required',
         'cat_type' => 'required|not_in:-1',
         'sp_type' => 'required|not_in:-1',
@@ -68,6 +68,7 @@ class CreateProductTarget extends Component
     protected $messages = [
         'dept_id.required' => "مطلوب",
         'dept_id.not_in' => "مطلوب",
+        'dept_id.min' => "مطلوب",
         'selected_month.required' => "مطلوب",
         'prod_id.required' => "مطلوب",
         'cat_type.required' => "مطلوب",
