@@ -1813,6 +1813,7 @@ class CreateProductTarget extends Component
 
     // function to save the data
     public function test($targets, $emps_percents, $products_codes) {
+//        dd($this->dept_id);
 //        dd($products_codes);
 //        dd($emps_percents);
 //        dd($this->emps_percentage);
@@ -1907,7 +1908,7 @@ class CreateProductTarget extends Component
                 $fetch = ProductTarget::where('product_id', $product_code)
                     ->where('month', $target_month)
                     ->where('year', $target_year)
-                    ->where('branch', $this->dept_id)
+                    ->where('branch', $this->dept_id[0])
                     ->where('user_id', $user->id)
                     ->first();
 
@@ -1915,7 +1916,7 @@ class CreateProductTarget extends Component
                     $record = ProductTarget::where('product_id', $product_code)
                         ->where('month', $target_month)
                         ->where('year', $target_year)
-                        ->where('branch', $this->dept_id)
+                        ->where('branch', $this->dept_id[0])
                         ->where('user_id', $user->id)
                         ->update(['target' => $target_num]);
                 } else {
@@ -1923,7 +1924,7 @@ class CreateProductTarget extends Component
                         'product_id' => $product_code,
                         'month' => $target_month,
                         'year' => $target_year,
-                        'branch' => $this->dept_id,
+                        'branch' => $this->dept_id[0],
                         'user_id' => $user->id,
                         'target' => $target_num
                     ]);
@@ -1933,7 +1934,7 @@ class CreateProductTarget extends Component
                     'product_id' => $product_code,
                     'month' => $target_month,
                     'year' => $target_year,
-                    'branch' => $this->dept_id,
+                    'branch' => $this->dept_id[0],
                     'user_id' => $user->id,
                     'target' => $target_num
                 ]);

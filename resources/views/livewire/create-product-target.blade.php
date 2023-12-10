@@ -165,7 +165,7 @@
 {{--                        </span>--}}
 {{--                            </button>--}}
 {{--                        </div>--}}
-                        @if($write_product_target == '2')
+                        @if($write_product_target == '2' || $write_product_target == '3')
                             <div class="mt-8 text-center w-full">
                                 <button id="test-btn"
                                         style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -322,7 +322,7 @@
                                             <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
                                             <div class="w-full text-sm text-center">
-                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2') )
+                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2' || $write_product_target == '3' || $write_product_target == '1') )
                                                     <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
                                                 @endif
                                             </div>
@@ -1307,7 +1307,7 @@
 
             console.log(employee_code);
 
-            $('.total-target').on('focusout', function () {
+            $('.total-target').on('focusout change', function () {
                 // console.log('kaka');
                 // console.log($(this).val());
                 // console.log($(this).attr('id'));
