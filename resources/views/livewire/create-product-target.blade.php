@@ -6,11 +6,11 @@
         </span>
         </a>
     </div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">المستهدف</div>
-    </div>
-    <div id="branch-container" class="mb-6">
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">المستهدف</div>--}}
+{{--    </div>--}}
+    <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
@@ -206,6 +206,22 @@
             <?php $all_total_dept_sales = []; ?>
             <?php $all_total_dept_tr = []; ?>
             <?php $total_historical = 0; ?>
+        @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0' || count($dept_id) > 1)
+            <div class="mb-5 p-2">
+            <div class="flex flex-col sm:flex-row gap-4 w-full">
+                <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
+                    <label class="block font-bold mb-5">خيارات</label>
+                    <div class="flex flex-row">
+                        <div class="flex items-center mb-4 w-full">
+                            <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
 
         @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '3' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0')
             <div id="percentage-container" class="mb-6">
@@ -346,13 +362,15 @@
                                     {{--                            </th>--}}
                                     {{--                        @endif--}}
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">الشهر</div>
+                                        <div class="text-sm" style="background-color: #dcdcdc;">الشهر</div>
                                     </th>
+                                    <?php $loop_counter = 0; ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <th style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">
                                                 <div class="text-sm">{{ $year_key."-".$month }}</div>
                                             </th>
+                                        <?php $loop_counter++; ?>
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -438,7 +456,7 @@
                                     </tr>
                                     @foreach($emps as $emp)
 
-                                        <tr>
+                                        <tr class="employee">
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 <div class="text-sm">{{ $emp->name }}</div>
                                             </th>
@@ -667,7 +685,7 @@
                         </tr>
                         <?php $total_sum_val = 0; ?>
                     @foreach($emps as $emp)
-                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                        <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
                             <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
@@ -724,12 +742,24 @@
                                         <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                         <div class="w-full text-sm text-center">المورد</div>
                                         <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                        <div class="w-full text-sm text-center mr-1">
+                                            @if($item_price == "WholeSale")
+                                                سعر مؤسسات
+                                            @elseif($item_price == "Retail")
+                                                سعر تجزئة
+                                            @elseif($item_price == "MaxDiscount")
+                                                أقل سعر
+                                            @else
+                                                السعر
+                                            @endif
+                                        </div>
+                                        <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
                                 <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">الشهر</div>
+                                    <div class="text-sm" style="background-color: #dcdcdc;">الشهر</div>
                                 </th>
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
@@ -738,9 +768,6 @@
                                         </th>
                                     @endforeach
                                 @endforeach
-                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">السعر</div>
-                                </th>
                                 <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">مجموع كمية</div>
                                 </th>
@@ -748,13 +775,11 @@
                                     <div class="text-sm">مجموع قيمة</div>
                                 </th>
                             </tr>
-
                             <tr>
-
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
                                         <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
-                                            <div class="text-sm">S</div>
+                                            <div class="text-sm">SH</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
                                             <div class="text-sm">F</div>
@@ -762,13 +787,13 @@
                                     @endforeach
                                 @endforeach
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">S</div>
+                                    <div class="text-sm">SH</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">F</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">S</div>
+                                    <div class="text-sm">SH</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <div class="text-sm">F</div>
@@ -946,9 +971,6 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ $record[$item_price] }}</div>
-                                    </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_sales) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -1060,9 +1082,6 @@
                                     <div class="text-sm">{{ $total_f12 }}</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10;" class="border p-2">
-                                    <div class="text-sm">{{ $record[$item_price] }}</div>
-                                </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_qty) }}</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10;" class="border p-2">
@@ -1129,9 +1148,6 @@
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
                                     <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $record[$item_price] }}</div>
-                                </th>
                                 @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
                                 <th colspan="4" style="border: 2px solid black; z-index: 10;" class="border p-2">
                                     <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
@@ -1156,14 +1172,14 @@
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">S</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SH</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">F</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
                     </tr>
                         <?php $total_dept_sum_s = 0; ?>
                         <?php $total_dept_sum_f = 0; ?>
                     @foreach($depts as $dept)
-                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                        <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                 @if($dept == '3')
@@ -1253,6 +1269,9 @@
 </div>
 
 
+@section('fixed-title')
+    المستهدف
+@stop
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
@@ -1273,6 +1292,19 @@
             // $('th #x').text('AA');
             // alert('aaaa');
             var targets = [];
+
+            $('#item_summary').attr('checked', false);
+
+            $("#item_summary").on('change', function () {
+                if(this.checked) {
+                    $(".employee").addClass("hide");
+                    $(".department").addClass("hide");
+                }
+                else {
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+                }
+            });
 
             // console.log($("input[name$='active']"));
             console.log($('.emps_percentage'));

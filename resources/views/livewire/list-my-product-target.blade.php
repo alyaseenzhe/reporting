@@ -8,13 +8,13 @@
             </a>
         </div>
 {{--    @endif--}}
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">
-            متابعة المستهدف
-        </div>
-    </div>
-    <div id="branch-container" class="mb-6">
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">--}}
+{{--            متابعة المستهدف--}}
+{{--        </div>--}}
+{{--    </div>--}}
+    <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
@@ -160,15 +160,32 @@
         <div id="report-btn" wire:loading.remove wire:target="generateReport" class="overflow-x-auto w-full">
             @if(count($products_items) > 0)
                 @if($results && $dept_id)
-                    <div style="background-color: #f5f5f5; padding-right: 20px" class="mb-5 p-2">
+                    <div class="mb-5 p-2">
                         <div class="flex flex-col sm:flex-row gap-4 w-full">
-                            <div class="w-full">
+                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
                                 <label class="block font-bold mb-5">خيارات</label>
 
                                 <div class="flex flex-row">
                                     <div class="flex items-center mb-4 w-full">
                                         <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
+                                <label class="block font-bold mb-5">تنويه</label>
+
+                                <div class="flex flex-row">
+                                    <div class="flex items-center mb-4 w-full">
+                                        <ul class="list-disc mr-4">
+                                            <li>رمز
+                                                <span class="font-bold">SC</span>
+                                                تعني المبيعات الحالية</li>
+                                            <li>رمز
+                                                <span class="font-bold">T</span>
+                                                تعني المستهدف</li>
+                                        </ul>
+{{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رمز SC تعني المبيعات الحالية</label>--}}
                                     </div>
                                 </div>
                             </div>
@@ -1144,7 +1161,9 @@
     @endif
 </div>
 
-
+@section('fixed-title')
+    متابعة المستهدف
+@stop
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
