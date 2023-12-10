@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,7 @@ class ListMyProductTarget extends Component
     public $month_stmt;
     public $employee_ids_in_my_branch = [];
     public $loading = false;
+    public $item_price;
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -93,6 +95,9 @@ class ListMyProductTarget extends Component
     {
         $branches = json_decode(Auth::user()->branches);
         $this->user_branches = $branches;
+
+        $settings_record = Setting::first();
+        $this->item_price = $settings_record->item_price;
 
         foreach ($branches as $branch) {
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')

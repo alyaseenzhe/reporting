@@ -655,23 +655,23 @@
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
-                            <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
+                            <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
                                 <?php $single_emp_diff = $total_historical == 0? 0 :  number_format((($all_total_emp_sales[$emp->emp_code]/$total_historical)*100)-100); ?>
-                            <td style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
+                            <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
                             <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
                         </tr>
                     @endforeach
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
-                        <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>
+                        <td id="summary-grand-total-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>
                         <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>
-                        <td style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>
+                        <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>
                     </tr>
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>
-                        <td colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
+                        <td id="historical-grand-total-sales" colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -1426,6 +1426,12 @@
 
 
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+
+            });
+
+            $('.target').on('focusin', function(){
+                console.log("old value " + $(this).val() == "" ? 0 : $(this).val());
+                $(this).data('val', $(this).val());
             });
 
             $('.target').on('focusout', function () {
@@ -1444,6 +1450,8 @@
                 item_price_txt = "#item-price-"+product_id;
                 total_all_emp_val = "#total-emp-val--"+product_id+"--";
                 total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
+                old_qty = $(this).data('val') == ""? 0 : parseFloat($(this).data('val'));
+                console.log('old qty:'+ old_qty);
 
                 console.log(txt);
                 console.log(totaltarget_txt);
@@ -1483,18 +1491,18 @@
                 $(total_emp_val).text(total_count*$(item_price_txt).text());
 
                 $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
-                    console.log("------val:"+$(this).text());
+                    console.log("------val:"+$(this).text().replace(/,/g, ""));
                     console.log("------product:"+product_id);
 
-                    total_emp_val_count = total_emp_val_count + parseFloat($(this).text() ? $(this).text() : 0);
+                    total_emp_val_count = total_emp_val_count + parseFloat($(this).text().replace(/,/g, "") ? $(this).text().replace(/,/g, "") : 0);
                 });
-                
+
                 console.log("-----------target----------");
                 console.log("total_emp_val_count:"+total_emp_val_count);
                 console.log("'#total-sales-emp--'+product_id:"+$('#total-sales-emp--'+product_id).text());
                 console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                 // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")))*100)-100);
 
 
                 total_count = 0;
@@ -1547,6 +1555,29 @@
                 // });
                 //
                 // $(".emps_percentage_readonly").text(100-total);
+
+                old_value = old_qty*parseFloat($(item_price_txt).text().replace(/,/g, ""));
+                old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+                old_summary_emp_grand_total = parseFloat($("#summary-grand-total-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+
+                new_summary_value = (old_summary_emp_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                new_summary_diff = ((new_summary_value/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
+
+                new_summary_emp_grand_total = (old_summary_emp_grand_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                new_summary_emp_grand_diff = ((new_summary_emp_grand_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
+                console.log('old_summary_emp_total:'+old_summary_emp_total);
+                console.log('old_value:'+old_value);
+                console.log('new_value:'+$(this).val());
+                console.log('price:'+parseFloat($(item_price_txt).text().replace(/,/g, "")));
+                console.log('new_summary_value:'+new_summary_value);
+
+                $("#summary-emp-val-"+txt_original[4]).text(new_summary_value.toLocaleString());
+                $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
+
+                $("#summary-grand-total-emp-val-"+txt_original[4]).text(new_summary_emp_grand_total.toLocaleString());
+                $("#summary-grand-total-emp-diff-"+txt_original[4]).text(Math.round(new_summary_emp_grand_diff).toLocaleString());
+
+
             });
 
             $('.emptarget').on('focusout', function () {
