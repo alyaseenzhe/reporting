@@ -53,6 +53,7 @@ class CreateProductTarget extends Component
     public $choose_special_product;
     public $edit_special_product;
     public $items;
+    public $item_price;
 
     protected $listeners = ['targets-entered' => 'test', 'create-report' => 'create_report'];
 
@@ -168,6 +169,7 @@ class CreateProductTarget extends Component
         $this->write_product_target = Auth::user()->user_group->write_product_target;
         $this->choose_special_product = Auth::user()->user_group->choose_special_product;
         $this->edit_special_product = Auth::user()->user_group->edit_special_product;
+        $this->item_price = $settings_record->item_price;
 
         $branches = json_decode($this->query->branches);
 //        $branches = json_decode(Auth::user()->branches);
@@ -1819,7 +1821,7 @@ class CreateProductTarget extends Component
 //        dd($this->emps_percentage);
 //        dd($targets);
 
-
+//        dd($this->emps_percentage);
         if ($emps_percents) {
             foreach ($emps_percents as $emp) {
                 $txt = explode('|', $emp);
@@ -1930,14 +1932,14 @@ class CreateProductTarget extends Component
                     ]);
                 }
 
-                $record = ProductTargetLog::create([
-                    'product_id' => $product_code,
-                    'month' => $target_month,
-                    'year' => $target_year,
-                    'branch' => $this->dept_id[0],
-                    'user_id' => $user->id,
-                    'target' => $target_num
-                ]);
+//                $record = ProductTargetLog::create([
+//                    'product_id' => $product_code,
+//                    'month' => $target_month,
+//                    'year' => $target_year,
+//                    'branch' => $this->dept_id[0],
+//                    'user_id' => $user->id,
+//                    'target' => $target_num
+//                ]);
 
             }
 

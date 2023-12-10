@@ -125,11 +125,11 @@
 {{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
 {{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                         <span></span>
                         <span>عرض الأصناف</span>
                     </span>
-                        <span class="mr-2 font-bold">
+                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
                     <span></span>
                     <span>الرجاء الانتظار</span>
                     </span>
@@ -315,8 +315,18 @@
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                            <div class="w-full text-sm text-center">السعر</div>
-                                            <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['MaxDiscount'] }}</div>
+                                            <div class="w-full text-sm text-center mr-1">
+                                                @if($item_price == "WholeSale")
+                                                    سعر مؤسسات
+                                                @elseif($item_price == "Retail")
+                                                    سعر تجزئة
+                                                @elseif($item_price == "MaxDiscount")
+                                                    أقل سعر
+                                                @else
+                                                    السعر
+                                                @endif
+                                            </div>
+                                            <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
                                             <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
                                             <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
@@ -354,13 +364,16 @@
                                 </tr>
                                 @if(Auth::user()->user_group->write_product_target == '2' || $write_product_target == '3' || $write_product_target == "0")
                                     <tr style="background-color: #e9e9e9">
-                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                             <div class="text-xs">مستهدف الفرع</div>
-                                            <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
+                                                    <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                                                 </svg>
                                             </div>
+                                                @endif
                                         </th>
                                         @php
                                             $target_counter =1;
@@ -420,7 +433,7 @@
 
                                         </th>
                                         <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-                                            <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record['MaxDiscount']) }}</div>
+                                            <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record[$item_price]) }}</div>
                                         </th>
                                     </tr>
                                     @foreach($emps as $emp)
@@ -470,15 +483,15 @@
                                                 {{--                                            <span>{{ $grand_emp_total_target }}</span>--}}
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                                <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record['MaxDiscount']) }}</div>
+                                                <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record[$item_price]) }}</div>
                                             </th>
                                         </tr>
                                             <?php
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
-                                                $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record['MaxDiscount'];
+                                                $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record[$item_price];
                                             }
                                             else {
-                                                $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record['MaxDiscount'];
+                                                $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record[$item_price];
                                             }
 
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
@@ -576,9 +589,9 @@
                                         {{ number_format(array_sum($sales)) }}
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record['MaxDiscount']) }}</div>
+                                        <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record[$item_price]) }}</div>
                                     </th>
-                                    <?php $total_historical += array_sum($sales)*$record['MaxDiscount']; ?>
+                                    <?php $total_historical += array_sum($sales)*$record[$item_price]; ?>
                                     {{--                        @endfor--}}
                                     {{--{{--                        @endforeach--}}
                                     {{--                    @endforeach--}}
@@ -586,11 +599,13 @@
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
-                                        <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                        @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
+                                            <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                             </svg>
                                         </div>
+                                        @endif
                                     </th>
                                     @php $target_counter2 =1; @endphp
                                     @foreach ($current_year_list as $year_key => $year)
@@ -931,7 +946,7 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                        <div class="text-sm">{{ $record[$item_price] }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_sales) }}</div>
@@ -940,31 +955,31 @@
                                         <div class="text-sm">{{ number_format($dept_forecast) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_sales*$record['MaxDiscount']) }}</div>
+                                        <div class="text-sm">{{ number_format($dept_sales*$record[$item_price]) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_forecast*$record['MaxDiscount']) }}</div>
+                                        <div class="text-sm">{{ number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
                                 </tr>
                                 @php
                                     $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
                                     $total_dept_f_qty = $total_dept_f_qty + $dept_forecast;
 
-                                    $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record['MaxDiscount']);
-                                    $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record['MaxDiscount']);
+                                    $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record[$item_price]);
+                                    $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record[$item_price]);
 
                                     if (!array_key_exists($dept, $all_total_dept_sales)) {
-                                        $all_total_dept_sales[$dept] = $dept_sales*$record['MaxDiscount'];
+                                        $all_total_dept_sales[$dept] = $dept_sales*$record[$item_price];
                                     }
                                     else {
-                                        $all_total_dept_sales[$dept] += $dept_sales*$record['MaxDiscount'];
+                                        $all_total_dept_sales[$dept] += $dept_sales*$record[$item_price];
                                     }
 
                                     if (!array_key_exists($dept, $all_total_dept_tr)) {
-                                        $all_total_dept_tr[$dept] = $dept_forecast*$record['MaxDiscount'];
+                                        $all_total_dept_tr[$dept] = $dept_forecast*$record[$item_price];
                                     }
                                     else {
-                                        $all_total_dept_tr[$dept] += $dept_forecast*$record['MaxDiscount'];
+                                        $all_total_dept_tr[$dept] += $dept_forecast*$record[$item_price];
                                     }
                                 @endphp
                             @endforeach
@@ -1045,7 +1060,7 @@
                                     <div class="text-sm">{{ $total_f12 }}</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10;" class="border p-2">
-                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                    <div class="text-sm">{{ $record[$item_price] }}</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_qty) }}</div>
@@ -1115,7 +1130,7 @@
                                     <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                    <div class="text-sm">{{ $record[$item_price] }}</div>
                                 </th>
                                 @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
                                 <th colspan="4" style="border: 2px solid black; z-index: 10;" class="border p-2">
@@ -2042,6 +2057,7 @@
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
                 console.log("============================");
+                console.log(percent_elements);
                 console.log(item_elements);
                 // const elements = $("input[id^='target--']");
                 elements.forEach(element =>{
