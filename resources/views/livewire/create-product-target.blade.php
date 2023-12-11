@@ -218,6 +218,25 @@
                         </div>
                     </div>
                 </div>
+                @if(count($dept_id) > 1)
+                    <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
+                        <label class="block font-bold mb-5">تنويه</label>
+
+                        <div class="flex flex-row">
+                            <div class="flex items-center mb-4 w-full">
+                                <ul class="list-disc mr-4">
+                                    <li>رمز
+                                        <span class="font-bold">SH</span>
+                                        تعني المبيعات التاريخية (نفس الشهر من العام السابق)</li>
+                                    <li>رمز
+                                        <span class="font-bold">F</span>
+                                        تعني المستهدف المتوقع</li>
+                                </ul>
+                                {{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رمز SC تعني المبيعات الحالية</label>--}}
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
         @endif
@@ -2079,7 +2098,9 @@
 
             $('#test-btn').on('click', function () {
                 // alert('hi');
+
                 $("#test-btn").html('<b>الرجاء الإنتظار..</b>');
+
 
                 targets = [];
                 emps_percents = [];
@@ -2125,6 +2146,7 @@
                 // console.log($("input[id^='target--']"));
 
                 // console.log(targets[0]);
+
                 Livewire.emit('targets-entered', targets, emps_percents, products_codes);
                 // Livewire.emit('targets-entered', targets);
                 // console.log(targets);
@@ -2367,6 +2389,10 @@
 
         });
 
+        Livewire.on('finished', () => {
+            swal.close();
+        });
+
         Livewire.on('clear-btn', value => {
             $('th span').empty();
                 // $('.total-target').val('');
@@ -2412,9 +2438,9 @@
             $('#dept_id').on('change', function (e) {
                 var data = $('#dept_id').select2("val");
 
-                if (prev_depts && prev_depts.includes('dept_all') == false && data.includes('dept_all') == true && prev_depts.length != data.length) {
+                if (prev_depts && prev_depts.includes('-1') == false && data.includes('-1') == true && prev_depts.length != data.length) {
                     $("#dept_id option").prop('selected', false);
-                    $("#dept_id option[value='dept_all']").prop('selected', true);
+                    $("#dept_id option[value='-1']").prop('selected', true);
 
                     prev_depts = $(this).val();
                     $('#dept_id').change();
@@ -2422,7 +2448,7 @@
                 else {
 
                     if (prev_depts && prev_depts.length != data.length) {
-                        $("#dept_id option[value='dept_all']").removeAttr('selected');
+                        $("#dept_id option[value='-1']").removeAttr('selected');
                         prev_depts = $(this).val();
 
                         $("#dept_id").change();
@@ -2498,7 +2524,38 @@
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
+
                 Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+
+                // if (dept_id.length > 0 && cat_type.length > 0 && sp_type.length > 0) {
+                //
+                // }
+                // else {
+                //     const Toast = Swal.mixin({
+                //         toast: true,
+                //         position: "top-end",
+                //         showConfirmButton: false,
+                //         timer: 3000,
+                //         timerProgressBar: true,
+                //         didOpen: (toast) => {
+                //             toast.onmouseenter = Swal.stopTimer;
+                //             toast.onmouseleave = Swal.resumeTimer;
+                //         }
+                //     });
+                //     Toast.fire({
+                //         icon: "success",
+                //         title: "Signed in successfully"
+                //     });
+                // }
             });
         });
 

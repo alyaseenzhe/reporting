@@ -563,7 +563,9 @@ class ListMyProductTarget extends Component
         $this->show_msg = true;
 //        dd($this->results);
 
+        $this->emit('finished');
         $this->results = collect($this->results);
+
 //        dd($this->results);
 //        dd($this->new_targets);
 

@@ -1167,6 +1167,7 @@
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
     <script>
 
         Livewire.on('show-container', () => {
@@ -1185,6 +1186,10 @@
                     $(".department").removeClass("hide");
                 }
             });
+        });
+
+        Livewire.on('finished', () => {
+            swal.close();
         });
 
         $(document).ready(function () {
@@ -1300,6 +1305,16 @@
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
+
                 Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
             });
         });
@@ -1308,6 +1323,7 @@
 @stop
 @section('css-scripts')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
     <style>
         .select2-selection__rendered {
             line-height: 31px !important;

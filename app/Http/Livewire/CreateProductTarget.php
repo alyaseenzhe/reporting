@@ -939,6 +939,8 @@ class CreateProductTarget extends Component
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
+        $this->emit('finished');
+
     }
 
     public function generateBranchesReport()
@@ -1700,6 +1702,7 @@ class CreateProductTarget extends Component
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
+        $this->emit('finished');
     }
 
     public function processData()
