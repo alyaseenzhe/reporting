@@ -19,6 +19,9 @@ class ListWeeklyReport extends Component
     public $final_results = [];
 //    public $test = [];
     public $customer_purchased = [];
+    public $category_qty = [];
+    public $category_qty_total = [];
+
     public $emp_codes = [];
     public $visits = [];
     public $emp_total = [];
@@ -118,6 +121,8 @@ class ListWeeklyReport extends Component
             ->where('accmast.Code', 'like',  $this->area_id.'%')
             ->pluck('accmast.Code as customer_code');
 
+        $this->category_qty_total = $this->categorizeQtyTotal($this->start_date, $this->end_date);
+
         $customer_details = $this->customer_details();
         $this->emp_codes = $this->emp_codes();
         $this->customer_purchased = $this->customer_purchased($this->start_date, $this->end_date);
@@ -135,6 +140,9 @@ class ListWeeklyReport extends Component
         $postponed_due_amount = $this->postponed_due_amount2($customers_code, $this->end_date, 120);
         $category_amount = $this->categorize($customers_code, $this->start_date, $this->end_date);
         $speciality_amount = $this->categorize_speciality($customers_code, $this->start_date, $this->end_date);
+        $this->category_qty = $this->categorizeQty($customers_code, $this->start_date, $this->end_date);
+        $this->category_qty_total = $this->categorizeQtyTotal($this->start_date, $this->end_date);
+//        dd($this->category_qty);
 
 //        dd($customer_details);
 //        $this->branch_postponed_due_amount_grand_total = array_sum(array_column($postponed_due_amount, 'DueAmount'));
@@ -760,7 +768,7 @@ class ListWeeklyReport extends Component
             ->where('SInvoice.SIDate', '<=', $end_date)
             ->whereNotIn('accmast.Code' , ['0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
 //            ->select('accmast.NodeNo as customer_nodeno', 'accmast.Code as customer_code', 'accmast.Arabic_Name as customer_name', 'StudentMast.Code as emp_code','StudentMast.Arabic_Name as emp_name', 'SInvoice.SInvoiceNo', 'SInvoice.PartyNo', 'SInvoice.SIDate')
-            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(accmast.Code)) as num')
+            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(SInvoiceNo)) as num')
             ->groupBy('StudentMast.Code')
             ->orderBy('StudentMast.Code')
             ->pluck('num', 'emp_code')
@@ -803,7 +811,7 @@ class ListWeeklyReport extends Component
             ->where('SInvoice.SIDate', '<=', $end_date)
             ->whereIn('accmast.Code' , ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
 //            ->select('accmast.NodeNo as customer_nodeno', 'accmast.Code as customer_code', 'accmast.Arabic_Name as customer_name', 'StudentMast.Code as emp_code','StudentMast.Arabic_Name as emp_name', 'SInvoice.SInvoiceNo', 'SInvoice.PartyNo', 'SInvoice.SIDate')
-            ->selectRaw('StudentMast.Code as emp_code, COUNT(*) as num')
+            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(SInvoiceNo)) as num')
             ->groupBy('StudentMast.Code')
             ->orderBy('StudentMast.Code')
             ->pluck('num', 'emp_code')
@@ -2003,6 +2011,1266 @@ group by Code, Name", [
 //        return ['bathoor' => $bathoor, 'mobedat' => $mobedat, 'asmedah' => $asmedah, 'other' => $other];
 
         return $result_cat;
+
+//        return $results_bathoor->toArray();
+
+    }
+    public function categorizeQty($customer_code, $start_date, $end_date) {
+
+//        $customer_code = ["0100590", "0100961"];
+        set_time_limit(2000);
+        $start_date = $start_date . ' 00:00:00';
+        $end_date = $end_date . ' 23:59:25';
+
+        $bathoor = 0;
+        $mobedat = 0;
+        $asmedah = 0;
+        $other = 0;
+
+        ///////// cash //////////////
+
+        // bathoor
+        $pinvoice_query_bathoor = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '20%')
+                    ->orWhere('ProductMast.code', 'like',  '21%')
+                    ->orWhere('ProductMast.code', 'like',  '22%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, -COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_bathoor = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '20%')
+                    ->orWhere('ProductMast.code', 'like',  '21%')
+                    ->orWhere('ProductMast.code', 'like',  '22%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_bathoor)
+            ->get();
+
+        // mobedat
+        $pinvoice_query_mobedat = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '10%')
+                    ->orWhere('ProductMast.code', 'like',  '11%')
+                    ->orWhere('ProductMast.code', 'like',  '12%')
+                    ->orWhere('ProductMast.code', 'like',  '13%')
+                    ->orWhere('ProductMast.code', 'like',  '14%')
+                    ->orWhere('ProductMast.code', 'like',  '15%')
+                    ->orWhere('ProductMast.code', 'like',  '16%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, -COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_mobedat = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '10%')
+                    ->orWhere('ProductMast.code', 'like',  '11%')
+                    ->orWhere('ProductMast.code', 'like',  '12%')
+                    ->orWhere('ProductMast.code', 'like',  '13%')
+                    ->orWhere('ProductMast.code', 'like',  '14%')
+                    ->orWhere('ProductMast.code', 'like',  '15%')
+                    ->orWhere('ProductMast.code', 'like',  '16%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, COUNT(ProductNo) as product_num')
+            ->selectRaw('distinct StudentMast.Code as emp_code, COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_mobedat)
+            ->get();
+
+//        dd($sinvoice_query_mobedat);
+
+        // asmedah
+        $pinvoice_query_asmedah = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '17%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+            //->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, -COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_asmedah = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '17%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_asmedah)
+            ->get();
+
+//        dd($sinvoice_query_asmedah);
+
+
+        // other
+        $pinvoice_query_other = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->where('ProductMast.code', 'not like', '20%')
+                    ->where('ProductMast.code', 'not like', '21%')
+                    ->where('ProductMast.code', 'not like', '22%')
+                    ->where('ProductMast.code', 'not like', '10%')
+                    ->where('ProductMast.code', 'not like', '11%')
+                    ->where('ProductMast.code', 'not like', '12%')
+                    ->where('ProductMast.code', 'not like', '13%')
+                    ->where('ProductMast.code', 'not like', '14%')
+                    ->where('ProductMast.code', 'not like', '15%')
+                    ->where('ProductMast.code', 'not like', '16%')
+                    ->where('ProductMast.code', 'not like', '17%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, -COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_other = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where(function ($query) {
+                $query->where('ProductMast.code', 'not like', '20%')
+                    ->where('ProductMast.code', 'not like', '21%')
+                    ->where('ProductMast.code', 'not like', '22%')
+                    ->where('ProductMast.code', 'not like', '10%')
+                    ->where('ProductMast.code', 'not like', '11%')
+                    ->where('ProductMast.code', 'not like', '12%')
+                    ->where('ProductMast.code', 'not like', '13%')
+                    ->where('ProductMast.code', 'not like', '14%')
+                    ->where('ProductMast.code', 'not like', '15%')
+                    ->where('ProductMast.code', 'not like', '16%')
+                    ->where('ProductMast.code', 'not like', '17%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, COUNT(DISTINCT ProductNo) as product_num')
+            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_other)
+            ->get();
+
+//        dd($sinvoice_query_other);
+
+        $results_bathoor = collect($sinvoice_query_bathoor)->groupBy('emp_code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//            return floatval($item->sum('product_num'));
+            return floatval($item->sum('product_num'));
+        });
+
+        $results_mobedat = collect($sinvoice_query_mobedat)->groupBy('emp_code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//            return floatval($item->sum('product_num'));
+            return floatval($item->sum('product_num'));
+        });
+
+        $results_asmedah = collect($sinvoice_query_asmedah)->groupBy('emp_code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//            return floatval($item->sum('product_num'));
+            return floatval($item->sum('product_num'));
+        });
+
+        $results_other = collect($sinvoice_query_other)->groupBy('emp_code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+            return floatval($item->sum('product_num'));
+        });
+
+//        dd($sinvoice_query_asmedah);
+
+        $result_cat = [];
+        foreach ($results_bathoor->toArray() as $key => $value) {
+            $customer_index = array_key_exists($key, $result_cat);
+
+            if ($customer_index) {
+                $result_cat[$key]['bathoor'] = $value;
+            }
+            else {
+                $result_cat[$key] = ['bathoor' => $value];
+            }
+        }
+
+        foreach ($results_mobedat->toArray() as $key => $value) {
+            $customer_index = array_key_exists($key, $result_cat);
+
+            if ($customer_index) {
+                $result_cat[$key]['mobedat'] = $value;
+            }
+            else {
+                $result_cat[$key] = ['mobedat' => $value];
+            }
+        }
+
+        foreach ($results_asmedah->toArray() as $key => $value) {
+            $customer_index = array_key_exists($key, $result_cat);
+
+            if ($customer_index) {
+                $result_cat[$key]['asmedah'] = $value;
+            }
+            else {
+                $result_cat[$key] = ['asmedah' => $value];
+            }
+        }
+
+        foreach ($results_other->toArray() as $key => $value) {
+            $customer_index = array_key_exists($key, $result_cat);
+
+            if ($customer_index) {
+                $result_cat[$key]['other'] = $value;
+            }
+            else {
+                $result_cat[$key] = ['other' => $value];
+            }
+        }
+
+//        dd($result_cat);
+////        dd($results_bathoor->toArray());
+//
+//        $bathoor += $results_bathoor->sum();
+//        $mobedat += $results_mobedat->sum();
+//        $asmedah += $results_asmedah->sum();
+//        $other += $results_other->sum();
+
+
+
+
+        // postponed_sales
+
+        // bathoor
+//        $pinvoice_query_p_bathoor = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '20%')
+//                    ->orWhere('ProductMast.code', 'like',  '21%')
+//                    ->orWhere('ProductMast.code', 'like',  '22%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_bathoor = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '20%')
+//                    ->orWhere('ProductMast.code', 'like',  '21%')
+//                    ->orWhere('ProductMast.code', 'like',  '22%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_bathoor) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////            dd($sinvoice_query_p_bathoor);
+//
+//        // mobedat
+//        $pinvoice_query_p_mobedat = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '10%')
+//                    ->orWhere('ProductMast.code', 'like',  '11%')
+//                    ->orWhere('ProductMast.code', 'like',  '12%')
+//                    ->orWhere('ProductMast.code', 'like',  '13%')
+//                    ->orWhere('ProductMast.code', 'like',  '14%')
+//                    ->orWhere('ProductMast.code', 'like',  '15%')
+//                    ->orWhere('ProductMast.code', 'like',  '16%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_mobedat = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '10%')
+//                    ->orWhere('ProductMast.code', 'like',  '11%')
+//                    ->orWhere('ProductMast.code', 'like',  '12%')
+//                    ->orWhere('ProductMast.code', 'like',  '13%')
+//                    ->orWhere('ProductMast.code', 'like',  '14%')
+//                    ->orWhere('ProductMast.code', 'like',  '15%')
+//                    ->orWhere('ProductMast.code', 'like',  '16%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_mobedat) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+//        dd($sinvoice_query_p_mobedat);
+//
+//        // asmedah
+//        $pinvoice_query_p_asmedah = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where('ProductMast.code', 'like',  '17%')
+////            ->where(function ($query) {
+////                $query->orWhere('ProductMast.code', 'like',  '10%')
+////                    ->orWhere('ProductMast.code', 'like',  '11%')
+////                    ->orWhere('ProductMast.code', 'like',  '12%')
+////                    ->orWhere('ProductMast.code', 'like',  '13%')
+////                    ->orWhere('ProductMast.code', 'like',  '14%')
+////                    ->orWhere('ProductMast.code', 'like',  '15%')
+////                    ->orWhere('ProductMast.code', 'like',  '16%');
+////            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_asmedah = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where('ProductMast.code', 'like',  '17%')
+////            ->where(function ($query) {
+////                $query->orWhere('ProductMast.code', 'like',  '10%')
+////                    ->orWhere('ProductMast.code', 'like',  '11%')
+////                    ->orWhere('ProductMast.code', 'like',  '12%')
+////                    ->orWhere('ProductMast.code', 'like',  '13%')
+////                    ->orWhere('ProductMast.code', 'like',  '14%')
+////                    ->orWhere('ProductMast.code', 'like',  '15%')
+////                    ->orWhere('ProductMast.code', 'like',  '16%');
+////            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_asmedah) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////        dd($sinvoice_query_p_asmedah);
+//
+//
+//        // other
+//        $pinvoice_query_p_other = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->where('ProductMast.code', 'not like', '20%')
+//                    ->where('ProductMast.code', 'not like', '21%')
+//                    ->where('ProductMast.code', 'not like', '22%')
+//                    ->where('ProductMast.code', 'not like', '10%')
+//                    ->where('ProductMast.code', 'not like', '11%')
+//                    ->where('ProductMast.code', 'not like', '12%')
+//                    ->where('ProductMast.code', 'not like', '13%')
+//                    ->where('ProductMast.code', 'not like', '14%')
+//                    ->where('ProductMast.code', 'not like', '15%')
+//                    ->where('ProductMast.code', 'not like', '16%')
+//                    ->where('ProductMast.code', 'not like', '17%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, voucherno, accountno, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_other = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->where('ProductMast.code', 'not like', '20%')
+//                    ->where('ProductMast.code', 'not like', '21%')
+//                    ->where('ProductMast.code', 'not like', '22%')
+//                    ->where('ProductMast.code', 'not like', '10%')
+//                    ->where('ProductMast.code', 'not like', '11%')
+//                    ->where('ProductMast.code', 'not like', '12%')
+//                    ->where('ProductMast.code', 'not like', '13%')
+//                    ->where('ProductMast.code', 'not like', '14%')
+//                    ->where('ProductMast.code', 'not like', '15%')
+//                    ->where('ProductMast.code', 'not like', '16%')
+//                    ->where('ProductMast.code', 'not like', '17%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, voucherno, accountno, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_other) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////        dd($sinvoice_query_p_other);
+//
+//
+////        $results = collect($sinvoice_query)->groupBy('code')->map(function ($item) {
+////            return $item->sum('Credit');
+////        });
+//
+//        $results_p_bathoor = collect($sinvoice_query_p_bathoor)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//
+//        $results_p_mobedat = collect($sinvoice_query_p_mobedat)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//        $results_p_asmedah = collect($sinvoice_query_p_asmedah)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//        $results_p_other = collect($sinvoice_query_p_other)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+////        dd($results_p_other);
+//
+////        dd($sinvoice_query_p_asmedah);
+////        dd($results_other);
+////        dd($results_p_asmedah);
+////        dd($results_p_mobedat);
+////        dd($results_p_bathoor);
+//
+//        foreach ($results_p_bathoor->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//            if ($customer_index && array_key_exists('bathoor', $result_cat[$key])) {
+//                $result_cat[$key]['bathoor'] += abs($value);
+////                dd('here');
+//            }
+//            else {
+//                $result_cat[$key]['bathoor'] = abs($value); //['bathoor' => abs($value)];
+////                dd($key);
+////                dd($result_cat[$key]);
+////                dd('there');
+//            }
+//        }
+//
+//
+//        foreach ($results_p_mobedat->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('mobedat', $result_cat[$key])) {
+//                $result_cat[$key]['mobedat'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['mobedat'] = abs($value);//['mobedat' => abs($value)];
+//            }
+//        }
+//
+////        dd($result_cat);
+//
+//        foreach ($results_p_asmedah->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('asmedah', $result_cat[$key])) {
+//                $result_cat[$key]['asmedah'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['asmedah'] = abs($value); // ['asmedah' => abs($value)];
+//            }
+//        }
+//
+//        foreach ($results_p_other->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('other', $result_cat[$key])) {
+//                $result_cat[$key]['other'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['other'] = abs($value); //['other' => abs($value)];
+//            }
+//        }
+//
+//        $bathoor += $results_p_bathoor->sum();
+//        $mobedat += $results_p_mobedat->sum();
+//        $asmedah += $results_p_asmedah->sum();
+//        $other += $results_p_other->sum();
+
+//        dd(['bathoor' => $bathoor, 'mobedat' => $mobedat, 'asmedah' => $asmedah, 'other' => $other]);
+//
+//        dd($result_cat);
+//        return ['bathoor' => $bathoor, 'mobedat' => $mobedat, 'asmedah' => $asmedah, 'other' => $other];
+
+        return $result_cat;
+
+//        return $results_bathoor->toArray();
+
+    }
+
+    public function categorizeQtyTotal($start_date, $end_date) {
+
+//        $customer_code = ["0100590", "0100961"];
+        set_time_limit(2000);
+        $start_date = $start_date . ' 00:00:00';
+        $end_date = $end_date . ' 23:59:25';
+
+        $real_area = '3';
+        $a = $this->area_id;
+        if ($a == '01') { // hasa
+            $real_area = '3';
+        }
+        elseif ($a == '02') { // jeddah
+            $real_area = '10';
+        }
+        elseif ($a == '03') { // riyadh
+            $real_area = '7';
+        }
+        elseif ($a == '04') { // wadi
+            $real_area = '7';
+        }
+        elseif ($a == '05') { // jouf
+            $real_area = '4';
+        }
+        elseif ($a == '06') { // dammam
+            $real_area = '6';
+        }
+        elseif ($a == '07') { // Kharaj --
+            $real_area = '5';
+        }
+        elseif ($a == '08') { // Najran
+            $real_area = '12';
+        }
+        elseif ($a == '09') { // Hail
+            $real_area = '11';
+        }
+        elseif ($a == '10') { // tabouk
+            $real_area = '9';
+        }
+        elseif ($a == '11') { // qassim
+            $real_area = '8';
+        }
+        elseif ($a == '12') { // sajer
+            $real_area = '505';
+        }
+
+        $bathoor = 0;
+        $mobedat = 0;
+        $asmedah = 0;
+        $other = 0;
+        $all_asmedah_products = [];
+        $all_bathoor_products = [];
+        $all_mobedat_products = [];
+        $all_other_products = [];
+
+        ///////// cash //////////////
+
+        // bathoor
+        $pinvoice_query_bathoor = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '20%')
+                    ->orWhere('ProductMast.code', 'like',  '21%')
+                    ->orWhere('ProductMast.code', 'like',  '22%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, ProductNo');
+//            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_bathoor = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '20%')
+                    ->orWhere('ProductMast.code', 'like',  '21%')
+                    ->orWhere('ProductMast.code', 'like',  '22%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code,ProductNo')
+//            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_bathoor)
+            ->pluck('ProductNo')->toArray();
+//            ->get();
+
+//        dd($sinvoice_query_bathoor);
+
+        // mobedat
+        $pinvoice_query_mobedat = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '10%')
+                    ->orWhere('ProductMast.code', 'like',  '11%')
+                    ->orWhere('ProductMast.code', 'like',  '12%')
+                    ->orWhere('ProductMast.code', 'like',  '13%')
+                    ->orWhere('ProductMast.code', 'like',  '14%')
+                    ->orWhere('ProductMast.code', 'like',  '15%')
+                    ->orWhere('ProductMast.code', 'like',  '16%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, ProductNo');
+//            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_mobedat = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '10%')
+                    ->orWhere('ProductMast.code', 'like',  '11%')
+                    ->orWhere('ProductMast.code', 'like',  '12%')
+                    ->orWhere('ProductMast.code', 'like',  '13%')
+                    ->orWhere('ProductMast.code', 'like',  '14%')
+                    ->orWhere('ProductMast.code', 'like',  '15%')
+                    ->orWhere('ProductMast.code', 'like',  '16%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, COUNT(ProductNo) as product_num')
+            ->selectRaw('distinct StudentMast.Code as emp_code,ProductNo')
+//            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_mobedat)
+            ->pluck('ProductNo')->toArray();
+
+//        dd($sinvoice_query_mobedat);
+
+        // asmedah
+        $pinvoice_query_asmedah = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '17%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+            //->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, ProductNo');
+//            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_asmedah = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->orWhere('ProductMast.code', 'like',  '17%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code,ProductNo')
+//            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_asmedah)
+            ->pluck('ProductNo')->toArray();
+
+//        dd($sinvoice_query_asmedah);
+
+
+        // other
+        $pinvoice_query_other = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->where('ProductMast.code', 'not like', '20%')
+                    ->where('ProductMast.code', 'not like', '21%')
+                    ->where('ProductMast.code', 'not like', '22%')
+                    ->where('ProductMast.code', 'not like', '10%')
+                    ->where('ProductMast.code', 'not like', '11%')
+                    ->where('ProductMast.code', 'not like', '12%')
+                    ->where('ProductMast.code', 'not like', '13%')
+                    ->where('ProductMast.code', 'not like', '14%')
+                    ->where('ProductMast.code', 'not like', '15%')
+                    ->where('ProductMast.code', 'not like', '16%')
+                    ->where('ProductMast.code', 'not like', '17%');
+            })
+            ->where(function ($query) {
+                $query->where('PInvoiceNo', 'not like', '310-%')
+                    ->where('PInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('pidate' ,'>=', $start_date)
+            ->where('pidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, -sum(pinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code, ProductNo');
+//            ->groupBy('StudentMast.Code');
+
+        $sinvoice_query_other = SInvoice::join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+            ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
+            ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
+            ->where(function ($query) {
+                $query->where('ProductMast.code', 'not like', '20%')
+                    ->where('ProductMast.code', 'not like', '21%')
+                    ->where('ProductMast.code', 'not like', '22%')
+                    ->where('ProductMast.code', 'not like', '10%')
+                    ->where('ProductMast.code', 'not like', '11%')
+                    ->where('ProductMast.code', 'not like', '12%')
+                    ->where('ProductMast.code', 'not like', '13%')
+                    ->where('ProductMast.code', 'not like', '14%')
+                    ->where('ProductMast.code', 'not like', '15%')
+                    ->where('ProductMast.code', 'not like', '16%')
+                    ->where('ProductMast.code', 'not like', '17%');
+            })
+            ->where(function ($query) {
+                $query->where('SInvoiceNo', 'not like', '310-%')
+                    ->where('SInvoiceNo', 'not like', '320-%');
+            })
+//            ->whereIn('PaymentMethodDetails.type', [1,2,3,4])
+//            ->whereIn('accmast.code', $customer_code)
+            ->where('sidate' ,'>=', $start_date)
+            ->where('sidate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
+            ->selectRaw('distinct StudentMast.Code as emp_code,ProductNo')
+//            ->groupBy('StudentMast.Code')
+            ->unionAll($pinvoice_query_other)
+            ->pluck('ProductNo')->toArray();
+//        dd($sinvoice_query_other);
+
+        array_push($all_bathoor_products, $sinvoice_query_bathoor);
+        array_push($all_mobedat_products, $sinvoice_query_mobedat);
+        array_push($all_asmedah_products, $sinvoice_query_asmedah);
+        array_push($all_other_products, $sinvoice_query_other);
+
+        $all_bathoor_products = array_unique($all_bathoor_products[0]);
+        $all_mobedat_products = array_unique($all_mobedat_products[0]);
+        $all_asmedah_products = array_unique($all_asmedah_products[0]);
+        $all_other_products = array_unique($all_other_products[0]);
+//        dd($all_bathoor_products);
+//        dd(array_unique($all_bathoor_products[0]));
+
+//        dd($flattened_array);
+
+
+//        dd($sinvoice_query_other);
+
+//        $results_bathoor = collect($sinvoice_query_bathoor)->groupBy('emp_code')->map(function ($item) {
+////            return floatval($item->sum('svalue'))*1.15;
+////            return floatval($item->sum('product_num'));
+//            return floatval($item->sum('product_num'));
+//        });
+//
+//        $results_mobedat = collect($sinvoice_query_mobedat)->groupBy('emp_code')->map(function ($item) {
+////            return floatval($item->sum('svalue'))*1.15;
+////            return floatval($item->sum('product_num'));
+//            return floatval($item->sum('product_num'));
+//        });
+//
+//        $results_asmedah = collect($sinvoice_query_asmedah)->groupBy('emp_code')->map(function ($item) {
+////            return floatval($item->sum('svalue'))*1.15;
+////            return floatval($item->sum('product_num'));
+//            return floatval($item->sum('product_num'));
+//        });
+//
+//        $results_other = collect($sinvoice_query_other)->groupBy('emp_code')->map(function ($item) {
+////            return floatval($item->sum('svalue'))*1.15;
+//            return floatval($item->sum('product_num'));
+//        });
+//
+////        dd($sinvoice_query_asmedah);
+//
+//        $result_cat = [];
+//        foreach ($results_bathoor->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index) {
+//                $result_cat[$key]['bathoor'] = $value;
+//            }
+//            else {
+//                $result_cat[$key] = ['bathoor' => $value];
+//            }
+//        }
+//
+//        foreach ($results_mobedat->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index) {
+//                $result_cat[$key]['mobedat'] = $value;
+//            }
+//            else {
+//                $result_cat[$key] = ['mobedat' => $value];
+//            }
+//        }
+//
+//        foreach ($results_asmedah->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index) {
+//                $result_cat[$key]['asmedah'] = $value;
+//            }
+//            else {
+//                $result_cat[$key] = ['asmedah' => $value];
+//            }
+//        }
+//
+//        foreach ($results_other->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index) {
+//                $result_cat[$key]['other'] = $value;
+//            }
+//            else {
+//                $result_cat[$key] = ['other' => $value];
+//            }
+//        }
+
+//        dd($result_cat);
+////        dd($results_bathoor->toArray());
+//
+//        $bathoor += $results_bathoor->sum();
+//        $mobedat += $results_mobedat->sum();
+//        $asmedah += $results_asmedah->sum();
+//        $other += $results_other->sum();
+
+
+
+
+        // postponed_sales
+
+        // bathoor
+//        $pinvoice_query_p_bathoor = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '20%')
+//                    ->orWhere('ProductMast.code', 'like',  '21%')
+//                    ->orWhere('ProductMast.code', 'like',  '22%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_bathoor = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '20%')
+//                    ->orWhere('ProductMast.code', 'like',  '21%')
+//                    ->orWhere('ProductMast.code', 'like',  '22%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_bathoor) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////            dd($sinvoice_query_p_bathoor);
+//
+//        // mobedat
+//        $pinvoice_query_p_mobedat = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '10%')
+//                    ->orWhere('ProductMast.code', 'like',  '11%')
+//                    ->orWhere('ProductMast.code', 'like',  '12%')
+//                    ->orWhere('ProductMast.code', 'like',  '13%')
+//                    ->orWhere('ProductMast.code', 'like',  '14%')
+//                    ->orWhere('ProductMast.code', 'like',  '15%')
+//                    ->orWhere('ProductMast.code', 'like',  '16%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_mobedat = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->orWhere('ProductMast.code', 'like',  '10%')
+//                    ->orWhere('ProductMast.code', 'like',  '11%')
+//                    ->orWhere('ProductMast.code', 'like',  '12%')
+//                    ->orWhere('ProductMast.code', 'like',  '13%')
+//                    ->orWhere('ProductMast.code', 'like',  '14%')
+//                    ->orWhere('ProductMast.code', 'like',  '15%')
+//                    ->orWhere('ProductMast.code', 'like',  '16%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_mobedat) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+//        dd($sinvoice_query_p_mobedat);
+//
+//        // asmedah
+//        $pinvoice_query_p_asmedah = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where('ProductMast.code', 'like',  '17%')
+////            ->where(function ($query) {
+////                $query->orWhere('ProductMast.code', 'like',  '10%')
+////                    ->orWhere('ProductMast.code', 'like',  '11%')
+////                    ->orWhere('ProductMast.code', 'like',  '12%')
+////                    ->orWhere('ProductMast.code', 'like',  '13%')
+////                    ->orWhere('ProductMast.code', 'like',  '14%')
+////                    ->orWhere('ProductMast.code', 'like',  '15%')
+////                    ->orWhere('ProductMast.code', 'like',  '16%');
+////            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_asmedah = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where('ProductMast.code', 'like',  '17%')
+////            ->where(function ($query) {
+////                $query->orWhere('ProductMast.code', 'like',  '10%')
+////                    ->orWhere('ProductMast.code', 'like',  '11%')
+////                    ->orWhere('ProductMast.code', 'like',  '12%')
+////                    ->orWhere('ProductMast.code', 'like',  '13%')
+////                    ->orWhere('ProductMast.code', 'like',  '14%')
+////                    ->orWhere('ProductMast.code', 'like',  '15%')
+////                    ->orWhere('ProductMast.code', 'like',  '16%');
+////            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_asmedah) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////        dd($sinvoice_query_p_asmedah);
+//
+//
+//        // other
+//        $pinvoice_query_p_other = PInvoice::join('PaymentMethod', 'pinvoiceno', 'voucherno')
+//            ->join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->where('ProductMast.code', 'not like', '20%')
+//                    ->where('ProductMast.code', 'not like', '21%')
+//                    ->where('ProductMast.code', 'not like', '22%')
+//                    ->where('ProductMast.code', 'not like', '10%')
+//                    ->where('ProductMast.code', 'not like', '11%')
+//                    ->where('ProductMast.code', 'not like', '12%')
+//                    ->where('ProductMast.code', 'not like', '13%')
+//                    ->where('ProductMast.code', 'not like', '14%')
+//                    ->where('ProductMast.code', 'not like', '15%')
+//                    ->where('ProductMast.code', 'not like', '16%')
+//                    ->where('ProductMast.code', 'not like', '17%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('PIDate' ,'>=', $start_date)
+//            ->where('PIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, voucherno, accountno, PaymentMethod.Credit, Cash, Visa,-sum(PInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa');
+////            ->get();
+//
+//        $sinvoice_query_p_other = SInvoice::join('PaymentMethod', 'sinvoiceno', 'voucherno')
+//            ->join('accmast', 'sinvoice.partyno', 'accmast.nodeno')
+//            ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
+//            ->where('accmast.type', 10)
+//            ->where(function ($query) {
+//                $query->where('ProductMast.code', 'not like', '20%')
+//                    ->where('ProductMast.code', 'not like', '21%')
+//                    ->where('ProductMast.code', 'not like', '22%')
+//                    ->where('ProductMast.code', 'not like', '10%')
+//                    ->where('ProductMast.code', 'not like', '11%')
+//                    ->where('ProductMast.code', 'not like', '12%')
+//                    ->where('ProductMast.code', 'not like', '13%')
+//                    ->where('ProductMast.code', 'not like', '14%')
+//                    ->where('ProductMast.code', 'not like', '15%')
+//                    ->where('ProductMast.code', 'not like', '16%')
+//                    ->where('ProductMast.code', 'not like', '17%');
+//            })
+//            ->where('PaymentMethod.Credit', '<>' , 0)
+//            ->whereIn('accmast.code', $customer_code)
+//            ->where('SIDate' ,'>=', $start_date)
+//            ->where('SIDate' ,'<=', $end_date)
+//            ->selectRaw('distinct accmast.code,accmast.name, voucherno, accountno, PaymentMethod.Credit, Cash, Visa,-sum(SInvoice.Value*exchangerate+extrafieldstotal) as svalue')
+//            ->groupBy('accmast.code','accmast.name', 'voucherno', 'accountno', 'PaymentMethod.Credit', 'PaymentMethod.Cash', 'PaymentMethod.visa')
+//            ->unionAll($pinvoice_query_p_other) //
+////            ->sum('svalue');
+////            ->sum('svalue');
+//            ->get();
+//
+////        dd($sinvoice_query_p_other);
+//
+//
+////        $results = collect($sinvoice_query)->groupBy('code')->map(function ($item) {
+////            return $item->sum('Credit');
+////        });
+//
+//        $results_p_bathoor = collect($sinvoice_query_p_bathoor)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//
+//        $results_p_mobedat = collect($sinvoice_query_p_mobedat)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//        $results_p_asmedah = collect($sinvoice_query_p_asmedah)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+//
+//        $results_p_other = collect($sinvoice_query_p_other)->groupBy('code')->map(function ($item) {
+//            return floatval($item->sum('svalue'))*1.15;
+//        });
+////        dd($results_p_other);
+//
+////        dd($sinvoice_query_p_asmedah);
+////        dd($results_other);
+////        dd($results_p_asmedah);
+////        dd($results_p_mobedat);
+////        dd($results_p_bathoor);
+//
+//        foreach ($results_p_bathoor->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//            if ($customer_index && array_key_exists('bathoor', $result_cat[$key])) {
+//                $result_cat[$key]['bathoor'] += abs($value);
+////                dd('here');
+//            }
+//            else {
+//                $result_cat[$key]['bathoor'] = abs($value); //['bathoor' => abs($value)];
+////                dd($key);
+////                dd($result_cat[$key]);
+////                dd('there');
+//            }
+//        }
+//
+//
+//        foreach ($results_p_mobedat->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('mobedat', $result_cat[$key])) {
+//                $result_cat[$key]['mobedat'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['mobedat'] = abs($value);//['mobedat' => abs($value)];
+//            }
+//        }
+//
+////        dd($result_cat);
+//
+//        foreach ($results_p_asmedah->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('asmedah', $result_cat[$key])) {
+//                $result_cat[$key]['asmedah'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['asmedah'] = abs($value); // ['asmedah' => abs($value)];
+//            }
+//        }
+//
+//        foreach ($results_p_other->toArray() as $key => $value) {
+//            $customer_index = array_key_exists($key, $result_cat);
+//
+//            if ($customer_index && array_key_exists('other', $result_cat[$key])) {
+//                $result_cat[$key]['other'] += abs($value);
+//            }
+//            else {
+//                $result_cat[$key]['other'] = abs($value); //['other' => abs($value)];
+//            }
+//        }
+//
+//        $bathoor += $results_p_bathoor->sum();
+//        $mobedat += $results_p_mobedat->sum();
+//        $asmedah += $results_p_asmedah->sum();
+//        $other += $results_p_other->sum();
+
+//        dd(['bathoor' => $bathoor, 'mobedat' => $mobedat, 'asmedah' => $asmedah, 'other' => $other]);
+//
+//        dd($result_cat);
+//        return ['bathoor' => $bathoor, 'mobedat' => $mobedat, 'asmedah' => $asmedah, 'other' => $other];
+
+//        dd($all_products);
+//        return $result_cat;
+//        dd(['bathoor' => $all_bathoor_products, 'asmedah' => $all_asmedah_products, 'mobedat' => $all_mobedat_products, 'other' => $all_other_products]);
+        return ['bathoor' => count($all_bathoor_products), 'asmedah' => count($all_asmedah_products), 'mobedat' => count($all_mobedat_products), 'other' => count($all_other_products)];
 
 //        return $results_bathoor->toArray();
 

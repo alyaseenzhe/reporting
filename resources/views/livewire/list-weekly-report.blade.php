@@ -138,16 +138,28 @@
                         <div class="text-sm">مجموع مبيعات</div>
                     </th>
                     <th>
-                        <div class="text-sm">بذور</div>
+                        <div class="text-sm">#بذور</div>
                     </th>
                     <th>
-                        <div class="text-sm">مبيدات</div>
+                        <div class="text-sm">$بذور</div>
                     </th>
                     <th>
-                        <div class="text-sm">اسمدة</div>
+                        <div class="text-sm">#مبيدات</div>
+                    </th>
+                    <th>
+                        <div class="text-sm">$مبيدات</div>
+                    </th>
+                    <th>
+                        <div class="text-sm">#اسمدة</div>
+                    </th>
+                    <th>
+                        <div class="text-sm">$اسمدة</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm">اخرى</div>
+                        <div class="text-sm">#اخرى</div>
+                    </th>
+                    <th style="border-left: 2px solid black;">
+                        <div class="text-sm">$اخرى</div>
                     </th>
                     <th>
                         <div class="text-sm">مميز 1</div>
@@ -221,16 +233,29 @@
                                     @php $total_grand_total +=  floatval($record['cash'])+floatval($record['postponed_sales'])  @endphp
                                 </td>
                                 <td>
+                                    {{ array_key_exists($key, $category_qty) ?  (array_key_exists("bathoor", $category_qty[$key]) ? $category_qty[$key]['bathoor'] : 0) : "0"}}
+                                </td>
+                                <td>
                                     {{ number_format(round($record['bathoor']/1000)) }}
                                     @php $total_bathoor +=  floatval($record['bathoor']) @endphp
+                                </td>
+                                <td>
+
+                                    {{ array_key_exists($key, $category_qty) ?  (array_key_exists("mobedat", $category_qty[$key]) ? $category_qty[$key]['mobedat'] : 0) : "0"}}
                                 </td>
                                 <td>
                                     {{ number_format(round($record['mobedat']/1000)) }}
                                     @php $total_mobedat +=  floatval($record['mobedat']) @endphp
                                 </td>
                                 <td>
+                                    {{ array_key_exists($key, $category_qty) ?  (array_key_exists("asmedah", $category_qty[$key]) ? $category_qty[$key]['asmedah'] : 0) : "0"}}
+                                </td>
+                                <td>
                                     {{ number_format(round($record['asmedah']/1000)) }}
                                     @php $total_asmedah +=  floatval($record['asmedah']) @endphp
+                                </td>
+                                <td>
+                                    {{ array_key_exists($key, $category_qty) ?  (array_key_exists("other", $category_qty[$key]) ? $category_qty[$key]['other'] : 0) : "0"}}
                                 </td>
                                 <td style="border-left: 2px solid black;">
                                     {{ number_format(round($record['other']/1000)) }}
@@ -265,9 +290,13 @@
                     <td>{{ number_format(round($total_cash/1000)) }}</td>
                     <td>{{ number_format(round($total_postponed/1000)) }}</td>
                     <td style="border-left: 2px solid black;">{{ number_format(round($total_grand_total/1000)) }}</td>
+                    <td>{{ number_format($category_qty_total['bathoor']) }}</td>
                     <td>{{ number_format(round($total_bathoor/1000)) }}</td>
+                    <td>{{ number_format($category_qty_total['mobedat']) }}</td>
                     <td>{{ number_format(round($total_mobedat/1000)) }}</td>
+                    <td>{{ number_format($category_qty_total['asmedah']) }}</td>
                     <td>{{ number_format(round($total_asmedah/1000)) }}</td>
+                    <td>{{ number_format($category_qty_total['other']) }}</td>
                     <td style="border-left: 2px solid black;">{{ number_format(round($total_other/1000)) }}</td>
                     <td>{{ number_format(round($total_sp1/1000)) }}</td>
                     <td>{{ number_format(round($total_sp2/1000)) }}</td>
