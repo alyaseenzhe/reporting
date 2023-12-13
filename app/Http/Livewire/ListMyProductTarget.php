@@ -62,6 +62,7 @@ class ListMyProductTarget extends Component
 
     public function booted() {
 
+        set_time_limit(2000);
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
         }
@@ -74,6 +75,7 @@ class ListMyProductTarget extends Component
     }
 
     public function mount() {
+        set_time_limit(2000);
         $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
         $this->key = now();
 
@@ -84,15 +86,9 @@ class ListMyProductTarget extends Component
 
     }
 
-
-//    public function boot() {
-//        $branches = json_decode(Auth::user()->branches);
-//        if (count($branches) == 1) {
-//            $this->dept_id = $branches[0];
-//        }
-//    }
     public function render()
     {
+        set_time_limit(2000);
         $branches = json_decode(Auth::user()->branches);
         $this->user_branches = $branches;
 
@@ -110,82 +106,9 @@ class ListMyProductTarget extends Component
             }
         }
 
-//        dd($branches);
-//        dd($emps);
-
         return view('livewire.list-my-product-target')
             ->layout('layouts.dashboard');
     }
-
-//    public function updatedDeptId($value) {
-//        $this->reset(['show_msg', 'results', 'items']);
-//
-////        dd('xxxx');
-////        $branches = json_decode(Auth::user()->branches);
-////        if (count($branches) == 1) {
-////            $this->dept_id = $branches[0];
-////        }
-////
-////        if (Auth::user()->user_group->read_type == '1') {
-//////            $this->user_id =
-////        }
-//
-////        if ($value == "all") {
-////
-////            $emp_codes = [];
-////
-////            $branches = json_decode(Auth::user()->branches);
-////
-////            foreach ($branches as $branch) {
-////                $emps = User::join('user_groups', 'user_groups.id', 'users.group')
-////                    ->whereIn('write_product_target', ['1', '2'])
-////                    ->where('branches', 'like', '%"'.$branch.'"%')->get();
-////                foreach ($emps as $emp) {
-////                    array_push($emp_codes, $emp->emp_code);
-////                }
-////            }
-////
-////            $emp_codes = array_unique($emp_codes);
-//////            dd($emp_codes);
-////
-////            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-////                ->whereIn('write_product_target', ['1', '2'])
-////                ->select('users.id', 'users.name')
-////                ->whereNotNull('group')
-////                ->where('role', 'u')
-//////                ->whereNotIn('users.id', [1,13,14,15,16,18,21,38])
-////                ->whereIn('emp_code', $emp_codes)
-////                ->distinct()
-////                ->get();
-////
-////        }
-////        else {
-////        if (count($this->dept_id) == 1) {
-////            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-////                ->where('branches', 'LIKE' ,'%"'.$value[0].'"%')
-////                ->whereNotNull('group')
-////                ->where('role', 'u')
-////                ->whereIn('write_product_target', ['1', '2'])
-//////                ->where('group', '!=', 4)
-//////                ->where('group', '!=', 5)
-//////                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
-////                ->select('users.id', 'users.name', 'users.emp_code')
-////                ->distinct()
-////                ->get();
-////        }
-////        }
-//
-////        dd($this->users);
-//
-////        $this->emit('re-initialize-select2');
-//
-//    }
-
-//    public function updatedUserId($value) {
-//        $this->reset(['selected_month', 'show_msg']);
-//        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
-//        $this->emit('re-initialize-select2');
-//    }
 
     public function updatedSelectedMonth($value) {
         $this->reset(['show_msg']);
@@ -193,6 +116,7 @@ class ListMyProductTarget extends Component
     }
 
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
+        set_time_limit(2000);
         $this->dept_id = $dept_id;
         $this->cat_type = $cat_type;
         $this->sp_type = $sp_type;
@@ -202,8 +126,8 @@ class ListMyProductTarget extends Component
     }
 
     public function generateReport() {
+        set_time_limit(2000);
         $this->validate();
-
 
         if (in_array('dept_all', $this->dept_id)) {
             $this->dept_id = $this->user_branches;
@@ -224,7 +148,6 @@ class ListMyProductTarget extends Component
         }
 
         $this->emit('show-container');
-//        $this->emit('re-initialize-select2');
         $this->items = [];
         $month_stmt = null;
         $this->results = [];
@@ -244,8 +167,6 @@ class ListMyProductTarget extends Component
                 ->distinct()
                 ->get();
         }
-
-//        dd($this->users);
 
         $month_stmt = '';
         $this->list = [];
@@ -355,17 +276,14 @@ class ListMyProductTarget extends Component
                     ->get();
             }
         }
-//        dd($this->new_targets);
 
         $arr_new_targets = $this->new_targets->toArray();
-//        dd($arr_new_targets);
         $product_codes = "";
         foreach ($arr_new_targets as $key => $product) {
             array_push($this->products_items, $product['product_id']);
         }
 
         $this->products_items = array_unique($this->products_items);
-//        dd($this->products_items);
         $this->products_items = $this->filtered_products($this->products_items, $this->cat_type, $this->sp_type, $this->vendor_type);
 
         foreach ($this->products_items as $key => $product) {
@@ -389,7 +307,6 @@ class ListMyProductTarget extends Component
         $month_counter = 1;
 
         $merged_dept = $this->dept_id;
-//            dd($this->dept_id);
         // merge two depts
         if (in_array('3', $this->dept_id)) {
             array_push($merged_dept, "509");
