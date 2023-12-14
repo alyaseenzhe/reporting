@@ -108,67 +108,67 @@
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
                     <th class="whitespace-nowrap">
-                        <div class="text-sm">#</div>
+                        <div class="text-xs">#</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="whitespace-nowrap">
-                        <div class="text-sm">الاسم</div>
+                        <div class="text-xs">الاسم</div>
                     </th>
                     <th>
-                        <div class="text-sm"># عملاء مبيعات</div>
+                        <div class="text-xs"># عملاء مبيعات</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm"># زيارات</div>
+                        <div class="text-xs"># زيارات</div>
                     </th>
                     <th>
-                        <div class="text-sm">$ مستحق</div>
+                        <div class="text-xs">$ مستحق</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm">%المستحق</div>
+                        <div class="text-xs">%المستحق</div>
                     </th>
                     <th>
-                        <div class="text-sm">تحصيل</div>
+                        <div class="text-xs">تحصيل</div>
                     </th>
                     <th>
-                        <div class="text-sm">م نقدية</div>
+                        <div class="text-xs">م نقدية</div>
                     </th>
                     <th>
-                        <div class="text-sm">م آجلة</div>
+                        <div class="text-xs">م آجلة</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm">مجموع مبيعات</div>
+                        <div class="text-xs">مجموع مبيعات</div>
                     </th>
                     <th>
-                        <div class="text-sm">#بذور</div>
+                        <div class="text-xs">#بذور</div>
                     </th>
                     <th>
-                        <div class="text-sm">$بذور</div>
+                        <div class="text-xs">$بذور</div>
                     </th>
                     <th>
-                        <div class="text-sm">#مبيدات</div>
+                        <div class="text-xs">#مبيدات</div>
                     </th>
                     <th>
-                        <div class="text-sm">$مبيدات</div>
+                        <div class="text-xs">$مبيدات</div>
                     </th>
                     <th>
-                        <div class="text-sm">#اسمدة</div>
+                        <div class="text-xs">#اسمدة</div>
                     </th>
                     <th>
-                        <div class="text-sm">$اسمدة</div>
+                        <div class="text-xs">$اسمدة</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm">#اخرى</div>
+                        <div class="text-xs">#اخرى</div>
                     </th>
                     <th style="border-left: 2px solid black;">
-                        <div class="text-sm">$اخرى</div>
+                        <div class="text-xs">$اخرى</div>
                     </th>
                     <th>
-                        <div class="text-sm">مميز 1</div>
+                        <div class="text-xs">مميز 1</div>
                     </th>
                     <th>
-                        <div class="text-sm">مميز 2</div>
+                        <div class="text-xs">مميز 2</div>
                     </th>
                     <th>
-                        <div class="text-sm">مميز 0</div>
+                        <div class="text-xs">مميز 0</div>
                     </th>
                 </tr>
                 </thead>
@@ -290,13 +290,13 @@
                     <td>{{ number_format(round($total_cash/1000)) }}</td>
                     <td>{{ number_format(round($total_postponed/1000)) }}</td>
                     <td style="border-left: 2px solid black;">{{ number_format(round($total_grand_total/1000)) }}</td>
-                    <td>{{ number_format($category_qty_total['bathoor']) }}</td>
+                    <td>{{ isset($category_qty_total['bathoor']) ? number_format($category_qty_total['bathoor']) : 0 }}</td>
                     <td>{{ number_format(round($total_bathoor/1000)) }}</td>
-                    <td>{{ number_format($category_qty_total['mobedat']) }}</td>
+                    <td>{{ isset($category_qty_total['mobedat']) ? number_format($category_qty_total['mobedat']) : 0 }}</td>
                     <td>{{ number_format(round($total_mobedat/1000)) }}</td>
-                    <td>{{ number_format($category_qty_total['asmedah']) }}</td>
+                    <td>{{ isset($category_qty_total['asmedah']) ? number_format($category_qty_total['asmedah']) : 0 }}</td>
                     <td>{{ number_format(round($total_asmedah/1000)) }}</td>
-                    <td>{{ number_format($category_qty_total['other']) }}</td>
+                    <td>{{ isset($category_qty_total['other']) ? number_format($category_qty_total['other']) : 0 }}</td>
                     <td style="border-left: 2px solid black;">{{ number_format(round($total_other/1000)) }}</td>
                     <td>{{ number_format(round($total_sp1/1000)) }}</td>
                     <td>{{ number_format(round($total_sp2/1000)) }}</td>

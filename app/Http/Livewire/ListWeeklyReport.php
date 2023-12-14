@@ -121,7 +121,7 @@ class ListWeeklyReport extends Component
             ->where('accmast.Code', 'like',  $this->area_id.'%')
             ->pluck('accmast.Code as customer_code');
 
-        $this->category_qty_total = $this->categorizeQtyTotal($this->start_date, $this->end_date);
+//        $this->category_qty_total = $this->categorizeQtyTotal($this->start_date, $this->end_date);
 
         $customer_details = $this->customer_details();
         $this->emp_codes = $this->emp_codes();
@@ -617,43 +617,43 @@ class ListWeeklyReport extends Component
         $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'yasser.salah@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'hisham.najeh@alyaseenagri.com'];
         $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'mahmoud.alsabagh@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.sajer@alyaseenagri.com', 'abdulaziz.sharqawi@alyaseenagri.com'];
 
-//        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+//        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
 
         if ($this->area_id == '01') {
-            Mail::to($ahsa_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($ahsa_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '02') {
-            Mail::to($jeddah_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($jeddah_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '03') {
-            Mail::to($riyadh_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($riyadh_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '04') {
-            Mail::to($wadi_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($wadi_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '05') {
-            Mail::to($jouf_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($jouf_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '06') {
-            Mail::to($dammam_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($dammam_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '07') {
-            Mail::to($kharaj_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($kharaj_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '08') {
-            Mail::to($najran_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($najran_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '09') {
-            Mail::to($hail_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($hail_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '10') {
-            Mail::to($tabouk_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($tabouk_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '11') {
-            Mail::to($qaseem_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($qaseem_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
         elseif ($this->area_id == '12') {
-            Mail::to($sajer_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits));
+            Mail::to($sajer_branch)->cc(['bader.albladi@alyaseenagri.com', 'mohamed.shaban@alyaseenagri.com', 'basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
         }
 
         return 0;
@@ -768,7 +768,7 @@ class ListWeeklyReport extends Component
             ->where('SInvoice.SIDate', '<=', $end_date)
             ->whereNotIn('accmast.Code' , ['0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
 //            ->select('accmast.NodeNo as customer_nodeno', 'accmast.Code as customer_code', 'accmast.Arabic_Name as customer_name', 'StudentMast.Code as emp_code','StudentMast.Arabic_Name as emp_name', 'SInvoice.SInvoiceNo', 'SInvoice.PartyNo', 'SInvoice.SIDate')
-            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(SInvoiceNo)) as num')
+            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(accmast.Code)) as num')
             ->groupBy('StudentMast.Code')
             ->orderBy('StudentMast.Code')
             ->pluck('num', 'emp_code')
@@ -811,7 +811,7 @@ class ListWeeklyReport extends Component
             ->where('SInvoice.SIDate', '<=', $end_date)
             ->whereIn('accmast.Code' , ['0000000', '0100000', '0200000', '0300000', '0400000', '0500000', '0600000', '0700000', '0800000', '0900000', '1000000', '1100000', '1200000'])
 //            ->select('accmast.NodeNo as customer_nodeno', 'accmast.Code as customer_code', 'accmast.Arabic_Name as customer_name', 'StudentMast.Code as emp_code','StudentMast.Arabic_Name as emp_name', 'SInvoice.SInvoiceNo', 'SInvoice.PartyNo', 'SInvoice.SIDate')
-            ->selectRaw('StudentMast.Code as emp_code, COUNT(DISTINCT(SInvoiceNo)) as num')
+            ->selectRaw('StudentMast.Code as emp_code, COUNT(accmast.Code) as num')
             ->groupBy('StudentMast.Code')
             ->orderBy('StudentMast.Code')
             ->pluck('num', 'emp_code')
@@ -2022,6 +2022,45 @@ group by Code, Name", [
         $start_date = $start_date . ' 00:00:00';
         $end_date = $end_date . ' 23:59:25';
 
+        $real_area = '3';
+        $a = $this->area_id;
+        if ($a == '01') { // hasa
+            $real_area = '3';
+        }
+        elseif ($a == '02') { // jeddah
+            $real_area = '10';
+        }
+        elseif ($a == '03') { // riyadh
+            $real_area = '7';
+        }
+        elseif ($a == '04') { // wadi
+            $real_area = '13';
+        }
+        elseif ($a == '05') { // jouf
+            $real_area = '4';
+        }
+        elseif ($a == '06') { // dammam
+            $real_area = '6';
+        }
+        elseif ($a == '07') { // Kharaj --
+            $real_area = '5';
+        }
+        elseif ($a == '08') { // Najran
+            $real_area = '12';
+        }
+        elseif ($a == '09') { // Hail
+            $real_area = '11';
+        }
+        elseif ($a == '10') { // tabouk
+            $real_area = '9';
+        }
+        elseif ($a == '11') { // qassim
+            $real_area = '8';
+        }
+        elseif ($a == '12') { // sajer
+            $real_area = '505';
+        }
+
         $bathoor = 0;
         $mobedat = 0;
         $asmedah = 0;
@@ -2034,6 +2073,7 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2055,6 +2095,7 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2071,14 +2112,17 @@ group by Code, Name", [
 //            ->selectRaw('distinct accmast.code,accmast.name, sum(sinvoice.Value*exchangerate+extrafieldstotal) as svalue')
             ->selectRaw('distinct StudentMast.Code as emp_code, COUNT(DISTINCT ProductNo) as product_num')
             ->groupBy('StudentMast.Code')
-            ->unionAll($pinvoice_query_bathoor)
+//            ->unionAll($pinvoice_query_bathoor)
             ->get();
+
+//        dd($sinvoice_query_bathoor);
 
         // mobedat
         $pinvoice_query_mobedat = PInvoice::join('accmast', 'pinvoice.partyno', 'accmast.nodeno')
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2104,6 +2148,7 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2134,6 +2179,7 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2153,6 +2199,7 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2178,6 +2225,7 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
@@ -2207,6 +2255,7 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
+            ->where('accmast.Accmast_Department', $real_area)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
@@ -2628,7 +2677,7 @@ group by Code, Name", [
             $real_area = '7';
         }
         elseif ($a == '04') { // wadi
-            $real_area = '7';
+            $real_area = '13';
         }
         elseif ($a == '05') { // jouf
             $real_area = '4';
