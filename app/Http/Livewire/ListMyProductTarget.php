@@ -385,7 +385,7 @@ class ListMyProductTarget extends Component
 //            array_push($this->results, $fetch_query);
                 }
 
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount
+                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
@@ -453,7 +453,7 @@ class ListMyProductTarget extends Component
 //            array_push($this->results, $fetch_query);
                 }
 
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount
+                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;

@@ -147,10 +147,34 @@
                                 <label class="block font-bold mb-5">خيارات</label>
 
                                 <div class="flex flex-row">
-                                    <div class="flex items-center mb-4 w-full">
-                                        <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
-                                    </div>
+
+                                    @if(count($dept_id) > 1)
+                                        <div class="flex items-center mb-4 w-full">
+                                            <input id="item_summary" name="item_summary" type="checkbox" value="all_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
+                                        </div>
+                                    @elseif(count($dept_id) == 1)
+                                        <div class="flex flex-col items-center mb-4 w-full">
+                                            <div>
+                                                <input id="item_summary_employee" name="item_summary" type="radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف بالموظف</label>
+                                            </div>
+                                            <div>
+                                                <select id="emp_code_selection" name="emp_code_selection"
+                                                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                        style="@error('dept_id') border: solid 1px #fda4af; @enderror">
+                                                    <option value="-1">جميع الموظفين</option>
+                                                    @foreach($users as $emp)
+                                                        <option value="{{ $emp->emp_code }}">{{ $emp->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center mb-4 w-full">
+                                            <input id="item_summary" name="item_summary" type="radio" value="all_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
@@ -183,7 +207,7 @@
                                 @if($record['VendorNo'] != $vendor_id)
                                         <?php $vendor_id = $record['VendorNo']; ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                         <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                     </tr>
                                 @endif
@@ -235,6 +259,9 @@
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
                                         <div class="text-sm">مجموع قيمة</div>
                                     </th>
+                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                        <div class="text-sm">الفرق</div>
+                                    </th>
                                 </tr>
                                 <tr>
 
@@ -259,6 +286,9 @@
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                        <div class="text-sm">%</div>
                                     </th>
                                 </tr>
                                     <?php $new_tr = []; ?>
@@ -286,7 +316,7 @@
                                         <?php $total_new_tr = 0; ?>
                                         <?php $total_new_sales = 0; ?>
 
-                                    <tr class="employee">
+                                    <tr class="employee employee-{{$emp->emp_code}}">
                                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                             <div class="text-sm">{{ $emp->name }}</div>
                                         </th>
@@ -396,10 +426,16 @@
                                             <div class="text-sm">{{ number_format($total_new_tr) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                            <div class="text-sm">{{ number_format($total_new_sales*$record[$item_price]) }}</div>
+                                            <?php $sales_total = $total_new_sales*$record[$item_price]; ?>
+                                            <div class="text-sm">{{ number_format($sales_total) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <div class="text-sm">{{ number_format($total_new_tr*$record[$item_price]) }}</div>
+                                            <?php $target_total = $total_new_tr*$record[$item_price]; ?>
+                                            <div class="text-sm">{{ number_format($target_total) }}</div>
+                                        </th>
+                                        @php $a = $target_total == 0 ? 0 : (($sales_total/$target_total)*100)-100; @endphp
+                                        <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                            <div class="text-sm">{{ number_format($a) }}</div>
                                         </th>
                                     </tr>
                                     @php
@@ -424,7 +460,7 @@
                                             }
                                     @endphp
                                 @endforeach
-                                <tr>
+                                <tr class="emp-total">
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">المجموع</div>
                                     </th>
@@ -512,62 +548,66 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                         <div class="text-sm">{{ number_format($total_f_value) }}</div>
                                     </th>
+                                    @php $a = $total_f_value == 0 ? 0 : (($total_s_value/$total_f_value)*100)-100;  @endphp
+                                    <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ number_format($a) }}</div>
+                                    </th>
                                 </tr>
-                                <tr>
+                                <tr class="emp-diff">
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
                                     </th>
-                                    @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
+                                    @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100)}}</div>
+                                        <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100)}}</div>
                                     </th>
-                                    @php $a = floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100) @endphp
+                                    @php $a = floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100)}}</div>
+                                        <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100)}}</div>
                                     </th>
-                                    @php $a = floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100) @endphp
+                                    @php $a = floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100) @endphp
+                                    @php $a = floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100) @endphp
+                                    @php $a = floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100) @endphp
+                                    @php $a = floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100) @endphp
+                                    @php $a = floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100) @endphp
+                                    @php $a = floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100) @endphp
+                                    @php $a = floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100) @endphp
+                                    @php $a = floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100) @endphp
+                                    @php $a = floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100) @endphp
+                                    @php $a = floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f_qty) == 0 ? 0 : ceil((($total_s_qty/$total_f_qty)*100) - 100) @endphp
-                                    <th colspan="4" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_f_qty) == 0 ? 0 : ceil((($total_s_qty/$total_f_qty)*100) - 100)}}</div>
+                                    @php $a = floatval($total_f_qty) == 0 ? 0 : number_format((($total_s_qty/$total_f_qty)*100) - 100) @endphp
+                                    <th colspan="5" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ floatval($total_f_qty) == 0 ? 0 : number_format((($total_s_qty/$total_f_qty)*100) - 100)}}</div>
                                     </th>
                                 </tr>
                             </div>
@@ -587,7 +627,7 @@
                                     <?php $total_sum_s = 0; ?>
                                     <?php $total_sum_f = 0; ?>
                                 @foreach($users as $emp)
-                                    <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <tr class="employee employee-{{$emp->emp_code}}" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                         <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
                                             <?php $total_sum_s += $all_total_emp_sales[$emp->emp_code]; ?>
                                         <td id="summary-emp-sales-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
@@ -598,7 +638,7 @@
 
                                     </tr>
                                 @endforeach
-                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                <tr class="emp-summary-total" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
                                     <td id="summary-grand-total-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fff6a1" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_s) }}</td>
                                     <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_f) }}</td>
@@ -619,7 +659,7 @@
                                 @if($record['VendorNo'] != $vendor_id)
                                         <?php $vendor_id = $record['VendorNo'] ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                         <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                     </tr>
                                 @endif
@@ -671,6 +711,9 @@
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
                                         <div class="text-sm">مجموع قيمة</div>
                                     </th>
+                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                        <div class="text-sm">الفرق</div>
+                                    </th>
                                 </tr>
                                 <tr>
                                     @foreach ($list as $year_key => $year)
@@ -695,6 +738,9 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">T</div>
                                     </th>
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                            <div class="text-sm">%</div>
+                                        </th>
                                 </tr>
                                     <?php $new_tr = []; ?>
                                     <?php $new_sales = []; ?>
@@ -864,6 +910,10 @@
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                             <div class="text-sm">{{ number_format($dept_forecast*$record[$item_price]) }}</div>
                                         </th>
+                                        @php $a = ($dept_forecast*$record[$item_price]) == 0 ? 0 : (((($dept_sales*$record[$item_price])/($dept_forecast*$record[$item_price]))*100)-100);  @endphp
+                                        <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                            <div class="text-sm">{{ number_format($a) }}</div>
+                                        </th>
                                     </tr>
                                     @php
                                         $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
@@ -975,63 +1025,67 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                         <div class="text-sm">{{ number_format($total_dept_f_value) }}</div>
                                     </th>
+                                    @php $a = $total_dept_f_value == 0 ? 0 : ((($total_dept_s_value/$total_dept_f_value)*100)-100) @endphp
+                                    <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ number_format($a) }}</div>
+                                    </th>
                                 </tr>
 
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
                                     </th>
-                                    @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
+                                    @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100)}}</div>
+                                        <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100)}}</div>
                                     </th>
-                                    @php $a = floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100) @endphp
+                                    @php $a = floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100)}}</div>
+                                        <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100)}}</div>
                                     </th>
-                                    @php $a = floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100) @endphp
+                                    @php $a = floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100) @endphp
+                                    @php $a = floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100) @endphp
+                                    @php $a = floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100) @endphp
+                                    @php $a = floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100) @endphp
+                                    @php $a = floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100) @endphp
+                                    @php $a = floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100) @endphp
+                                    @php $a = floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100) @endphp
+                                    @php $a = floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100) @endphp
+                                    @php $a = floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100) @endphp
+                                    @php $a = floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100) @endphp
                                     <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                        <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                     </th>
-                                    @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
-                                    <th colspan="4" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                        <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
+                                    @php $a = floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
+                                    <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
                                     </th>
                                 </tr>
                             </div>
@@ -1151,9 +1205,10 @@
 
             $("#gen-report").html('<b>إنشاء تقرير</b>');
 
-            $('#item_summary').attr('checked', false);
+            // $('#item_summary').attr('checked', true);
+            $('#item_summary_employee').attr('checked', true);
 
-            $("#item_summary").on('change', function () {
+            $("input[type=checkbox][name=item_summary]").on('change', function () {
                 if(this.checked) {
                     $(".employee").addClass("hide");
                     $(".department").addClass("hide");
@@ -1163,6 +1218,71 @@
                     $(".department").removeClass("hide");
                 }
             });
+
+            $("input[type=radio][name=item_summary]").on('change', function () {
+                if(this.value == 'all_item') {
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+
+                    $(".emp-total").removeClass("hide");
+                    $(".emp-diff").removeClass("hide");
+                    $(".emp-summary-total").removeClass("hide");
+
+                    $(".employee").addClass("hide");
+                    $(".department").addClass("hide");
+                    $("#emp_code_selection").addClass("hide");
+                }
+                else {
+
+                    $("#emp_code_selection").val('-1').change();
+
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+
+                    $(".emp-total").removeClass("hide");
+                    $(".emp-diff").removeClass("hide");
+                    $(".emp-summary-total").removeClass("hide");
+
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+                    $("#emp_code_selection").removeClass("hide");
+                }
+            });
+
+            $("#emp_code_selection").on('change', function () {
+                if($(this).val() == '-1') {
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+
+                    $(".emp-total").removeClass("hide");
+                    $(".emp-diff").removeClass("hide");
+                    $(".emp-summary-total").removeClass("hide");
+
+                    // $(".employee").addClass("hide");
+                    // $(".department").addClass("hide");
+                }
+                else {
+                    emp = $(this).val();
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+
+                    $(".emp-total").removeClass("hide");
+                    $(".emp-diff").removeClass("hide");
+                    $(".emp-summary-total").removeClass("hide");
+
+
+                    $(`.employee:not(.employee-${emp})`).addClass("hide");
+                    $(".department").addClass("hide");
+
+                    $(".emp-total").addClass("hide");
+                    $(".emp-diff").addClass("hide");
+                    $(".emp-summary-total").addClass("hide");
+
+                    // $(".employee").removeClass("hide");
+                    // $(".department").removeClass("hide");
+                }
+            });
+
         });
 
         Livewire.on('finished', () => {
