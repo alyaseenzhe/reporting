@@ -166,33 +166,37 @@
 {{--                            </button>--}}
 {{--                        </div>--}}
                         @if($write_product_target == '2' || $write_product_target == '3')
-                            <div class="mt-8 text-center w-full">
-                                <button id="test-btn"
-                                        style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                            @if(count($dept_id) == 1)
+                                <div class="mt-8 text-center w-full">
+                                        <button id="test-btn"
+                                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                            <span class="mr-2 font-bold">
+                                <span></span>
+                                <span>حفظ</span>
+                            </span>
+                                            <span class="mr-2 font-bold" wire:loading wire:target="processData">
                             <span></span>
-                            <span>حفظ</span>
-                        </span>
-                                    <span class="mr-2 font-bold" wire:loading wire:target="processData">
-                        <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                                </button>
-                            </div>
+                            <span>الرجاء الانتظار</span>
+                            </span>
+                                        </button>
+                                </div>
+                            @endif
                         @elseif($write_product_target == '1')
-                            <div class="mt-8 text-center w-full">
-                                <button id="emptest-btn"
-                                        style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                            @if(count($dept_id) == 1)
+                                <div class="mt-8 text-center w-full">
+                                    <button id="emptest-btn"
+                                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                            <span class="mr-2 font-bold">
+                                <span></span>
+                                <span>حفظ</span>
+                            </span>
+                                        <span class="mr-2 font-bold" wire:loading wire:target="processData">
                             <span></span>
-                            <span>حفظ</span>
-                        </span>
-                                    <span class="mr-2 font-bold" wire:loading wire:target="processData">
-                        <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                                </button>
-                            </div>
+                            <span>الرجاء الانتظار</span>
+                            </span>
+                                    </button>
+                                </div>
+                            @endif
                         @endif
                     @endif
                 @endif
@@ -229,7 +233,7 @@
                                         <span class="font-bold">SH</span>
                                         تعني المبيعات التاريخية (نفس الشهر من العام السابق)</li>
                                     <li>رمز
-                                        <span class="font-bold">F</span>
+                                        <span class="font-bold">T</span>
                                         تعني المستهدف المتوقع</li>
                                 </ul>
                                 {{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رمز SC تعني المبيعات الحالية</label>--}}
@@ -250,6 +254,7 @@
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">النسبة</th>
                         </tr>
+                        @dd($emps)
                         @foreach($emps as $key => $employee)
                             <tr style="background-color: #FFFFFF">
                                 <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>
@@ -327,7 +332,7 @@
                                                 <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
                                             </div>
                                         </td>
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                         <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                     </tr>
                                 @endif
@@ -692,39 +697,48 @@
             </div>
             <div id="summary-container" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
                 <div class="text-2xl bold mb-4">المجاميع</div>
-                <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
-                    <tbody class="text-sm divide-y divide-gray-100">
+                <div>
+                    <table id="tbl3-summary" style="border: 2px solid black; margin-bottom: 20px;" class="table-fixed table-container w-full border text-center">
+                        <tbody class="text-sm divide-y divide-gray-100">
+                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع قيم المستهدف</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق%</td>
+                        </tr>
+                        <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td id="summary-emp-total-val" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(array_sum($all_total_emp_sales)) }}</td>
+                            <td id="historical-grand-total-sales" style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
+                                <?php $single_emp_diff = $total_historical == 0? "*" :  number_format(((array_sum($all_total_emp_sales)/$total_historical)*100)-100); ?>
+                            <td id="summary-emp-total-diff" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                        <tbody class="text-sm divide-y divide-gray-100">
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الموظف</td>
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع القيم</td>
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">قيم المستهدف</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">% المستهدف من المجموع</td>
                         </tr>
-                        <?php $total_sum_val = 0; ?>
-                    @foreach($emps as $emp)
-                        <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                            <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
-                            <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
-                                <?php $single_emp_diff = $total_historical == 0? 0 :  number_format((($all_total_emp_sales[$emp->emp_code]/$total_historical)*100)-100); ?>
-                            <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
-                            <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
-                        </tr>
-                    @endforeach
-                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
-                        <td id="summary-grand-total-emp-val" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>
-                        <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>
-                        <td id="summary-grand-total-emp-diff" style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>
-                    </tr>
-                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>
-                        <td id="historical-grand-total-sales" colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                            <?php $total_sum_val = 0; ?>
+                        @foreach($emps as $emp)
+                            <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                                <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
+                                <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
+                                    <?php $single_emp_diff = $total_historical == 0? 0 :  number_format(($all_total_emp_sales[$emp->emp_code]/(array_sum($all_total_emp_sales)))*100, 2); ?>
+                                <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
+                                    <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         @elseif(count($dept_id) > 1)
             <div id="table-container2" class="overflow-x-auto w-full">
@@ -741,7 +755,7 @@
                             @if($record['VendorNo'] != $vendor_id)
                                     <?php $vendor_id = $record['VendorNo'] ?>
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                     <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                 </tr>
                             @endif
@@ -793,6 +807,9 @@
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
                                     <div class="text-sm">مجموع قيمة</div>
                                 </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">الفرق</div>
+                                </th>
                             </tr>
                             <tr>
                                 @foreach ($current_year_list as $year_key => $year)
@@ -801,7 +818,7 @@
                                             <div class="text-sm">SH</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <div class="text-sm">F</div>
+                                            <div class="text-sm">T</div>
                                         </th>
                                     @endforeach
                                 @endforeach
@@ -809,13 +826,16 @@
                                     <div class="text-sm">SH</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                    <div class="text-sm">F</div>
+                                    <div class="text-sm">T</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                     <div class="text-sm">SH</div>
                                 </th>
                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                    <div class="text-sm">F</div>
+                                    <div class="text-sm">T</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">%</div>
                                 </th>
                             </tr>
                                 <?php $new_tr = []; ?>
@@ -1001,6 +1021,10 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">{{ number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
+                                    @php $a = ($dept_forecast*$record[$item_price]) == 0 ? 0 : number_format(((($dept_sales*$record[$item_price])/($dept_forecast*$record[$item_price]))*100) - 100) @endphp
+                                    <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ $a }}</div>
+                                    </th>
                                 </tr>
                                 @php
                                     $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
@@ -1112,6 +1136,10 @@
                                 <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_value) }}</div>
                                 </th>
+                                @php $a = $total_dept_f_value == 0 ? 0 : number_format((($total_dept_s_value/$total_dept_f_value)*100) - 100) @endphp
+                                <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                    <div class="text-sm">{{ number_format($a)  }}</div>
+                                </th>
                             </tr>
 
 
@@ -1119,57 +1147,57 @@
                                 <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                     <div class="text-sm">الفرق %</div>
                                 </th>
-                                @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
+                                @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100) @endphp
+                                @php $a = floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100) @endphp
+                                @php $a = floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100) @endphp
+                                @php $a = floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100) @endphp
+                                @php $a = floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100) @endphp
+                                @php $a = floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100) @endphp
+                                @php $a = floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100) @endphp
+                                @php $a = floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100) @endphp
+                                @php $a = floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100) @endphp
+                                @php $a = floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100) @endphp
+                                @php $a = floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100) @endphp
+                                @php $a = floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
-                                <th colspan="4" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
+                                @php $a = floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
+                                <th colspan="5" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                    <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
                                 </th>
                                 @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
                                 {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
@@ -1192,7 +1220,7 @@
                         {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SH</td>
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">F</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">T</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
                     </tr>
                         <?php $total_dept_sum_s = 0; ?>
@@ -1297,6 +1325,53 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
+        function calculate_sum_all() {
+            total_val = 0;
+            historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
+
+            $(`[id ^='total-val-col--']`).each(function () {
+                total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                console.log('total-col:'+$(this).text());
+                // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+            });
+
+            total_diff = ((total_val/historical_sales)*100)-100;
+            $("#summary-emp-total-val").text(total_val.toLocaleString());
+            $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+        }
+        function calculate_sum_emp(emp_codes) {
+
+            // historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
+            summary_total_val = $("#summary-emp-total-val").text().replace(/,/g, "");
+
+            // $(`[id ^='total-val-col--']`).each(function () {
+            //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+            //     console.log('total-col:'+$(this).text());
+            //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+            //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+            //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+            // });
+
+            employee_code.forEach(function (element, idx, array) {
+                total_val = 0;
+                $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                    total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                    // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                    // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                    // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                });
+                diff = (total_val/summary_total_val)*100
+                $(`#summary-emp-val-${element}`).text(total_val.toLocaleString());
+                $(`#summary-emp-diff-${element}`).text(diff.toFixed(2));
+            });
+
+            // total_diff = ((total_val/historical_sales)*100)-100;
+            // $("#summary-emp-total-val").text(total_val.toLocaleString());
+            // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+        }
+
         var employee_code = [];
         Livewire.on('show-container', () => {
             // $('th span').empty();
@@ -1463,27 +1538,29 @@
                 $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
 
 
-                var summary_total_all = 0;
-                employee_code.forEach(function (element, idx, array) {
-                    emp_total = 0;
-                    $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
-                        emp_total = emp_total + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-                        console.log('single-emp'+element+':'+ $(this).text());
-                        // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                    });
-                    console.log('total-emp'+element+':'+ emp_total);
-                    $("#summary-emp-val-"+element).text(emp_total.toLocaleString());
-                    emp_total_diff = Math.round(((emp_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
-                    $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
-
-                    summary_total_all += emp_total;
-                });
-
-                summary_total_all_diff = Math.round(((summary_total_all/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
-
-                // $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
-                $("#summary-grand-total-emp-val").text(summary_total_all.toLocaleString());
-                $("#summary-grand-total-emp-diff").text(summary_total_all_diff.toLocaleString());
+                calculate_sum_all();
+                calculate_sum_emp();
+                // var summary_total_all = 0;
+                // employee_code.forEach(function (element, idx, array) {
+                //     emp_total = 0;
+                //     $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                //         emp_total = emp_total + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                //         console.log('single-emp'+element+':'+ $(this).text());
+                //         // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                //     });
+                //     console.log('total-emp'+element+':'+ emp_total);
+                //     $("#summary-emp-val-"+element).text(emp_total.toLocaleString());
+                //     emp_total_diff = Math.round(((emp_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+                //     $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                //
+                //     summary_total_all += emp_total;
+                // });
+                //
+                // summary_total_all_diff = Math.round(((summary_total_all/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+                //
+                // // $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                // $("#summary-grand-total-emp-val").text(summary_total_all.toLocaleString());
+                // $("#summary-grand-total-emp-diff").text(summary_total_all_diff.toLocaleString());
 
 
                 //
@@ -1647,12 +1724,22 @@
                 //
                 // $(".emps_percentage_readonly").text(100-total);
 
+                historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
                 old_value = old_qty*parseFloat($(item_price_txt).text().replace(/,/g, ""));
-                old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+                // old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+
+                old_summary_single_emp = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+                new_summary_single_emp = (old_summary_single_emp-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                $("#summary-emp-val-"+txt_original[4]).text(new_summary_single_emp.toLocaleString());
+                single_summary_diff = (new_summary_single_emp/historical_sales)*100;
+                $("#summary-emp-diff-"+txt_original[4]).text(single_summary_diff.toFixed(2));
+
+
+                old_summary_emp_total = parseFloat($("#summary-emp-total-val").text().replace(/,/g, ""));
                 old_summary_emp_grand_total = parseFloat($("#summary-grand-total-emp-val").text().replace(/,/g, ""));
 
                 new_summary_value = (old_summary_emp_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
-                new_summary_diff = ((new_summary_value/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
+                new_summary_diff = ((new_summary_value/parseFloat(historical_sales))*100)-100;
 
                 new_summary_emp_grand_total = (old_summary_emp_grand_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
                 new_summary_emp_grand_diff = ((new_summary_emp_grand_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
@@ -1661,9 +1748,11 @@
                 console.log('new_value:'+$(this).val());
                 console.log('price:'+parseFloat($(item_price_txt).text().replace(/,/g, "")));
                 console.log('new_summary_value:'+new_summary_value);
+                console.log('historical_sales:'+historical_sales);
 
-                $("#summary-emp-val-"+txt_original[4]).text(new_summary_value.toLocaleString());
-                $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
+                $("#summary-emp-total-val").text(new_summary_value.toLocaleString());
+                // $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
+                $("#summary-emp-total-diff").text(Math.round(new_summary_diff).toLocaleString());
 
                 $("#summary-grand-total-emp-val").text(new_summary_emp_grand_total.toLocaleString());
                 $("#summary-grand-total-emp-diff").text(Math.round(new_summary_emp_grand_diff).toLocaleString());
@@ -1898,6 +1987,7 @@
                                     txt = txt.split("--");
                                     product_id = txt[1];
                                     txt= txt[1]+"--"+txt[2]+"--"+txt[3];
+                                    // total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
                                     console.log(txt);
                                     var target_entered = element.value;
 
@@ -1941,8 +2031,12 @@
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
                                             total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                            console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                            $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                            // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                            // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                            // console.log("total-count-final:"+total_count);
+                                            // console.log("price-final:"+$(`item-price-${product_id}`).text());
+                                            // console.log("price:"+`item-price-${product_id}`);
+                                            $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(`#item-price-${product_id}`).text()));
                                         });
 
                                         console.log(element);
@@ -1965,6 +2059,9 @@
 
                             $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                         }
+
+                        calculate_sum_all();
+                        calculate_sum_emp();
                     }
                 });
             });
@@ -1985,10 +2082,27 @@
                         btn_id = btn_id.split('--');
                         selector_txt = 'totaltarget--'+ btn_id[1];
                         product_id = btn_id[1];
+                        item_price_txt = "#item-price-"+product_id;
                         console.log(selector_txt);
+                        historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
                         const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
                         console.log(elements);
+
+                        // total_val = 0;
+                        // $(`[id ^='total-val-col--']`).each(function () {
+                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                        //     console.log('total-col:'+$(this).text());
+                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        //
+                        // total_diff = ((total_val/historical_sales)*100)-100;
+                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
+                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+
+                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
                         elements.forEach(element =>{
                             if (element.value) {
@@ -2066,13 +2180,28 @@
                                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                     total_count = 0;
-                                    $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
-                                        total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                        console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                        $("#total-emp--"+product_id+"--"+element).text(total_count);
-                                    });
+                                    // var total_single_val = 0;
+                                    // // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
+                                    // //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                                    // //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                    // //     $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                    // //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                                    // //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
+                                    // // });
+                                    // $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                                    //     // total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                                    //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                    //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                    //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                                    //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
+                                    // });
 
-                                    console.log(element);
+                                    // emp_diff = (total_single_val/parseFloat($("#summary-emp-total-val").text()))*100;
+                                    // $('summary-emp-val-'+element).text(total_single_val.toLocaleString());
+                                    // $('summary-emp-diff-'+element).text(emp_diff.toLocaleString());
+                                    //
+                                    //
+                                    // console.log(element);
                                 });
 
 
@@ -2091,7 +2220,29 @@
 
                         });
 
-                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                        // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
+                        //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                        //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        // total_val = 0;
+                        // $(`[id ^='total-val-col--']`).each(function () {
+                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                        //     console.log('total-col:'+$(this).text());
+                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        //
+                        // total_diff = ((total_val/historical_sales)*100)-100;
+                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
+                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+                        //
+                        // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+
+                        calculate_sum_all();
+                        calculate_sum_emp();
                     }
                 });
             });
@@ -2235,6 +2386,8 @@
                         // $(`[id ^='totaltarget--${product_code}--5']`).val(value_entered).change();
                         $(`input:not([disabled])[id ^='totaltarget--${product_code}']`).val(document.querySelector(`input:not([disabled])[id ^='totaltarget--${product_code}']`).value).change();
                         // end here
+
+                        calculate_sum_emp();
                     }
                 });
             });
