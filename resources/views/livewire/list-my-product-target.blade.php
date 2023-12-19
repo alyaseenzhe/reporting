@@ -328,7 +328,7 @@
                                                         $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
                                                         $month_num = "month".$month_counter;
                                                         ?>
-                                                    <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
+                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                         <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                     @php $total_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
                                                     @switch($month_counter)
@@ -374,7 +374,7 @@
                                                         <?php
                                                         $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id[0])->where('user_id', $emp->id)->first(): 0;
                                                         ?>
-                                                    <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
+                                                    <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "": $new_result->target) : ""  }}</div>
                                                         <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     @php $total_new_tr += $new_result ? $new_result->target : 0; @endphp
                                                     @switch($month_counter)
@@ -420,22 +420,22 @@
                                             @endforeach
                                         @endforeach
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                            <div class="text-sm">{{ number_format($total_new_sales) }}</div>
+                                            <div class="text-sm">{{ $total_new_sales == 0 ? "" : number_format($total_new_sales) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <div class="text-sm">{{ number_format($total_new_tr) }}</div>
+                                            <div class="text-sm">{{ $total_new_tr == 0 ? "" : number_format($total_new_tr) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                             <?php $sales_total = $total_new_sales*$record[$item_price]; ?>
-                                            <div class="text-sm">{{ number_format($sales_total) }}</div>
+                                            <div class="text-sm">{{ $sales_total == 0 ? "" : number_format($sales_total) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                             <?php $target_total = $total_new_tr*$record[$item_price]; ?>
-                                            <div class="text-sm">{{ number_format($target_total) }}</div>
+                                            <div class="text-sm">{{ $target_total == 0 ? "" : number_format($target_total) }}</div>
                                         </th>
                                         @php $a = $target_total == 0 ? 0 : (($sales_total/$target_total)*100)-100; @endphp
                                         <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                            <div class="text-sm">{{ number_format($a) }}</div>
+                                            <div class="text-sm">{{ $a == 0 ? "" : number_format($a) }}</div>
                                         </th>
                                     </tr>
                                     @php
@@ -465,92 +465,92 @@
                                         <div class="text-sm">المجموع</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s1 }}</div>
+                                        <div class="text-sm">{{ $total_s1 == 0 ? "" : $total_s1 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f1 }}</div>
+                                        <div class="text-sm">{{ $total_f1 == 0 ? "" : $total_f1 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s2 }}</div>
+                                        <div class="text-sm">{{ $total_s2 == 0 ? "" : $total_s2 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f2 }}</div>
+                                        <div class="text-sm">{{ $total_f2 == 0 ? "" : $total_f2 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s3 }}</div>
+                                        <div class="text-sm">{{ $total_s3 == 0 ? "" : $total_s3 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f3 }}</div>
+                                        <div class="text-sm">{{ $total_f3 == 0 ? "" : $total_f3 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s4 }}</div>
+                                        <div class="text-sm">{{ $total_s4 == 0 ? "" : $total_s4 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f4 }}</div>
+                                        <div class="text-sm">{{ $total_f4 == 0 ? "" : $total_f4 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s5 }}</div>
+                                        <div class="text-sm">{{ $total_s5 == 0 ? "" : $total_s5 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f5 }}</div>
+                                        <div class="text-sm">{{ $total_f5 == 0 ? "" : $total_f5 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s6 }}</div>
+                                        <div class="text-sm">{{ $total_s6 == 0 ? "" : $total_s6 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f6 }}</div>
+                                        <div class="text-sm">{{ $total_f6 == 0 ? "" : $total_f6 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s7 }}</div>
+                                        <div class="text-sm">{{ $total_s7 == 0 ? "" : $total_s7 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f7 }}</div>
+                                        <div class="text-sm">{{ $total_f7 == 0 ? "" : $total_f7 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s8 }}</div>
+                                        <div class="text-sm">{{ $total_s8 == 0 ? "" : $total_s8 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f8 }}</div>
+                                        <div class="text-sm">{{ $total_f8 == 0 ? "" : $total_f8 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s9 }}</div>
+                                        <div class="text-sm">{{ $total_s9 == 0 ? "" : $total_s9 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f9 }}</div>
+                                        <div class="text-sm">{{ $total_f9 == 0 ? "" : $total_f9 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s10 }}</div>
+                                        <div class="text-sm">{{ $total_s10 == 0 ? "" : $total_s10 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f10 }}</div>
+                                        <div class="text-sm">{{ $total_f10 == 0 ? "" : $total_f10 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s11 }}</div>
+                                        <div class="text-sm">{{ $total_s11 == 0 ? "" : $total_s11 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f11 }}</div>
+                                        <div class="text-sm">{{ $total_f11 == 0 ? "" : $total_f11 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ $total_s12 }}</div>
+                                        <div class="text-sm">{{ $total_s12 == 0 ? "" : $total_s12 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ $total_f12 }}</div>
+                                        <div class="text-sm">{{ $total_f12 == 0 ? "" : $total_f12 }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10;background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($total_s_qty) }}</div>
+                                        <div class="text-sm">{{ $total_s_qty == 0 ? "" : number_format($total_s_qty) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10;background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($total_f_qty) }}</div>
+                                        <div class="text-sm">{{ $total_f_qty == 0 ? "" : number_format($total_f_qty) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($total_s_value) }}</div>
+                                        <div class="text-sm">{{ $total_s_value == 0 ? "" : number_format($total_s_value) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($total_f_value) }}</div>
+                                        <div class="text-sm">{{ $total_f_value == 0 ? "" : number_format($total_f_value) }}</div>
                                     </th>
                                     @php $a = $total_f_value == 0 ? 0 : (($total_s_value/$total_f_value)*100)-100;  @endphp
                                     <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                        <div class="text-sm">{{ number_format($a) }}</div>
+                                        <div class="text-sm">{{ $a == 0 ? "" : number_format($a) }}</div>
                                     </th>
                                 </tr>
                                 <tr class="emp-diff">

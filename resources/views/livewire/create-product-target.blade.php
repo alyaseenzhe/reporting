@@ -1196,7 +1196,7 @@
                                 </th>
                                 @php $a = $total_dept_f_value == 0 ? 0 : number_format((($total_dept_s_value/$total_dept_f_value)*100) - 100) @endphp
                                 <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                    <div class="text-sm">{{ number_format($a)  }}</div>
+                                    <div class="text-sm">{{ $a  }}</div>
                                 </th>
                             </tr>
 
