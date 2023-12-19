@@ -249,38 +249,96 @@
         @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '3' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0')
             <div id="percentage-container" class="mb-6">
                 <div style="background-color: whitesmoke; padding: 30px" class="overflow-x-auto w-full">
-                    <table id="tbl1" style="border: 2px solid black;" class="table-container w-full border text-center">
-                        <tr>
+                    <table wire:key="tbl1-{{time()}}" id="tbl1" style="border: 2px solid black;" class="table-container w-full border text-center">
+                        <tr wire:key="tbl-title-{{time()}}">
+                            <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">كود الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">النسبة</th>
                         </tr>
-                        @dd($emps)
-                        @foreach($emps as $key => $employee)
-                            <tr style="background-color: #FFFFFF">
-                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>
-                                <td style="border: 2px solid black; z-index: 10" class="border">
-                                    <div class="w-full">
-                                        @if($key === array_key_last($emps->toArray()))
-                                            <div wire:ignore id="emp--{{$employee->emp_code}}--readonly"
-                                                 class="emps_percentage_readonly block text-gray-900 w-full text-center"
-                                                 style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
-                                                {{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null}}
-                                            </div>
-                                        @else
-                                            <input id="emp--{{$employee->emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
-                                                   value="{{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null }}"
-                                                   class="emps_percentage block text-gray-900 w-full text-center"
-                                                   style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
-                                        @endif
-                                        @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
-                                    </div>
+                        @foreach($employee_branch_names as $branch_key => $branch_emps)
+                            <tr wire:key="branch-code-{{$branch_key}}-{{time()}}" style="background-color: #dcdcdc;">
+                                <td colspan="3">
+                                    @if($branch_key == "0101")
+                                        فرع الاحساء
+                                    @elseif($branch_key == "0102")
+                                        فرع جدة
+                                    @elseif($branch_key == "0103")
+                                        فرع الرياض
+                                    @elseif($branch_key == "0104")
+                                        فرع وادي الدواسر
+                                    @elseif($branch_key == "0105")
+                                        فرع الجوف
+                                    @elseif($branch_key == "0106")
+                                        فرع الدمام
+                                    @elseif($branch_key == "0107")
+                                        فرع الخرج
+                                    @elseif($branch_key == "0108")
+                                        فرع نجران
+                                    @elseif($branch_key == "0109")
+                                        فرع حائل
+                                    @elseif($branch_key == "0110")
+                                        فرع تبوك
+                                    @elseif($branch_key == "0111")
+                                        فرع القصيم
+                                    @elseif($branch_key == "0112")
+                                        فرع ساجر
+                                    @else
+                                        المركز الرئيسي
+                                    @endif
                                 </td>
                             </tr>
+                            @foreach($branch_emps as $key => $emp)
+                                @php $emp_code = $emps->where('id', $emp)->first()['emp_code']; @endphp
+                                <tr wire:key="emp-code-{{$key}}-{{time()}}" style="background-color: #FFFFFF">
+                                    {{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
+                                    <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['emp_code'] : null}}</td>
+                                    <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['name'] : null}}</td>
+                                    <td style="border: 2px solid black; z-index: 10" class="border">
+                                        <div class="w-full">
+                                            @if($key === array_key_last($branch_emps))
+                                                <div wire:ignore id="emp--{{$emp_code}}--readonly"
+                                                     class="emps_percentage_readonly block text-gray-900 w-full text-center"
+                                                     style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
+                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}
+                                                </div>
+                                            @else
+                                                <input id="emp--{{$emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
+                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"
+                                                       class="emps_percentage block text-gray-900 w-full text-center"
+                                                       style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
+                                            @endif
+                                            @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @endforeach
+{{--                        @foreach($emps as $key => $employee)--}}
+{{--                            <tr style="background-color: #FFFFFF">--}}
+{{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
+{{--                                <td style="border: 2px solid black; z-index: 10" class="border">--}}
+{{--                                    <div class="w-full">--}}
+{{--                                        @if($key === array_key_last($emps->toArray()))--}}
+{{--                                            <div wire:ignore id="emp--{{$employee->emp_code}}--readonly"--}}
+{{--                                                 class="emps_percentage_readonly block text-gray-900 w-full text-center"--}}
+{{--                                                 style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">--}}
+{{--                                                {{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null}}--}}
+{{--                                            </div>--}}
+{{--                                        @else--}}
+{{--                                            <input id="emp--{{$employee->emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"--}}
+{{--                                                   value="{{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null }}"--}}
+{{--                                                   class="emps_percentage block text-gray-900 w-full text-center"--}}
+{{--                                                   style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>--}}
+{{--                                        @endif--}}
+{{--                                        @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
+{{--                                    </div>--}}
+{{--                                </td>--}}
+{{--                            </tr>--}}
+{{--                        @endforeach--}}
                     </table>
 
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->calculate_all_product_target == '1')
-                        @if($edit_special_product == 1)
+                        @if($edit_special_product == 1 && count($dept_id) == 1)
                             <div class="mt-8 text-center w-full">
                                 <button id="recalculate-btn"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -290,7 +348,7 @@
                         </span>
                                 </button>
                             </div>
-                        @elseif($edit_special_product == 0)
+                        @elseif($edit_special_product == 0 && count($dept_id) == 1)
                             <div class="mt-8 text-center w-full">
                                 <button id="recalculate-btn-not-special"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -1952,6 +2010,8 @@
                             });
 
                             $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            calculate_sum_all();
+                            calculate_sum_emp();
                         }
                     }
                 });
@@ -2058,10 +2118,9 @@
                             });
 
                             $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            calculate_sum_all();
+                            calculate_sum_emp();
                         }
-
-                        calculate_sum_all();
-                        calculate_sum_emp();
                     }
                 });
             });

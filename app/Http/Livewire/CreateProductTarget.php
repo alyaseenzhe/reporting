@@ -21,6 +21,7 @@ class CreateProductTarget extends Component
     public $dept_id = ["-1"];
     public $selected_month;
     public $employee_ids_in_my_branch = [];
+    public $employee_branch_names = [];
     public $user_branches;
     public $old_targets = [];
     public $cat_type = ["cat_all"];
@@ -214,12 +215,82 @@ class CreateProductTarget extends Component
 
     public function generateReport()
     {
+        $this->emps = [];
+        $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
         $this->reset('target', 'results', 'current_year_list', 'current_target', 'current_target_to_edit', 'old_targets');
         $this->validate();
 //        $this->results = [];
 //        $current_year_list = [];
+
+        $this->employee_ids_in_my_branch = [];
+        foreach ($this->dept_id as $branch) {
+            $emps = User::join('user_groups', 'user_groups.id', 'users.group')
+                ->where('branches', 'like', '%"'.$branch.'"%')
+                ->whereIn('write_product_target', ['1', '2'])
+                ->select('users.id')
+                ->get();
+
+            $dept_code = "";
+
+            if ($branch == "3") {
+                $dept_code = "0101";
+            }
+            elseif ($branch == "6") {
+                $dept_code = "0106";
+            }
+            elseif ($branch == "4") {
+                $dept_code = "0105";
+            }
+            elseif ($branch == "11") {
+                $dept_code = "0109";
+            }
+            elseif ($branch == "8") {
+                $dept_code = "0111";
+            }
+            elseif ($branch == "505") {
+                $dept_code = "0112";
+            }
+            elseif ($branch == "5") {
+                $dept_code = "0107";
+            }
+            elseif ($branch == "7") {
+                $dept_code = "0103";
+            }
+            elseif ($branch == "9") {
+                $dept_code = "0110";
+            }
+            elseif ($branch == "10") {
+                $dept_code = "0102";
+            }
+            elseif ($branch == "12") {
+                $dept_code = "0108";
+            }
+            elseif ($branch == "13") {
+                $dept_code = "0104";
+            }
+            else {
+                $dept_code = "0001";
+            }
+
+
+            foreach ($emps as $emp) {
+                array_push($this->employee_ids_in_my_branch, $emp->id);
+                if (!array_key_exists($dept_code, $this->employee_branch_names)) {
+//                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
+                    $this->employee_branch_names[$dept_code] = [$emp->id];
+                }
+                else {
+                    $this->employee_branch_names[$dept_code][] = $emp->id;
+//                    $this->employee_ids_in_my_branch[$branch][] = $emp->id;
+//                    array_push($this->employee_ids_in_my_branch[$branch][], $emp->id);
+                }
+            }
+        }
+
+//        dd($this->employee_branch_names);
+//        dd($this->employee_ids_in_my_branch);
 
         if (count($this->dept_id) == 1 && $this->dept_id[0] == "-1") {
             $this->dept_id = $this->user_branches;
@@ -429,10 +500,17 @@ class CreateProductTarget extends Component
             ->where('branch', $this->dept_id[0])
             ->get();
 
+//        $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
+////            ->where('branch', $this->dept_id[0])
+//            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+//            ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
+//            ->get();
         $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
-            ->where('branch', $this->dept_id[0])
+            ->whereIn('users.id', $this->employee_ids_in_my_branch)
             ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
             ->get();
+//        dd($this->employee_ids_in_my_branch);
+//        dd($this->emps_percentage);
 
         $this->special_product_id = SpecialProduct::all();
 
@@ -945,6 +1023,8 @@ class CreateProductTarget extends Component
 
     public function generateBranchesReport()
     {
+        $this->emps = [];
+        $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
         $this->reset('target');
@@ -957,11 +1037,65 @@ class CreateProductTarget extends Component
                 ->whereIn('write_product_target', ['1', '2'])
                 ->select('users.id')
                 ->get();
+
+            $dept_code = "";
+
+            if ($branch == "3") {
+                $dept_code = "0101";
+            }
+            elseif ($branch == "6") {
+                $dept_code = "0106";
+            }
+            elseif ($branch == "4") {
+                $dept_code = "0105";
+            }
+            elseif ($branch == "11") {
+                $dept_code = "0109";
+            }
+            elseif ($branch == "8") {
+                $dept_code = "0111";
+            }
+            elseif ($branch == "505") {
+                $dept_code = "0112";
+            }
+            elseif ($branch == "5") {
+                $dept_code = "0107";
+            }
+            elseif ($branch == "7") {
+                $dept_code = "0103";
+            }
+            elseif ($branch == "9") {
+                $dept_code = "0110";
+            }
+            elseif ($branch == "10") {
+                $dept_code = "0102";
+            }
+            elseif ($branch == "12") {
+                $dept_code = "0108";
+            }
+            elseif ($branch == "13") {
+                $dept_code = "0104";
+            }
+            else {
+                $dept_code = "0001";
+            }
+
+
             foreach ($emps as $emp) {
                 array_push($this->employee_ids_in_my_branch, $emp->id);
+                if (!array_key_exists($dept_code, $this->employee_branch_names)) {
+//                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
+                    $this->employee_branch_names[$dept_code] = [$emp->id];
+                }
+                else {
+                    $this->employee_branch_names[$dept_code][] = $emp->id;
+//                    $this->employee_ids_in_my_branch[$branch][] = $emp->id;
+//                    array_push($this->employee_ids_in_my_branch[$branch][], $emp->id);
+                }
             }
         }
 
+//        dd($this->employee_branch_names);
 //        dd($this->employee_ids_in_my_branch);
 
 
