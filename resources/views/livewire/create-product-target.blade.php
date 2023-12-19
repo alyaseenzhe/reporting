@@ -733,7 +733,7 @@
                                                 {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
                                                 {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
                                                 {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
-                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: $old_diff_value}}" class="w-full form-input" disabled="disabled">
+                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
                                                 {{--                                    @endif--}}
                                                 {{--                                <span id="x" class="w-full">--}}
 
@@ -2310,6 +2310,15 @@
                 // alert('hi');
 
                 $("#test-btn").html('<b>الرجاء الإنتظار..</b>');
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
 
 
                 targets = [];
@@ -2366,6 +2375,15 @@
             $('#emptest-btn').on('click', function () {
                 // alert('hi');
                 $("#emptest-btn").html('<b>الرجاء الإنتظار..</b>');
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
 
                 targets = [];
                 emps_percents = [];
