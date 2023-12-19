@@ -965,7 +965,7 @@
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
+                                                <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                     <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                     <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>
                                                 @php $total_dept_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
@@ -1020,7 +1020,7 @@
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
+                                                <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
                                                     <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
 
@@ -1068,20 +1068,20 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_sales) }}</div>
+                                        <div class="text-sm">{{ $dept_sales == 0 ? "" : number_format($dept_sales) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_forecast) }}</div>
+                                        <div class="text-sm">{{ $dept_forecast == 0 ? "" : number_format($dept_forecast) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_sales*$record[$item_price]) }}</div>
+                                        <div class="text-sm">{{ ($dept_sales*$record[$item_price]) == 0 ? "" : number_format($dept_sales*$record[$item_price]) }}</div>
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_forecast*$record[$item_price]) }}</div>
+                                        <div class="text-sm">{{ ($dept_forecast*$record[$item_price]) == 0 ? "" : number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
                                     @php $a = ($dept_forecast*$record[$item_price]) == 0 ? 0 : number_format(((($dept_sales*$record[$item_price])/($dept_forecast*$record[$item_price]))*100) - 100) @endphp
                                     <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                        <div class="text-sm">{{ $a }}</div>
+                                        <div class="text-sm">{{ $a == 0 ? "" : $a }}</div>
                                     </th>
                                 </tr>
                                 @php
