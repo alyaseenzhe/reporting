@@ -63,6 +63,8 @@ class ListMyProductTarget extends Component
     public function booted() {
 
         set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
         }
@@ -76,6 +78,8 @@ class ListMyProductTarget extends Component
 
     public function mount() {
         set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
         $this->key = now();
 
@@ -89,6 +93,8 @@ class ListMyProductTarget extends Component
     public function render()
     {
         set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $branches = json_decode(Auth::user()->branches);
         $this->user_branches = $branches;
 
@@ -117,6 +123,8 @@ class ListMyProductTarget extends Component
 
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
         set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $this->dept_id = $dept_id;
         $this->cat_type = $cat_type;
         $this->sp_type = $sp_type;
@@ -127,6 +135,7 @@ class ListMyProductTarget extends Component
 
     public function generateReport() {
         set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
         $this->validate();
 
         if (in_array('dept_all', $this->dept_id)) {
@@ -493,6 +502,9 @@ class ListMyProductTarget extends Component
     }
 
     public function filtered_products($products, $cats, $sps, $vendors) {
+
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
         $asmedah = "Code like '17%' ";

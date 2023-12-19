@@ -81,6 +81,8 @@ class CreateProductTarget extends Component
     ];
 
     public function booted() {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
@@ -95,6 +97,9 @@ class CreateProductTarget extends Component
     }
 
     public function mount() {
+
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         $this->query = User::where('id', Auth::id())->first();
         $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
@@ -133,6 +138,8 @@ class CreateProductTarget extends Component
 
     public function render()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 //        $test = ScribeProductTarget::where('Department', $this->dept_id)
 //            ->where('PriceList', '1')
 //            ->where('Year', '2024')
@@ -197,6 +204,8 @@ class CreateProductTarget extends Component
     }
 
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
         $this->dept_id = $dept_id;
         $this->cat_type = $cat_type;
         $this->sp_type = $sp_type;
@@ -215,6 +224,9 @@ class CreateProductTarget extends Component
 
     public function generateReport()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $this->emps = [];
         $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
@@ -1023,6 +1035,8 @@ class CreateProductTarget extends Component
 
     public function generateBranchesReport()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
         $this->emps = [];
         $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
@@ -1953,6 +1967,9 @@ class CreateProductTarget extends Component
 
     // function to save the data
     public function test($targets, $emps_percents, $products_codes) {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
 //        dd($this->dept_id);
 //        dd($products_codes);
 //        dd($emps_percents);
@@ -2095,6 +2112,9 @@ class CreateProductTarget extends Component
 
     public function filtered_products($cats, $sps, $vendors) {
 
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+        
         $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
         $asmedah = "Code like '17%' ";
         $mobedat = "Code like '10%' or Code like '11%' or Code like '12%' or Code like '13%' or Code like '14%' or Code like '15%' or Code like '16%' ";
