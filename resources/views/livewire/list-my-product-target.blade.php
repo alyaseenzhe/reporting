@@ -137,6 +137,8 @@
             @php $all_total_emp_tr = []; @endphp
             @php $all_total_dept_sales = []; @endphp
             @php $all_total_dept_tr = []; @endphp
+            @php $mod_total_s_value = 0; @endphp
+            @php $mode_total_dept_s_value = 0; @endphp
 
         <div id="report-btn" wire:loading.remove wire:target="generateReport" class="overflow-x-auto w-full">
             @if(count($products_items) > 0)
@@ -552,6 +554,14 @@
                                     <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                         <div class="text-sm">{{ number_format($a) }}</div>
                                     </th>
+                                    @php
+                                        if ($total_s_value > $total_f_value) {
+                                            $mod_total_s_value += $total_f_value;
+                                        }
+                                        else {
+                                            $mod_total_s_value += $total_s_value;
+                                        }
+                                    @endphp
                                 </tr>
                                 <tr class="emp-diff">
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
@@ -644,6 +654,23 @@
                                     <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_f) }}</td>
                                         <?php $total_emp_diff = $total_sum_f == 0? 0 :  number_format((($total_sum_s/$total_sum_f)*100)-100); ?>
                                     <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($total_emp_diff > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_emp_diff) }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    <div id="summary-container-emp" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
+                            <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                                <tbody class="text-sm divide-y divide-gray-100">
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع المعدل</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق المعدل %</td>
+                                </tr>
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($mod_total_s_value) }}</td>
+                                    <td style="border: 2px solid black; background-color: #e4fdf7;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_f) }}</td>
+                                        <?php $single_mod_emp_diff = $total_sum_f == 0? 0: (number_format((($mod_total_s_value/$total_sum_f)*100)-100));  ?>
+                                    <td style="border: 2px solid black;@if($single_mod_emp_diff > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_mod_emp_diff }}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -1029,8 +1056,15 @@
                                     <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                         <div class="text-sm">{{ number_format($a) }}</div>
                                     </th>
+                                    @php
+                                        if($total_dept_s_value > $total_dept_f_value) {
+                                            $mode_total_dept_s_value += $total_dept_f_value;
+                                        }
+                                        else {
+                                            $mode_total_dept_s_value += $total_dept_s_value;
+                                        }
+                                    @endphp
                                 </tr>
-
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
@@ -1158,6 +1192,23 @@
                                 </tbody>
                             </table>
                         </div>
+                    <div id="summary-container-dept" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
+                        <table id="tbl5" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                                <tbody class="text-sm divide-y divide-gray-100">
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع المعدل</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق المعدل %</td>
+                                </tr>
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($mode_total_dept_s_value) }}</td>
+                                    <td style="border: 2px solid black; background-color: #e4fdf7;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($summary_grand_total_dept_f) }}</td>
+                                        <?php $single_mod_dept_diff = $summary_grand_total_dept_f == 0? 0: (number_format((($mode_total_dept_s_value/$summary_grand_total_dept_f)*100)-100));  ?>
+                                    <td style="border: 2px solid black;@if($single_mod_dept_diff > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_mod_dept_diff }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                    </div>
                 @else
                     <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات في هذه الشهور ..</div>
                 @endif
@@ -1231,6 +1282,7 @@
                     $(".employee").addClass("hide");
                     $(".department").addClass("hide");
                     $("#emp_code_selection").addClass("hide");
+                    $("#summary-container-emp").removeClass("hide");
                 }
                 else {
 
@@ -1257,6 +1309,7 @@
                     $(".emp-total").removeClass("hide");
                     $(".emp-diff").removeClass("hide");
                     $(".emp-summary-total").removeClass("hide");
+                    $("#summary-container-emp").removeClass("hide");
 
                     // $(".employee").addClass("hide");
                     // $(".department").addClass("hide");
@@ -1277,6 +1330,7 @@
                     $(".emp-total").addClass("hide");
                     $(".emp-diff").addClass("hide");
                     $(".emp-summary-total").addClass("hide");
+                    $("#summary-container-emp").addClass("hide");
 
                     // $(".employee").removeClass("hide");
                     // $(".department").removeClass("hide");

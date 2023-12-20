@@ -1079,7 +1079,7 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
                                         <div class="text-sm">{{ ($dept_forecast*$record[$item_price]) == 0 ? "" : number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
-                                    @php $a = ($dept_forecast*$record[$item_price]) == 0 ? 0 : number_format(((($dept_sales*$record[$item_price])/($dept_forecast*$record[$item_price]))*100) - 100) @endphp
+                                    @php $a = ($dept_sales*$record[$item_price]) == 0 ? 0 : number_format(((($dept_forecast*$record[$item_price])/($dept_sales*$record[$item_price]))*100) - 100) @endphp
                                     <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                         <div class="text-sm">{{ $a == 0 ? "" : $a }}</div>
                                     </th>
