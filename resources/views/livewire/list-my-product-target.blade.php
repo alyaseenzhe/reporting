@@ -26,42 +26,42 @@
                         <select id="dept_id" name="dept_id[]" multiple="multiple"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('dept_id') border: solid 1px #fda4af; @enderror">
-                            <option value="dept_all" selected>الكل</option>
+                            <option value="dept_all" @if(in_array("dept_all", $dept_id)) selected @endif>الكل</option>
                             @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="3">الاحساء</option>
+                                <option value="3" @if(in_array("3", $dept_id)) selected @endif>الاحساء</option>
                             @endif
                             @if(in_array("10", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="10">جدة</option>
+                                <option value="10" @if(in_array("10", $dept_id)) selected @endif>جدة</option>
                             @endif
                             @if(in_array("7", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="7">الرياض</option>
+                                <option value="7" @if(in_array("7", $dept_id)) selected @endif>الرياض</option>
                             @endif
                             @if(in_array("13", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="13">وادي الدواسر</option>
+                                <option value="13" @if(in_array("13", $dept_id)) selected @endif>وادي الدواسر</option>
                             @endif
                             @if(in_array("4", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="4">الجوف</option>
+                                <option value="4" @if(in_array("4", $dept_id)) selected @endif>الجوف</option>
                             @endif
                             @if(in_array("6", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="6">الدمام</option>
+                                <option value="6" @if(in_array("6", $dept_id)) selected @endif>الدمام</option>
                             @endif
                             @if(in_array("5", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="5">الخرج</option>
+                                <option value="5" @if(in_array("5", $dept_id)) selected @endif>الخرج</option>
                             @endif
                             @if(in_array("12", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="12">نجران</option>
+                                <option value="12" @if(in_array("12", $dept_id)) selected @endif>نجران</option>
                             @endif
                             @if(in_array("11", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="11">حائل</option>
+                                <option value="11" @if(in_array("11", $dept_id)) selected @endif>حائل</option>
                             @endif
                             @if(in_array("9", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="9">تبوك</option>
+                                <option value="9" @if(in_array("9", $dept_id)) selected @endif>تبوك</option>
                             @endif
                             @if(in_array("8", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="8">القصيم</option>
+                                <option value="8" @if(in_array("8", $dept_id)) selected @endif>القصيم</option>
                             @endif
                             @if(in_array("505", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                                <option value="505">ساجر</option>
+                                <option value="505" @if(in_array("505", $dept_id)) selected @endif>ساجر</option>
                             @endif
                         </select>
                     </div>
@@ -75,11 +75,11 @@
                         <select id="cat_type" name="cat_type" multiple="multiple"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-                        <option value="cat_all" selected>الكل</option>
-                        <option value="bathoor">بذور</option>
-                        <option value="asmedah">اسمدة</option>
-                        <option value="mobedat">مبيدات</option>
-                        <option value="other">اخرى</option>
+                        <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>
+                        <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>
+                        <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>
+                        <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>
+                        <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>
                     </select>
                     </div>
                     @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -92,10 +92,10 @@
                         <select id="sp_type" name="sp_type" multiple="multiple"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('sp_type') border: solid 1px #fda4af; @enderror">
-                        <option value="sp_all" selected>الكل</option>
-                        <option value="0">مميز 0</option>
-                        <option value="1">مميز 1</option>
-                        <option value="2">مميز 2</option>
+                        <option value="sp_all" @if(in_array("sp_all", $sp_type)) selected @endif>الكل</option>
+                        <option value="0" @if(in_array("0", $sp_type)) selected @endif>مميز 0</option>
+                        <option value="1" @if(in_array("1", $sp_type)) selected @endif>مميز 1</option>
+                        <option value="2" @if(in_array("2", $sp_type)) selected @endif>مميز 2</option>
                     </select>
                     </div>
                     @error('sp_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -108,13 +108,21 @@
                         <select id="vendor_type" name="vendor_type"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
-                            <option value="vendor_all" selected>الكل</option>
+                            <option value="vendor_all" @if($vendor_type == "vendor_all") selected @endif>الكل</option>
                             @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor->NodeNo }}">{{ $vendor->Arabic_Name }}</option>
+                                <option value="{{ $vendor->NodeNo }}" @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
                             @endforeach
                         </select>
                     </div>
                     @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="mt-8 text-center w-full">
+                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                            <span></span>
+                            <span>إعادة ضبط</span>
+                        </span>
+                    </button>
                 </div>
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -1467,6 +1475,26 @@
                 });
 
                 Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+            });
+
+            $('#reset-btn').on('click', function () {
+                $("#dept_id option").prop('selected', false);
+                $("#dept_id option[value='dept_all']").prop('selected', true);
+
+                $("#cat_type option").prop('selected', false);
+                $("#cat_type option[value='cat_all']").prop('selected', true);
+
+                $("#sp_type option").prop('selected', false);
+                $("#sp_type option[value='sp_all']").prop('selected', true);
+
+                $("#vendor_type option").prop('selected', false);
+                $("#vendor_type option[value='sp_all']").prop('selected', true);
+
+
+                $("#dept_id").change();
+                $("#cat_type").change();
+                $("#sp_type").change();
+                $("#vendor_type").change();
             });
         });
 

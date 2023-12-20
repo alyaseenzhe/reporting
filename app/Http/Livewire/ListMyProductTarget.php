@@ -89,7 +89,7 @@ class ListMyProductTarget extends Component
             ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
             ->get();
 
-//        $this->get_filters();
+        $this->get_filters();
 
     }
 
@@ -141,7 +141,7 @@ class ListMyProductTarget extends Component
         ini_set('memory_limit', '2048M');
         $this->validate();
 
-//        $this->save_filters();
+        $this->save_filters();
 
         if (in_array('dept_all', $this->dept_id)) {
             $this->dept_id = $this->user_branches;
@@ -599,7 +599,7 @@ class ListMyProductTarget extends Component
             $this->sp_type = json_decode($record->sp_type);
             $this->vendor_type = json_decode($record->vendor_type);
 
-            dd($this->dept_id);
+//            dd($this->dept_id);
         }
     }
 
