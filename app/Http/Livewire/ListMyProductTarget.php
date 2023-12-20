@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetFilter;
 use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
@@ -88,6 +89,8 @@ class ListMyProductTarget extends Component
             ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
             ->get();
 
+//        $this->get_filters();
+
     }
 
     public function render()
@@ -137,6 +140,8 @@ class ListMyProductTarget extends Component
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
         $this->validate();
+
+//        $this->save_filters();
 
         if (in_array('dept_all', $this->dept_id)) {
             $this->dept_id = $this->user_branches;
@@ -580,5 +585,49 @@ class ListMyProductTarget extends Component
 
 //        dd($results);
         return $results;
+    }
+
+    public function get_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "list")
+            ->first();
+
+        if($record) {
+            $this->dept_id = json_decode($record->dept_id);
+            $this->cat_type = json_decode($record->cat_type);
+            $this->sp_type = json_decode($record->sp_type);
+            $this->vendor_type = json_decode($record->vendor_type);
+
+//            dd($this->dept_id);
+        }
+    }
+
+    public function save_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "list")
+            ->first();
+
+        if($record) {
+            $a = ProductTargetFilter::where('user_id', Auth::id())
+                ->where('page', "list")
+                ->update([
+                    'dept_id' => json_encode($this->dept_id),
+                    'cat_type' => json_encode($this->cat_type),
+                    'sp_type' => json_encode($this->sp_type),
+                    'vendor_type' => json_encode($this->vendor_type)
+                ]);
+        }
+        else {
+            $a = ProductTargetFilter::create([
+                'dept_id' => json_encode($this->dept_id),
+                'cat_type' => json_encode($this->cat_type),
+                'sp_type' => json_encode($this->sp_type),
+                'vendor_type' => json_encode($this->vendor_type),
+                'user_id' => Auth::id(),
+                'page' => 'list',
+            ]);
+        }
     }
 }

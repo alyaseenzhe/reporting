@@ -1194,7 +1194,7 @@
                                 <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_value) }}</div>
                                 </th>
-                                @php $a = $total_dept_f_value == 0 ? 0 : number_format((($total_dept_s_value/$total_dept_f_value)*100) - 100) @endphp
+                                @php $a = $total_dept_s_value == 0 ? 0 : number_format((($total_dept_f_value/$total_dept_s_value)*100) - 100) @endphp
                                 <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                     <div class="text-sm">{{ $a  }}</div>
                                 </th>
@@ -1205,57 +1205,57 @@
                                 <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                     <div class="text-sm">الفرق %</div>
                                 </th>
-                                @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
+                                @php $a = floatval($total_s1) == 0 ? 0 : number_format((($total_f1/$total_s1)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_s1) == 0 ? 0 : number_format((($total_f1/$total_s1)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100) @endphp
+                                @php $a = floatval($total_s2) == 0 ? 0 : number_format((($total_f2/$total_s2)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : number_format((($total_s2/$total_f2)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_s2) == 0 ? 0 : number_format((($total_f2/$total_s2)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100) @endphp
+                                @php $a = floatval($total_s3) == 0 ? 0 : number_format((($total_f3/$total_s3)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : number_format((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s3) == 0 ? 0 : number_format((($total_f3/$total_s3)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100) @endphp
+                                @php $a = floatval($total_s4) == 0 ? 0 : number_format((($total_f4/$total_s4)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : number_format((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s4) == 0 ? 0 : number_format((($total_f4/$total_s4)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100) @endphp
+                                @php $a = floatval($total_s5) == 0 ? 0 : number_format((($total_f5/$total_s5)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : number_format((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s5) == 0 ? 0 : number_format((($total_f5/$total_s5)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100) @endphp
+                                @php $a = floatval($total_s6) == 0 ? 0 : number_format((($total_f6/$total_s6)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : number_format((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s6) == 0 ? 0 : number_format((($total_f6/$total_s6)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100) @endphp
+                                @php $a = floatval($total_s7) == 0 ? 0 : number_format((($total_f7/$total_s7)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : number_format((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s7) == 0 ? 0 : number_format((($total_f7/$total_s7)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100) @endphp
+                                @php $a = floatval($total_s8) == 0 ? 0 : number_format((($total_f8/$total_s8)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : number_format((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s8) == 0 ? 0 : number_format((($total_f8/$total_s8)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100) @endphp
+                                @php $a = floatval($total_s9) == 0 ? 0 : number_format((($total_f9/$total_s9)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : number_format((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s9) == 0 ? 0 : number_format((($total_f9/$total_s9)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100) @endphp
+                                @php $a = floatval($total_s10) == 0 ? 0 : number_format((($total_f10/$total_s10)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : number_format((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s10) == 0 ? 0 : number_format((($total_f10/$total_s10)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100) @endphp
+                                @php $a = floatval($total_s11) == 0 ? 0 : number_format((($total_f11/$total_s11)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : number_format((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s11) == 0 ? 0 : number_format((($total_f11/$total_s11)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100) @endphp
+                                @php $a = floatval($total_s12) == 0 ? 0 : number_format((($total_f12/$total_s12)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : number_format((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s12) == 0 ? 0 : number_format((($total_f12/$total_s12)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
+                                @php $a = floatval($total_dept_s_qty) == 0 ? 0 : number_format((($total_dept_f_qty/$total_dept_s_qty)*100) - 100) @endphp
                                 <th colspan="5" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : number_format((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_dept_s_qty) == 0 ? 0 : number_format((($total_dept_f_qty/$total_dept_s_qty)*100) - 100)}}</div>
                                 </th>
                                 @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
                                 {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
@@ -1317,7 +1317,7 @@
                             </td>
                             <td style="border: 2px solid black; background-color: #fffacd;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_sales[$dept]) }}</td>
                             <td style="border: 2px solid black; background-color: #e4fdf7;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_tr[$dept]) }}</td>
-                            <?php $total_dept_diff = $all_total_dept_tr[$dept] == 0 ? 0 : number_format((($all_total_dept_sales[$dept]/$all_total_dept_tr[$dept])*100)-100); ?>
+                            <?php $total_dept_diff = $all_total_dept_sales[$dept] == 0 ? 0 : number_format((($all_total_dept_tr[$dept]/$all_total_dept_sales[$dept])*100)-100); ?>
                             <td style="border: 2px solid black;@if(floatval($total_dept_diff) > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $total_dept_diff }}</td>
                             @php
                                 $total_dept_sum_s += $all_total_dept_sales[$dept];
@@ -1329,7 +1329,7 @@
                         <td style="border: 2px solid black;background-color: #dcdcdc; font-weight: bold;" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
                         <td style="border: 2px solid black; font-weight: bold; background-color: #fff6a1;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_s) }}</td>
                         <td style="border: 2px solid black; font-weight: bold; background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_f) }}</td>
-                        <?php $grand_total_dept_diff = $total_dept_sum_f == 0 ? 0 : number_format((($total_dept_sum_s/$total_dept_sum_f)*100)-100); ?>
+                        <?php $grand_total_dept_diff = $total_dept_sum_s == 0 ? 0 : number_format((($total_dept_sum_f/$total_dept_sum_s)*100)-100); ?>
                         <td style="border: 2px solid black; font-weight: bold;@if(floatval($grand_total_dept_diff) > 0) background-color: #cfffbd; @else background-color: #ffdcdc; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $grand_total_dept_diff }}</td>
                     </tr>
 {{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
