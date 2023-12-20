@@ -599,7 +599,7 @@ class ListMyProductTarget extends Component
             $this->sp_type = json_decode($record->sp_type);
             $this->vendor_type = json_decode($record->vendor_type);
 
-//            dd($this->dept_id);
+            dd($this->dept_id);
         }
     }
 
