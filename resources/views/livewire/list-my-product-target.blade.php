@@ -1488,7 +1488,7 @@
                 $("#sp_type option[value='sp_all']").prop('selected', true);
 
                 $("#vendor_type option").prop('selected', false);
-                $("#vendor_type option[value='sp_all']").prop('selected', true);
+                $("#vendor_type option[value='vendor_all']").prop('selected', true);
 
 
                 $("#dept_id").change();

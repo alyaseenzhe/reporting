@@ -6,6 +6,7 @@ use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
 use App\Models\ProductTargetEmpPercent;
+use App\Models\ProductTargetFilter;
 use App\Models\ProductTargetLog;
 use App\Models\ScribeProductTarget;
 use App\Models\Setting;
@@ -134,6 +135,9 @@ class CreateProductTarget extends Component
 
 //        $this->vendor_list = User::all();
 //        dd($this->vendor_list);
+
+        $this->get_filters();
+
     }
 
     public function render()
@@ -235,6 +239,7 @@ class CreateProductTarget extends Component
         $this->validate();
 //        $this->results = [];
 //        $current_year_list = [];
+        $this->save_filters();
 
         $this->employee_ids_in_my_branch = [];
         foreach ($this->dept_id as $branch) {
@@ -1043,6 +1048,8 @@ class CreateProductTarget extends Component
 //        dd($this->vendor_id);
         $this->reset('target');
         $this->validate();
+
+        $this->save_filters();
 
         $this->employee_ids_in_my_branch = [];
         foreach ($this->dept_id as $branch) {
@@ -2114,7 +2121,7 @@ class CreateProductTarget extends Component
 
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
-        
+
         $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
         $asmedah = "Code like '17%' ";
         $mobedat = "Code like '10%' or Code like '11%' or Code like '12%' or Code like '13%' or Code like '14%' or Code like '15%' or Code like '16%' ";
@@ -2191,6 +2198,50 @@ AND Pricelist = 1 ";
 
 //        dd($results);
         return $fetch_products_query;
+    }
+
+    public function get_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "create")
+            ->first();
+
+        if($record) {
+            $this->dept_id = json_decode($record->dept_id);
+            $this->cat_type = json_decode($record->cat_type);
+            $this->sp_type = json_decode($record->sp_type);
+            $this->vendor_type = json_decode($record->vendor_type);
+
+//            dd($this->dept_id);
+        }
+    }
+
+    public function save_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "create")
+            ->first();
+
+        if($record) {
+            $a = ProductTargetFilter::where('user_id', Auth::id())
+                ->where('page', "create")
+                ->update([
+                    'dept_id' => json_encode($this->dept_id),
+                    'cat_type' => json_encode($this->cat_type),
+                    'sp_type' => json_encode($this->sp_type),
+                    'vendor_type' => json_encode($this->vendor_type)
+                ]);
+        }
+        else {
+            $a = ProductTargetFilter::create([
+                'dept_id' => json_encode($this->dept_id),
+                'cat_type' => json_encode($this->cat_type),
+                'sp_type' => json_encode($this->sp_type),
+                'vendor_type' => json_encode($this->vendor_type),
+                'user_id' => Auth::id(),
+                'page' => 'create',
+            ]);
+        }
     }
 
 }
