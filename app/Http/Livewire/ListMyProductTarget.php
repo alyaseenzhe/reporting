@@ -5,6 +5,8 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetFilter;
+use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +37,7 @@ class ListMyProductTarget extends Component
     public $month_stmt;
     public $employee_ids_in_my_branch = [];
     public $loading = false;
+    public $item_price;
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -60,6 +63,9 @@ class ListMyProductTarget extends Component
 
     public function booted() {
 
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
         }
@@ -72,6 +78,9 @@ class ListMyProductTarget extends Component
     }
 
     public function mount() {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
         $this->key = now();
 
@@ -80,19 +89,20 @@ class ListMyProductTarget extends Component
             ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
             ->get();
 
+        $this->get_filters();
+
     }
 
-
-//    public function boot() {
-//        $branches = json_decode(Auth::user()->branches);
-//        if (count($branches) == 1) {
-//            $this->dept_id = $branches[0];
-//        }
-//    }
     public function render()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $branches = json_decode(Auth::user()->branches);
         $this->user_branches = $branches;
+
+        $settings_record = Setting::first();
+        $this->item_price = $settings_record->item_price;
 
         foreach ($branches as $branch) {
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')
@@ -105,82 +115,9 @@ class ListMyProductTarget extends Component
             }
         }
 
-//        dd($branches);
-//        dd($emps);
-
         return view('livewire.list-my-product-target')
             ->layout('layouts.dashboard');
     }
-
-//    public function updatedDeptId($value) {
-//        $this->reset(['show_msg', 'results', 'items']);
-//
-////        dd('xxxx');
-////        $branches = json_decode(Auth::user()->branches);
-////        if (count($branches) == 1) {
-////            $this->dept_id = $branches[0];
-////        }
-////
-////        if (Auth::user()->user_group->read_type == '1') {
-//////            $this->user_id =
-////        }
-//
-////        if ($value == "all") {
-////
-////            $emp_codes = [];
-////
-////            $branches = json_decode(Auth::user()->branches);
-////
-////            foreach ($branches as $branch) {
-////                $emps = User::join('user_groups', 'user_groups.id', 'users.group')
-////                    ->whereIn('write_product_target', ['1', '2'])
-////                    ->where('branches', 'like', '%"'.$branch.'"%')->get();
-////                foreach ($emps as $emp) {
-////                    array_push($emp_codes, $emp->emp_code);
-////                }
-////            }
-////
-////            $emp_codes = array_unique($emp_codes);
-//////            dd($emp_codes);
-////
-////            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-////                ->whereIn('write_product_target', ['1', '2'])
-////                ->select('users.id', 'users.name')
-////                ->whereNotNull('group')
-////                ->where('role', 'u')
-//////                ->whereNotIn('users.id', [1,13,14,15,16,18,21,38])
-////                ->whereIn('emp_code', $emp_codes)
-////                ->distinct()
-////                ->get();
-////
-////        }
-////        else {
-////        if (count($this->dept_id) == 1) {
-////            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-////                ->where('branches', 'LIKE' ,'%"'.$value[0].'"%')
-////                ->whereNotNull('group')
-////                ->where('role', 'u')
-////                ->whereIn('write_product_target', ['1', '2'])
-//////                ->where('group', '!=', 4)
-//////                ->where('group', '!=', 5)
-//////                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
-////                ->select('users.id', 'users.name', 'users.emp_code')
-////                ->distinct()
-////                ->get();
-////        }
-////        }
-//
-////        dd($this->users);
-//
-////        $this->emit('re-initialize-select2');
-//
-//    }
-
-//    public function updatedUserId($value) {
-//        $this->reset(['selected_month', 'show_msg']);
-//        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
-//        $this->emit('re-initialize-select2');
-//    }
 
     public function updatedSelectedMonth($value) {
         $this->reset(['show_msg']);
@@ -188,6 +125,9 @@ class ListMyProductTarget extends Component
     }
 
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
         $this->dept_id = $dept_id;
         $this->cat_type = $cat_type;
         $this->sp_type = $sp_type;
@@ -197,8 +137,11 @@ class ListMyProductTarget extends Component
     }
 
     public function generateReport() {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
         $this->validate();
 
+        $this->save_filters();
 
         if (in_array('dept_all', $this->dept_id)) {
             $this->dept_id = $this->user_branches;
@@ -219,7 +162,6 @@ class ListMyProductTarget extends Component
         }
 
         $this->emit('show-container');
-//        $this->emit('re-initialize-select2');
         $this->items = [];
         $month_stmt = null;
         $this->results = [];
@@ -239,8 +181,6 @@ class ListMyProductTarget extends Component
                 ->distinct()
                 ->get();
         }
-
-//        dd($this->users);
 
         $month_stmt = '';
         $this->list = [];
@@ -350,17 +290,14 @@ class ListMyProductTarget extends Component
                     ->get();
             }
         }
-//        dd($this->new_targets);
 
         $arr_new_targets = $this->new_targets->toArray();
-//        dd($arr_new_targets);
         $product_codes = "";
         foreach ($arr_new_targets as $key => $product) {
             array_push($this->products_items, $product['product_id']);
         }
 
         $this->products_items = array_unique($this->products_items);
-//        dd($this->products_items);
         $this->products_items = $this->filtered_products($this->products_items, $this->cat_type, $this->sp_type, $this->vendor_type);
 
         foreach ($this->products_items as $key => $product) {
@@ -384,7 +321,6 @@ class ListMyProductTarget extends Component
         $month_counter = 1;
 
         $merged_dept = $this->dept_id;
-//            dd($this->dept_id);
         // merge two depts
         if (in_array('3', $this->dept_id)) {
             array_push($merged_dept, "509");
@@ -463,7 +399,7 @@ class ListMyProductTarget extends Component
 //            array_push($this->results, $fetch_query);
                 }
 
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount
+                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
@@ -531,7 +467,7 @@ class ListMyProductTarget extends Component
 //            array_push($this->results, $fetch_query);
                 }
 
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount
+                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
@@ -558,7 +494,9 @@ class ListMyProductTarget extends Component
         $this->show_msg = true;
 //        dd($this->results);
 
+        $this->emit('finished');
         $this->results = collect($this->results);
+
 //        dd($this->results);
 //        dd($this->new_targets);
 
@@ -569,6 +507,9 @@ class ListMyProductTarget extends Component
     }
 
     public function filtered_products($products, $cats, $sps, $vendors) {
+
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
         $asmedah = "Code like '17%' ";
@@ -644,5 +585,49 @@ class ListMyProductTarget extends Component
 
 //        dd($results);
         return $results;
+    }
+
+    public function get_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "list")
+            ->first();
+
+        if($record) {
+            $this->dept_id = json_decode($record->dept_id);
+            $this->cat_type = json_decode($record->cat_type);
+            $this->sp_type = json_decode($record->sp_type);
+            $this->vendor_type = json_decode($record->vendor_type);
+
+//            dd($this->dept_id);
+        }
+    }
+
+    public function save_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "list")
+            ->first();
+
+        if($record) {
+            $a = ProductTargetFilter::where('user_id', Auth::id())
+                ->where('page', "list")
+                ->update([
+                    'dept_id' => json_encode($this->dept_id),
+                    'cat_type' => json_encode($this->cat_type),
+                    'sp_type' => json_encode($this->sp_type),
+                    'vendor_type' => json_encode($this->vendor_type)
+                ]);
+        }
+        else {
+            $a = ProductTargetFilter::create([
+                'dept_id' => json_encode($this->dept_id),
+                'cat_type' => json_encode($this->cat_type),
+                'sp_type' => json_encode($this->sp_type),
+                'vendor_type' => json_encode($this->vendor_type),
+                'user_id' => Auth::id(),
+                'page' => 'list',
+            ]);
+        }
     }
 }

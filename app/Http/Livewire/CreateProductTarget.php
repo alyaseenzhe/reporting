@@ -6,6 +6,7 @@ use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
 use App\Models\ProductTargetEmpPercent;
+use App\Models\ProductTargetFilter;
 use App\Models\ProductTargetLog;
 use App\Models\ScribeProductTarget;
 use App\Models\Setting;
@@ -21,6 +22,7 @@ class CreateProductTarget extends Component
     public $dept_id = ["-1"];
     public $selected_month;
     public $employee_ids_in_my_branch = [];
+    public $employee_branch_names = [];
     public $user_branches;
     public $old_targets = [];
     public $cat_type = ["cat_all"];
@@ -53,11 +55,12 @@ class CreateProductTarget extends Component
     public $choose_special_product;
     public $edit_special_product;
     public $items;
+    public $item_price;
 
     protected $listeners = ['targets-entered' => 'test', 'create-report' => 'create_report'];
 
     protected $rules = [
-        'dept_id' => 'required|not_in:-1',
+        'dept_id' => 'required|array|min:1|not_in:-1',
         'selected_month' => 'required',
         'cat_type' => 'required|not_in:-1',
         'sp_type' => 'required|not_in:-1',
@@ -67,6 +70,7 @@ class CreateProductTarget extends Component
     protected $messages = [
         'dept_id.required' => "مطلوب",
         'dept_id.not_in' => "مطلوب",
+        'dept_id.min' => "مطلوب",
         'selected_month.required' => "مطلوب",
         'prod_id.required' => "مطلوب",
         'cat_type.required' => "مطلوب",
@@ -78,6 +82,8 @@ class CreateProductTarget extends Component
     ];
 
     public function booted() {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
@@ -92,6 +98,9 @@ class CreateProductTarget extends Component
     }
 
     public function mount() {
+
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         $this->query = User::where('id', Auth::id())->first();
         $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
@@ -126,10 +135,15 @@ class CreateProductTarget extends Component
 
 //        $this->vendor_list = User::all();
 //        dd($this->vendor_list);
+
+        $this->get_filters();
+
     }
 
     public function render()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 //        $test = ScribeProductTarget::where('Department', $this->dept_id)
 //            ->where('PriceList', '1')
 //            ->where('Year', '2024')
@@ -168,6 +182,7 @@ class CreateProductTarget extends Component
         $this->write_product_target = Auth::user()->user_group->write_product_target;
         $this->choose_special_product = Auth::user()->user_group->choose_special_product;
         $this->edit_special_product = Auth::user()->user_group->edit_special_product;
+        $this->item_price = $settings_record->item_price;
 
         $branches = json_decode($this->query->branches);
 //        $branches = json_decode(Auth::user()->branches);
@@ -193,6 +208,8 @@ class CreateProductTarget extends Component
     }
 
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
         $this->dept_id = $dept_id;
         $this->cat_type = $cat_type;
         $this->sp_type = $sp_type;
@@ -211,12 +228,86 @@ class CreateProductTarget extends Component
 
     public function generateReport()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
+        $this->emps = [];
+        $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
         $this->reset('target', 'results', 'current_year_list', 'current_target', 'current_target_to_edit', 'old_targets');
         $this->validate();
 //        $this->results = [];
 //        $current_year_list = [];
+        $this->save_filters();
+
+        $this->employee_ids_in_my_branch = [];
+        foreach ($this->dept_id as $branch) {
+            $emps = User::join('user_groups', 'user_groups.id', 'users.group')
+                ->where('branches', 'like', '%"'.$branch.'"%')
+                ->whereIn('write_product_target', ['1', '2'])
+                ->select('users.id')
+                ->get();
+
+            $dept_code = "";
+
+            if ($branch == "3") {
+                $dept_code = "0101";
+            }
+            elseif ($branch == "6") {
+                $dept_code = "0106";
+            }
+            elseif ($branch == "4") {
+                $dept_code = "0105";
+            }
+            elseif ($branch == "11") {
+                $dept_code = "0109";
+            }
+            elseif ($branch == "8") {
+                $dept_code = "0111";
+            }
+            elseif ($branch == "505") {
+                $dept_code = "0112";
+            }
+            elseif ($branch == "5") {
+                $dept_code = "0107";
+            }
+            elseif ($branch == "7") {
+                $dept_code = "0103";
+            }
+            elseif ($branch == "9") {
+                $dept_code = "0110";
+            }
+            elseif ($branch == "10") {
+                $dept_code = "0102";
+            }
+            elseif ($branch == "12") {
+                $dept_code = "0108";
+            }
+            elseif ($branch == "13") {
+                $dept_code = "0104";
+            }
+            else {
+                $dept_code = "0001";
+            }
+
+
+            foreach ($emps as $emp) {
+                array_push($this->employee_ids_in_my_branch, $emp->id);
+                if (!array_key_exists($dept_code, $this->employee_branch_names)) {
+//                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
+                    $this->employee_branch_names[$dept_code] = [$emp->id];
+                }
+                else {
+                    $this->employee_branch_names[$dept_code][] = $emp->id;
+//                    $this->employee_ids_in_my_branch[$branch][] = $emp->id;
+//                    array_push($this->employee_ids_in_my_branch[$branch][], $emp->id);
+                }
+            }
+        }
+
+//        dd($this->employee_branch_names);
+//        dd($this->employee_ids_in_my_branch);
 
         if (count($this->dept_id) == 1 && $this->dept_id[0] == "-1") {
             $this->dept_id = $this->user_branches;
@@ -426,10 +517,17 @@ class CreateProductTarget extends Component
             ->where('branch', $this->dept_id[0])
             ->get();
 
+//        $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
+////            ->where('branch', $this->dept_id[0])
+//            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+//            ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
+//            ->get();
         $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
-            ->where('branch', $this->dept_id[0])
+            ->whereIn('users.id', $this->employee_ids_in_my_branch)
             ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
             ->get();
+//        dd($this->employee_ids_in_my_branch);
+//        dd($this->emps_percentage);
 
         $this->special_product_id = SpecialProduct::all();
 
@@ -473,7 +571,7 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
             SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
             SELECT ProductNo";
 
@@ -936,14 +1034,22 @@ class CreateProductTarget extends Component
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
+        $this->emit('finished');
+
     }
 
     public function generateBranchesReport()
     {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+        $this->emps = [];
+        $this->employee_branch_names = [];
 //        $this->resetExcept(['branches', 'dept_id', 'filter_type', 'vendor_id']);
 //        dd($this->vendor_id);
         $this->reset('target');
         $this->validate();
+
+        $this->save_filters();
 
         $this->employee_ids_in_my_branch = [];
         foreach ($this->dept_id as $branch) {
@@ -952,11 +1058,65 @@ class CreateProductTarget extends Component
                 ->whereIn('write_product_target', ['1', '2'])
                 ->select('users.id')
                 ->get();
+
+            $dept_code = "";
+
+            if ($branch == "3") {
+                $dept_code = "0101";
+            }
+            elseif ($branch == "6") {
+                $dept_code = "0106";
+            }
+            elseif ($branch == "4") {
+                $dept_code = "0105";
+            }
+            elseif ($branch == "11") {
+                $dept_code = "0109";
+            }
+            elseif ($branch == "8") {
+                $dept_code = "0111";
+            }
+            elseif ($branch == "505") {
+                $dept_code = "0112";
+            }
+            elseif ($branch == "5") {
+                $dept_code = "0107";
+            }
+            elseif ($branch == "7") {
+                $dept_code = "0103";
+            }
+            elseif ($branch == "9") {
+                $dept_code = "0110";
+            }
+            elseif ($branch == "10") {
+                $dept_code = "0102";
+            }
+            elseif ($branch == "12") {
+                $dept_code = "0108";
+            }
+            elseif ($branch == "13") {
+                $dept_code = "0104";
+            }
+            else {
+                $dept_code = "0001";
+            }
+
+
             foreach ($emps as $emp) {
                 array_push($this->employee_ids_in_my_branch, $emp->id);
+                if (!array_key_exists($dept_code, $this->employee_branch_names)) {
+//                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
+                    $this->employee_branch_names[$dept_code] = [$emp->id];
+                }
+                else {
+                    $this->employee_branch_names[$dept_code][] = $emp->id;
+//                    $this->employee_ids_in_my_branch[$branch][] = $emp->id;
+//                    array_push($this->employee_ids_in_my_branch[$branch][], $emp->id);
+                }
             }
         }
 
+//        dd($this->employee_branch_names);
 //        dd($this->employee_ids_in_my_branch);
 
 
@@ -1227,7 +1387,7 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT Department, ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+        $month_stmt = "SELECT Department, ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
             SELECT Department, ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
             SELECT Department, ProductNo";
 
@@ -1697,6 +1857,7 @@ class CreateProductTarget extends Component
 //        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
+        $this->emit('finished');
     }
 
     public function processData()
@@ -1813,12 +1974,16 @@ class CreateProductTarget extends Component
 
     // function to save the data
     public function test($targets, $emps_percents, $products_codes) {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+
+//        dd($this->dept_id);
 //        dd($products_codes);
 //        dd($emps_percents);
 //        dd($this->emps_percentage);
 //        dd($targets);
 
-
+//        dd($this->emps_percentage);
         if ($emps_percents) {
             foreach ($emps_percents as $emp) {
                 $txt = explode('|', $emp);
@@ -1907,7 +2072,7 @@ class CreateProductTarget extends Component
                 $fetch = ProductTarget::where('product_id', $product_code)
                     ->where('month', $target_month)
                     ->where('year', $target_year)
-                    ->where('branch', $this->dept_id)
+                    ->where('branch', $this->dept_id[0])
                     ->where('user_id', $user->id)
                     ->first();
 
@@ -1915,7 +2080,7 @@ class CreateProductTarget extends Component
                     $record = ProductTarget::where('product_id', $product_code)
                         ->where('month', $target_month)
                         ->where('year', $target_year)
-                        ->where('branch', $this->dept_id)
+                        ->where('branch', $this->dept_id[0])
                         ->where('user_id', $user->id)
                         ->update(['target' => $target_num]);
                 } else {
@@ -1923,20 +2088,20 @@ class CreateProductTarget extends Component
                         'product_id' => $product_code,
                         'month' => $target_month,
                         'year' => $target_year,
-                        'branch' => $this->dept_id,
+                        'branch' => $this->dept_id[0],
                         'user_id' => $user->id,
                         'target' => $target_num
                     ]);
                 }
 
-                $record = ProductTargetLog::create([
-                    'product_id' => $product_code,
-                    'month' => $target_month,
-                    'year' => $target_year,
-                    'branch' => $this->dept_id,
-                    'user_id' => $user->id,
-                    'target' => $target_num
-                ]);
+//                $record = ProductTargetLog::create([
+//                    'product_id' => $product_code,
+//                    'month' => $target_month,
+//                    'year' => $target_year,
+//                    'branch' => $this->dept_id[0],
+//                    'user_id' => $user->id,
+//                    'target' => $target_num
+//                ]);
 
             }
 
@@ -1953,6 +2118,9 @@ class CreateProductTarget extends Component
     }
 
     public function filtered_products($cats, $sps, $vendors) {
+
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
 
         $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
         $asmedah = "Code like '17%' ";
@@ -2007,7 +2175,7 @@ class CreateProductTarget extends Component
 
         $cat_stmt .= ") ";
 
-        $stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, accmast.Code, accmast.Arabic_name as VendorName FROM ProductMast, accmast
+        $stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, accmast.Code as VendorCode, accmast.Code, accmast.Arabic_name as VendorName FROM ProductMast, accmast
 WHERE ProductMast.VendorNo = accmast.NodeNo
 AND Pricelist = 1 ";
         if ($vendors != 'vendor_all') {
@@ -2030,6 +2198,50 @@ AND Pricelist = 1 ";
 
 //        dd($results);
         return $fetch_products_query;
+    }
+
+    public function get_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "create")
+            ->first();
+
+        if($record) {
+            $this->dept_id = json_decode($record->dept_id);
+            $this->cat_type = json_decode($record->cat_type);
+            $this->sp_type = json_decode($record->sp_type);
+            $this->vendor_type = json_decode($record->vendor_type);
+
+//            dd($this->dept_id);
+        }
+    }
+
+    public function save_filters() {
+
+        $record = ProductTargetFilter::where('user_id', Auth::id())
+            ->where('page', "create")
+            ->first();
+
+        if($record) {
+            $a = ProductTargetFilter::where('user_id', Auth::id())
+                ->where('page', "create")
+                ->update([
+                    'dept_id' => json_encode($this->dept_id),
+                    'cat_type' => json_encode($this->cat_type),
+                    'sp_type' => json_encode($this->sp_type),
+                    'vendor_type' => json_encode($this->vendor_type)
+                ]);
+        }
+        else {
+            $a = ProductTargetFilter::create([
+                'dept_id' => json_encode($this->dept_id),
+                'cat_type' => json_encode($this->cat_type),
+                'sp_type' => json_encode($this->sp_type),
+                'vendor_type' => json_encode($this->vendor_type),
+                'user_id' => Auth::id(),
+                'page' => 'create',
+            ]);
+        }
     }
 
 }

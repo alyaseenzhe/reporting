@@ -6,11 +6,11 @@
         </span>
         </a>
     </div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">المستهدف</div>
-    </div>
-    <div id="branch-container" class="mb-6">
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">المستهدف</div>--}}
+{{--    </div>--}}
+    <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
@@ -30,38 +30,38 @@
                         <select id="dept_id" name="dept_id" multiple="multiple"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('dept_id') border: solid 1px #fda4af; @enderror">
-                            <option value="-1" selected>الكل</option>
+                            <option value="-1" @if(in_array("-1", $dept_id)) selected @endif>الكل</option>
                         @foreach($branches as $branch)
                             @if($branch == "3")
-                                <option value="3">الاحساء</option>
+                                <option value="3" @if(in_array("3", $dept_id)) selected @endif>الاحساء</option>
 {{--                            @elseif($branch == "509")--}}
 {{--                                <option value="509">منطقة القرية العليا</option>--}}
                             @elseif($branch == "10")
-                                <option value="10">جدة</option>
+                                <option value="10" @if(in_array("10", $dept_id)) selected @endif>جدة</option>
 {{--                            @elseif($branch == "510")--}}
 {{--                                <option value="510">منطقة المدينة المنورة</option>--}}
                             @elseif($branch == "7")
-                                <option value="7">الرياض</option>
+                                <option value="7" @if(in_array("7", $dept_id)) selected @endif>الرياض</option>
                             @elseif($branch == "13")
-                                <option value="13">وادي الدواسر</option>
+                                <option value="13" @if(in_array("13", $dept_id)) selected @endif>وادي الدواسر</option>
                             @elseif($branch == "4")
-                                <option value="4">الجوف</option>
+                                <option value="4" @if(in_array("4", $dept_id)) selected @endif>الجوف</option>
                             @elseif($branch == "6")
-                                <option value="6">الدمام</option>
+                                <option value="6" @if(in_array("6", $dept_id)) selected @endif>الدمام</option>
                             @elseif($branch == "5")
-                                <option value="5">الخرج</option>
+                                <option value="5" @if(in_array("5", $dept_id)) selected @endif>الخرج</option>
                             @elseif($branch == "12")
-                                <option value="12">نجران</option>
+                                <option value="12" @if(in_array("12", $dept_id)) selected @endif>نجران</option>
 {{--                            @elseif($branch == "515")--}}
 {{--                                <option value="515">منطقة الباحة</option>--}}
                             @elseif($branch == "11")
-                                <option value="11">حائل</option>
+                                <option value="11" @if(in_array("11", $dept_id)) selected @endif>حائل</option>
                             @elseif($branch == "9")
-                                <option value="9">تبوك</option>
+                                <option value="9" @if(in_array("9", $dept_id)) selected @endif>تبوك</option>
                             @elseif($branch == "8")
-                                <option value="8">القصيم</option>
+                                <option value="8" @if(in_array("8", $dept_id)) selected @endif>القصيم</option>
                             @elseif($branch == "505")
-                                <option value="505">ساجر</option>
+                                <option value="505" @if(in_array("505", $dept_id)) selected @endif>ساجر</option>
                             @endif
                         @endforeach
 
@@ -78,11 +78,11 @@
                         <select id="cat_type" name="cat_type" multiple="multiple"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-                            <option value="cat_all" selected>الكل</option>
-                            <option value="bathoor">بذور</option>
-                            <option value="asmedah">اسمدة</option>
-                            <option value="mobedat">مبيدات</option>
-                            <option value="other">اخرى</option>
+                            <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>
+                            <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>
+                            <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>
+                            <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>
+                            <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>
                         </select>
                     </div>
                     @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -95,10 +95,10 @@
                         <select id="sp_type" name="sp_type" multiple="multiple"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('sp_type') border: solid 1px #fda4af; @enderror">
-                            <option value="sp_all" selected>الكل</option>
-                            <option value="0">مميز 0</option>
-                            <option value="1">مميز 1</option>
-                            <option value="2">مميز 2</option>
+                            <option value="sp_all" @if(in_array("sp_all", $sp_type)) selected @endif>الكل</option>
+                            <option value="0" @if(in_array("0", $sp_type)) selected @endif>مميز 0</option>
+                            <option value="1" @if(in_array("1", $sp_type)) selected @endif>مميز 1</option>
+                            <option value="2" @if(in_array("2", $sp_type)) selected @endif>مميز 2</option>
                         </select>
                     </div>
                     @error('sp_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -111,9 +111,9 @@
                         <select id="vendor_type" name="vendor_type"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
-                            <option value="vendor_all" selected>الكل</option>
+                            <option value="vendor_all" @if($vendor_type == "vendor_all") selected @endif>الكل</option>
                             @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor->NodeNo }}">{{ $vendor->Arabic_Name }}</option>
+                                <option value="{{ $vendor->NodeNo }}" @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -122,14 +122,22 @@
 
 {{--                @if($btn_generate)--}}
                 <div class="mt-8 text-center w-full">
+                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                            <span></span>
+                            <span>إعادة ضبط</span>
+                        </span>
+                    </button>
+                </div>
+                <div class="mt-8 text-center w-full">
 {{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
 {{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                         <span></span>
                         <span>عرض الأصناف</span>
                     </span>
-                        <span class="mr-2 font-bold">
+                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
                     <span></span>
                     <span>الرجاء الانتظار</span>
                     </span>
@@ -165,34 +173,38 @@
 {{--                        </span>--}}
 {{--                            </button>--}}
 {{--                        </div>--}}
-                        @if($write_product_target == '2')
-                            <div class="mt-8 text-center w-full">
-                                <button id="test-btn"
-                                        style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                        @if($write_product_target == '2' || $write_product_target == '3')
+                            @if(count($dept_id) == 1)
+                                <div class="mt-8 text-center w-full">
+                                        <button id="test-btn"
+                                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                            <span class="mr-2 font-bold">
+                                <span></span>
+                                <span>حفظ</span>
+                            </span>
+                                            <span class="mr-2 font-bold" wire:loading wire:target="processData">
                             <span></span>
-                            <span>حفظ</span>
-                        </span>
-                                    <span class="mr-2 font-bold" wire:loading wire:target="processData">
-                        <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                                </button>
-                            </div>
+                            <span>الرجاء الانتظار</span>
+                            </span>
+                                        </button>
+                                </div>
+                            @endif
                         @elseif($write_product_target == '1')
-                            <div class="mt-8 text-center w-full">
-                                <button id="emptest-btn"
-                                        style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
+                            @if(count($dept_id) == 1)
+                                <div class="mt-8 text-center w-full">
+                                    <button id="emptest-btn"
+                                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                            <span class="mr-2 font-bold">
+                                <span></span>
+                                <span>حفظ</span>
+                            </span>
+                                        <span class="mr-2 font-bold" wire:loading wire:target="processData">
                             <span></span>
-                            <span>حفظ</span>
-                        </span>
-                                    <span class="mr-2 font-bold" wire:loading wire:target="processData">
-                        <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                                </button>
-                            </div>
+                            <span>الرجاء الانتظار</span>
+                            </span>
+                                    </button>
+                                </div>
+                            @endif
                         @endif
                     @endif
                 @endif
@@ -203,41 +215,138 @@
     @if($show_msg)
             <?php $all_total_emp_sales = []; ?>
             <?php $all_total_emp_tr = []; ?>
+            <?php $all_total_dept_sales = []; ?>
+            <?php $all_total_dept_tr = []; ?>
+            <?php $total_historical = 0; ?>
+        @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0' || count($dept_id) > 1)
+            <div class="mb-5 p-2">
+            <div class="flex flex-col sm:flex-row gap-4 w-full">
+                <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
+                    <label class="block font-bold mb-5">خيارات</label>
+                    <div class="flex flex-row">
+                        <div class="flex items-center mb-4 w-full">
+                            <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
+                        </div>
+                    </div>
+                </div>
+                @if(count($dept_id) > 1)
+                    <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
+                        <label class="block font-bold mb-5">تنويه</label>
+
+                        <div class="flex flex-row">
+                            <div class="flex items-center mb-4 w-full">
+                                <ul class="list-disc mr-4">
+                                    <li>رمز
+                                        <span class="font-bold">SH</span>
+                                        تعني المبيعات التاريخية (نفس الشهر من العام السابق)</li>
+                                    <li>رمز
+                                        <span class="font-bold">T</span>
+                                        تعني المستهدف المتوقع</li>
+                                </ul>
+                                {{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رمز SC تعني المبيعات الحالية</label>--}}
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
 
         @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '2' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '3' || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0')
             <div id="percentage-container" class="mb-6">
                 <div style="background-color: whitesmoke; padding: 30px" class="overflow-x-auto w-full">
-                    <table id="tbl1" style="border: 2px solid black;" class="table-container w-full border text-center">
-                        <tr>
+                    <table wire:key="tbl1-{{time()}}" id="tbl1" style="border: 2px solid black;" class="table-container w-full border text-center">
+                        <tr wire:key="tbl-title-{{time()}}">
+                            <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">كود الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">النسبة</th>
                         </tr>
-                        @foreach($emps as $key => $employee)
-                            <tr style="background-color: #FFFFFF">
-                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>
-                                <td style="border: 2px solid black; z-index: 10" class="border">
-                                    <div class="w-full">
-                                        @if($key === array_key_last($emps->toArray()))
-                                            <div wire:ignore id="emp--{{$employee->emp_code}}--readonly"
-                                                 class="emps_percentage_readonly block text-gray-900 w-full text-center"
-                                                 style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
-                                                {{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null}}
-                                            </div>
-                                        @else
-                                            <input id="emp--{{$employee->emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
-                                                   value="{{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null }}"
-                                                   class="emps_percentage block text-gray-900 w-full text-center"
-                                                   style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
-                                        @endif
-                                        @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
-                                    </div>
+                        @foreach($employee_branch_names as $branch_key => $branch_emps)
+                            <tr wire:key="branch-code-{{$branch_key}}-{{time()}}" style="background-color: #dcdcdc;">
+                                <td colspan="3">
+                                    @if($branch_key == "0101")
+                                        فرع الاحساء
+                                    @elseif($branch_key == "0102")
+                                        فرع جدة
+                                    @elseif($branch_key == "0103")
+                                        فرع الرياض
+                                    @elseif($branch_key == "0104")
+                                        فرع وادي الدواسر
+                                    @elseif($branch_key == "0105")
+                                        فرع الجوف
+                                    @elseif($branch_key == "0106")
+                                        فرع الدمام
+                                    @elseif($branch_key == "0107")
+                                        فرع الخرج
+                                    @elseif($branch_key == "0108")
+                                        فرع نجران
+                                    @elseif($branch_key == "0109")
+                                        فرع حائل
+                                    @elseif($branch_key == "0110")
+                                        فرع تبوك
+                                    @elseif($branch_key == "0111")
+                                        فرع القصيم
+                                    @elseif($branch_key == "0112")
+                                        فرع ساجر
+                                    @else
+                                        المركز الرئيسي
+                                    @endif
                                 </td>
                             </tr>
+                            @foreach($branch_emps as $key => $emp)
+                                @php $emp_code = $emps->where('id', $emp)->first()['emp_code']; @endphp
+                                <tr wire:key="emp-code-{{$key}}-{{time()}}" style="background-color: #FFFFFF">
+                                    {{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
+                                    <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['emp_code'] : null}}</td>
+                                    <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['name'] : null}}</td>
+                                    <td style="border: 2px solid black; z-index: 10" class="border">
+                                        <div class="w-full">
+                                            @if($key === array_key_last($branch_emps))
+                                                <div wire:ignore id="emp--{{$emp_code}}--readonly"
+                                                     class="emps_percentage_readonly block text-gray-900 w-full text-center"
+                                                     style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
+                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}
+                                                </div>
+                                            @else
+                                                <input id="emp--{{$emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
+                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"
+                                                       class="emps_percentage block text-gray-900 w-full text-center"
+                                                       style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
+                                            @endif
+                                            @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
                         @endforeach
+{{--                        @foreach($emps as $key => $employee)--}}
+{{--                            <tr style="background-color: #FFFFFF">--}}
+{{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
+{{--                                <td style="border: 2px solid black; z-index: 10" class="border">--}}
+{{--                                    <div class="w-full">--}}
+{{--                                        @if($key === array_key_last($emps->toArray()))--}}
+{{--                                            <div wire:ignore id="emp--{{$employee->emp_code}}--readonly"--}}
+{{--                                                 class="emps_percentage_readonly block text-gray-900 w-full text-center"--}}
+{{--                                                 style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">--}}
+{{--                                                {{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null}}--}}
+{{--                                            </div>--}}
+{{--                                        @else--}}
+{{--                                            <input id="emp--{{$employee->emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"--}}
+{{--                                                   value="{{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null }}"--}}
+{{--                                                   class="emps_percentage block text-gray-900 w-full text-center"--}}
+{{--                                                   style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>--}}
+{{--                                        @endif--}}
+{{--                                        @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
+{{--                                    </div>--}}
+{{--                                </td>--}}
+{{--                            </tr>--}}
+{{--                        @endforeach--}}
                     </table>
 
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->calculate_all_product_target == '1')
-                        @if($edit_special_product == 1)
+                        @if($edit_special_product == 1 && count($dept_id) == 1)
                             <div class="mt-8 text-center w-full">
                                 <button id="recalculate-btn"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -247,7 +356,7 @@
                         </span>
                                 </button>
                             </div>
-                        @elseif($edit_special_product == 0)
+                        @elseif($edit_special_product == 0 && count($dept_id) == 1)
                             <div class="mt-8 text-center w-full">
                                 <button id="recalculate-btn-not-special"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -289,7 +398,7 @@
                                                 <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
                                             </div>
                                         </td>
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                         <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                     </tr>
                                 @endif
@@ -312,14 +421,24 @@
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                            <div class="w-full text-sm text-center">السعر</div>
-                                            <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['MaxDiscount'] }}</div>
+                                            <div class="w-full text-sm text-center mr-1">
+                                                @if($item_price == "WholeSale")
+                                                    سعر مؤسسات
+                                                @elseif($item_price == "Retail")
+                                                    سعر تجزئة
+                                                @elseif($item_price == "MaxDiscount")
+                                                    أقل سعر
+                                                @else
+                                                    السعر
+                                                @endif
+                                            </div>
+                                            <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
                                             <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
                                             <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
                                             <div class="w-full text-sm text-center">
-                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2') )
+                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2' || $write_product_target == '3' || $write_product_target == '1') )
                                                     <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
                                                 @endif
                                             </div>
@@ -351,13 +470,16 @@
                                 </tr>
                                 @if(Auth::user()->user_group->write_product_target == '2' || $write_product_target == '3' || $write_product_target == "0")
                                     <tr style="background-color: #e9e9e9">
-                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                             <div class="text-xs">مستهدف الفرع</div>
-                                            <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
+                                                    <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                                                 </svg>
                                             </div>
+                                                @endif
                                         </th>
                                         @php
                                             $target_counter =1;
@@ -417,12 +539,12 @@
 
                                         </th>
                                         <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-                                            <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record['MaxDiscount']) }}</div>
+                                            <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record[$item_price]) }}</div>
                                         </th>
                                     </tr>
                                     @foreach($emps as $emp)
 
-                                        <tr>
+                                        <tr class="employee">
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 <div class="text-sm">{{ $emp->name }}</div>
                                             </th>
@@ -467,15 +589,15 @@
                                                 {{--                                            <span>{{ $grand_emp_total_target }}</span>--}}
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                                <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record['MaxDiscount']) }}</div>
+                                                <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record[$item_price]) }}</div>
                                             </th>
                                         </tr>
                                             <?php
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
-                                                $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record['MaxDiscount'];
+                                                $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record[$item_price];
                                             }
                                             else {
-                                                $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record['MaxDiscount'];
+                                                $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record[$item_price];
                                             }
 
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
@@ -573,8 +695,9 @@
                                         {{ number_format(array_sum($sales)) }}
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record['MaxDiscount']) }}</div>
+                                        <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record[$item_price]) }}</div>
                                     </th>
+                                    <?php $total_historical += array_sum($sales)*$record[$item_price]; ?>
                                     {{--                        @endfor--}}
                                     {{--{{--                        @endforeach--}}
                                     {{--                    @endforeach--}}
@@ -582,11 +705,13 @@
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
-                                        <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                        @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
+                                            <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                             </svg>
                                         </div>
+                                        @endif
                                     </th>
                                     @php $target_counter2 =1; @endphp
                                     @foreach ($current_year_list as $year_key => $year)
@@ -616,7 +741,7 @@
                                                 {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
                                                 {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
                                                 {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
-                                                <input style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: $old_diff_value}}" class="w-full form-input" disabled="disabled">
+                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
                                                 {{--                                    @endif--}}
                                                 {{--                                <span id="x" class="w-full">--}}
 
@@ -636,16 +761,50 @@
                     </tbody>
                 </table>
             </div>
-            <div id="summary-container" class="overflow-x-auto w-full">
-                <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
-                    <tbody class="text-sm divide-y divide-gray-100">
+            <div id="summary-container" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
+                <div class="text-2xl bold mb-4">المجاميع</div>
+                <div>
+                    <table id="tbl3-summary" style="border: 2px solid black; margin-bottom: 20px;" class="table-fixed table-container w-full border text-center">
+                        <tbody class="text-sm divide-y divide-gray-100">
+                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع قيم المستهدف</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق%</td>
+                        </tr>
+                        <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td id="summary-emp-total-val" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(array_sum($all_total_emp_sales)) }}</td>
+                            <td id="historical-grand-total-sales" style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
+                                <?php $single_emp_diff = $total_historical == 0? "*" :  number_format(((array_sum($all_total_emp_sales)/$total_historical)*100)-100); ?>
+                            <td id="summary-emp-total-diff" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                        <tbody class="text-sm divide-y divide-gray-100">
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الموظف</td>
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع القيم</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">قيم المستهدف</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">% المستهدف من المجموع</td>
                         </tr>
-                    </tbody>
-                </table>
+                            <?php $total_sum_val = 0; ?>
+                        @foreach($emps as $emp)
+                            <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                                <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
+                                <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
+                                    <?php $single_emp_diff = $total_historical == 0? 0 :  number_format(($all_total_emp_sales[$emp->emp_code]/(array_sum($all_total_emp_sales)))*100, 2); ?>
+                                <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
+                                    <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         @elseif(count($dept_id) > 1)
             <div id="table-container2" class="overflow-x-auto w-full">
@@ -662,7 +821,7 @@
                             @if($record['VendorNo'] != $vendor_id)
                                     <?php $vendor_id = $record['VendorNo'] ?>
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
                                     <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
                                 </tr>
                             @endif
@@ -680,54 +839,69 @@
                                         <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
                                         <div class="w-full text-sm text-center">المورد</div>
                                         <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                        <div class="w-full text-sm text-center mr-1">
+                                            @if($item_price == "WholeSale")
+                                                سعر مؤسسات
+                                            @elseif($item_price == "Retail")
+                                                سعر تجزئة
+                                            @elseif($item_price == "MaxDiscount")
+                                                أقل سعر
+                                            @else
+                                                السعر
+                                            @endif
+                                        </div>
+                                        <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
-                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                     <div class="text-sm">الشهر</div>
                                 </th>
+                                    <?php $loop_counter = 0; ?>
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
+                                        <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">
                                             <div class="text-sm">{{ $year_key."-".$month }}</div>
                                         </th>
+                                            <?php $loop_counter++; ?>
                                     @endforeach
                                 @endforeach
-                                <th rowspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">السعر</div>
-                                </th>
-                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #d2dafa;" class="border p-2">
                                     <div class="text-sm">مجموع كمية</div>
                                 </th>
-                                <th colspan="2" style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
                                     <div class="text-sm">مجموع قيمة</div>
                                 </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">الفرق</div>
+                                </th>
                             </tr>
-
                             <tr>
-
                                 @foreach ($current_year_list as $year_key => $year)
                                     @foreach ($year as $month)
-                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
-                                            <div class="text-sm">S</div>
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                            <div class="text-sm">SH</div>
                                         </th>
-                                        <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border p-2">
-                                            <div class="text-sm">F</div>
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                            <div class="text-sm">T</div>
                                         </th>
                                     @endforeach
                                 @endforeach
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">S</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">SH</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">F</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">T</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">S</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                    <div class="text-sm">SH</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">F</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                    <div class="text-sm">T</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">%</div>
                                 </th>
                             </tr>
                                 <?php $new_tr = []; ?>
@@ -789,7 +963,7 @@
                                         <?php $month_counter = 1; ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
-                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                            <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
                                                 {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
@@ -799,7 +973,7 @@
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? number_format($new_result->$month_num) : 0  }}</div>
+                                                <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                     <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                     <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>
                                                 @php $total_dept_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
@@ -845,7 +1019,7 @@
                                                 {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
                                                 {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
                                             </th>
-                                            <th style="border: 2px solid black; z-index: 10; @if($loop->iteration%2 == 0) background-color: #e4fdf7; @else background-color: #fafad2; @endif" class="border">
+                                            <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
                                                 {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
@@ -854,7 +1028,7 @@
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? $new_result->target : 0  }}</div>
+                                                <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
                                                     <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
 
@@ -901,182 +1075,195 @@
                                             @php $month_counter++; @endphp
                                         @endforeach
                                     @endforeach
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                        <div class="text-sm">{{ $dept_sales == 0 ? "" : number_format($dept_sales) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_sales) }}</div>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                        <div class="text-sm">{{ $dept_forecast == 0 ? "" : number_format($dept_forecast) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_forecast) }}</div>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                        <div class="text-sm">{{ ($dept_sales*$record[$item_price]) == 0 ? "" : number_format($dept_sales*$record[$item_price]) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_sales*$record['MaxDiscount']) }}</div>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                        <div class="text-sm">{{ ($dept_forecast*$record[$item_price]) == 0 ? "" : number_format($dept_forecast*$record[$item_price]) }}</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ number_format($dept_forecast*$record['MaxDiscount']) }}</div>
+                                    @php $a = ($dept_sales*$record[$item_price]) == 0 ? 0 : number_format(((($dept_forecast*$record[$item_price])/($dept_sales*$record[$item_price]))*100) - 100) @endphp
+                                    <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                        <div class="text-sm">{{ $a == 0 ? "" : $a }}</div>
                                     </th>
                                 </tr>
                                 @php
                                     $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
                                     $total_dept_f_qty = $total_dept_f_qty + $dept_forecast;
 
-                                    $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record['MaxDiscount']);
-                                    $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record['MaxDiscount']);
+                                    $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record[$item_price]);
+                                    $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record[$item_price]);
+
+                                    if (!array_key_exists($dept, $all_total_dept_sales)) {
+                                        $all_total_dept_sales[$dept] = $dept_sales*$record[$item_price];
+                                    }
+                                    else {
+                                        $all_total_dept_sales[$dept] += $dept_sales*$record[$item_price];
+                                    }
+
+                                    if (!array_key_exists($dept, $all_total_dept_tr)) {
+                                        $all_total_dept_tr[$dept] = $dept_forecast*$record[$item_price];
+                                    }
+                                    else {
+                                        $all_total_dept_tr[$dept] += $dept_forecast*$record[$item_price];
+                                    }
                                 @endphp
                             @endforeach
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">مجموع الفرع</div>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <div class="text-sm">المجموع</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s1 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f1 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s2 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f2 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s3 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f3 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s4 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f4 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s5 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f5 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s6 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f6 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s7 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f7 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s8 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f8 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s9 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f9 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s10 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f10 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s11 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f11 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ $total_s12 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ $total_f12 }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
-                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
-                                </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_qty) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_qty) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_s_value) }}</div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10;" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #c0fff0;" class="border p-2">
                                     <div class="text-sm">{{ number_format($total_dept_f_value) }}</div>
+                                </th>
+                                @php $a = $total_dept_s_value == 0 ? 0 : number_format((($total_dept_f_value/$total_dept_s_value)*100) - 100) @endphp
+                                <th colspan="5" style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                    <div class="text-sm">{{ $a  }}</div>
                                 </th>
                             </tr>
 
 
                             <tr>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                     <div class="text-sm">الفرق %</div>
                                 </th>
-                                @php $a = floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100) @endphp
+                                @php $a = floatval($total_s1) == 0 ? 0 : number_format((($total_f1/$total_s1)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f1) == 0 ? 0 : ceil((($total_s1/$total_f1)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_s1) == 0 ? 0 : number_format((($total_f1/$total_s1)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100) @endphp
+                                @php $a = floatval($total_s2) == 0 ? 0 : number_format((($total_f2/$total_s2)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_f2) == 0 ? 0 : ceil((($total_s2/$total_f2)*100) - 100)}}</div>
+                                    <div class="text-sm">{{ floatval($total_s2) == 0 ? 0 : number_format((($total_f2/$total_s2)*100) - 100)}}</div>
                                 </th>
-                                @php $a = floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100) @endphp
+                                @php $a = floatval($total_s3) == 0 ? 0 : number_format((($total_f3/$total_s3)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f3) == 0 ? 0 : ceil((($total_s3/$total_f3)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s3) == 0 ? 0 : number_format((($total_f3/$total_s3)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100) @endphp
+                                @php $a = floatval($total_s4) == 0 ? 0 : number_format((($total_f4/$total_s4)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f4) == 0 ? 0 : ceil((($total_s4/$total_f4)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s4) == 0 ? 0 : number_format((($total_f4/$total_s4)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100) @endphp
+                                @php $a = floatval($total_s5) == 0 ? 0 : number_format((($total_f5/$total_s5)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f5) == 0 ? 0 : ceil((($total_s5/$total_f5)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s5) == 0 ? 0 : number_format((($total_f5/$total_s5)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100) @endphp
+                                @php $a = floatval($total_s6) == 0 ? 0 : number_format((($total_f6/$total_s6)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f6) == 0 ? 0 : ceil((($total_s6/$total_f6)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s6) == 0 ? 0 : number_format((($total_f6/$total_s6)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100) @endphp
+                                @php $a = floatval($total_s7) == 0 ? 0 : number_format((($total_f7/$total_s7)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f7) == 0 ? 0 : ceil((($total_s7/$total_f7)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s7) == 0 ? 0 : number_format((($total_f7/$total_s7)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100) @endphp
+                                @php $a = floatval($total_s8) == 0 ? 0 : number_format((($total_f8/$total_s8)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f8) == 0 ? 0 : ceil((($total_s8/$total_f8)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s8) == 0 ? 0 : number_format((($total_f8/$total_s8)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100) @endphp
+                                @php $a = floatval($total_s9) == 0 ? 0 : number_format((($total_f9/$total_s9)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f9) == 0 ? 0 : ceil((($total_s9/$total_f9)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s9) == 0 ? 0 : number_format((($total_f9/$total_s9)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100) @endphp
+                                @php $a = floatval($total_s10) == 0 ? 0 : number_format((($total_f10/$total_s10)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f10) == 0 ? 0 : ceil((($total_s10/$total_f10)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s10) == 0 ? 0 : number_format((($total_f10/$total_s10)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100) @endphp
+                                @php $a = floatval($total_s11) == 0 ? 0 : number_format((($total_f11/$total_s11)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f11) == 0 ? 0 : ceil((($total_s11/$total_f11)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s11) == 0 ? 0 : number_format((($total_f11/$total_s11)*100) - 100)}}</div></div>
                                 </th>
-                                @php $a = floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100) @endphp
+                                @php $a = floatval($total_s12) == 0 ? 0 : number_format((($total_f12/$total_s12)*100) - 100) @endphp
                                 <th colspan="2" style="border: 2px solid black; z-index: 10; @if($a <= 0) background-color: #ffebeb; @else background-color: #ebffee; @endif" class="border p-2">
-                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_f12) == 0 ? 0 : ceil((($total_s12/$total_f12)*100) - 100)}}</div></div>
+                                    <div class="text-sm"><div class="text-sm">{{ floatval($total_s12) == 0 ? 0 : number_format((($total_f12/$total_s12)*100) - 100)}}</div></div>
                                 </th>
-                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                    <div class="text-sm">{{ $record['MaxDiscount'] }}</div>
-                                </th>
-                                @php $a = floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100) @endphp
-                                <th colspan="4" style="border: 2px solid black; z-index: 10;" class="border p-2">
-                                    <div class="text-sm">{{ floatval($total_dept_f_qty) == 0 ? 0 : ceil((($total_dept_s_qty/$total_dept_f_qty)*100) - 100)}}</div>
+                                @php $a = floatval($total_dept_s_qty) == 0 ? 0 : number_format((($total_dept_f_qty/$total_dept_s_qty)*100) - 100) @endphp
+                                <th colspan="5" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
+                                    <div class="text-sm">{{ floatval($total_dept_s_qty) == 0 ? 0 : number_format((($total_dept_f_qty/$total_dept_s_qty)*100) - 100)}}</div>
                                 </th>
                                 @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
                                 {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
@@ -1088,6 +1275,83 @@
                     {{--                    @else--}}
                     {{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
                     {{--                    @endif--}}
+                    </tbody>
+                </table>
+            </div>
+            <div id="summary-container2" style="background-color: #f5f5f5" class="overflow-x-auto w-full p-6 mt-4">
+                <div class="text-2xl bold mb-4">مجاميع القيم</div>
+                <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
+                    <tbody class="text-sm divide-y divide-gray-100">
+                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SH</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">T</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق %</td>
+                    </tr>
+                        <?php $total_dept_sum_s = 0; ?>
+                        <?php $total_dept_sum_f = 0; ?>
+                    @foreach($depts as $dept)
+                        <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+                            <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
+                                @if($dept == '3')
+                                    الاحساء
+                                @elseif($dept == '10')
+                                    جدة
+                                @elseif($dept == '7')
+                                    الرياض
+                                @elseif($dept == '13')
+                                    وادي الدواسر
+                                @elseif($dept == '4')
+                                    الجوف
+                                @elseif($dept == '6')
+                                    الدمام
+                                @elseif($dept == '5')
+                                    الخرج
+                                @elseif($dept == '12')
+                                    نجران
+                                @elseif($dept == '11')
+                                    حائل
+                                @elseif($dept == '9')
+                                    تبوك
+                                @elseif($dept == '8')
+                                    القصيم
+                                @elseif($dept == '505')
+                                    ساجر
+                                @else
+                                    {{ $dept }}
+                                @endif
+                            </td>
+                            <td style="border: 2px solid black; background-color: #fffacd;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_sales[$dept]) }}</td>
+                            <td style="border: 2px solid black; background-color: #e4fdf7;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_tr[$dept]) }}</td>
+                            <?php $total_dept_diff = $all_total_dept_sales[$dept] == 0 ? 0 : number_format((($all_total_dept_tr[$dept]/$all_total_dept_sales[$dept])*100)-100); ?>
+                            <td style="border: 2px solid black;@if(floatval($total_dept_diff) > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $total_dept_diff }}</td>
+                            @php
+                                $total_dept_sum_s += $all_total_dept_sales[$dept];
+                                $total_dept_sum_f += $all_total_dept_tr[$dept];
+                            @endphp
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td style="border: 2px solid black;background-color: #dcdcdc; font-weight: bold;" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
+                        <td style="border: 2px solid black; font-weight: bold; background-color: #fff6a1;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_s) }}</td>
+                        <td style="border: 2px solid black; font-weight: bold; background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_f) }}</td>
+                        <?php $grand_total_dept_diff = $total_dept_sum_s == 0 ? 0 : number_format((($total_dept_sum_f/$total_dept_sum_s)*100)-100); ?>
+                        <td style="border: 2px solid black; font-weight: bold;@if(floatval($grand_total_dept_diff) > 0) background-color: #cfffbd; @else background-color: #ffdcdc; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $grand_total_dept_diff }}</td>
+                    </tr>
+{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
+{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>--}}
+{{--                            <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>--}}
+{{--                        <td style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>--}}
+{{--                    </tr>--}}
+{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
+{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
+{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>--}}
+{{--                        <td colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>--}}
+{{--                    </tr>--}}
                     </tbody>
                 </table>
             </div>
@@ -1118,12 +1382,62 @@
 </div>
 
 
+@section('fixed-title')
+    المستهدف
+@stop
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
+        function calculate_sum_all() {
+            total_val = 0;
+            historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
+
+            $(`[id ^='total-val-col--']`).each(function () {
+                total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                console.log('total-col:'+$(this).text());
+                // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+            });
+
+            total_diff = ((total_val/historical_sales)*100)-100;
+            $("#summary-emp-total-val").text(total_val.toLocaleString());
+            $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+        }
+        function calculate_sum_emp(emp_codes) {
+
+            // historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
+            summary_total_val = $("#summary-emp-total-val").text().replace(/,/g, "");
+
+            // $(`[id ^='total-val-col--']`).each(function () {
+            //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+            //     console.log('total-col:'+$(this).text());
+            //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+            //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+            //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+            // });
+
+            employee_code.forEach(function (element, idx, array) {
+                total_val = 0;
+                $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                    total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                    // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                    // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                    // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                });
+                diff = (total_val/summary_total_val)*100
+                $(`#summary-emp-val-${element}`).text(total_val.toLocaleString());
+                $(`#summary-emp-diff-${element}`).text(diff.toFixed(2));
+            });
+
+            // total_diff = ((total_val/historical_sales)*100)-100;
+            // $("#summary-emp-total-val").text(total_val.toLocaleString());
+            // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+        }
+
         var employee_code = [];
         Livewire.on('show-container', () => {
             // $('th span').empty();
@@ -1138,6 +1452,19 @@
             // $('th #x').text('AA');
             // alert('aaaa');
             var targets = [];
+
+            $('#item_summary').attr('checked', false);
+
+            $("#item_summary").on('change', function () {
+                if(this.checked) {
+                    $(".employee").addClass("hide");
+                    $(".department").addClass("hide");
+                }
+                else {
+                    $(".employee").removeClass("hide");
+                    $(".department").removeClass("hide");
+                }
+            });
 
             // console.log($("input[name$='active']"));
             console.log($('.emps_percentage'));
@@ -1253,6 +1580,8 @@
                         total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
                         console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
                         $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        total_val_price = parseFloat(total_count)*parseFloat($(item_price_txt).text().replace(/,/g, ""));
+                        $("#total-emp-val--"+product_id+"--"+element).text(total_val_price.toLocaleString());
                     });
 
 
@@ -1273,6 +1602,31 @@
 
                 $(`[id ^='totaltarget--${product_id}--${month}--']`).val(total_target);
                 $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
+
+
+                calculate_sum_all();
+                calculate_sum_emp();
+                // var summary_total_all = 0;
+                // employee_code.forEach(function (element, idx, array) {
+                //     emp_total = 0;
+                //     $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                //         emp_total = emp_total + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                //         console.log('single-emp'+element+':'+ $(this).text());
+                //         // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                //     });
+                //     console.log('total-emp'+element+':'+ emp_total);
+                //     $("#summary-emp-val-"+element).text(emp_total.toLocaleString());
+                //     emp_total_diff = Math.round(((emp_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+                //     $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                //
+                //     summary_total_all += emp_total;
+                // });
+                //
+                // summary_total_all_diff = Math.round(((summary_total_all/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
+                //
+                // // $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
+                // $("#summary-grand-total-emp-val").text(summary_total_all.toLocaleString());
+                // $("#summary-grand-total-emp-diff").text(summary_total_all_diff.toLocaleString());
 
 
                 //
@@ -1306,9 +1660,15 @@
 
 
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+
             });
 
-            $('.target').on('focusout change', function () {
+            $('.target').on('focusin', function(){
+                console.log("old value " + $(this).val() == "" ? 0 : $(this).val());
+                $(this).data('val', $(this).val());
+            });
+
+            $('.target').on('focusout', function () {
                 console.log('kaka');
                 console.log($(this).val());
                 console.log($(this).attr('id'));
@@ -1322,6 +1682,10 @@
                 sales_txt= "#sales--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 diff_txt= "#diff--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 item_price_txt = "#item-price-"+product_id;
+                total_all_emp_val = "#total-emp-val--"+product_id+"--";
+                total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
+                old_qty = $(this).data('val') == ""? 0 : parseFloat($(this).data('val'));
+                console.log('old qty:'+ old_qty);
 
                 console.log(txt);
                 console.log(totaltarget_txt);
@@ -1349,6 +1713,30 @@
                     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+txt_original[4]);
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
                 });
+
+                var total_emp_val_count= 0;
+                // console.log(document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`));
+                // total_emp_val_elements = document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`);
+                // total_emp_val_elements.forEach(function (element) {
+                //     total_emp_val_count = total_emp_val_count + parseFloat(element.innerHTML);
+                //     console.log('value:'+total_emp_val_count);
+                // });
+
+                $(total_emp_val).text(total_count*$(item_price_txt).text());
+
+                $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
+                    console.log("------val:"+$(this).text().replace(/,/g, ""));
+                    console.log("------product:"+product_id);
+
+                    total_emp_val_count = total_emp_val_count + parseFloat($(this).text().replace(/,/g, "") ? $(this).text().replace(/,/g, "") : 0);
+                });
+
+                console.log("-----------target----------");
+                console.log("total_emp_val_count:"+total_emp_val_count);
+                console.log("'#total-sales-emp--'+product_id:"+$('#total-sales-emp--'+product_id).text());
+                console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")))*100)-100);
 
 
                 total_count = 0;
@@ -1402,10 +1790,43 @@
                 //
                 // $(".emps_percentage_readonly").text(100-total);
 
-                $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
+                old_value = old_qty*parseFloat($(item_price_txt).text().replace(/,/g, ""));
+                // old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+
+                old_summary_single_emp = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
+                new_summary_single_emp = (old_summary_single_emp-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                $("#summary-emp-val-"+txt_original[4]).text(new_summary_single_emp.toLocaleString());
+                single_summary_diff = (new_summary_single_emp/historical_sales)*100;
+                $("#summary-emp-diff-"+txt_original[4]).text(single_summary_diff.toFixed(2));
+
+
+                old_summary_emp_total = parseFloat($("#summary-emp-total-val").text().replace(/,/g, ""));
+                old_summary_emp_grand_total = parseFloat($("#summary-grand-total-emp-val").text().replace(/,/g, ""));
+
+                new_summary_value = (old_summary_emp_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                new_summary_diff = ((new_summary_value/parseFloat(historical_sales))*100)-100;
+
+                new_summary_emp_grand_total = (old_summary_emp_grand_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
+                new_summary_emp_grand_diff = ((new_summary_emp_grand_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
+                console.log('old_summary_emp_total:'+old_summary_emp_total);
+                console.log('old_value:'+old_value);
+                console.log('new_value:'+$(this).val());
+                console.log('price:'+parseFloat($(item_price_txt).text().replace(/,/g, "")));
+                console.log('new_summary_value:'+new_summary_value);
+                console.log('historical_sales:'+historical_sales);
+
+                $("#summary-emp-total-val").text(new_summary_value.toLocaleString());
+                // $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
+                $("#summary-emp-total-diff").text(Math.round(new_summary_diff).toLocaleString());
+
+                $("#summary-grand-total-emp-val").text(new_summary_emp_grand_total.toLocaleString());
+                $("#summary-grand-total-emp-diff").text(Math.round(new_summary_emp_grand_diff).toLocaleString());
+
+
             });
 
-            $('.emptarget').on('keyup change', function () {
+            $('.emptarget').on('focusout', function () {
                 // console.log('kaka');
                 // console.log($(this).val());
                 // console.log($(this).attr('id'));
@@ -1597,6 +2018,8 @@
                             });
 
                             $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            calculate_sum_all();
+                            calculate_sum_emp();
                         }
                     }
                 });
@@ -1632,6 +2055,7 @@
                                     txt = txt.split("--");
                                     product_id = txt[1];
                                     txt= txt[1]+"--"+txt[2]+"--"+txt[3];
+                                    // total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
                                     console.log(txt);
                                     var target_entered = element.value;
 
@@ -1675,8 +2099,12 @@
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
                                             total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                            console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                            $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                            // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                            // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                            // console.log("total-count-final:"+total_count);
+                                            // console.log("price-final:"+$(`item-price-${product_id}`).text());
+                                            // console.log("price:"+`item-price-${product_id}`);
+                                            $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(`#item-price-${product_id}`).text()));
                                         });
 
                                         console.log(element);
@@ -1698,6 +2126,8 @@
                             });
 
                             $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                            calculate_sum_all();
+                            calculate_sum_emp();
                         }
                     }
                 });
@@ -1719,10 +2149,27 @@
                         btn_id = btn_id.split('--');
                         selector_txt = 'totaltarget--'+ btn_id[1];
                         product_id = btn_id[1];
+                        item_price_txt = "#item-price-"+product_id;
                         console.log(selector_txt);
+                        historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
                         const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
                         console.log(elements);
+
+                        // total_val = 0;
+                        // $(`[id ^='total-val-col--']`).each(function () {
+                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                        //     console.log('total-col:'+$(this).text());
+                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        //
+                        // total_diff = ((total_val/historical_sales)*100)-100;
+                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
+                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+
+                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
                         elements.forEach(element =>{
                             if (element.value) {
@@ -1800,13 +2247,28 @@
                                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                     total_count = 0;
-                                    $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
-                                        total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                        console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                        $("#total-emp--"+product_id+"--"+element).text(total_count);
-                                    });
+                                    // var total_single_val = 0;
+                                    // // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
+                                    // //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                                    // //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                    // //     $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                    // //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                                    // //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
+                                    // // });
+                                    // $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
+                                    //     // total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                                    //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                                    //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                                    //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                                    //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
+                                    // });
 
-                                    console.log(element);
+                                    // emp_diff = (total_single_val/parseFloat($("#summary-emp-total-val").text()))*100;
+                                    // $('summary-emp-val-'+element).text(total_single_val.toLocaleString());
+                                    // $('summary-emp-diff-'+element).text(emp_diff.toLocaleString());
+                                    //
+                                    //
+                                    // console.log(element);
                                 });
 
 
@@ -1825,14 +2287,47 @@
 
                         });
 
-                        $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+                        // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
+                        //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                        //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        // total_val = 0;
+                        // $(`[id ^='total-val-col--']`).each(function () {
+                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                        //     console.log('total-col:'+$(this).text());
+                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
+                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
+                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
+                        // });
+                        //
+                        // total_diff = ((total_val/historical_sales)*100)-100;
+                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
+                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
+                        //
+                        // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
+
+                        calculate_sum_all();
+                        calculate_sum_emp();
                     }
                 });
             });
 
             $('#test-btn').on('click', function () {
                 // alert('hi');
+
                 $("#test-btn").html('<b>الرجاء الإنتظار..</b>');
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
+
 
                 targets = [];
                 emps_percents = [];
@@ -1842,6 +2337,7 @@
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
                 console.log("============================");
+                console.log(percent_elements);
                 console.log(item_elements);
                 // const elements = $("input[id^='target--']");
                 elements.forEach(element =>{
@@ -1877,6 +2373,7 @@
                 // console.log($("input[id^='target--']"));
 
                 // console.log(targets[0]);
+
                 Livewire.emit('targets-entered', targets, emps_percents, products_codes);
                 // Livewire.emit('targets-entered', targets);
                 // console.log(targets);
@@ -1886,6 +2383,15 @@
             $('#emptest-btn').on('click', function () {
                 // alert('hi');
                 $("#emptest-btn").html('<b>الرجاء الإنتظار..</b>');
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
 
                 targets = [];
                 emps_percents = [];
@@ -1965,6 +2471,8 @@
                         // $(`[id ^='totaltarget--${product_code}--5']`).val(value_entered).change();
                         $(`input:not([disabled])[id ^='totaltarget--${product_code}']`).val(document.querySelector(`input:not([disabled])[id ^='totaltarget--${product_code}']`).value).change();
                         // end here
+
+                        calculate_sum_emp();
                     }
                 });
             });
@@ -2119,6 +2627,10 @@
 
         });
 
+        Livewire.on('finished', () => {
+            swal.close();
+        });
+
         Livewire.on('clear-btn', value => {
             $('th span').empty();
                 // $('.total-target').val('');
@@ -2164,9 +2676,9 @@
             $('#dept_id').on('change', function (e) {
                 var data = $('#dept_id').select2("val");
 
-                if (prev_depts && prev_depts.includes('dept_all') == false && data.includes('dept_all') == true && prev_depts.length != data.length) {
+                if (prev_depts && prev_depts.includes('-1') == false && data.includes('-1') == true && prev_depts.length != data.length) {
                     $("#dept_id option").prop('selected', false);
-                    $("#dept_id option[value='dept_all']").prop('selected', true);
+                    $("#dept_id option[value='-1']").prop('selected', true);
 
                     prev_depts = $(this).val();
                     $('#dept_id').change();
@@ -2174,7 +2686,7 @@
                 else {
 
                     if (prev_depts && prev_depts.length != data.length) {
-                        $("#dept_id option[value='dept_all']").removeAttr('selected');
+                        $("#dept_id option[value='-1']").removeAttr('selected');
                         prev_depts = $(this).val();
 
                         $("#dept_id").change();
@@ -2250,7 +2762,59 @@
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
+
                 Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+
+                // if (dept_id.length > 0 && cat_type.length > 0 && sp_type.length > 0) {
+                //
+                // }
+                // else {
+                //     const Toast = Swal.mixin({
+                //         toast: true,
+                //         position: "top-end",
+                //         showConfirmButton: false,
+                //         timer: 3000,
+                //         timerProgressBar: true,
+                //         didOpen: (toast) => {
+                //             toast.onmouseenter = Swal.stopTimer;
+                //             toast.onmouseleave = Swal.resumeTimer;
+                //         }
+                //     });
+                //     Toast.fire({
+                //         icon: "success",
+                //         title: "Signed in successfully"
+                //     });
+                // }
+            });
+
+            $('#reset-btn').on('click', function () {
+
+                $("#dept_id option").prop('selected', false);
+                $("#dept_id option[value='-1']").prop('selected', true);
+
+                $("#cat_type option").prop('selected', false);
+                $("#cat_type option[value='cat_all']").prop('selected', true);
+
+                $("#sp_type option").prop('selected', false);
+                $("#sp_type option[value='sp_all']").prop('selected', true);
+
+                $("#vendor_type option").prop('selected', false);
+                $("#vendor_type option[value='vendor_all']").prop('selected', true);
+
+
+                $("#dept_id").change();
+                $("#cat_type").change();
+                $("#sp_type").change();
+                $("#vendor_type").change();
             });
         });
 

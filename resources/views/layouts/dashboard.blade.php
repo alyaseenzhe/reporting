@@ -159,6 +159,9 @@
                             <img src="{{asset('images/logo-small.png')}}" alt="شركة الياسين الزراعية">
                         </a>
                     </div>
+                    <div class="flex text-2xl font-bold">
+                        @yield('fixed-title')
+                    </div>
                     <div class="flex items-center space-x-3">
                         <div class="relative inline-flex" x-data="{ open: false }">
 
