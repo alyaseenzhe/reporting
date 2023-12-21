@@ -47,6 +47,24 @@
             <p>هنا بإمكانك الإطلاع على التقارير المتعلقة بالشركة</p>
         </div>
     </div>
+
+    @if (Auth::user()->role == 'a')
+        <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+            <a class="w-full" href="{{ route('list.settings') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="icon multi-color w-20 h-20" viewBox="0 0 24 24" id="settings" xmlns="http://www.w3.org/2000/svg"><path id="secondary-fill" d="M10,3.94A.13.13,0,0,0,10,4v.59a1,1,0,0,1-.67.94h0a1,1,0,0,1-1.14-.2l-.41-.41a1,1,0,0,0-1-.24.94.94,0,0,0-.42.24L4.93,6.34a1.1,1.1,0,0,0-.24.4,1,1,0,0,0,.24,1l.41.41a1,1,0,0,1,.2,1.14v0a1,1,0,0,1-.94.67H4a1,1,0,0,0-.87.52A.89.89,0,0,0,3,11v2a.89.89,0,0,0,.13.48A1,1,0,0,0,4,14h.59a1,1,0,0,1,.94.67v0a1,1,0,0,1-.2,1.14l-.41.41a1,1,0,0,0-.24,1,1.1,1.1,0,0,0,.24.4l1.41,1.41a.94.94,0,0,0,.42.24,1,1,0,0,0,1-.24l.41-.41a1,1,0,0,1,1.14-.2h0a1,1,0,0,1,.67.94V20a.13.13,0,0,0,0,.06A9,9,0,0,0,10,3.94Z" style="fill: rgb(44, 169, 188); stroke-width: 2;"></path><circle id="tertiary-fill" cx="12" cy="12" r="3" style="fill: #b7b7b7; stroke-width: 2;"></circle><path id="primary-stroke" d="M15,12a3,3,0,1,1-3-3A3,3,0,0,1,15,12Zm5-2h-.59a1,1,0,0,1-.94-.67v0a1,1,0,0,1,.2-1.14l.41-.41a1,1,0,0,0,0-1.42L17.66,4.93a1,1,0,0,0-1.42,0l-.41.41a1,1,0,0,1-1.14.2h0A1,1,0,0,1,14,4.59V4a1,1,0,0,0-1-1H11a1,1,0,0,0-1,1v.59a1,1,0,0,1-.67.94h0a1,1,0,0,1-1.14-.2l-.41-.41a1,1,0,0,0-1.42,0L4.93,6.34a1,1,0,0,0,0,1.42l.41.41a1,1,0,0,1,.2,1.14v0a1,1,0,0,1-.94.67H4a1,1,0,0,0-1,1v2a1,1,0,0,0,1,1h.59a1,1,0,0,1,.94.67v0a1,1,0,0,1-.2,1.14l-.41.41a1,1,0,0,0,0,1.42l1.41,1.41a1,1,0,0,0,1.42,0l.41-.41a1,1,0,0,1,1.14-.2h0a1,1,0,0,1,.67.94V20a1,1,0,0,0,1,1h2a1,1,0,0,0,1-1v-.59a1,1,0,0,1,.67-.94h0a1,1,0,0,1,1.14.2l.41.41a1,1,0,0,0,1.42,0l1.41-1.41a1,1,0,0,0,0-1.42l-.41-.41a1,1,0,0,1-.2-1.14v0a1,1,0,0,1,.94-.67H20a1,1,0,0,0,1-1V11A1,1,0,0,0,20,10Z" style="fill: none; stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path></svg>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">إعدادات الموقع</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    @endif
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
         @if(\Illuminate\Support\Facades\Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('list.users') }}">
@@ -667,7 +685,7 @@
 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">مستهدف الاصناف</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">مستهدف الياسين</div>
                     </div>
                 </div>
             </a>

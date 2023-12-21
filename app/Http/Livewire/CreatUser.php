@@ -18,6 +18,7 @@ class CreatUser extends Component
     public $group_id;
 
     public $role = 'u';
+    public $is_active;
 
     protected $rules = [
         'emp_code' => 'required',
@@ -61,6 +62,7 @@ class CreatUser extends Component
             'email' => $this->email,
             'password' => Hash::make($this->password),
             'role' => $this->role,
+            'is_active' => $this->is_active,
             'group' => $this->group_id == '-1' ? null : $this->group_id,
             'branches' => json_encode($this->branches),
         ]);

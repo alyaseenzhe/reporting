@@ -87,6 +87,28 @@
         </div>
     </div>
 
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">حالة التفعيل</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input checked wire:model="is_active" type="radio" name="is_active" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">مفعل</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="is_active" type="radio" name="is_active" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">غير مفعل</label>
+                    </div>
+                </div>
+
+                @error('is_active')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
     <hr style="color: #cbd5e1;border: 2px solid;">
     <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
     <div>
