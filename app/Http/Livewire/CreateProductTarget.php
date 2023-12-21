@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetBranchTotal;
 use App\Models\ProductTargetEmpPercent;
 use App\Models\ProductTargetFilter;
 use App\Models\ProductTargetLog;
@@ -406,107 +407,57 @@ class CreateProductTarget extends Component
         $this->keys = array_keys($this->list);
         if (count($this->keys) > 1) {
 
-//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
-//                ->where('PriceList', '1')
-//                ->whereNotNull('ProductNo')
-//                ->where(function ($query) {
-//                    $query->where('Taget', '<>', 0)
-//                        ->orWhere('Revision', '<>', 0);
-//                })
-//                ->where(function ($query) {
-//                    $query->where('Year', $this->keys[0])
-//                        ->where('Department', $this->dept_id)
-//                        ->whereIn('month', array_values($this->list[$this->keys[0]]));
-//                })
-//                ->orWhere(function ($query) {
-//                    $query->where('Year', $this->keys[1])
-//                        ->where('Department', $this->dept_id)
-//                        ->whereIn('month', array_values($this->list[$this->keys[1]]));
-//                })
-//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-////                ->orderBy('Date', 'desc')
-////                ->limit(70)
-//                ->get();
-
 //            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
 //                        FROM ProductsTarget, ProductMast
 //                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-//                        and ((Year = '".$this->keys[1]."' and month in (1, 2,3,4,5,6,7,8,9,10)) or (Year = '".$this->keys[0]."' and month in (11, 12)))
-//                        and Department = 6
+//                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
+//                        and Department = ". $this->dept_id[0] ."
 //                        and ProductMast.[Pricelist] = 1
 //                        and (Taget <> 0 or Revision <> 0)
 //                        order by Date desc";
 
-//            dd($this->list[$this->keys[0]]);
-            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
-                        FROM ProductsTarget, ProductMast
-                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
-                        and Department = ". $this->dept_id[0] ."
-                        and ProductMast.[Pricelist] = 1
-                        and (Taget <> 0 or Revision <> 0)
-                        order by Date desc";
+
+            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+                ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
+                ->whereRaw("branch = ". $this->dept_id[0])
+                ->select('product_id', 'month', 'year', 'branch', 'target')
+                ->get();
+
+//            dd($this->old_targets);
+
 
 //            dd($stmt);
 //
-            $query = DB::connection('sqlsrv')->select($stmt);
-//            $this->old_targets = collect($query);
-
-//            dd($this->old_targets[0]);
-//        dd(collect($query));
-            $fetch_query = json_decode(json_encode($query), true);
-            $this->old_targets = collect($fetch_query);
-//            $this->old_targets = $fetch_query;
-//            dd($this->old_targets->where('Code', '170966')->where('month', '11')->where('Year', '2023')->count());
-//            dd($this->old_targets);
-//            dd($this->old_targets->where('ProductNo', '10144')->where('month', '12')->where('Year', '2024')->count());// > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
-//            $old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
-//            dd($this->old_targets->where('ProductNo', '10297')->count());
-//            dd($this->old_targets->where('ProductNo', '10297')->first()['Taget']);
-////
-//        dd(collect($fetch_query));
-//            array_push($this->old_targets, $fetch_query);
-//            dd($this->old_targets);
+//            $query = DB::connection('sqlsrv')->select($stmt);
+//
+//            $fetch_query = json_decode(json_encode($query), true);
+//            $this->old_targets = collect($fetch_query);
 
 
 
         }
         else {
 
-//            dd('nono');
-//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
-//                ->where('PriceList', '1')
-//                ->whereNotNull('ProductNo')
-//                ->where('Year', $this->keys[0])
-//                ->whereIn('month', array_values($this->list[$this->keys[0]]))
-//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-////                ->where(function ($query) {
-////                    $query->where('Taget', '<>', 0)
-////                        ->orWhere('Revision', '<>', 0);
-////                })
-////                ->orderBy('Date', 'desc')
-//                ->get();
-
-            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
-                        FROM ProductsTarget, ProductMast
-                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-                        and (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))
-                        and Department = ". $this->dept_id[0] ."
-                        and ProductMast.[Pricelist] = 1
-                        and (Taget <> 0 or Revision <> 0)
-                        order by Date desc";
+//            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
+//                        FROM ProductsTarget, ProductMast
+//                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
+//                        and (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))
+//                        and Department = ". $this->dept_id[0] ."
+//                        and ProductMast.[Pricelist] = 1
+//                        and (Taget <> 0 or Revision <> 0)
+//                        order by Date desc";
 //            dd($stmt);
 
-            $query = DB::connection('sqlsrv')->select($stmt);
-//            $this->old_targets = collect($query);
+            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+                ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+                ->whereRaw("branch = ". $this->dept_id[0])
+                ->select('product_id', 'month', 'year', 'branch', 'target')
+                ->get();
 
-//            dd($this->old_targets[0]);
-//        dd(collect($query));
-            $fetch_query = json_decode(json_encode($query), true);
-            $this->old_targets = collect($fetch_query);
-//            dd($this->old_targets);
+//            $query = DB::connection('sqlsrv')->select($stmt);
+//
+//            $fetch_query = json_decode(json_encode($query), true);
+//            $this->old_targets = collect($fetch_query);
 
         }
 
@@ -1228,107 +1179,52 @@ class CreateProductTarget extends Component
         $this->keys = array_keys($this->list);
         if (count($this->keys) > 1) {
 
-//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
-//                ->where('PriceList', '1')
-//                ->whereNotNull('ProductNo')
-//                ->where(function ($query) {
-//                    $query->where('Taget', '<>', 0)
-//                        ->orWhere('Revision', '<>', 0);
-//                })
-//                ->where(function ($query) {
-//                    $query->where('Year', $this->keys[0])
-//                        ->where('Department', $this->dept_id)
-//                        ->whereIn('month', array_values($this->list[$this->keys[0]]));
-//                })
-//                ->orWhere(function ($query) {
-//                    $query->where('Year', $this->keys[1])
-//                        ->where('Department', $this->dept_id)
-//                        ->whereIn('month', array_values($this->list[$this->keys[1]]));
-//                })
-//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-////                ->orderBy('Date', 'desc')
-////                ->limit(70)
-//                ->get();
 
 //            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
 //                        FROM ProductsTarget, ProductMast
 //                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-//                        and ((Year = '".$this->keys[1]."' and month in (1, 2,3,4,5,6,7,8,9,10)) or (Year = '".$this->keys[0]."' and month in (11, 12)))
-//                        and Department = 6
+//                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
+//                        and Department in (". implode(',', $this->dept_id) .")
 //                        and ProductMast.[Pricelist] = 1
 //                        and (Taget <> 0 or Revision <> 0)
 //                        order by Date desc";
 
-//            dd($this->list[$this->keys[0]]);
-            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
-                        FROM ProductsTarget, ProductMast
-                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
-                        and Department in (". implode(',', $this->dept_id) .")
-                        and ProductMast.[Pricelist] = 1
-                        and (Taget <> 0 or Revision <> 0)
-                        order by Date desc";
-
 //            dd($stmt);
+
+            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+                ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
+                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
+                ->select('product_id', 'month', 'year', 'branch', 'target')
+                ->get();
+
+//            $query = DB::connection('sqlsrv')->select($stmt);
 //
-            $query = DB::connection('sqlsrv')->select($stmt);
-//            $this->old_targets = collect($query);
-
-//            dd($this->old_targets[0]);
-//        dd(collect($query));
-            $fetch_query = json_decode(json_encode($query), true);
-            $this->old_targets = collect($fetch_query);
-//            $this->old_targets = $fetch_query;
-//            dd($this->old_targets->where('Code', '170966')->where('month', '11')->where('Year', '2023')->count());
-//            dd($this->old_targets);
-//            dd($this->old_targets->where('ProductNo', '10144')->where('month', '12')->where('Year', '2024')->count());// > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
-//            $old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget'];
-//            dd($this->old_targets->where('ProductNo', '10297')->count());
-//            dd($this->old_targets->where('ProductNo', '10297')->first()['Taget']);
-////
-//        dd(collect($fetch_query));
-//            array_push($this->old_targets, $fetch_query);
-//            dd($this->old_targets);
-
-
+//            $fetch_query = json_decode(json_encode($query), true);
+//            $this->old_targets = collect($fetch_query);
 
         }
         else {
 
-//            dd('nono');
-//            $this->old_targets = ScribeProductTarget::where('Department', $this->dept_id)
-//                ->where('PriceList', '1')
-//                ->whereNotNull('ProductNo')
-//                ->where('Year', $this->keys[0])
-//                ->whereIn('month', array_values($this->list[$this->keys[0]]))
-//                ->select('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-//                ->groupBy('Department', 'month', 'Year', 'PriceList', 'ProductNo', 'Taget', 'Revision')
-////                ->where(function ($query) {
-////                    $query->where('Taget', '<>', 0)
-////                        ->orWhere('Revision', '<>', 0);
-////                })
-////                ->orderBy('Date', 'desc')
-//                ->get();
-
-            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
-                        FROM ProductsTarget, ProductMast
-                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-                        and (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))
-                        and Department in (". implode(',',$this->dept_id) .")
-                        and ProductMast.[Pricelist] = 1
-                        and (Taget <> 0 or Revision <> 0)
-                        order by Date desc";
+//            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
+//                        FROM ProductsTarget, ProductMast
+//                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
+//                        and (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))
+//                        and Department in (". implode(',',$this->dept_id) .")
+//                        and ProductMast.[Pricelist] = 1
+//                        and (Taget <> 0 or Revision <> 0)
+//                        order by Date desc";
 //            dd($stmt);
 
-            $query = DB::connection('sqlsrv')->select($stmt);
-//            $this->old_targets = collect($query);
+            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+                ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+                ->whereRaw("branch in (". implode(',',$this->dept_id) .")")
+                ->select('product_id', 'month', 'year', 'branch', 'target')
+                ->get();
 
-//            dd($this->old_targets[0]);
-//        dd(collect($query));
-            $fetch_query = json_decode(json_encode($query), true);
-            $this->old_targets = collect($fetch_query);
-//            dd($this->old_targets);
+//            $query = DB::connection('sqlsrv')->select($stmt);
+//
+//            $fetch_query = json_decode(json_encode($query), true);
+//            $this->old_targets = collect($fetch_query);
 
         }
 
