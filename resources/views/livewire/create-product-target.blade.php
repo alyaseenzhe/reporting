@@ -1032,11 +1032,14 @@
 
                                                     <?php
 //                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept->Department)->first(): 0;
-                                                    $new_result = key_exists('ProductCode', $record) ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
+//                                                    $new_result = key_exists('ProductCode', $record) ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
+                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
+                                                <div class="text-sm">
+                                                    {{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}
+                                                </div>
                                                     <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
 
@@ -2338,10 +2341,12 @@
 
 
                 targets = [];
+                var totaltargets = [];
                 emps_percents = [];
                 products_codes = [];
 
                 const elements = document.querySelectorAll("input[id^='target--']");
+                const totaltarget_element = document.querySelectorAll("input[id^='totaltarget--']");
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
                 console.log("============================");
@@ -2356,6 +2361,20 @@
                     //     targets.push(element)
                         targets.push(element.id + "|" +element.value);
                     //     targets.push({element.id: element.value});
+                    }
+                    // targets.push({element.id: element.value});
+
+
+                });
+
+                totaltarget_element.forEach(element =>{
+                    if (element.value) {
+                        $("#test-btn").prop('value', 'الرجاء الإنتظار..');
+                        console.log(element.value);
+                        //     // targets[element.id] = element.value;
+                        //     targets.push(element)
+                        totaltargets.push(element.id + "|" +element.value);
+                        //     targets.push({element.id: element.value});
                     }
                     // targets.push({element.id: element.value});
 
@@ -2382,7 +2401,7 @@
 
                 // console.log(targets[0]);
 
-                Livewire.emit('targets-entered', targets, emps_percents, products_codes);
+                Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
                 // Livewire.emit('targets-entered', targets);
                 // console.log(targets);
 

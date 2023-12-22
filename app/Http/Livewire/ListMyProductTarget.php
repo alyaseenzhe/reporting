@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetBranchTotal;
 use App\Models\ProductTargetFilter;
 use App\Models\Setting;
 use App\Models\User;
@@ -232,17 +233,24 @@ class ListMyProductTarget extends Component
                     ->get();
             }
             elseif (count($this->dept_id) > 1) {
-                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
-                    ->whereIn('branch', $this->dept_id)
-//                ->where('user_id', $this->user_id)
-                    ->where(function ($query) {
-                        $query->where('year', $this->keys[0])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                    ->groupBy('product_id', 'month', 'year', 'branch')
+
+//                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
+//                    ->whereIn('branch', $this->dept_id)
+////                ->where('user_id', $this->user_id)
+//                    ->where(function ($query) {
+//                        $query->where('year', $this->keys[0])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                    })
+//                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                    ->get();
+
+                $this->new_targets = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+                    ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                    ->whereRaw("branch = ". $this->dept_id[0])
+                    ->select('product_id', 'month', 'year', 'branch', 'target')
                     ->get();
             }
         }
@@ -269,24 +277,30 @@ class ListMyProductTarget extends Component
                     ->get();
             }
             if (count($this->dept_id) > 1) {
-                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
-                    ->whereIn('branch', $this->dept_id)
-//                ->where('user_id', $this->user_id)
-                    ->where(function ($query) {
-                        $query->where('year', $this->keys[0])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                    ->orWhere(function ($query) {
-                        $query->where('year', $this->keys[1])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                    })
-//                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                    ->select('product_id', 'month', 'year', 'branch', DB::raw('SUM(target) as target'))
-                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
+//                    ->whereIn('branch', $this->dept_id)
+////                ->where('user_id', $this->user_id)
+//                    ->where(function ($query) {
+//                        $query->where('year', $this->keys[0])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                    })
+//                    ->orWhere(function ($query) {
+//                        $query->where('year', $this->keys[1])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[1]]));
+//                    })
+////                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                    ->select('product_id', 'month', 'year', 'branch', DB::raw('SUM(target) as target'))
+//                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                    ->get();
+
+                $this->new_targets = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+                    ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
+//                    ->whereRaw("branch = ". $this->dept_id[0])
+                    ->select('product_id', 'month', 'year', 'branch', 'target')
                     ->get();
             }
         }

@@ -1179,7 +1179,6 @@ class CreateProductTarget extends Component
         $this->keys = array_keys($this->list);
         if (count($this->keys) > 1) {
 
-
 //            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
 //                        FROM ProductsTarget, ProductMast
 //                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
@@ -1191,11 +1190,19 @@ class CreateProductTarget extends Component
 
 //            dd($stmt);
 
-            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-                ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
-                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
+//            dd(implode(',', $this->dept_id));
+//            dd("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))");
+//            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
+                ->whereIn("branch", $this->dept_id)
+//                ->whereIn("branch", [7])
                 ->select('product_id', 'month', 'year', 'branch', 'target')
                 ->get();
+
+
+//            dd($this->old_targets->where('product_id', '170458')->where("month", '1')->where('year', '2024')->where('branch', '7')->first());
+//            dd($this->old_targets);
 
 //            $query = DB::connection('sqlsrv')->select($stmt);
 //
@@ -1231,8 +1238,9 @@ class CreateProductTarget extends Component
         // End of getting old data from Scribe
 
         // target data from reporting
-        $this->current_target = ProductTarget::whereIn('user_id', $this->employee_ids_in_my_branch)
-            ->get();
+        // good
+//        $this->current_target = ProductTarget::whereIn('user_id', $this->employee_ids_in_my_branch)
+//            ->get();
 
         $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
             ->whereIn('users.id', $this->employee_ids_in_my_branch)
@@ -1695,54 +1703,92 @@ class CreateProductTarget extends Component
 
 
         // get the current targets
-        $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
-        $current_end_selected_month = Carbon::parse($this->selected_month)->addMonths(12)->format('Y-m-d');
-
-        $this->current_start_selected_month_exploded = explode('-', $current_start_selected_month);
-        $this->current_end_selected_month_exploded = explode('-', $current_end_selected_month);
-
-//        dd($current_end_selected_month_exploded[0]);
-
-
-        $this->current_target_to_edit = [];
-        if (count($this->current_year_list) == 1) {
-//            $this->current_target_to_edit = ProductTarget::where('user_id', Auth::id())
-            $this->current_target_to_edit = ProductTarget::whereIn('branch', $this->dept_id)
-                ->where(function ($query) {
-                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
-                        ->whereIn('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
-                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
-                })
-                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
-                ->groupBy('product_id', 'month', 'year', 'branch')
-                ->get();
-        }
-        elseif (count($this->current_year_list) > 1) {
-            $this->current_target_to_edit = ProductTarget::whereIn('branch', $this->dept_id)
-                ->where(function ($query) {
-                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
-                        ->whereIn('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
-                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
-                })
-                ->orWhere(function ($query) {
-                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
-                        ->whereIn('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
-//                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
-                })
-                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
-                ->groupBy('product_id', 'month', 'year', 'branch')
-                ->get();
-        }
+//        $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
+//        $current_end_selected_month = Carbon::parse($this->selected_month)->addMonths(12)->format('Y-m-d');
+//
+//        $this->current_start_selected_month_exploded = explode('-', $current_start_selected_month);
+//        $this->current_end_selected_month_exploded = explode('-', $current_end_selected_month);
+//
+////        dd($current_end_selected_month_exploded[0]);
+//
+//
+//        $this->current_target_to_edit = [];
+//        if (count($this->current_year_list) == 1) {
+//// good
+////            $this->current_target_to_edit = ProductTarget::whereIn('branch', $this->dept_id)
+////                ->where(function ($query) {
+////                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+////                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+//////                        ->where('user_id', Auth::id())
+//////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+////                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+////                })
+////                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+////                ->groupBy('product_id', 'month', 'year', 'branch')
+////                ->get();
+//
+//            $this->current_target_to_edit = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+//                ->where(function ($query) {
+//                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+//                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+//                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+//                })
+////                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+////                ->groupBy('product_id', 'month', 'year', 'branch')
+//                ->get();
+//        }
+//        elseif (count($this->current_year_list) > 1) {
+////            $this->current_target_to_edit = ProductTarget::whereIn('branch', $this->dept_id)
+////                ->where(function ($query) {
+////                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+////                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+//////                        ->where('user_id', Auth::id())
+//////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+////                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+////                })
+////                ->orWhere(function ($query) {
+////                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
+////                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+//////                        ->where('user_id', Auth::id())
+//////                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
+//////                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+////                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
+////                })
+////                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+////                ->groupBy('product_id', 'month', 'year', 'branch')
+////                ->get();
+//
+//            $this->current_target_to_edit = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+//                ->where(function ($query) {
+//                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+//                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+//                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+//                })
+//                ->orWhere(function ($query) {
+//                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
+//                        ->whereIn('branch', $this->dept_id)
+////                        ->whereIn('user_id', $this->employee_ids_in_my_branch)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
+////                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
+//                })
+////                ->select('product_id', 'month', 'year', 'branch', DB::raw("SUM(target) as target"))
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+////                ->groupBy('product_id', 'month', 'year', 'branch')
+//                ->get();
+//
+//        }
 
         $this->items = $this->filtered_products($this->cat_type, $this->sp_type, $this->vendor_type);
 
@@ -1869,9 +1915,10 @@ class CreateProductTarget extends Component
     }
 
     // function to save the data
-    public function test($targets, $emps_percents, $products_codes) {
+    public function test($targets, $emps_percents, $products_codes, $totaltargets) {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
+//        dd($totaltargets);
 
 //        dd($this->dept_id);
 //        dd($products_codes);
@@ -1947,6 +1994,70 @@ class CreateProductTarget extends Component
                   }
                 }
             }
+        }
+
+        if ($totaltargets) {
+
+            foreach ($totaltargets as $target) {
+                $txt = explode('|', $target);
+                $details = $txt[0];
+                $target_num = $txt[1];
+                $details = explode('--', $details);
+
+                $product_code = $details[1];
+                $target_date = explode('-', $details[2]);
+                $target_year = $target_date[0];
+                $target_month = $target_date[1];
+//                $emp_code = $details[4];
+
+//                $user = User::where('emp_code', $emp_code)->first();
+
+//                $fetch = ProductTarget::where('product_id', $product_code)
+//                    ->where('month', $target_month)
+//                    ->where('year', $target_year)
+//                    ->where('branch', $this->dept_id[0])
+//                    ->where('user_id', $user->id)
+//                    ->first();
+
+                $fetch = ProductTargetBranchTotal::where('product_id', $product_code)
+                    ->where('month', $target_month)
+                    ->where('year', $target_year)
+                    ->where('branch', $this->dept_id[0])
+//                    ->where('user_id', $user->id)
+                    ->first();
+
+                if ($fetch) {
+                    $record = ProductTargetBranchTotal::where('product_id', $product_code)
+                        ->where('month', $target_month)
+                        ->where('year', $target_year)
+                        ->where('branch', $this->dept_id[0])
+//                        ->where('user_id', $user->id)
+                        ->update(['target' => $target_num]);
+                } else {
+                    $record = ProductTargetBranchTotal::create([
+                        'product_id' => $product_code,
+                        'month' => $target_month,
+                        'year' => $target_year,
+                        'branch' => $this->dept_id[0],
+//                        'user_id' => $user->id,
+                        'target' => $target_num
+                    ]);
+                }
+
+//                $record = ProductTargetLog::create([
+//                    'product_id' => $product_code,
+//                    'month' => $target_month,
+//                    'year' => $target_year,
+//                    'branch' => $this->dept_id[0],
+//                    'user_id' => $user->id,
+//                    'target' => $target_num
+//                ]);
+
+            }
+
+            $this->emit('msg');
+            $this->reset('target', 'emps_percentage', 'emp_target');
+            $this->generateReport();
         }
 
         if ($targets) {

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProductTargetBranchTotal extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 }
