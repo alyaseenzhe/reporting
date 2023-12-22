@@ -2218,7 +2218,7 @@ AND Pricelist = 1 ";
             $this->cat_type = json_decode($record->cat_type);
             $this->sp_type = json_decode($record->sp_type);
             $this->vendor_type = json_decode($record->vendor_type);
-
+            $this->selected_month = $record->selected_month ? $this->selected_month : Carbon::parse(Carbon::now())->format('Y-m');
 //            dd($this->dept_id);
         }
     }
@@ -2236,7 +2236,8 @@ AND Pricelist = 1 ";
                     'dept_id' => json_encode($this->dept_id),
                     'cat_type' => json_encode($this->cat_type),
                     'sp_type' => json_encode($this->sp_type),
-                    'vendor_type' => json_encode($this->vendor_type)
+                    'vendor_type' => json_encode($this->vendor_type),
+                    'selected_month' => $this->selected_month,
                 ]);
         }
         else {
@@ -2245,6 +2246,7 @@ AND Pricelist = 1 ";
                 'cat_type' => json_encode($this->cat_type),
                 'sp_type' => json_encode($this->sp_type),
                 'vendor_type' => json_encode($this->vendor_type),
+                'selected_month' => $this->selected_month,
                 'user_id' => Auth::id(),
                 'page' => 'create',
             ]);
