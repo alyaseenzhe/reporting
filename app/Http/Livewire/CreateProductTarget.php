@@ -1927,6 +1927,7 @@ class CreateProductTarget extends Component
 //        dd($targets);
 
 //        dd($this->emps_percentage);
+
         if ($emps_percents) {
             foreach ($emps_percents as $emp) {
                 $txt = explode('|', $emp);
@@ -1945,7 +1946,7 @@ class CreateProductTarget extends Component
                     $record = ProductTargetEmpPercent::where('user_id', $user_record->id)
                         ->update([
                             'emp_percentage' => $percent_num,
-                            'branch' => $this->dept_id,
+                            'branch' => $this->dept_id[0],
                             'added_by' => Auth::id()
                         ]);
                 }
@@ -1953,7 +1954,7 @@ class CreateProductTarget extends Component
                     $record = ProductTargetEmpPercent::create([
                             'user_id' => $user_record->id,
                             'emp_percentage' => $percent_num,
-                            'branch' => $this->dept_id,
+                            'branch' => $this->dept_id[0],
                             'added_by' => Auth::id()
                         ]);
                 }

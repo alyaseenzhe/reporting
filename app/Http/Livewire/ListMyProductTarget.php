@@ -404,6 +404,7 @@ class ListMyProductTarget extends Component
 //        $test = '';
 
                 if (count($this->products_items) > 0) {
+
                     $query = DB::connection('sqlsrv')->select($month_stmt);
                     $this->results = $query;
 //            $test = $query;
@@ -411,15 +412,15 @@ class ListMyProductTarget extends Component
 //            $fetch_query = json_decode(json_encode($query), true);
 //
 //            array_push($this->results, $fetch_query);
-                }
-
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
+                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
-                $item_query = DB::connection('sqlsrv')->select($item_stmt);
-                $fetch_item_query = json_decode(json_encode($item_query), true);
-                array_push($this->items, $fetch_item_query);
+                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
+                    $fetch_item_query = json_decode(json_encode($item_query), true);
+                    array_push($this->items, $fetch_item_query);
+                }
+
             }
             elseif (count($this->dept_id) > 1) {
                 /* Sales Query Statement */
@@ -479,15 +480,15 @@ class ListMyProductTarget extends Component
 //            $fetch_query = json_decode(json_encode($query), true);
 //
 //            array_push($this->results, $fetch_query);
-                }
-
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
+                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
-                $item_query = DB::connection('sqlsrv')->select($item_stmt);
-                $fetch_item_query = json_decode(json_encode($item_query), true);
-                array_push($this->items, $fetch_item_query);
+                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
+                    $fetch_item_query = json_decode(json_encode($item_query), true);
+                    array_push($this->items, $fetch_item_query);
+                }
+
             }
         }
         else {
@@ -589,13 +590,17 @@ class ListMyProductTarget extends Component
             $stmt .= $cat_stmt;
         }
 
-        $products_query = DB::connection('sqlsrv')->select($stmt);
-        $fetch_products_query = json_decode(json_encode($products_query), true);
+        $results = [];
+
+        if (count($products) > 0) {
+            $products_query = DB::connection('sqlsrv')->select($stmt);
+            $fetch_products_query = json_decode(json_encode($products_query), true);
 //        array_push($this->items, $fetch_item_query);
 //        dd($fetch_products_query);
 
-        $results = [];
-        array_walk_recursive($fetch_products_query, function ($item, $key) use (&$results){array_push($results, $item);});
+
+            array_walk_recursive($fetch_products_query, function ($item, $key) use (&$results){array_push($results, $item);});
+        }
 
 //        dd($results);
         return $results;
