@@ -670,7 +670,7 @@
                             <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                                 <tbody class="text-sm divide-y divide-gray-100">
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف المعدل</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات المعدل</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق المعدل %</td>
                                 </tr>
@@ -1204,7 +1204,7 @@
                         <table id="tbl5" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                                 <tbody class="text-sm divide-y divide-gray-100">
                                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف المعدل</td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات المعدل</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المستهدف</td>
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق المعدل %</td>
                                 </tr>

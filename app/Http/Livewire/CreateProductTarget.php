@@ -2222,6 +2222,9 @@ AND Pricelist = 1 ";
             $this->selected_month = $record->selected_month ? $record->selected_month : Carbon::parse(Carbon::now())->format('Y-m');
 //            dd($this->dept_id);
         }
+        else {
+          $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+        }
     }
 
     public function save_filters() {
