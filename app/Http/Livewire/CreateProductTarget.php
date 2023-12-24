@@ -104,7 +104,7 @@ class CreateProductTarget extends Component
         ini_set('memory_limit', '2048M');
 
         $this->query = User::where('id', Auth::id())->first();
-        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+//        $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
 
 //        dd($this->users);
 
@@ -2219,7 +2219,7 @@ AND Pricelist = 1 ";
             $this->cat_type = json_decode($record->cat_type);
             $this->sp_type = json_decode($record->sp_type);
             $this->vendor_type = json_decode($record->vendor_type);
-            $this->selected_month = $record->selected_month ? $this->selected_month : Carbon::parse(Carbon::now())->format('Y-m');
+            $this->selected_month = $record->selected_month ? $record->selected_month : Carbon::parse(Carbon::now())->format('Y-m');
 //            dd($this->dept_id);
         }
     }
