@@ -540,16 +540,15 @@ class CreateProductTarget extends Component
 
         $current_dept_id = $this->dept_id[0];
 
-        if ($this->dept_id == "3") {
+        if ($current_dept_id == "3") {
             $current_dept_id = "3 , 509";
         }
-        elseif ($this->dept_id == "10") {
+        elseif ($current_dept_id == "10") {
             $current_dept_id = "10, 510";
         }
-        elseif ($this->dept_id == "12") {
+        elseif ($current_dept_id == "12") {
             $current_dept_id = "12, 515";
         }
-
 
 
         /*$month_stmt .= " FROM (
