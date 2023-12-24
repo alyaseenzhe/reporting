@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\AccMast;
 use App\Models\ProductMast;
 use App\Models\ProductTarget;
+use App\Models\ProductTargetBranchTotal;
 use App\Models\ProductTargetFilter;
 use App\Models\Setting;
 use App\Models\User;
@@ -232,17 +233,24 @@ class ListMyProductTarget extends Component
                     ->get();
             }
             elseif (count($this->dept_id) > 1) {
-                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
-                    ->whereIn('branch', $this->dept_id)
-//                ->where('user_id', $this->user_id)
-                    ->where(function ($query) {
-                        $query->where('year', $this->keys[0])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                    ->groupBy('product_id', 'month', 'year', 'branch')
+
+//                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
+//                    ->whereIn('branch', $this->dept_id)
+////                ->where('user_id', $this->user_id)
+//                    ->where(function ($query) {
+//                        $query->where('year', $this->keys[0])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                    })
+//                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                    ->get();
+
+                $this->new_targets = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+                    ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                    ->whereRaw("branch = ". $this->dept_id[0])
+                    ->select('product_id', 'month', 'year', 'branch', 'target')
                     ->get();
             }
         }
@@ -269,24 +277,30 @@ class ListMyProductTarget extends Component
                     ->get();
             }
             if (count($this->dept_id) > 1) {
-                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
-                    ->whereIn('branch', $this->dept_id)
-//                ->where('user_id', $this->user_id)
-                    ->where(function ($query) {
-                        $query->where('year', $this->keys[0])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                    })
-                    ->orWhere(function ($query) {
-                        $query->where('year', $this->keys[1])
-                            ->whereIn('branch', $this->dept_id)
-//                        ->where('user_id', $this->user_id)
-                            ->whereIn('month', array_values($this->list[$this->keys[1]]));
-                    })
-//                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
-                    ->select('product_id', 'month', 'year', 'branch', DB::raw('SUM(target) as target'))
-                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                $this->new_targets = ProductTarget::join('users', 'user_id', 'users.id')
+//                    ->whereIn('branch', $this->dept_id)
+////                ->where('user_id', $this->user_id)
+//                    ->where(function ($query) {
+//                        $query->where('year', $this->keys[0])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                    })
+//                    ->orWhere(function ($query) {
+//                        $query->where('year', $this->keys[1])
+//                            ->whereIn('branch', $this->dept_id)
+////                        ->where('user_id', $this->user_id)
+//                            ->whereIn('month', array_values($this->list[$this->keys[1]]));
+//                    })
+////                    ->selectRaw('product_id, month, year, branch, SUM(target) as target')
+//                    ->select('product_id', 'month', 'year', 'branch', DB::raw('SUM(target) as target'))
+//                    ->groupBy('product_id', 'month', 'year', 'branch')
+//                    ->get();
+
+                $this->new_targets = ProductTargetBranchTotal::whereIn('branch', $this->dept_id)
+                    ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
+//                    ->whereRaw("branch = ". $this->dept_id[0])
+                    ->select('product_id', 'month', 'year', 'branch', 'target')
                     ->get();
             }
         }
@@ -390,6 +404,7 @@ class ListMyProductTarget extends Component
 //        $test = '';
 
                 if (count($this->products_items) > 0) {
+
                     $query = DB::connection('sqlsrv')->select($month_stmt);
                     $this->results = $query;
 //            $test = $query;
@@ -397,15 +412,15 @@ class ListMyProductTarget extends Component
 //            $fetch_query = json_decode(json_encode($query), true);
 //
 //            array_push($this->results, $fetch_query);
-                }
-
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
+                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
-                $item_query = DB::connection('sqlsrv')->select($item_stmt);
-                $fetch_item_query = json_decode(json_encode($item_query), true);
-                array_push($this->items, $fetch_item_query);
+                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
+                    $fetch_item_query = json_decode(json_encode($item_query), true);
+                    array_push($this->items, $fetch_item_query);
+                }
+
             }
             elseif (count($this->dept_id) > 1) {
                 /* Sales Query Statement */
@@ -465,15 +480,15 @@ class ListMyProductTarget extends Component
 //            $fetch_query = json_decode(json_encode($query), true);
 //
 //            array_push($this->results, $fetch_query);
-                }
-
-                $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
+                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
                     FROM ProductMast, accmast
                     WHERE ProductMast.VendorNo = accmast.NodeNo
                     and ProductMast.Code in ". $product_codes;
-                $item_query = DB::connection('sqlsrv')->select($item_stmt);
-                $fetch_item_query = json_decode(json_encode($item_query), true);
-                array_push($this->items, $fetch_item_query);
+                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
+                    $fetch_item_query = json_decode(json_encode($item_query), true);
+                    array_push($this->items, $fetch_item_query);
+                }
+
             }
         }
         else {
@@ -575,13 +590,17 @@ class ListMyProductTarget extends Component
             $stmt .= $cat_stmt;
         }
 
-        $products_query = DB::connection('sqlsrv')->select($stmt);
-        $fetch_products_query = json_decode(json_encode($products_query), true);
+        $results = [];
+
+        if (count($products) > 0) {
+            $products_query = DB::connection('sqlsrv')->select($stmt);
+            $fetch_products_query = json_decode(json_encode($products_query), true);
 //        array_push($this->items, $fetch_item_query);
 //        dd($fetch_products_query);
 
-        $results = [];
-        array_walk_recursive($fetch_products_query, function ($item, $key) use (&$results){array_push($results, $item);});
+
+            array_walk_recursive($fetch_products_query, function ($item, $key) use (&$results){array_push($results, $item);});
+        }
 
 //        dd($results);
         return $results;
@@ -598,6 +617,7 @@ class ListMyProductTarget extends Component
             $this->cat_type = json_decode($record->cat_type);
             $this->sp_type = json_decode($record->sp_type);
             $this->vendor_type = json_decode($record->vendor_type);
+            $this->selected_month = $record->selected_month ? $this->selected_month : Carbon::parse(Carbon::now())->format('Y-m');
 
 //            dd($this->dept_id);
         }
@@ -616,7 +636,8 @@ class ListMyProductTarget extends Component
                     'dept_id' => json_encode($this->dept_id),
                     'cat_type' => json_encode($this->cat_type),
                     'sp_type' => json_encode($this->sp_type),
-                    'vendor_type' => json_encode($this->vendor_type)
+                    'vendor_type' => json_encode($this->vendor_type),
+                    'selected_month' => $this->selected_month,
                 ]);
         }
         else {
@@ -625,6 +646,7 @@ class ListMyProductTarget extends Component
                 'cat_type' => json_encode($this->cat_type),
                 'sp_type' => json_encode($this->sp_type),
                 'vendor_type' => json_encode($this->vendor_type),
+                'selected_month' => $this->selected_month,
                 'user_id' => Auth::id(),
                 'page' => 'list',
             ]);

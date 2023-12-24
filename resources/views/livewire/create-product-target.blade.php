@@ -513,7 +513,9 @@
 //                                                $x = $old_targets->where('Code', '170224')->where('month', 12)->where('Year', 2023)->first()['Revision'];
 //                                                dd($x);
 
-                                                        $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                    // good
+//                                                        $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
+                                                        $val = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() ? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0;
                                                         $grand_total_target += $val == null ? 0 : $val;
 //                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
                                                         ?>
@@ -723,8 +725,12 @@
                                                     $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                                     $diff = $fromDate->diffInMonths($toDate, false);
             //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
-                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
-                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
+                                                    // goog
+//                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
+                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
+                                                    // good
+//                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
+//                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
             //                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
 
                                                 @endphp
@@ -741,7 +747,9 @@
                                                 {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
                                                 {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
                                                 {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
-                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
+{{--                                                good --}}
+{{--                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">--}}
+                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
                                                 {{--                                    @endif--}}
                                                 {{--                                <span id="x" class="w-full">--}}
 
@@ -797,7 +805,7 @@
                                 {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                 <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
                                 <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
-                                    <?php $single_emp_diff = $total_historical == 0? 0 :  number_format(($all_total_emp_sales[$emp->emp_code]/(array_sum($all_total_emp_sales)))*100, 2); ?>
+                                    <?php $single_emp_diff = (array_sum($all_total_emp_sales)) == 0? 0 :  number_format(($all_total_emp_sales[$emp->emp_code]/(array_sum($all_total_emp_sales)))*100, 2); ?>
                                 <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
                                     <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
                             </tr>
@@ -1024,11 +1032,14 @@
 
                                                     <?php
 //                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept->Department)->first(): 0;
-                                                    $new_result = key_exists('ProductCode', $record) ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
+//                                                    $new_result = key_exists('ProductCode', $record) ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
+                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
                                                     ?>
                                                     <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
                                                 {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
-                                                <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
+                                                <div class="text-sm">
+                                                    {{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}
+                                                </div>
                                                     <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
                                                     <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
 
@@ -2330,10 +2341,12 @@
 
 
                 targets = [];
+                var totaltargets = [];
                 emps_percents = [];
                 products_codes = [];
 
                 const elements = document.querySelectorAll("input[id^='target--']");
+                const totaltarget_element = document.querySelectorAll("input[id^='totaltarget--']");
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
                 console.log("============================");
@@ -2348,6 +2361,20 @@
                     //     targets.push(element)
                         targets.push(element.id + "|" +element.value);
                     //     targets.push({element.id: element.value});
+                    }
+                    // targets.push({element.id: element.value});
+
+
+                });
+
+                totaltarget_element.forEach(element =>{
+                    if (element.value) {
+                        $("#test-btn").prop('value', 'الرجاء الإنتظار..');
+                        console.log(element.value);
+                        //     // targets[element.id] = element.value;
+                        //     targets.push(element)
+                        totaltargets.push(element.id + "|" +element.value);
+                        //     targets.push({element.id: element.value});
                     }
                     // targets.push({element.id: element.value});
 
@@ -2374,7 +2401,7 @@
 
                 // console.log(targets[0]);
 
-                Livewire.emit('targets-entered', targets, emps_percents, products_codes);
+                Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
                 // Livewire.emit('targets-entered', targets);
                 // console.log(targets);
 
