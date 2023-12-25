@@ -540,16 +540,15 @@ class CreateProductTarget extends Component
 
         $current_dept_id = $this->dept_id[0];
 
-        if ($this->dept_id == "3") {
+        if ($current_dept_id == "3") {
             $current_dept_id = "3 , 509";
         }
-        elseif ($this->dept_id == "10") {
+        elseif ($current_dept_id == "10") {
             $current_dept_id = "10, 510";
         }
-        elseif ($this->dept_id == "12") {
+        elseif ($current_dept_id == "12") {
             $current_dept_id = "12, 515";
         }
-
 
 
         /*$month_stmt .= " FROM (
@@ -1307,17 +1306,29 @@ class CreateProductTarget extends Component
             }
         }
 
-        $current_dept_id = $this->dept_id[0];
+        $current_dept_id = $this->dept_id;
+//        dd($this->dept_id);
 
-        if ($this->dept_id == "3") {
-            $current_dept_id = "3 , 509";
+//        if ($current_dept_id == "3") {
+//            $current_dept_id = "3 , 509";
+//        }
+//        elseif ($current_dept_id == "10") {
+//            $current_dept_id = "10, 510";
+//        }
+//        elseif ($current_dept_id == "12") {
+//            $current_dept_id = "12, 515";
+//        }
+        if (in_array("3", $current_dept_id)) {
+            array_push($current_dept_id, "509");
         }
-        elseif ($this->dept_id == "10") {
-            $current_dept_id = "10, 510";
+        if (in_array("10", $current_dept_id)) {
+            array_push($current_dept_id, "510");
         }
-        elseif ($this->dept_id == "12") {
-            $current_dept_id = "12, 515";
+        if (in_array("12", $current_dept_id)) {
+            array_push($current_dept_id, "515");
         }
+
+//        dd($current_dept_id);
 
 
 
@@ -1657,18 +1668,18 @@ class CreateProductTarget extends Component
 //        }
 
         $month_stmt .= " FROM (
-            SELECT Department, ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+            SELECT CASE WHEN Department = '509' THEN '3' WHEN Department = '510' THEN '10' WHEN Department = '515' THEN '12' ELSE Department END as Department, ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[SInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . implode(',', $this->dept_id) .
+            and Department in (" . implode(',', $current_dept_id) .
             ") group by Department, ProductNo, NodeNo, Code, Arabic_Name, SIDate
             union all
-            SELECT Department, ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+            SELECT CASE WHEN Department = '509' THEN '3' WHEN Department = '510' THEN '10' WHEN Department = '515' THEN '12' ELSE Department END as Department, ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[PInvoice], accmast
             where partyno=nodeno and accmast.[type]=10
             and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . implode(',', $this->dept_id) .
+            and Department in (" . implode(',', $current_dept_id) .
             ") group by Department, ProductNo, NodeNo, Code, Arabic_Name, PIDate
             ) as tbl
             group by Department, ProductNo) as tbl2

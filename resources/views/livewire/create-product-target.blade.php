@@ -804,10 +804,10 @@
                             <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                 {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                 <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp->name }}</td>
-                                <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_emp_sales[$emp->emp_code]) }}</td>
-                                    <?php $single_emp_diff = (array_sum($all_total_emp_sales)) == 0? 0 :  number_format(($all_total_emp_sales[$emp->emp_code]/(array_sum($all_total_emp_sales)))*100, 2); ?>
+                                <td id="summary-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format((array_key_exists($emp->emp_code,$all_total_emp_sales) ? $all_total_emp_sales[$emp->emp_code] : 0)) }}</td>
+                                    <?php $single_emp_diff = (array_sum($all_total_emp_tr)) == 0? 0 :  number_format(((array_key_exists($emp->emp_code,$all_total_emp_sales) ? $all_total_emp_sales[$emp->emp_code] : 0)/(array_sum($all_total_emp_tr)))*100, 2); ?>
                                 <td id="summary-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($single_emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $single_emp_diff }}</td>
-                                    <?php $total_sum_val += $all_total_emp_sales[$emp->emp_code]; ?>
+                                    <?php $total_sum_val += (array_key_exists($emp->emp_code,$all_total_emp_sales) ? $all_total_emp_sales[$emp->emp_code] : 0); ?>
                             </tr>
                         @endforeach
                         </tbody>
