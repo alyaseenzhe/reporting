@@ -706,6 +706,43 @@
                                 </tr>
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-xs">متوسط مبيعات تاريخية(3)</div>
+                                    </th>
+                                    {{--                    @foreach ($list as $year_key => $year)--}}
+                                    {{--                        @foreach ($year as $month)--}}
+                                    @php $sales2 = []; @endphp
+                                    @php $target_counter2 =1; @endphp
+                                    {{--                        @for($i = 1; $i <= 12; $i++)--}}
+                                    @foreach ($current_year_list as $year_key => $year)
+                                        @foreach ($year as $month_key => $month)
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                                @php $month_temp = "month".$target_counter2; @endphp
+                                                @php //$check_prod = array_search($record['ProductCode'],array_column($results2[0], "ProductCode")); @endphp
+                                                @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp
+{{--                                                @dd($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0)--}}
+{{--                                                <div class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>--}}
+{{--                                                <div class="text-sm">{{ number_format($check_prod != false? $results2[0][$check_prod][$month_temp] : 0) }}</div>--}}
+                                                <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>
+                                                @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp
+{{--                                                @php array_push($sales, $record['month'.$target_counter]); @endphp--}}
+                                            </th>
+                                            @php $target_counter2++; @endphp
+                                        @endforeach
+                                    @endforeach
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                        {{--                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)) }}</div>--}}
+                                        {{ number_format(array_sum($sales2)) }}
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                        <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>
+                                    </th>
+                                        <?php //$total_historical += array_sum($sales)*$record[$item_price]; ?>
+                                    {{--                        @endfor--}}
+                                    {{--{{--                        @endforeach--}}
+                                    {{--                    @endforeach--}}
+                                </tr>
+                                <tr>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
                                         @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
                                             <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
