@@ -33,7 +33,9 @@ class CreateProductTarget extends Component
     public $prod_id = null;
 
     public $results = [];
+    public $results2 = [];
     public $list = [];
+    public $list2 = [];
     public $current_year_list = [];
     public $target;
     public $emp_target;
@@ -416,7 +418,6 @@ class CreateProductTarget extends Component
 //                        and (Taget <> 0 or Revision <> 0)
 //                        order by Date desc";
 
-
             $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
                 ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
                 ->whereRaw("branch = ". $this->dept_id[0])
@@ -550,30 +551,6 @@ class CreateProductTarget extends Component
             $current_dept_id = "12, 515";
         }
 
-
-        /*$month_stmt .= " FROM (
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[SInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-            union all
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[PInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-            ) as tbl
-            group by ProductNo) as tbl2
-            RIGHT JOIN ProductMast
-            on tbl2.ProductNo = ProductMast.NodeNo
-            WHERE ProductMast.Pricelist = 1) as tbl3
-            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-            WHERE VendorNo = '" . $this->vendor_id . "'
-            ORDER BY VendorNo";*/
-
         // cat_type
         $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
         $asmedah = "ProductCode like '17%' ";
@@ -629,263 +606,6 @@ class CreateProductTarget extends Component
         $cat_stmt .= ") ";
         // end of cat_type
 
-//        if ($this->filter_type == 'vendor') {
-//
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE VendorNo = '" . $this->vendor_id . "' ";
-//            if (in_array('sp_all', $this->sp_type) == false) {
-//                $month_stmt .= "AND SpecialityCode in (". implode(',', $this->sp_type).") ";
-//            }
-//            if ($this->vendor_type != 'vendor_all') {
-//                $month_stmt .= "AND VendorNo = '". $this->vendor_type ."' ";
-//            }
-//            if (in_array('cat_all', $this->cat_type) == false) {
-//                $month_stmt .= $cat_stmt;
-//            }
-//            $month_stmt .= " ORDER BY VendorNo";
-//        }
-//        else if ($this->filter_type == 'product') {
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE ProductCode = '" . $this->prod_id . "'
-//            ORDER BY VendorNo";
-//        }
-//        else if ($this->filter_type == 'sp0') {
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE SpecialityCode = '0'
-//            ORDER BY VendorNo";
-//        }
-//        else if ($this->filter_type == 'sp1') {
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE SpecialityCode = '1'
-//            ORDER BY VendorNo";
-//        }
-//        else if ($this->filter_type == 'sp2') {
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE SpecialityCode = '2'
-//            ORDER BY VendorNo";
-//        }
-//        else if($this->filter_type == 'bathoor') {
-//
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE (ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%')
-//            ORDER BY VendorNo";
-//
-//        }
-//        else if($this->filter_type == 'mobedat') {
-//
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE (ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%')
-//            ORDER BY VendorNo";
-//
-//        }
-//        else if($this->filter_type == 'asmedah') {
-//
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE (ProductCode like '17%')
-//            ORDER BY VendorNo";
-//
-//        }
-//        else if($this->filter_type == 'other') {
-//            $month_stmt .= " FROM (
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[SInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//            union all
-//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//              FROM [AccountsC5].[dbo].[PInvoice], accmast
-//            where partyno=nodeno and accmast.[type]=10
-//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//            and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//            ) as tbl
-//            group by ProductNo) as tbl2
-//            RIGHT JOIN ProductMast
-//            on tbl2.ProductNo = ProductMast.NodeNo
-//            WHERE ProductMast.Pricelist = 1) as tbl3
-//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//            WHERE (ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%')
-//            ORDER BY VendorNo";
-//        }
-//        else if($this->filter_type == "all") {
-//            // for all products
-//            $month_stmt .= " FROM (
-//                SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-//                  FROM [AccountsC5].[dbo].[SInvoice], accmast
-//                where partyno=nodeno and accmast.[type]=10
-//                and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-//                and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-//                union all
-//                SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-//                  FROM [AccountsC5].[dbo].[PInvoice], accmast
-//                where partyno=nodeno and accmast.[type]=10
-//                and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-//                and Department in (" . $current_dept_id .
-//                ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-//                ) as tbl
-//                group by ProductNo) as tbl2
-//                RIGHT JOIN ProductMast
-//                on tbl2.ProductNo = ProductMast.NodeNo
-//                WHERE ProductMast.Pricelist = 1) as tbl3
-//                LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-//                ORDER BY VendorNo";
-//        }
-
         $month_stmt .= " FROM (
             SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[SInvoice], accmast
@@ -921,15 +641,12 @@ class CreateProductTarget extends Component
 //        dd($month_stmt);
 
         $query = DB::connection('sqlsrv')->select($month_stmt);
-//        dd($query);
+
         $fetch_query = json_decode(json_encode($query), true);
 
-//        dd($fetch_query);
         array_push($this->results, $fetch_query);
 
-//        dd($this->results);
-//        dd(array_values($this->results));
-
+        $this->historicalThreeYearsSales();
 
         // get the current targets
         $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
@@ -976,12 +693,6 @@ class CreateProductTarget extends Component
                 })
                 ->get();
         }
-
-//        dd($this->current_year_list[array_key_first($this->current_year_list)]);
-//        dd(count($this->current_year_list));
-//        dd($this->current_target_to_edit);
-//
-//        dd('start:' . $current_start_selected_month . '| end:'. $current_end_selected_month);
 
         $this->show_msg = true;
         $this->emit('finished');
@@ -1881,6 +1592,156 @@ class CreateProductTarget extends Component
             $this->reset('target');
             $this->generateReport();
         }
+
+    }
+
+    public function historicalThreeYearsSales() {
+
+        $selected_year1 = Carbon::parse($this->selected_month)->subYears(3);
+        $selected_year2 = Carbon::parse($this->selected_month)->subYear()->addMonth(11);
+
+        $start_of_period = $selected_year1->format('Y-m-d');
+        $end_of_period = $selected_year2->endOfMonth()->format('Y-m-d');
+
+
+        $this->list2 = [];
+        for ($i = 0; $i < 12; $i++) {
+            $month = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('n');
+            $year = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('Y');
+
+            $this->list2[$year][] = $month;
+        }
+
+        $month_counter = 1;
+
+        /* Query Statement */
+        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
+            SELECT ProductNo";
+
+
+        foreach ($this->list2 as $year_key => $year) {
+
+            foreach ($year as $month) {
+                $first_date = Carbon::parse($year_key . '-' . $month . '-01')->format('Y-m-d');
+                $end_date = Carbon::parse($year_key . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+
+                $first_date2 = Carbon::parse(intval($year_key)-1 . '-' . $month . '-01')->format('Y-m-d');
+                $end_date2 = Carbon::parse(intval($year_key)-1 . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+
+                $first_date3 = Carbon::parse(intval($year_key)-2 . '-' . $month . '-01')->format('Y-m-d');
+                $end_date3 = Carbon::parse(intval($year_key)-2 . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+
+                $month_stmt .= ", SUM(case when (voucher_date >= '" . $first_date . " 00:00:00' and voucher_date <= '" . $end_date . " 23:59:59') or (voucher_date >= '" . $first_date2 . " 00:00:00' and voucher_date <= '" . $end_date2 . " 23:59:59') or (voucher_date >= '" . $first_date3 . " 00:00:00' and voucher_date <= '" . $end_date3 . " 23:59:59') then svalue/3 else 0 end) as 'month" . $month_counter . "'";
+
+                $month_counter++;
+            }
+        }
+
+        $current_dept_id = $this->dept_id[0];
+
+        if ($current_dept_id == "3") {
+            $current_dept_id = "3 , 509";
+        }
+        elseif ($current_dept_id == "10") {
+            $current_dept_id = "10, 510";
+        }
+        elseif ($current_dept_id == "12") {
+            $current_dept_id = "12, 515";
+        }
+
+        // cat_type
+        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
+        $asmedah = "ProductCode like '17%' ";
+        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
+        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
+
+        $cat_stmt = "AND (";
+        foreach ($this->cat_type as $key => $cat) {
+            if ($key === array_key_first($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= $bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= $asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= $mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= $other;
+                }
+            }
+            elseif ($key === array_key_last($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= ' or '.$bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= ' or '.$asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= ' or '.$mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= 'or '.$other;
+                }
+            }
+            else {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= " or " . $bathoor;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= " or " . $asmedah;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= " or " . $mobedat;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= " or " . $other;
+                }
+            }
+        }
+
+        $cat_stmt .= ") ";
+        // end of cat_type
+
+        $month_stmt .= " FROM (
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+            ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+            union all
+            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=nodeno and accmast.[type]=10
+            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+            and Department in (" . $current_dept_id .
+            ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+            ) as tbl
+            group by ProductNo) as tbl2
+            RIGHT JOIN ProductMast
+            on tbl2.ProductNo = ProductMast.NodeNo
+            WHERE ProductMast.Pricelist = 1) as tbl3
+            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+            WHERE ProductCode is not null ";
+        if (in_array('sp_all', $this->sp_type) == false) {
+            $month_stmt .= "AND SpecialityCode in (". implode(',', $this->sp_type).") ";
+        }
+        if ($this->vendor_type != 'vendor_all') {
+            $month_stmt .= "AND VendorNo = '". $this->vendor_type ."' ";
+        }
+        if (in_array('cat_all', $this->cat_type) == false) {
+            $month_stmt .= $cat_stmt;
+        }
+        $month_stmt .= " ORDER BY VendorNo";
+
+//        dd($month_stmt);
+
+        $query = DB::connection('sqlsrv')->select($month_stmt);
+
+        $this->results2 = collect($query);
 
     }
 
