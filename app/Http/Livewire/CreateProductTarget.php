@@ -1919,9 +1919,9 @@ class CreateProductTarget extends Component
 
             }
 
-            $this->emit('msg');
-            $this->reset('target', 'emps_percentage', 'emp_target');
-            $this->generateReport();
+//            $this->emit('msg');
+//            $this->reset('target', 'emps_percentage', 'emp_target');
+//            $this->generateReport();
         }
 
         if ($targets) {
