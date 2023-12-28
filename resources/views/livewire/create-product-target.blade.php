@@ -6,10 +6,6 @@
         </span>
         </a>
     </div>
-{{--    <div--}}
-{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
-{{--        <div class="w-full">المستهدف</div>--}}
-{{--    </div>--}}
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -34,12 +30,8 @@
                         @foreach($branches as $branch)
                             @if($branch == "3")
                                 <option value="3" @if(in_array("3", $dept_id)) selected @endif>الاحساء</option>
-{{--                            @elseif($branch == "509")--}}
-{{--                                <option value="509">منطقة القرية العليا</option>--}}
                             @elseif($branch == "10")
                                 <option value="10" @if(in_array("10", $dept_id)) selected @endif>جدة</option>
-{{--                            @elseif($branch == "510")--}}
-{{--                                <option value="510">منطقة المدينة المنورة</option>--}}
                             @elseif($branch == "7")
                                 <option value="7" @if(in_array("7", $dept_id)) selected @endif>الرياض</option>
                             @elseif($branch == "13")
@@ -52,8 +44,6 @@
                                 <option value="5" @if(in_array("5", $dept_id)) selected @endif>الخرج</option>
                             @elseif($branch == "12")
                                 <option value="12" @if(in_array("12", $dept_id)) selected @endif>نجران</option>
-{{--                            @elseif($branch == "515")--}}
-{{--                                <option value="515">منطقة الباحة</option>--}}
                             @elseif($branch == "11")
                                 <option value="11" @if(in_array("11", $dept_id)) selected @endif>حائل</option>
                             @elseif($branch == "9")
@@ -119,8 +109,6 @@
                     </div>
                     @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-
-{{--                @if($btn_generate)--}}
                 <div class="mt-8 text-center w-full">
                     <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold">
@@ -130,8 +118,6 @@
                     </button>
                 </div>
                 <div class="mt-8 text-center w-full">
-{{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
-{{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                         <span></span>
@@ -143,36 +129,8 @@
                     </span>
                     </button>
                 </div>
-{{--                @endif--}}
                 @if($results)
                     @if($btn_save)
-{{--                        <div class="mt-8 text-center w-full">--}}
-{{--                            <button wire:click.prevent="processData" wire:loading.attr="disabled"--}}
-{{--                                    style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-{{--                        <span class="mr-2 font-bold" wire:loading.remove wire:target="processData">--}}
-{{--                            <span></span>--}}
-{{--                            <span>حفظ</span>--}}
-{{--                        </span>--}}
-{{--                                <span class="mr-2 font-bold" wire:loading wire:target="processData">--}}
-{{--                        <span></span>--}}
-{{--                        <span>الرجاء الانتظار</span>--}}
-{{--                        </span>--}}
-{{--                            </button>--}}
-{{--                        </div>--}}
-
-{{--                        <div class="mt-8 text-center w-full">--}}
-{{--                            <button id="clear-btn" wire:click.prevent="clear_btn"--}}
-{{--                                    style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-{{--                        <span class="mr-2 font-bold">--}}
-{{--                            <span></span>--}}
-{{--                            <span>مسح</span>--}}
-{{--                        </span>--}}
-{{--                                <span class="mr-2 font-bold" wire:loading wire:target="clear_btn">--}}
-{{--                        <span></span>--}}
-{{--                        <span>الرجاء الانتظار</span>--}}
-{{--                        </span>--}}
-{{--                            </button>--}}
-{{--                        </div>--}}
                         @if($write_product_target == '2' || $write_product_target == '3')
                             @if(count($dept_id) == 1)
                                 <div class="mt-8 text-center w-full">
@@ -244,7 +202,6 @@
                                         <span class="font-bold">T</span>
                                         تعني المستهدف المتوقع</li>
                                 </ul>
-                                {{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رمز SC تعني المبيعات الحالية</label>--}}
                             </div>
                         </div>
                     </div>
@@ -321,28 +278,6 @@
                                 </tr>
                             @endforeach
                         @endforeach
-{{--                        @foreach($emps as $key => $employee)--}}
-{{--                            <tr style="background-color: #FFFFFF">--}}
-{{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
-{{--                                <td style="border: 2px solid black; z-index: 10" class="border">--}}
-{{--                                    <div class="w-full">--}}
-{{--                                        @if($key === array_key_last($emps->toArray()))--}}
-{{--                                            <div wire:ignore id="emp--{{$employee->emp_code}}--readonly"--}}
-{{--                                                 class="emps_percentage_readonly block text-gray-900 w-full text-center"--}}
-{{--                                                 style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">--}}
-{{--                                                {{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null}}--}}
-{{--                                            </div>--}}
-{{--                                        @else--}}
-{{--                                            <input id="emp--{{$employee->emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"--}}
-{{--                                                   value="{{ $emps_percentage->where('emp_code', $employee->emp_code)->first() ? $emps_percentage->where('emp_code', $employee->emp_code)->first()['emp_percentage'] : null }}"--}}
-{{--                                                   class="emps_percentage block text-gray-900 w-full text-center"--}}
-{{--                                                   style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>--}}
-{{--                                        @endif--}}
-{{--                                        @error('emps_percentage') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
-{{--                                    </div>--}}
-{{--                                </td>--}}
-{{--                            </tr>--}}
-{{--                        @endforeach--}}
                     </table>
 
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->calculate_all_product_target == '1')
@@ -392,7 +327,6 @@
                                 @if($record['VendorNo'] != $vendor_type)
                                         <?php $vendor_type = $record['VendorNo'] ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                             <div class="flex items-center justify-center w-full">
                                                 <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
@@ -446,11 +380,6 @@
                                     </th>
                                 </tr>
                                 <tr>
-                                    {{--                        @if(Auth::user()->user_group->write_product_target == '2')--}}
-                                    {{--                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-                                    {{--                                <div class="text-sm">الموظف</div>--}}
-                                    {{--                            </th>--}}
-                                    {{--                        @endif--}}
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">الشهر</div>
                                     </th>
@@ -502,41 +431,17 @@
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
 
                                                     @endphp
-                                                    {{--                                @if($diff < 3)--}}
-                                                    {{--                                        @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-                                                    {{--                                            --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-                                                    {{--                                            {{ $current ? $current->target : "-" }}--}}
-                                                    {{--                                            @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-                                                    {{--                                            --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-                                                    {{--                                        @else--}}
                                                         <?php
-//                                                $x = $old_targets->where('Code', '170224')->where('month', 12)->where('Year', 2023)->first()['Revision'];
-//                                                dd($x);
-
-                                                    // good
-//                                                        $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
                                                         $val = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() ? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0;
                                                         $grand_total_target += $val == null ? 0 : $val;
-//                                                $val = $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null);
                                                         ?>
-                                                    {{--                                            <div>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target')) : floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'] > 0 ? $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision']: $old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : null) }}</div>--}}
-                                                    {{--                                            <div>{{$record['ProductCode']}} | {{$year_key."-".$month}} | {{ $val }}</div>--}}
-                                                    {{--                                        {{ \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target }}--}}
                                                     <input wire:key="input-totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{time()}}" min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="{{ $val }}" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || $write_product_target == 0) disabled="disabled" @endif>
-                                                    {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="<?php echo $val;  ?>" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                    {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                    {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" class="total-target form-input w-full" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : ($old_targets->where('ProductNo', $record['ProductNo'])/*->where('month', $month)->where('Year', $year_key)*/->count() > 0 ? number_format($old_targets->where('ProductNo', $record['ProductNo'])->where('month', $month)->where('Year', $year_key)->first()['Taget']) : "null")}}" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                    {{--                                            <input min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="total-target form-input w-full">--}}
-                                                    {{--                                        @endif--}}
+
                                                     @php $target_counter++; @endphp
                                                 </th>
                                             @endforeach
                                         @endforeach
                                         <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-                                            {{--                                <span id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs" style="text-align: center;">{{ $grand_total_target }}</span>--}}
-                                            {{--                                    <input type="number" id="total-col--{{ $record['ProductCode'] }}" class="total-col text-xs w-16" style="text-align: center;">--}}
-                                            {{--                                    </span>--}}
-                                            {{--                                        <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>--}}
                                             <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
 
                                         </th>
@@ -567,28 +472,13 @@
 
                                                     @endphp
                                                     <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
-                                                        {{--                                @if($diff < 3)--}}
-                                                        {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-                                                        {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-                                                        {{--                                                {{ $current ? $current->target : "-" }}--}}
-                                                        {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-                                                        {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-                                                        {{--                                            @else--}}
-{{--                                                        <div wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}">--}}
-                                                            {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
-                                                            {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
-                                                            {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
                                                             <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || $write_product_target == "0") disabled="disabled" @endif>
-{{--                                                        </div>--}}
-                                                        {{--                                            @endif--}}
                                                         @php $target_counter++; @endphp
                                                     </th>
                                                 @endforeach
                                             @endforeach
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
                                                 <div wire:key="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
-                                                {{--                                            <div wire:key="total-emp--{{time()}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>--}}
-                                                {{--                                            <span>{{ $grand_emp_total_target }}</span>--}}
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
                                                 <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record[$item_price]) }}</div>
@@ -678,11 +568,8 @@
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-xs">مبيعات تاريخية</div>
                                     </th>
-                                    {{--                    @foreach ($list as $year_key => $year)--}}
-                                    {{--                        @foreach ($year as $month)--}}
                                     @php $sales = []; @endphp
                                     @php $target_counter =1; @endphp
-                                    {{--                        @for($i = 1; $i <= 12; $i++)--}}
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month_key => $month)
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -693,53 +580,36 @@
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        {{--                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)) }}</div>--}}
                                         {{ number_format(array_sum($sales)) }}
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
                                         <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record[$item_price]) }}</div>
                                     </th>
                                     <?php $total_historical += array_sum($sales)*$record[$item_price]; ?>
-                                    {{--                        @endfor--}}
-                                    {{--{{--                        @endforeach--}}
-                                    {{--                    @endforeach--}}
                                 </tr>
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-xs">متوسط مبيعات تاريخية(3)</div>
                                     </th>
-                                    {{--                    @foreach ($list as $year_key => $year)--}}
-                                    {{--                        @foreach ($year as $month)--}}
                                     @php $sales2 = []; @endphp
                                     @php $target_counter2 =1; @endphp
-                                    {{--                        @for($i = 1; $i <= 12; $i++)--}}
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month_key => $month)
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 @php $month_temp = "month".$target_counter2; @endphp
-                                                @php //$check_prod = array_search($record['ProductCode'],array_column($results2[0], "ProductCode")); @endphp
                                                 @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp
-{{--                                                @dd($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0)--}}
-{{--                                                <div class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>--}}
-{{--                                                <div class="text-sm">{{ number_format($check_prod != false? $results2[0][$check_prod][$month_temp] : 0) }}</div>--}}
                                                 <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>
                                                 @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp
-{{--                                                @php array_push($sales, $record['month'.$target_counter]); @endphp--}}
                                             </th>
                                             @php $target_counter2++; @endphp
                                         @endforeach
                                     @endforeach
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        {{--                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)) }}</div>--}}
                                         {{ number_format(array_sum($sales2)) }}
                                     </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
                                         <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>
                                     </th>
-                                        <?php //$total_historical += array_sum($sales)*$record[$item_price]; ?>
-                                    {{--                        @endfor--}}
-                                    {{--{{--                        @endforeach--}}
-                                    {{--                    @endforeach--}}
                                 </tr>
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -812,13 +682,11 @@
                     <table id="tbl3-summary" style="border: 2px solid black; margin-bottom: 20px;" class="table-fixed table-container w-full border text-center">
                         <tbody class="text-sm divide-y divide-gray-100">
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع قيم المستهدف</td>
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>
                             <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرق%</td>
                         </tr>
                         <tr class="employee" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td id="summary-emp-total-val" style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(array_sum($all_total_emp_sales)) }}</td>
                             <td id="historical-grand-total-sales" style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>
                                 <?php $single_emp_diff = $total_historical == 0? "*" :  number_format(((array_sum($all_total_emp_sales)/$total_historical)*100)-100); ?>
@@ -855,7 +723,6 @@
             <div id="table-container2" class="overflow-x-auto w-full">
                 <table id="tbl3" style="border: 2px solid black;" class="table-container w-full border text-center">
                     <tbody class="text-sm divide-y divide-gray-100">
-                    {{--                    @if($results)--}}
                         <?php
                         $vendor_id = "*";
                         ?>
@@ -1009,15 +876,11 @@
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
-                                                {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
-//                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept->Department)->first(): 0;
                                                     $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
                                                     $month_num = "month".$month_counter;
                                                     ?>
-                                                    <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                 <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                     <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
                                                     <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>
@@ -1060,20 +923,12 @@
                                                         @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
                                                         @break
                                                 @endswitch
-
-                                                {{--                                <div class="text-sm">{{ $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() ? $new_targets->where('product_id', '220020')->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first()->target : 0 }}</div>--}}
-                                                {{--                                <div class="text-sm">{{ $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first() }}</div>--}}
                                             </th>
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
-                                                {{--                                <input id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" type="number" wire:model="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" class="form-input w-full">--}}
 
                                                     <?php
-//                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept->Department)->first(): 0;
-//                                                    $new_result = key_exists('ProductCode', $record) ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
                                                     $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
                                                     ?>
-                                                    <?php //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->first(): 0; ?>
-                                                {{--                                <div class="text-sm">{{ dd($record['ProductCode']) }}</div>--}}
                                                 <div class="text-sm">
                                                     {{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}
                                                 </div>
@@ -1313,16 +1168,9 @@
                                 <th colspan="5" style="border: 2px solid black; z-index: 10;@if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                     <div class="text-sm">{{ floatval($total_dept_s_qty) == 0 ? 0 : number_format((($total_dept_f_qty/$total_dept_s_qty)*100) - 100)}}</div>
                                 </th>
-                                @php //$a = floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100) @endphp
-                                {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10;" class="border p-2">--}}
-                                {{--                                    <div class="text-sm">{{ floatval($total_f_value) == 0 ? 0 : ceil((($total_s_value/$total_f_value)*100) - 100)}}</div>--}}
-                                {{--                                </th>--}}
                             </tr>
                         </div>
                     @endforeach
-                    {{--                    @else--}}
-                    {{--                        <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات لهذا المستخدم في هذه الشهور ..</div>--}}
-                    {{--                    @endif--}}
                     </tbody>
                 </table>
             </div>
@@ -1331,7 +1179,6 @@
                 <table id="tbl3" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                     <tbody class="text-sm divide-y divide-gray-100">
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                        {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">الفرع</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">SH</td>
                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">T</td>
@@ -1341,7 +1188,6 @@
                         <?php $total_dept_sum_f = 0; ?>
                     @foreach($depts as $dept)
                         <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            {{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                 @if($dept == '3')
                                     الاحساء
@@ -1388,18 +1234,6 @@
                         <?php $grand_total_dept_diff = $total_dept_sum_s == 0 ? 0 : number_format((($total_dept_sum_f/$total_dept_sum_s)*100)-100); ?>
                         <td style="border: 2px solid black; font-weight: bold;@if(floatval($grand_total_dept_diff) > 0) background-color: #cfffbd; @else background-color: #ffdcdc; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $grand_total_dept_diff }}</td>
                     </tr>
-{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
-{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>--}}
-{{--                        <td style="border: 2px solid black;background-color: #fffacd" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_val) }}</td>--}}
-{{--                            <?php $emp_diff = $total_historical == 0? 0 :  number_format((($total_sum_val/$total_historical)*100)-100); ?>--}}
-{{--                        <td style="border: 2px solid black; @if($emp_diff > 0) background-color: #e8ffdf @else background-color: #ffeded @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $emp_diff }}</td>--}}
-{{--                    </tr>--}}
-{{--                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">--}}
-{{--                        --}}{{--                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorNo'] }}</td>--}}
-{{--                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">مجموع المبيعات التاريخية</td>--}}
-{{--                        <td colspan="2" style="border: 2px solid black; background-color: #FFFFFF;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_historical) }}</td>--}}
-{{--                    </tr>--}}
                     </tbody>
                 </table>
             </div>
@@ -1446,9 +1280,6 @@
             $(`[id ^='total-val-col--']`).each(function () {
                 total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
                 console.log('total-col:'+$(this).text());
-                // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
             });
 
             total_diff = ((total_val/historical_sales)*100)-100;
@@ -1456,49 +1287,25 @@
             $("#summary-emp-total-diff").text(total_diff.toLocaleString());
         }
         function calculate_sum_emp(emp_codes) {
-
-            // historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
             summary_total_val = $("#summary-emp-total-val").text().replace(/,/g, "");
-
-            // $(`[id ^='total-val-col--']`).each(function () {
-            //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-            //     console.log('total-col:'+$(this).text());
-            //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-            //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
-            //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-            // });
 
             employee_code.forEach(function (element, idx, array) {
                 total_val = 0;
                 $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
                     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-                    // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                    // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                    // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
                 });
                 diff = (total_val/summary_total_val)*100
                 $(`#summary-emp-val-${element}`).text(total_val.toLocaleString());
                 $(`#summary-emp-diff-${element}`).text(diff.toFixed(2));
             });
-
-            // total_diff = ((total_val/historical_sales)*100)-100;
-            // $("#summary-emp-total-val").text(total_val.toLocaleString());
-            // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
         }
 
         var employee_code = [];
         Livewire.on('show-container', () => {
-            // $('th span').empty();
-            // location.reload();
             $('th span').empty();
 
             $('.total-target').empty();
             $('.target').empty();
-            // $('input').val('');
-            // div = document.getElementById("report-btn");
-            // div.classList.remove("hide");
-            // $('th #x').text('AA');
-            // alert('aaaa');
             var targets = [];
 
             $('#item_summary').attr('checked', false);
@@ -1513,8 +1320,6 @@
                     $(".department").removeClass("hide");
                 }
             });
-
-            // console.log($("input[name$='active']"));
             console.log($('.emps_percentage'));
 
             employee_code = [];
@@ -1538,8 +1343,6 @@
                     $(`[id ^='item--'][id $='--${vendor_id}']`).prop('checked', false);
                 }
                 console.log(this.checked);
-                // var txt = $(this).attr('id').split('--');
-                // employee_code.push(txt[1]);
             });
 
 
@@ -1563,26 +1366,14 @@
             console.log(employee_code);
 
             $('.total-target').on('focusout change', function () {
-                // console.log('kaka');
-                // console.log($(this).val());
-                // console.log($(this).attr('id'));
-                // console.log(employee_code);
-                //
                 var txt = $(this).attr('id');
                 txt = txt.split("--");
                 product_id = txt[1];
                 month = txt[2];
                 txt= txt[1]+"--"+txt[2]+"--"+txt[3];
-                // console.log(txt);
                 var target_entered = $(this).val();
-                //
                 var sales = $("#sales--"+txt).text();
                 item_price_txt = "#item-price-"+product_id;
-                // console.log("#sales--"+txt);
-                // console.log('sales: ' + sales);
-                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
-                // $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100 : null);
-                //
                 total_count = 0;
                 $(`[id ^='totaltarget--${product_id}']`).each(function () {
                     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
@@ -1591,8 +1382,6 @@
 
                 total_val = parseFloat($("#total-col--"+product_id).text().replace(/,/g, ""))*parseFloat($(item_price_txt).text());
                 $("#total-val-col--"+product_id).text(total_val.toLocaleString());
-                //
-                //
                 max_percent = 0;
                 max_percent_emp = 0;
                 target_total = 0;
@@ -1616,11 +1405,7 @@
 
                     console.log(percent);
                     console.log("teeest#target--"+txt+"--"+element);
-                    // console.log(target_entered);
-                    // $("#target--"+txt+"--"+element).val(target_entered);
-                    // $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100))).change();
                     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                    // target_total += Math.round(parseFloat(target_entered)*(percent/100));
                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                     total_count = 0;
@@ -1632,11 +1417,6 @@
                         $("#total-emp-val--"+product_id+"--"+element).text(total_val_price.toLocaleString());
                     });
 
-
-                    // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                    // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                    // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-
                     console.log(element);
                 });
 
@@ -1644,68 +1424,13 @@
                 total_target = 0;
                 $(`[id ^='target--${product_id}--${month}--']`).each(function () {
                     total_target = total_target + parseFloat($(this).val() ? $(this).val() : 0);
-                    // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                    // $("#total-emp--"+product_id+"--"+element).text(total_count);
                 });
 
                 $(`[id ^='totaltarget--${product_id}--${month}--']`).val(total_target);
                 $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : target_entered ? Math.round((parseFloat(total_target)/parseFloat(sales))*100-100) : null);
 
-
                 calculate_sum_all();
                 calculate_sum_emp();
-                // var summary_total_all = 0;
-                // employee_code.forEach(function (element, idx, array) {
-                //     emp_total = 0;
-                //     $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
-                //         emp_total = emp_total + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-                //         console.log('single-emp'+element+':'+ $(this).text());
-                //         // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                //     });
-                //     console.log('total-emp'+element+':'+ emp_total);
-                //     $("#summary-emp-val-"+element).text(emp_total.toLocaleString());
-                //     emp_total_diff = Math.round(((emp_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
-                //     $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
-                //
-                //     summary_total_all += emp_total;
-                // });
-                //
-                // summary_total_all_diff = Math.round(((summary_total_all/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100);
-                //
-                // // $("#summary-emp-diff-"+element).text(emp_total_diff.toLocaleString());
-                // $("#summary-grand-total-emp-val").text(summary_total_all.toLocaleString());
-                // $("#summary-grand-total-emp-diff").text(summary_total_all_diff.toLocaleString());
-
-
-                //
-                // if(target_total > target_entered) {
-                //     console.log('minus');
-                //     edited_num = $("#target--"+txt+"--"+max_percent_emp).val();
-                //     $("#target--"+txt+"--"+max_percent_emp).val(parseInt(edited_num)-1).change();
-                // }
-                // else if (target_total < target_entered) {
-                //     console.log('plus');
-                //     edited_num = $("#target--"+txt+"--"+max_percent_emp).val();
-                //     $("#target--"+txt+"--"+max_percent_emp).val(parseInt(edited_num)+1).change();
-                // }
-
-
-
-
-
-                // var total = 0;
-                // $(".emps_percentage").each(function () {
-                //
-                //     if ((total + parseFloat($(this).val())) > 100) {
-                //         console.log('dude');
-                //         $(this).val(0);
-                //     }
-                //
-                //     total = total + parseFloat($(this).val() ? $(this).val() : 0);
-                // });
-                //
-                // $(".emps_percentage_readonly").text(100-total);
-
 
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
@@ -1737,7 +1462,6 @@
 
                 console.log(txt);
                 console.log(totaltarget_txt);
-                // var target_entered = $(this).val();
 
                 total = 0;
 
@@ -1763,12 +1487,6 @@
                 });
 
                 var total_emp_val_count= 0;
-                // console.log(document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`));
-                // total_emp_val_elements = document.querySelectorAll(`[id^="total-emp-val--${product_id}--"]`);
-                // total_emp_val_elements.forEach(function (element) {
-                //     total_emp_val_count = total_emp_val_count + parseFloat(element.innerHTML);
-                //     console.log('value:'+total_emp_val_count);
-                // });
 
                 $(total_emp_val).text(total_count*$(item_price_txt).text());
 
@@ -1783,7 +1501,6 @@
                 console.log("total_emp_val_count:"+total_emp_val_count);
                 console.log("'#total-sales-emp--'+product_id:"+$('#total-sales-emp--'+product_id).text());
                 console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
-                // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")))*100)-100);
 
 
@@ -1797,50 +1514,8 @@
                 total_val = parseFloat($("#total-col--"+product_id).text().replace(/,/g, ""))*parseFloat($(item_price_txt).text());
                 $("#total-val-col--"+product_id).text(total_val.toLocaleString());
 
-
-                // var sales = $("#sales--"+txt).text();
-                // console.log("#sales--"+txt);
-                // console.log('sales: ' + sales);
-                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
-                //
-                // employee_code.forEach(function (element, idx, array) {
-                //     percent = 0;
-                //     if (idx === array.length - 1){
-                //         percent = parseFloat($("#emp--"+element+"--readonly").text());
-                //     }
-                //     else {
-                //         percent = parseFloat($("#emp--"+element+"--active").val());
-                //     }
-                //
-                //     console.log(percent);
-                //     console.log("#target--"+txt+"--"+element);
-                //     // console.log(target_entered);
-                //     // $("#target--"+txt+"--"+element).val(target_entered);
-                //     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                //     // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                //     // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                //     // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                //
-                //     console.log(element);
-                // });
-
-
-                // var total = 0;
-                // $(".emps_percentage").each(function () {
-                //
-                //     if ((total + parseFloat($(this).val())) > 100) {
-                //         console.log('dude');
-                //         $(this).val(0);
-                //     }
-                //
-                //     total = total + parseFloat($(this).val() ? $(this).val() : 0);
-                // });
-                //
-                // $(".emps_percentage_readonly").text(100-total);
-
                 historical_sales = $("#historical-grand-total-sales").text().replace(/,/g, "");
                 old_value = old_qty*parseFloat($(item_price_txt).text().replace(/,/g, ""));
-                // old_summary_emp_total = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
 
                 old_summary_single_emp = parseFloat($("#summary-emp-val-"+txt_original[4]).text().replace(/,/g, ""));
                 new_summary_single_emp = (old_summary_single_emp-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
@@ -1857,15 +1532,8 @@
 
                 new_summary_emp_grand_total = (old_summary_emp_grand_total-old_value) + (parseFloat($(item_price_txt).text().replace(/,/g, ""))*$(this).val());
                 new_summary_emp_grand_diff = ((new_summary_emp_grand_total/parseFloat($("#historical-grand-total-sales").text().replace(/,/g, "")))*100)-100;
-                console.log('old_summary_emp_total:'+old_summary_emp_total);
-                console.log('old_value:'+old_value);
-                console.log('new_value:'+$(this).val());
-                console.log('price:'+parseFloat($(item_price_txt).text().replace(/,/g, "")));
-                console.log('new_summary_value:'+new_summary_value);
-                console.log('historical_sales:'+historical_sales);
 
                 $("#summary-emp-total-val").text(new_summary_value.toLocaleString());
-                // $("#summary-emp-diff-"+txt_original[4]).text(Math.round(new_summary_diff).toLocaleString());
                 $("#summary-emp-total-diff").text(Math.round(new_summary_diff).toLocaleString());
 
                 $("#summary-grand-total-emp-val").text(new_summary_emp_grand_total.toLocaleString());
@@ -1875,97 +1543,22 @@
             });
 
             $('.emptarget').on('focusout', function () {
-                // console.log('kaka');
-                // console.log($(this).val());
-                // console.log($(this).attr('id'));
-                // console.log(employee_code);
 
                 var txt = $(this).attr('id');
                 txt_original = txt.split("--");
                 product_id = txt_original[1];
                 txt= txt_original[0]+ "--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
-                // totaltarget_txt= "#totaltarget--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 sales_txt= "#sales--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
                 diff_txt= "#diff--" + txt_original[1]+"--"+txt_original[2]+"--"+txt_original[3];
 
                 $(diff_txt).val(parseFloat($(this).val())? Math.round(((parseFloat($(this).val())/parseFloat($(sales_txt).text()))*100)-100) : 0);
 
-                // console.log(txt);
-                // console.log(totaltarget_txt);
-                // // var target_entered = $(this).val();
-                //
-                // total = 0;
-                //
-                // employee_code.forEach(function (element, idx, array) {
-                //     total += $("#"+txt+"--"+element).val() ? parseInt($("#"+txt+"--"+element).val()) : 0;
-                //     console.log("tar:" + $("#"+txt+"--"+element).val());
-                //     console.log('total:'+ total);
-                //
-                // });
-                // $(totaltarget_txt).val(total);
-                //
-                // var sales = $(sales_txt).text();
-                // console.log(sales_txt);
-                // console.log('sales: ' + sales);
-                // $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(total)/parseFloat(sales))*100)).change();
-                //
                 total_count = 0;
-                console.log('holllllllla');
+
                 $(`[id ^='emptarget--${product_id}--']`).each(function () {
-                    console.log('cool');
                     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                    console.log('total-emp:'+ "#total-emp--"+product_id+"--");
-                    console.log(total_count);
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
                 });
-
-
-                // total_count = 0;
-                // $(`[id ^='totaltarget--${product_id}--']`).each(function () {
-                //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                //     console.log('total-col:'+ "#total-col--"+product_id);
-                //     $("#total-col--"+product_id).text(total_count);
-                // });
-
-                // var sales = $("#sales--"+txt).text();
-                // console.log("#sales--"+txt);
-                // console.log('sales: ' + sales);
-                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
-                //
-                // employee_code.forEach(function (element, idx, array) {
-                //     percent = 0;
-                //     if (idx === array.length - 1){
-                //         percent = parseFloat($("#emp--"+element+"--readonly").text());
-                //     }
-                //     else {
-                //         percent = parseFloat($("#emp--"+element+"--active").val());
-                //     }
-                //
-                //     console.log(percent);
-                //     console.log("#target--"+txt+"--"+element);
-                //     // console.log(target_entered);
-                //     // $("#target--"+txt+"--"+element).val(target_entered);
-                //     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                //     // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                //     // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                //     // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                //
-                //     console.log(element);
-                // });
-
-
-                // var total = 0;
-                // $(".emps_percentage").each(function () {
-                //
-                //     if ((total + parseFloat($(this).val())) > 100) {
-                //         console.log('dude');
-                //         $(this).val(0);
-                //     }
-                //
-                //     total = total + parseFloat($(this).val() ? $(this).val() : 0);
-                // });
-                //
-                // $(".emps_percentage_readonly").text(100-total);
 
                 console.log("KK#total-diff-emp--"+product_id);
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-emp--'+product_id+'--'+txt_original[4]).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
@@ -2030,24 +1623,16 @@
                                             }
                                         }
 
-                                        console.log(percent);
-                                        console.log("#target--"+txt+"--"+element);
-                                        // console.log(target_entered);
-                                        // $("#target--"+txt+"--"+element).val(target_entered);
                                         $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                        // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                                        // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                                        // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
+
                                         target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
                                             total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                            console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
                                             $("#total-emp--"+product_id+"--"+element).text(total_count);
                                         });
 
-                                        console.log(element);
                                     });
 
                                     if(target_total > target_entered) {
@@ -2136,26 +1721,15 @@
 
                                         console.log(percent);
                                         console.log("#target--"+txt+"--"+element);
-                                        // console.log(target_entered);
-                                        // $("#target--"+txt+"--"+element).val(target_entered);
                                         $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                        // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                                        // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                                        // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
                                         target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                         total_count = 0;
                                         $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
                                             total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                            // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                            // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                                            // console.log("total-count-final:"+total_count);
-                                            // console.log("price-final:"+$(`item-price-${product_id}`).text());
-                                            // console.log("price:"+`item-price-${product_id}`);
+
                                             $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(`#item-price-${product_id}`).text()));
                                         });
-
-                                        console.log(element);
                                     });
 
                                     if(target_total > target_entered) {
@@ -2202,20 +1776,6 @@
                         historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
                         const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
-                        console.log(elements);
-
-                        // total_val = 0;
-                        // $(`[id ^='total-val-col--']`).each(function () {
-                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-                        //     console.log('total-col:'+$(this).text());
-                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-                        // });
-                        //
-                        // total_diff = ((total_val/historical_sales)*100)-100;
-                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
-                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
 
                         $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
@@ -2231,12 +1791,7 @@
                                 var target_entered = element.value;
 
                                 var sales = $("#sales--"+txt).text();
-                                console.log("#sales--"+txt);
-                                console.log('sales: ' + sales);
-                                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
                                 $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
-
-                                console.log('');
 
                                 max_percent = 0;
                                 max_percent_emp = 0;
@@ -2259,64 +1814,13 @@
                                         }
                                     }
 
-                                    console.log(percent);
-                                    console.log("#target--"+txt+"--"+element);
-                                    // console.log(target_entered);
-                                    // $("#target--"+txt+"--"+element).val(target_entered);
-
                                     // good
                                     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
 
-                                    // $(`input:not([disabled])[id ^='target--${txt}--${element}']`).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                    //
-                                    //
-                                    // console.log('length');
-                                    // console.log(month_txt);
-                                    // console.log(`target--${product_id}--${month_txt}`);
-                                    // // console.log($(`input:empty[id ^='target--${txt}--']`));
-                                    // // console.log($(`input:disabled:empty[id ^='target--${product_id}--']`).length);
-                                    // console.log($(`input:disabled:empty[id ^='target--${product_id}--${month_txt}']`).length > 0);
-                                    // console.log($(`input:disabled:empty[id ^='totaltarget--${product_id}--${month_txt}']`).length > 0);
-                                    // // console.log($(`input:disabled:not(input:empty)[id ^='totaltarget--${product_id}--${month_txt}']`).length > 0);
-                                    // console.log($(`input:disabled:empty[id ^='target--${product_id}--${month_txt}']`));
-                                    // console.log($(`input:disabled:empty[id ^='totaltarget--${product_id}--${month_txt}']`));
-                                    // //console.log($(`input:disabled:empty[id ^='totaltarget--${product_id}--${month_txt}']`));
-                                    //
-                                    // if ($(`input:disabled:not(input:empty)[id ^='totaltarget--${product_id}--${month_txt}']`).length == 0 && $(`input:disabled:not(input:empty)[id ^='target--${product_id}--${month_txt}']`).length > 0) {
-                                    //     // $(`input:disabled:empty[id ^='target--${product_id}--${month_txt}']`)
-                                    //     console.log('===== cocka ======');
-                                    //     console.log(`target--${txt}--${element}`);
-                                    //     $(`input:disabled:empty[id ^='target--${txt}--${element}']`).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                    // }
-
-                                    // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                                    // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                                    // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
                                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                     total_count = 0;
-                                    // var total_single_val = 0;
-                                    // // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
-                                    // //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                    // //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                    // //     $("#total-emp--"+product_id+"--"+element).text(total_count);
-                                    // //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-                                    // //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
-                                    // // });
-                                    // $(`[id ^='total-emp-val--'][id $='--${element}']`).each(function () {
-                                    //     // total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                                    //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                                    //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                                    //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-                                    //     total_single_val = total_single_val +  total_count*parseFloat($(item_price_txt).text());
-                                    // });
 
-                                    // emp_diff = (total_single_val/parseFloat($("#summary-emp-total-val").text()))*100;
-                                    // $('summary-emp-val-'+element).text(total_single_val.toLocaleString());
-                                    // $('summary-emp-diff-'+element).text(emp_diff.toLocaleString());
-                                    //
-                                    //
-                                    // console.log(element);
                                 });
 
 
@@ -2335,27 +1839,6 @@
 
                         });
 
-                        // $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
-                        //     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
-                        //     console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                        //     $("#total-emp--"+product_id+"--"+element).text(total_count);
-                        //     $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-                        // });
-                        // total_val = 0;
-                        // $(`[id ^='total-val-col--']`).each(function () {
-                        //     total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
-                        //     console.log('total-col:'+$(this).text());
-                        //     // console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
-                        //     // $("#total-emp--"+product_id+"--"+element).text(total_count);
-                        //     // $("#total-emp-val--"+product_id+"--"+element).text(total_count*parseFloat($(item_price_txt).text()));
-                        // });
-                        //
-                        // total_diff = ((total_val/historical_sales)*100)-100;
-                        // $("#summary-emp-total-val").text(total_val.toLocaleString());
-                        // $("#summary-emp-total-diff").text(total_diff.toLocaleString());
-                        //
-                        // $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
-
                         calculate_sum_all();
                         calculate_sum_emp();
                     }
@@ -2363,7 +1846,6 @@
             });
 
             $('#test-btn').on('click', function () {
-                // alert('hi');
 
                 $("#test-btn").html('<b>الرجاء الإنتظار..</b>');
                 Swal.fire({
@@ -2386,34 +1868,21 @@
                 const totaltarget_element = document.querySelectorAll("input[id^='totaltarget--']");
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
-                console.log("============================");
-                console.log(percent_elements);
-                console.log(item_elements);
-                // const elements = $("input[id^='target--']");
+
                 elements.forEach(element =>{
                     if (element.value) {
                         $("#test-btn").prop('value', 'الرجاء الإنتظار..');
-                        console.log(element.value);
-                    //     // targets[element.id] = element.value;
-                    //     targets.push(element)
+
                         targets.push(element.id + "|" +element.value);
-                    //     targets.push({element.id: element.value});
                     }
-                    // targets.push({element.id: element.value});
-
-
                 });
 
                 totaltarget_element.forEach(element =>{
                     if (element.value) {
                         $("#test-btn").prop('value', 'الرجاء الإنتظار..');
-                        console.log(element.value);
-                        //     // targets[element.id] = element.value;
-                        //     targets.push(element)
+
                         totaltargets.push(element.id + "|" +element.value);
-                        //     targets.push({element.id: element.value});
                     }
-                    // targets.push({element.id: element.value});
 
 
                 });
@@ -2434,18 +1903,15 @@
                 item_elements.forEach(code => {
                     products_codes.push(code.id + "|" + code.checked);
                 });
-                // console.log($("input[id^='target--']"));
 
-                // console.log(targets[0]);
-
-                Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
-                // Livewire.emit('targets-entered', targets);
-                // console.log(targets);
+                // Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
+                // window.livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
+                console.log('hello');
+                @this.test(targets, emps_percents, products_codes, totaltargets);
 
             });
 
             $('#emptest-btn').on('click', function () {
-                // alert('hi');
                 $("#emptest-btn").html('<b>الرجاء الإنتظار..</b>');
                 Swal.fire({
                     title: 'الرجاء الإنتظار',
@@ -2470,13 +1936,8 @@
                 elements.forEach(element =>{
                     if (element.value) {
                         $("#emptest-btn").prop('value', 'الرجاء الإنتظار..');
-                        console.log(element.value);
-                        //     // targets[element.id] = element.value;
-                        //     targets.push(element)
                         targets.push(element.id + "|" +element.value);
-                        //     targets.push({element.id: element.value});
                     }
-                    // targets.push({element.id: element.value});
 
 
                 });
@@ -2497,13 +1958,7 @@
                 item_elements.forEach(code => {
                     products_codes.push(code.id + "|" + code.checked);
                 });
-                // console.log($("input[id^='target--']"));
-
-                // console.log(targets[0]);
                 Livewire.emit('targets-entered', targets, emps_percents, products_codes);
-                // Livewire.emit('targets-entered', targets);
-                // console.log(targets);
-
             });
 
             $('.copy-btn').on('click', function () {
@@ -2521,18 +1976,7 @@
                         // start here
                         txt = $(this).attr('id').split('--');
                         product_code = txt[1];
-
-                        //var a = $(`input:not([disabled]):first[id ^='totaltarget--${product_code}']`);
-                        // var a = $(`input:not([disabled]):first[id ^='totaltarget--${product_code}']`);
-                        // var x = document.querySelectorAll(`[id ^='totaltarget--${product_code}']`)
                         var value_entered = document.querySelector(`input:not([disabled])[id ^='totaltarget--${product_code}']`)
-                        console.log("first:");
-                        console.log(value_entered.value);
-
-                        // var total_value = $(`[id ^='totaltarget--${product_code}'][id $='--1']`);
-                        // $(`[id ^='totaltarget--${product_code}']`).val(total_value.val()).change();
-                        // $(`[id ^='totaltarget--${product_code}']`).val(value_entered).change();
-                        // $(`[id ^='totaltarget--${product_code}--5']`).val(value_entered).change();
                         $(`input:not([disabled])[id ^='totaltarget--${product_code}']`).val(document.querySelector(`input:not([disabled])[id ^='totaltarget--${product_code}']`).value).change();
                         // end here
 
@@ -2582,93 +2026,17 @@
                                 var txt = element.id;
                                 txt = txt.split("--");
                                 txt= txt[1]+"--"+txt[2]+"--"+txt[3];
-                                // console.log(txt);
-                                // var target_entered = element.value;
 
                                 var sales = $("#sales--"+txt).text();
-                                console.log("#sales--"+txt);
-                                console.log('sales: ' + sales);
-                                console.log('element: ' + element.id);
                                 $("#"+element.id).val(Math.round(parseFloat(sales)*(1+(parseFloat(result.value)/100)))).change();
-                                // $("#"+element.id).val(Math.round(parseFloat(sales)*(parseFloat(result.value)/100))).change();
-                                // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
-
-                                // max_percent = 0;
-                                // max_percent_emp = 0;
-                                // target_total = 0;
-                                //
-                                // employee_code.forEach(function (element, idx, array) {
-                                //     percent = 0;
-                                //     if (idx === array.length - 1){
-                                //         percent = parseFloat($("#emp--"+element+"--readonly").text());
-                                //         if (percent > max_percent) {
-                                //             max_percent = percent;
-                                //             max_percent_emp = element;
-                                //         }
-                                //     }
-                                //     else {
-                                //         percent = parseFloat($("#emp--"+element+"--active").val());
-                                //         if (percent > max_percent) {
-                                //             max_percent = percent;
-                                //             max_percent_emp = element;
-                                //         }
-                                //     }
-                                //
-                                //     console.log(percent);
-                                //     console.log("#target--"+txt+"--"+element);
-                                //     // console.log(target_entered);
-                                //     // $("#target--"+txt+"--"+element).val(target_entered);
-                                //     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                //     // @this.emp_target = Math.round(parseFloat(target_entered)*(percent/100));
-                                //     // $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-                                //     // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-                                //     target_total += Math.round(parseFloat(target_entered)*(percent/100));
-                                //
-                                //     console.log(element);
-                                // });
-                                //
-                                // if(target_total > target_entered) {
-                                //     edited_num = $("#target--"+txt+"--"+max_percent_emp).val();
-                                //     $("#target--"+txt+"--"+max_percent_emp).val(parseInt(edited_num)-1);
-                                // }
-                                // else if (target_total < target_entered) {
-                                //     edited_num = $("#target--"+txt+"--"+max_percent_emp).val();
-                                //     $("#target--"+txt+"--"+max_percent_emp).val(parseInt(edited_num)+1);
-                                // }
-
-                                //     end of recalculating indiviuals
-                            // }
-
-
                         });
 
                     }
                 });
-
-                // var total_value = $(`[id ^='totaltarget--${product_code}'][id $='--1']`);
-                // $(`[id ^='totaltarget--${product_code}']`).val(total_value.val());
             });
 
         })
 
-        // Livewire.on('diff-update', value => {
-        //     console.log(value);
-        //     $('#'+value[0]).text(value[1]);
-        //     employee_code.forEach(function (element, idx, array) {
-        //         percent = 0;
-        //         if (idx === array.length - 1){
-        //             percent = parseFloat($("#emp--"+element+"--readonly").text());
-        //         }
-        //         else {
-        //             percent = parseFloat($("#emp--"+element+"--active").val());
-        //         }
-        //
-        //         $("#"+value[2]+"--"+element).val(value[3]*(percent/100));
-        //         // document.getElementById("#"+value[2]+"--"+element).value = value[3]*(percent/100);
-        //
-        //         console.log(element);
-        //     });
-        // });
 
 
         Livewire.on('msg', value => {
@@ -2684,10 +2052,7 @@
 
            $('.total-target').empty();
            $('.target').empty();
-           // $('.emps_percentage').val('');
-           // $('.emps_percentage_readonly').text('');
            emps_percents = [];
-            // $('.notification-box').empty();
 
         });
 
@@ -2697,20 +2062,8 @@
 
         Livewire.on('clear-btn', value => {
             $('th span').empty();
-                // $('.total-target').val('');
-                // $('.target').val('');
-                // $('.emps_percentage').val('');
                 $('.emps_percentage_readonly').text('');
         });
-
-        // $('#vendor_id').select2({
-        //     dir: "rtl",
-        //     dropdownCssClass: "select-font-size"
-        // });
-        // $('#vendor_id').on('change', function (e) {
-        //     var data = $('#vendor_id').select2("val");
-        //     @this.set('vendor_id', data);
-        // });
 
 
         $(document).ready(function () {
@@ -2837,27 +2190,6 @@
                 });
 
                 Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
-
-                // if (dept_id.length > 0 && cat_type.length > 0 && sp_type.length > 0) {
-                //
-                // }
-                // else {
-                //     const Toast = Swal.mixin({
-                //         toast: true,
-                //         position: "top-end",
-                //         showConfirmButton: false,
-                //         timer: 3000,
-                //         timerProgressBar: true,
-                //         didOpen: (toast) => {
-                //             toast.onmouseenter = Swal.stopTimer;
-                //             toast.onmouseleave = Swal.resumeTimer;
-                //         }
-                //     });
-                //     Toast.fire({
-                //         icon: "success",
-                //         title: "Signed in successfully"
-                //     });
-                // }
             });
 
             $('#reset-btn').on('click', function () {
