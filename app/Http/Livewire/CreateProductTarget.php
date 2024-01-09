@@ -932,8 +932,8 @@ class CreateProductTarget extends Component
 //                        order by Date desc";
 //            dd($stmt);
 
-            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-                ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
                 ->whereRaw("branch in (". implode(',',$this->dept_id) .")")
                 ->select('product_id', 'month', 'year', 'branch', 'target')
                 ->get();
@@ -1410,7 +1410,7 @@ class CreateProductTarget extends Component
         }
         $month_stmt .= " ORDER BY VendorNo";
 
-//        dd($month_stmt);
+        dd($month_stmt);
 
         $query = DB::connection('sqlsrv')->select($month_stmt);
 //        dd($query);

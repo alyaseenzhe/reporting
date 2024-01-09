@@ -30,7 +30,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-postponed-by-customers', \App\Http\Livewire\ListPostponedByCustomer::class)->name('list.postponed-by-customers');
     Route::get('/list-cash-statement', \App\Http\Livewire\ListCashStatement::class)->name('list.customer-cash-statement');
     Route::get('/list-products-targets', \App\Http\Livewire\ListProductsTargets::class)->name('list.products-targets');
-    Route::get('/create-product-target', \App\Http\Livewire\CreateProductTarget::class)->name('create.product-target');
+//    Route::get('/create-product-target', \App\Http\Livewire\CreateProductTarget::class)->name('create.product-target');
+    Route::match(['get','post'],'/create-product-target', \App\Http\Livewire\CreateProductTarget::class)->name('create.product-target');
     Route::get('/list-my-product-target', \App\Http\Livewire\ListMyProductTarget::class)->name('list.my-product-target');
     Route::get('/show-my-products-targets', \App\Http\Livewire\ShowMyProductsTargets::class)->name('show.my-products-targets');
     Route::get('/list-weekly-report', \App\Http\Livewire\ListWeeklyReport::class)->name('list.weekly-report');
