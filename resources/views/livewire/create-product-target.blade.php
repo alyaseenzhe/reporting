@@ -873,13 +873,19 @@
                                         @endif
                                     </th>
                                         <?php $month_counter = 1; ?>
+
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
 
                                                     <?php
-                                                    $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
+//                                                    $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
+//                                                    $new_result = $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first();
+//                                                    $new_result = \Illuminate\Support\Facades\DB::select("select". $month_num ." from `sales` inner join `products` on `sales`.`ProductCode` = `products`.`product_code` where `year` = ? and products.VendorNo is not null and sales.Department IN (3,7) and products.SpecialityCode IN (0,1,2) and ProductCode is not null")
                                                     $month_num = "month".$month_counter;
+                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept ."' AND `year` = '". intval($year_key)-1 ."'");
+                                                    $new_result = count($new_result) > 0 ? $new_result[0] : 0;
+
                                                     ?>
                                                 <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                     <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
@@ -927,7 +933,11 @@
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
 
                                                     <?php
-                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
+//                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
+                                                    $new_result = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept ."' LIMIT 1"));
+                                                    $new_result = count($new_result) > 0 ? $new_result[0] : 0;
+//                                                    dd($new_result->target);
+//                                                    dd($new_result[0]->target);
                                                     ?>
                                                 <div class="text-sm">
                                                     {{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}
@@ -1186,6 +1196,7 @@
                     </tr>
                         <?php $total_dept_sum_s = 0; ?>
                         <?php $total_dept_sum_f = 0; ?>
+                        <?php $depts =  $dept_id ?>
                     @foreach($depts as $dept)
                         <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">

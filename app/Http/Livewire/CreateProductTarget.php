@@ -703,6 +703,23 @@ class CreateProductTarget extends Component
 
     public function generateBranchesReport()
     {
+//        $col1 = collect([[
+//            'id' => '1',
+//            'name' => 'Basil',
+//        ],
+//            [
+//                'id' => '2',
+//                'name' => 'Campoha',
+//            ]
+//        ]);
+//
+//        $col2 = collect([
+//            ['id' => '1', 'sale' => 550]
+//        ]);
+////        dd(array_merge($col1, $col2));
+//        dd($col1->merge($col2));
+
+
         set_time_limit(0);
         ini_set('memory_limit', '-1');
         $this->emps = [];
@@ -718,7 +735,8 @@ class CreateProductTarget extends Component
         foreach ($this->dept_id as $branch) {
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')
                 ->where('branches', 'like', '%"'.$branch.'"%')
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw('write_product_target IN (1,2)')
                 ->select('users.id')
                 ->get();
 
@@ -865,8 +883,10 @@ class CreateProductTarget extends Component
 //            ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
             ->whereNotNull('group')
             ->where('role', 'u')
-            ->whereIn('write_product_target', ['1', '2'])
-            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+//            ->whereIn('write_product_target', ['1', '2'])
+            ->whereRaw('write_product_target IN (1,2)')
+//            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+            ->whereRaw('users.id IN ('. implode(',' , $this->employee_ids_in_my_branch) . ')')
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
@@ -905,12 +925,19 @@ class CreateProductTarget extends Component
 //            dd(implode(',', $this->dept_id));
 //            dd("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))");
 //            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
-//                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
-                ->whereIn("branch", $this->dept_id)
-//                ->whereIn("branch", [7])
-                ->select('product_id', 'month', 'year', 'branch', 'target')
-                ->get();
+
+            //// goooood
+//            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+////                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
+////                ->whereIn("branch", $this->dept_id)
+//                ->whereRaw("branch IN (" . implode($this->dept_id) . ")")
+////                ->whereIn("branch", [7])
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+//                ->get();
+
+            //// end of goooood
+
+//            dd($this->old_targets);
 
 
 //            dd($this->old_targets->where('product_id', '170458')->where("month", '1')->where('year', '2024')->where('branch', '7')->first());
@@ -924,6 +951,7 @@ class CreateProductTarget extends Component
         }
         else {
 
+
 //            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
 //                        FROM ProductsTarget, ProductMast
 //                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
@@ -935,10 +963,19 @@ class CreateProductTarget extends Component
 //            dd($stmt);
 
 //            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
-                ->whereRaw("branch in (". implode(',',$this->dept_id) .")")
-                ->select('product_id', 'month', 'year', 'branch', 'target')
-                ->get();
+
+            // gooooooooood
+//            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                ->whereRaw("branch in (". implode(',',$this->dept_id) .")")
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+////                ->limit(10)
+////                    ->toSql();
+//                ->get();
+
+//            $kk = DB::select("select `product_id`, `month`, `year`, `branch`, `target` from `product_target_branch_totals` where (Year = '2024' and month in (1,2,3,4,5,6,7,8,9,10,11,12)) and branch in (3,7)");
+
+//            dd($kk);
+//            dd($this->old_targets);
 
 //            $query = DB::connection('sqlsrv')->select($stmt);
 //
@@ -946,6 +983,8 @@ class CreateProductTarget extends Component
 //            $this->old_targets = collect($fetch_query);
 
         }
+
+
 
         // End of getting old data from Scribe
 
@@ -955,8 +994,10 @@ class CreateProductTarget extends Component
 //            ->get();
 
         $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
-            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+//            ->whereIn('users.id', $this->employee_ids_in_my_branch)
+            ->whereRaw('users.id IN ('. implode(',', $this->employee_ids_in_my_branch) . ')')
             ->select('emp_percentage', 'branch', 'emp_code', 'product_target_emp_percents.user_id')
+//            ->toSql();
             ->get();
 
 //        dd($this->emps_percentage);
@@ -1070,79 +1111,82 @@ class CreateProductTarget extends Component
             WHERE VendorNo = '" . $this->vendor_id . "'
             ORDER BY VendorNo";*/
 
+        //// gooooooooood
         // cat_type
-        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
-        $asmedah = "ProductCode like '17%' ";
-        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
-        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
+//        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
+//        $asmedah = "ProductCode like '17%' ";
+//        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
+//        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
+//
+//        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
+//        $asmedah2 = "product_code like '17%' ";
+//        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
+//        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
+//
+////        $cat_stmt = "AND (";
+//        $cat_stmt = "(";
+//        $cat_stmt2 = "(";
+//        foreach ($this->cat_type as $key => $cat) {
+//            if ($key === array_key_first($this->cat_type)) {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= $bathoor;
+//                    $cat_stmt2 .= $bathoor2;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= $asmedah;
+//                    $cat_stmt2 .= $asmedah2;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= $mobedat;
+//                    $cat_stmt2 .= $mobedat2;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= $other;
+//                    $cat_stmt2 .= $other2;
+//                }
+//            }
+//            elseif ($key === array_key_last($this->cat_type)) {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= ' or '.$bathoor;
+//                    $cat_stmt2 .= ' or '.$bathoor2;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= ' or '.$asmedah;
+//                    $cat_stmt2 .= ' or '.$asmedah2;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= ' or '.$mobedat;
+//                    $cat_stmt2 .= ' or '.$mobedat2;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= 'or '.$other;
+//                    $cat_stmt2 .= 'or '.$other2;
+//                }
+//            }
+//            else {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= " or " . $bathoor;
+//                    $cat_stmt2 .= " or " . $bathoor2;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= " or " . $asmedah;
+//                    $cat_stmt2 .= " or " . $asmedah2;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= " or " . $mobedat;
+//                    $cat_stmt2 .= " or " . $mobedat2;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= " or " . $other;
+//                    $cat_stmt2 .= " or " . $other2;
+//                }
+//            }
+//        }
+//
+//        $cat_stmt .= ") ";
+//        $cat_stmt2 .= ") ";
 
-        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
-        $asmedah2 = "product_code like '17%' ";
-        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
-        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
-
-//        $cat_stmt = "AND (";
-        $cat_stmt = "(";
-        $cat_stmt2 = "(";
-        foreach ($this->cat_type as $key => $cat) {
-            if ($key === array_key_first($this->cat_type)) {
-                if ($cat == 'bathoor') {
-                    $cat_stmt .= $bathoor;
-                    $cat_stmt2 .= $bathoor2;
-                }
-                elseif ($cat == 'asmedah') {
-                    $cat_stmt .= $asmedah;
-                    $cat_stmt2 .= $asmedah2;
-                }
-                elseif ($cat == 'mobedat') {
-                    $cat_stmt .= $mobedat;
-                    $cat_stmt2 .= $mobedat2;
-                }
-                elseif ($cat == 'other') {
-                    $cat_stmt .= $other;
-                    $cat_stmt2 .= $other2;
-                }
-            }
-            elseif ($key === array_key_last($this->cat_type)) {
-                if ($cat == 'bathoor') {
-                    $cat_stmt .= ' or '.$bathoor;
-                    $cat_stmt2 .= ' or '.$bathoor2;
-                }
-                elseif ($cat == 'asmedah') {
-                    $cat_stmt .= ' or '.$asmedah;
-                    $cat_stmt2 .= ' or '.$asmedah2;
-                }
-                elseif ($cat == 'mobedat') {
-                    $cat_stmt .= ' or '.$mobedat;
-                    $cat_stmt2 .= ' or '.$mobedat2;
-                }
-                elseif ($cat == 'other') {
-                    $cat_stmt .= 'or '.$other;
-                    $cat_stmt2 .= 'or '.$other2;
-                }
-            }
-            else {
-                if ($cat == 'bathoor') {
-                    $cat_stmt .= " or " . $bathoor;
-                    $cat_stmt2 .= " or " . $bathoor2;
-                }
-                elseif ($cat == 'asmedah') {
-                    $cat_stmt .= " or " . $asmedah;
-                    $cat_stmt2 .= " or " . $asmedah2;
-                }
-                elseif ($cat == 'mobedat') {
-                    $cat_stmt .= " or " . $mobedat;
-                    $cat_stmt2 .= " or " . $mobedat2;
-                }
-                elseif ($cat == 'other') {
-                    $cat_stmt .= " or " . $other;
-                    $cat_stmt2 .= " or " . $other2;
-                }
-            }
-        }
-
-        $cat_stmt .= ") ";
-        $cat_stmt2 .= ") ";
+        // end of gooooooood
 
 //        dd($cat_stmt);
         // end of cat_type
@@ -1156,40 +1200,111 @@ class CreateProductTarget extends Component
         // variable should be named $this->results
 //        $sales_query = Sales::join('products', 'sales.ProductCode', 'products.product_code')
 
+        // goooood
         $sp_txt = in_array('sp_all', $this->sp_type) ?  ('products.SpecialityCode IN (0,1,2)') : ('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')');
         $cat_txt1 = in_array('cat_all', $this->cat_type) ?  ('ProductCode is not null') : $cat_stmt;
         $cat_txt2 = in_array('cat_all', $this->cat_type) ?  ('product_code is not null') : $cat_stmt2;
+        // end of goood
 //        dd($this->sp_type === 'sp_all');
 //        dd($sp_txt);
 //        dd($cat_txt1);
 
-        $this->results = Sales::join('products', 'sales.ProductCode', 'products.product_code')
-            ->where('year', '2022')
-//            ->where('products.VendorNo', $this->vendor_type)
-            ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
-            ->whereRaw('sales.Department IN (' . implode(',',$this->dept_id) . ')')
-//            ->whereIn('sales.Department', $this->dept_id)
-//            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
-            ->whereRaw($sp_txt)
-//            ->whereIn('products.SpecialityCode', $this->sp_type)
-//            ->whereRaw($cat_stmt)
-            ->whereRaw($cat_txt1)
-            ->get();
+//        dd($this->list);
+
+        ////////// good
+        $sales_year_keys = array_keys($this->list);
+//        dd($sales_year_keys);
+        if (count($sales_year_keys) > 1) {
+//            $this->results = Sales::join('products', 'sales.ProductCode', 'products.product_code')
+//                ->whereRaw("year = '" . $sales_year_keys[0]. "' or year = '". $sales_year_keys[1]."'")
+////            ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+////            ->where('products.VendorNo', $this->vendor_type)
+//                ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+//                ->whereRaw('sales.Department IN (' . implode(',',$this->dept_id) . ')')
+////            ->whereIn('sales.Department', $this->dept_id)
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//                ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt)
+//                ->whereRaw($cat_txt1)
+////                ->toSql();
+//            ->get();
+//            dd($this->results);
+
+            /// end of gooooooood
+        }
+        else {
+            // gooooood
+//            $this->results = Sales::join('products', 'sales.ProductCode', 'products.product_code')
+//                ->where('year', $sales_year_keys[0])
+////            ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+////            ->where('products.VendorNo', $this->vendor_type)
+//                ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+//                ->whereRaw('sales.Department IN (' . implode(',',$this->dept_id) . ')')
+////            ->whereIn('sales.Department', $this->dept_id)
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//                ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt)
+//                ->whereRaw($cat_txt1)
+////                ->toSql();
+//            ->get();
+//            dd($this->results);
+
+        }
+
+
+//        $kk = DB::select(DB::raw("SELECT DISTINCT * FROM `products` Left JOIN sales ON products.product_code = sales.ProductCode Left JOIN product_target_branch_totals ON product_target_branch_totals.product_id = products.product_code"));
+////            ->get();
+//        dd($kk);
+
+
 //        dd('aa');
 //        dd($this->results);
+
+//        $combined = DB::table('sales')
+//            ->join('products', 'sales.ProductCode', 'products.product_code')
+//            ->where('year', '2022')
+////            ->where('products.VendorNo', $this->vendor_type)
+//            ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+//            ->whereRaw('sales.Department IN (' . implode(',',$this->dept_id) . ')')
+////            ->whereIn('sales.Department', $this->dept_id)
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//            ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt)
+//            ->whereRaw($cat_txt1)
+//            ->limit(10)
+//            ->get();
+//        $combined = $this->results->join($this->old_targets);
+////            ->get();
+//        dd($combined);
 
 
 
         $this->items = Products::where('Pricelist', '1')
 //            ->where('products.VendorNo', $this->vendor_type)
             ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
-            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
             ->whereRaw($sp_txt)
 //            ->whereIn('products.SpecialityCode', $this->sp_type)
 //            ->whereRaw($cat_stmt2)
             ->whereRaw($cat_txt2)
             ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
+//            ->toSql();
             ->get()->toArray();
+//        dd($this->items);
+
+//        $this->items = Products::where('Pricelist', '1')
+////            ->where('products.VendorNo', $this->vendor_type)
+//            ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//            ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt2)
+//            ->whereRaw($cat_txt2)
+////            ->selectRaw('product_code')
+//            ->pluck('product_code');
 //        dd($this->items);
 
 //        dd($sales_query);
