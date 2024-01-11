@@ -322,8 +322,7 @@
                             <?php
                             $vendor_type = "*";
                             ?>
-{{--                        @foreach($results[0] as $record)--}}
-                        @foreach($results as $record)
+                        @foreach($results[0] as $record)
                                 @php $all_total_emp_tr = []; @endphp
                                 @if($record['VendorNo'] != $vendor_type)
                                         <?php $vendor_type = $record['VendorNo'] ?>
@@ -424,13 +423,7 @@
                                                     @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
-                                        // good
-//                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        // end of good
-
-//                                         $current = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept ."' AND `year` = '". intval($year_key)-1 ."'");
-//                                         $current = count($current) > 0 ? $current[0] : 0;
-
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
                                         $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $current_month = $now->year."-".$now->month."-01";
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
@@ -439,20 +432,14 @@
 
                                                     @endphp
                                                         <?php
-                                                            // good
-//                                                        $val = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() ? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0;
-                                                        // end of good
-
-//                                                    dd($dept_id);
-                                                        $val = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
-                                                        $val = count($val) > 0 ? $val[0]->target : 0;
-                                                        $grand_total_target += floatval($val) == null ? 0 : floatval($val);
+                                                        $val = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() ? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0;
+                                                        $grand_total_target += $val == null ? 0 : $val;
                                                         ?>
                                                     <input wire:key="input-totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{time()}}" min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="{{ $val }}" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || $write_product_target == 0) disabled="disabled" @endif>
 
                                                     @php $target_counter++; @endphp
                                                 </th>
-                                           @endforeach
+                                            @endforeach
                                         @endforeach
                                         <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
                                             <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
@@ -463,6 +450,7 @@
                                         </th>
                                     </tr>
                                     @foreach($emps as $emp)
+
                                         <tr class="employee">
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 <div class="text-sm">{{ $emp->name }}</div>
@@ -473,29 +461,18 @@
                                                     @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
-                                        // good
-//                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        // end of good
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
 
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
                                         $current_month = $now->year."-".$now->month."-01";
                                         $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-
-                                        $current_target_to_edit = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_targets WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' AND user_id = '". $user_ids[$emp->emp_code]. "' LIMIT 1"));
-                                        $current_target_to_edit = count($current_target_to_edit) > 0 ? $current_target_to_edit[0]->target : 0;
-                                        // good
-//                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
-                                        // end of good
-                                        $grand_emp_total_target += $current_target_to_edit;
-//                                        $special = $special_product_id->where('product_id', $record['ProductCode'])->first();
-                                        $special = (\Illuminate\Support\Facades\DB::select("SELECT product_id FROM special_products WHERE product_id = '". $record['ProductCode'] . "' LIMIT 1"));
-                                        $special = count($special) > 0 ? true : false;
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
                                                     @endphp
                                                     <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
-                                                            <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == "0") disabled="disabled" @endif>
+                                                            <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || $write_product_target == "0") disabled="disabled" @endif>
                                                         @php $target_counter++; @endphp
                                                     </th>
                                                 @endforeach
@@ -533,9 +510,7 @@
                                         $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
-                                        // good
-//                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        // end of good
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
                                         $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $current_month = $now->year."-".$now->month."-01";
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
@@ -554,25 +529,14 @@
                                                     @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
-                                        // good
-//                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        // end of good
+                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
 
                                         $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
                                         $target_month = $year_key."-".$month."-".$month_days;
                                         $current_month = $now->year."-".$now->month."-01";
                                         $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
-
-                                        $current_target_to_edit = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_targets WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' AND user_id = '". $user_ids[$emp->emp_code] ."' LIMIT 1"));
-                                        $current_target_to_edit = count($current_target_to_edit) > 0 ? $current_target_to_edit[0] : 0;
-
-                                        // good
-                                        //$grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
-                                        // end of good
-                                        $grand_emp_total_target += $current_target_to_edit;
-                                        $special = (\Illuminate\Support\Facades\DB::select("SELECT product_id FROM special_products WHERE product_id = '". $record['ProductCode'] . "' LIMIT 1"));
-                                        $special = count($special) > 0 ? true : false;
+                                        $grand_emp_total_target += $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : 0;
 
                                                     @endphp
                                                     <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
@@ -587,7 +551,7 @@
                                                             {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
                                                             {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
                                                             {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                            <input wire:key="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == '0') disabled="disabled" @endif>
+                                                            <input wire:key="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->first()) || $write_product_target == '0') disabled="disabled" @endif>
 {{--                                                        </div>--}}
                                                         {{--                                            @endif--}}
                                                         @php $target_counter++; @endphp
@@ -606,20 +570,11 @@
                                     </th>
                                     @php $sales = []; @endphp
                                     @php $target_counter =1; @endphp
-                                    <?php
-//                                        dd($record);
-                                        $month_num = "month".$target_counter;
-                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
-//                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '170224' AND `Department` = '10' AND `year` = '2023'");
-                                        $new_result = $new_result ? $new_result[0]->$month_num : 0;
-//                                        dd($new_result);
-//                                        $record['month'.$target_counter]
-                                    ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month_key => $month)
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($new_result, 0, '', '') }}</div>
-                                                @php array_push($sales, $new_result); @endphp
+                                                <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($record['month'.$target_counter], 0, '', '') }}</div>
+                                                @php array_push($sales, $record['month'.$target_counter]); @endphp
                                             </th>
                                             @php $target_counter++; @endphp
                                         @endforeach
@@ -632,34 +587,34 @@
                                     </th>
                                     <?php $total_historical += array_sum($sales)*$record[$item_price]; ?>
                                 </tr>
-{{--                                <tr>--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--                                        <div class="text-xs">متوسط مبيعات تاريخية(3)</div>--}}
-{{--                                    </th>--}}
-{{--                                    @php $sales2 = []; @endphp--}}
-{{--                                    @php $target_counter2 =1; @endphp--}}
-{{--                                    @foreach ($current_year_list as $year_key => $year)--}}
-{{--                                        @foreach ($year as $month_key => $month)--}}
-{{--                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--                                                @php $month_temp = "month".$target_counter2; @endphp--}}
-{{--                                                @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp--}}
-{{--                                                <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>--}}
-{{--                                                @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp--}}
-{{--                                            </th>--}}
-{{--                                            @php $target_counter2++; @endphp--}}
-{{--                                        @endforeach--}}
-{{--                                    @endforeach--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
-{{--                                        {{ number_format(array_sum($sales2)) }}--}}
-{{--                                    </th>--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
-{{--                                        <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>--}}
-{{--                                    </th>--}}
-{{--                                </tr>--}}
+                                <tr>
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-xs">متوسط مبيعات تاريخية(3)</div>
+                                    </th>
+                                    @php $sales2 = []; @endphp
+                                    @php $target_counter2 =1; @endphp
+                                    @foreach ($current_year_list as $year_key => $year)
+                                        @foreach ($year as $month_key => $month)
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                                @php $month_temp = "month".$target_counter2; @endphp
+                                                @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp
+                                                <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>
+                                                @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp
+                                            </th>
+                                            @php $target_counter2++; @endphp
+                                        @endforeach
+                                    @endforeach
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                        {{ number_format(array_sum($sales2)) }}
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                        <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>
+                                    </th>
+                                </tr>
                                 <tr>
                                     <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
-                                        @if((($edit_special_product == 1 && $special) || ($special == 0)))
+                                        @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
                                             <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
@@ -679,22 +634,8 @@
             //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
                                                     // goog
 //                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
-                                                    $old_target = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
-                                                    $old_target = count($old_target) > 0 ? $old_target[0] : 0;
-
-                                                    $month_num = "month".$target_counter2;
-                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
-                                                    $new_result = count($new_result) > 0 ? $new_result[0]->$month_num : 0;
-//                                                    dd($new_result);
-//                                                    dd($old_target->target);
+                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
                                                     // good
-//                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
-                                                    // end of good
-                                                    // good
-//                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
-                                                    // end of good
-
-                                                    $old_diff_value = floatval($new_result) == 0 ? 0 : round(((($old_target? $old_target->target : 0)/ floatval($new_result))*100)-100);
 //                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
 //                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
             //                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
@@ -715,7 +656,7 @@
                                                 {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
 {{--                                                good --}}
 {{--                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">--}}
-                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ ($new_result == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
+                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
                                                 {{--                                    @endif--}}
                                                 {{--                                <span id="x" class="w-full">--}}
 
@@ -932,19 +873,13 @@
                                         @endif
                                     </th>
                                         <?php $month_counter = 1; ?>
-
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
 
                                                     <?php
-//                                                    $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
-//                                                    $new_result = $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first();
-//                                                    $new_result = \Illuminate\Support\Facades\DB::select("select". $month_num ." from `sales` inner join `products` on `sales`.`ProductCode` = `products`.`product_code` where `year` = ? and products.VendorNo is not null and sales.Department IN (3,7) and products.SpecialityCode IN (0,1,2) and ProductCode is not null")
+                                                    $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
                                                     $month_num = "month".$month_counter;
-                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept ."' AND `year` = '". intval($year_key)-1 ."'");
-                                                    $new_result = count($new_result) > 0 ? $new_result[0] : 0;
-
                                                     ?>
                                                 <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
                                                     <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
@@ -992,11 +927,7 @@
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
 
                                                     <?php
-//                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
-                                                    $new_result = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept ."' LIMIT 1"));
-                                                    $new_result = count($new_result) > 0 ? $new_result[0] : 0;
-//                                                    dd($new_result->target);
-//                                                    dd($new_result[0]->target);
+                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
                                                     ?>
                                                 <div class="text-sm">
                                                     {{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}
@@ -1255,7 +1186,6 @@
                     </tr>
                         <?php $total_dept_sum_s = 0; ?>
                         <?php $total_dept_sum_f = 0; ?>
-                        <?php $depts =  $dept_id ?>
                     @foreach($depts as $dept)
                         <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
@@ -1349,6 +1279,7 @@
 
             $(`[id ^='total-val-col--']`).each(function () {
                 total_val = total_val + parseFloat($(this).text() ? $(this).text().replace(/,/g, "") : 0);
+                console.log('total-col:'+$(this).text());
             });
 
             total_diff = ((total_val/historical_sales)*100)-100;
@@ -1389,6 +1320,7 @@
                     $(".department").removeClass("hide");
                 }
             });
+            console.log($('.emps_percentage'));
 
             employee_code = [];
 
@@ -1399,6 +1331,7 @@
 
             $("[id^='vendor--']").on('change', function () {
 
+                console.log($(this).attr('id'));
                 txt = $(this).attr('id');
                 txt = txt.split("--");
                 vendor_id = txt[1];
@@ -1409,15 +1342,18 @@
                 else {
                     $(`[id ^='item--'][id $='--${vendor_id}']`).prop('checked', false);
                 }
+                console.log(this.checked);
             });
 
 
 
             $('.emps_percentage').on('keyup', function () {
+                console.log('coco');
                 var total = 0;
                 $(".emps_percentage").each(function () {
 
                     if ((total + parseFloat($(this).val())) > 100) {
+                        console.log('dude');
                         $(this).val(0);
                     }
 
@@ -1427,10 +1363,10 @@
                 $(".emps_percentage_readonly").text(100-total);
             });
 
+            console.log(employee_code);
+
             $('.total-target').on('focusout change', function () {
                 var txt = $(this).attr('id');
-                // add changed class
-                $(this).addClass('changed');
                 txt = txt.split("--");
                 product_id = txt[1];
                 month = txt[2];
@@ -1466,24 +1402,28 @@
                             max_percent_emp = element;
                         }
                     }
+
+                    console.log(percent);
+                    console.log("teeest#target--"+txt+"--"+element);
                     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                    $("#target--"+txt+"--"+element).addClass('changed');
                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                     total_count = 0;
                     $(`[id ^='target--${product_id}--'][id $='--${element}']`).each(function () {
                         total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                        console.log('total-emp:'+ "#total-emp--"+product_id+"--"+element);
                         $("#total-emp--"+product_id+"--"+element).text(total_count);
                         total_val_price = parseFloat(total_count)*parseFloat($(item_price_txt).text().replace(/,/g, ""));
                         $("#total-emp-val--"+product_id+"--"+element).text(total_val_price.toLocaleString());
                     });
+
+                    console.log(element);
                 });
 
                 // recalculate total target again
                 total_target = 0;
                 $(`[id ^='target--${product_id}--${month}--']`).each(function () {
                     total_target = total_target + parseFloat($(this).val() ? $(this).val() : 0);
-                    $(this).addClass('changed');
                 });
 
                 $(`[id ^='totaltarget--${product_id}--${month}--']`).val(total_target);
@@ -1497,11 +1437,15 @@
             });
 
             $('.target').on('focusin', function(){
+                console.log("old value " + $(this).val() == "" ? 0 : $(this).val());
                 $(this).data('val', $(this).val());
             });
 
             $('.target').on('focusout', function () {
-                $(this).addClass('changed');
+                console.log('kaka');
+                console.log($(this).val());
+                console.log($(this).attr('id'));
+                console.log(employee_code);
 
                 var txt = $(this).attr('id');
                 txt_original = txt.split("--");
@@ -1514,26 +1458,32 @@
                 total_all_emp_val = "#total-emp-val--"+product_id+"--";
                 total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
                 old_qty = $(this).data('val') == ""? 0 : parseFloat($(this).data('val'));
+                console.log('old qty:'+ old_qty);
+
+                console.log(txt);
+                console.log(totaltarget_txt);
 
                 total = 0;
 
                 employee_code.forEach(function (element, idx, array) {
                     total += $("#"+txt+"--"+element).val() ? parseInt($("#"+txt+"--"+element).val()) : 0;
+                    console.log("tar:" + $("#"+txt+"--"+element).val());
+                    console.log('total:'+ total);
+
                 });
                 $(totaltarget_txt).val(total);
-                $(totaltarget_txt).addClass('changed');
-
 
                 var sales = $(sales_txt).text();
-
+                console.log(sales_txt);
+                console.log('sales: ' + sales);
                 $(diff_txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(total)/parseFloat(sales))*100)).change();
 
                 total_count = 0;
-
+                console.log('holllllllla');
                 $(`[id ^='target--${product_id}--'][id $='--${txt_original[4]}']`).each(function () {
                     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                    console.log('total-emp:'+ "#total-emp--"+product_id+"--"+txt_original[4]);
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
-                    // $(this).addClass('changed');
                 });
 
                 var total_emp_val_count= 0;
@@ -1541,16 +1491,23 @@
                 $(total_emp_val).text(total_count*$(item_price_txt).text());
 
                 $(`[id ^='total-emp-val--${product_id}--']`).each(function () {
+                    console.log("------val:"+$(this).text().replace(/,/g, ""));
+                    console.log("------product:"+product_id);
 
                     total_emp_val_count = total_emp_val_count + parseFloat($(this).text().replace(/,/g, "") ? $(this).text().replace(/,/g, "") : 0);
                 });
 
+                console.log("-----------target----------");
+                console.log("total_emp_val_count:"+total_emp_val_count);
+                console.log("'#total-sales-emp--'+product_id:"+$('#total-sales-emp--'+product_id).text());
+                console.log(Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")) == 0 ? "*" : Math.round((parseFloat(total_emp_val_count)/parseFloat($('#total-sales-emp--'+product_id).text().replace(/,/g, "")))*100)-100);
 
 
                 total_count = 0;
                 $(`[id ^='totaltarget--${product_id}--']`).each(function () {
                     total_count = total_count + parseFloat($(this).val() ? $(this).val() : 0);
+                    console.log('total-col:'+ "#total-col--"+product_id);
                     $("#total-col--"+product_id).text(total_count);
                 });
 
@@ -1603,6 +1560,7 @@
                     $("#total-emp--"+product_id+"--"+txt_original[4]).text(total_count);
                 });
 
+                console.log("KK#total-diff-emp--"+product_id);
                 $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-emp--'+product_id+'--'+txt_original[4]).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
             });
 
@@ -1618,24 +1576,29 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         if($('.emps_percentage').val()) {
+                            console.log($(this).attr('id'));
                             btn_id = $(this).attr('id');
                             btn_id = btn_id.split('--');
                             selector_txt = 'totaltarget--'+ btn_id[1];
 
+                            console.log(selector_txt);
                             const elements = document.querySelectorAll(".total-target");
+                            console.log(elements);
 
                             elements.forEach(element =>{
                                 if (element.value) {
 
                                     // recalculating indiviuals based on the percentage
                                     var txt = element.id;
-                                    $("#"+txt).addClass('changed');
                                     txt = txt.split("--");
                                     product_id = txt[1];
                                     txt= txt[1]+"--"+txt[2]+"--"+txt[3];
+                                    console.log(txt);
                                     var target_entered = element.value;
 
                                     var sales = $("#sales--"+txt).text();
+                                    console.log("#sales--"+txt);
+                                    console.log('sales: ' + sales);
                                     // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
                                     $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
 
@@ -1661,7 +1624,6 @@
                                         }
 
                                         $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                        $("#target--"+txt+"--"+element).addClass('changed');
 
                                         target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
@@ -1709,26 +1671,30 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         if($('.emps_percentage').val()) {
+                            console.log($(this).attr('id'));
                             btn_id = $(this).attr('id');
                             btn_id = btn_id.split('--');
                             selector_txt = 'totaltarget--'+ btn_id[1];
 
+                            console.log(selector_txt);
                             const elements = document.querySelectorAll(".total-target:not(.special-item)");
+                            console.log(elements);
 
                             elements.forEach(element =>{
                                 if (element.value) {
 
                                     // recalculating indiviuals based on the percentage
                                     var txt = element.id;
-                                    $("#"+txt).addClass('changed');
-
                                     txt = txt.split("--");
                                     product_id = txt[1];
                                     txt= txt[1]+"--"+txt[2]+"--"+txt[3];
                                     // total_emp_val = "#total-emp-val--"+product_id+"--"+txt_original[4];
+                                    console.log(txt);
                                     var target_entered = element.value;
 
                                     var sales = $("#sales--"+txt).text();
+                                    console.log("#sales--"+txt);
+                                    console.log('sales: ' + sales);
                                     // $("#diff--"+txt).text(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100));
                                     $("#diff--"+txt).val(parseFloat(sales) == 0 ? "*" : Math.round((parseFloat(target_entered)/parseFloat(sales))*100)-100);
 
@@ -1753,9 +1719,9 @@
                                             }
                                         }
 
+                                        console.log(percent);
+                                        console.log("#target--"+txt+"--"+element);
                                         $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                        $("#target--"+txt+"--"+element).addClass('changed');
-
                                         target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
                                         total_count = 0;
@@ -1800,11 +1766,13 @@
                     cancelButtonText: "إلغاء",
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        console.log($(this).attr('id'));
                         btn_id = $(this).attr('id');
                         btn_id = btn_id.split('--');
                         selector_txt = 'totaltarget--'+ btn_id[1];
                         product_id = btn_id[1];
                         item_price_txt = "#item-price-"+product_id;
+                        console.log(selector_txt);
                         historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
                         const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
@@ -1816,11 +1784,10 @@
 
                                 // recalculating indiviuals based on the percentage
                                 var txt = element.id;
-                                $("#"+txt).addClass('changed');
-
                                 txt = txt.split("--");
                                 var month_txt = txt[2];
                                 txt= txt[1]+"--"+txt[2]+"--"+txt[3];
+                                console.log(txt);
                                 var target_entered = element.value;
 
                                 var sales = $("#sales--"+txt).text();
@@ -1849,7 +1816,6 @@
 
                                     // good
                                     $("#target--"+txt+"--"+element).val(Math.round(parseFloat(target_entered)*(percent/100)));
-                                    $("#target--"+txt+"--"+element).addClass('changed');
 
                                     target_total += Math.round(parseFloat(target_entered)*(percent/100));
 
@@ -1869,6 +1835,7 @@
 
                                 //     end of recalculating indiviuals
                             }
+
 
                         });
 
@@ -1897,10 +1864,10 @@
                 emps_percents = [];
                 products_codes = [];
 
-                const elements = document.querySelectorAll("input[id^='target--'][class*='changed']");
-                const totaltarget_element = document.querySelectorAll("input[id^='totaltarget--'][class*='changed']");
+                const elements = document.querySelectorAll("input[id^='target--']");
+                const totaltarget_element = document.querySelectorAll("input[id^='totaltarget--']");
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
-                const item_elements = document.querySelectorAll("input[id^='item--']:checked");
+                const item_elements = document.querySelectorAll("input[id^='item--']");
 
                 elements.forEach(element =>{
                     if (element.value) {
@@ -1937,9 +1904,9 @@
                     products_codes.push(code.id + "|" + code.checked);
                 });
 
-
                 // Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
                 // window.livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
+                console.log('hello');
                 @this.test(targets, emps_percents, products_codes, totaltargets);
 
             });
@@ -1963,6 +1930,8 @@
                 const elements = document.querySelectorAll("input[id^='emptarget--']");
                 const percent_elements = document.querySelectorAll("*[class^='emps_percentage']");
                 const item_elements = document.querySelectorAll("input[id^='item--']");
+                console.log("============================");
+                console.log(item_elements);
                 // const elements = $("input[id^='target--']");
                 elements.forEach(element =>{
                     if (element.value) {
@@ -2044,7 +2013,11 @@
                     },
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        console.log(result.value);
+
                         const elements = document.querySelectorAll(`input:not([disabled])[id^='totaltarget--${product_code}']`);
+
+                        console.log(elements);
 
                         elements.forEach(element =>{
                             // if (element.value) {
@@ -2303,15 +2276,21 @@
         var amountScrolledNav = 25;
 
         $("div").scroll(function() {
+            // console.log('hiii');
+            // console.log($(window).scrollTop());
             const element = document.getElementById("content");
+            // console.log($(this).scrollTop());
             if ( $(this).scrollTop() > amountScrolled ) {
                 $('button.back-to-top').addClass('show');
+                // console.log('dododo');
             } else {
                 $('button.back-to-top').removeClass('show');
+                // console.log('xexexexe');
             }
         });
 
         $('button.back-to-top').click(function() {
+            console.log('hello');
             $('div').animate({
                 scrollTop: 0
             }, 800);
