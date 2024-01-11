@@ -260,15 +260,21 @@
                                     <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['name'] : null}}</td>
                                     <td style="border: 2px solid black; z-index: 10" class="border">
                                         <div class="w-full">
+                                            @php
+                                                $percent = (\Illuminate\Support\Facades\DB::select("SELECT emp_percentage FROM product_target_emp_percents, users WHERE product_target_emp_percents.user_id = users.id AND users.emp_code = '". $emp_code ."' LIMIT 1"));
+                                                $percent = count($percent) > 0 ? $percent[0]->emp_percentage : 0;
+                                            @endphp
                                             @if($key === array_key_last($branch_emps))
                                                 <div wire:ignore id="emp--{{$emp_code}}--readonly"
                                                      class="emps_percentage_readonly block text-gray-900 w-full text-center"
                                                      style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
-                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}
+                                                    {{ $percent }}
+{{--                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}--}}
                                                 </div>
                                             @else
-                                                <input id="emp--{{$emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
-                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"
+                                                <input wire:ignore id="emp--{{$emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
+                                                       value="{{ $percent }}"
+{{--                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"--}}
                                                        class="emps_percentage block text-gray-900 w-full text-center"
                                                        style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
                                             @endif
@@ -608,15 +614,18 @@
                                     @php $target_counter =1; @endphp
                                     <?php
 //                                        dd($record);
-                                        $month_num = "month".$target_counter;
-                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
-//                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '170224' AND `Department` = '10' AND `year` = '2023'");
-                                        $new_result = $new_result ? $new_result[0]->$month_num : 0;
+
 //                                        dd($new_result);
 //                                        $record['month'.$target_counter]
                                     ?>
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month_key => $month)
+                                            @php
+                                                $month_num = "month".$target_counter;
+                                                $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
+        //                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '170224' AND `Department` = '10' AND `year` = '2023'");
+                                                $new_result = $new_result ? $new_result[0]->$month_num : 0;
+                                            @endphp
                                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                                 <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($new_result, 0, '', '') }}</div>
                                                 @php array_push($sales, $new_result); @endphp
@@ -2068,6 +2077,7 @@
 
         Livewire.on('msg', value => {
            // sendNotification('success', 'تم حفظ البيانات بنجاح!');
+            swal.close();
             Swal.fire({
                 title: "تم إضافة المستهدف بنجاح",
                 icon: "success",
