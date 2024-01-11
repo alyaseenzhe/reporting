@@ -251,7 +251,7 @@ class CreateProductTarget extends Component
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')
                 ->where('branches', 'like', '%"'.$branch.'"%')
                 ->whereIn('write_product_target', ['1', '2'])
-                ->select('users.id')
+                ->select('users.id', 'users.emp_code')
                 ->get();
 
             $dept_code = "";
@@ -298,7 +298,8 @@ class CreateProductTarget extends Component
 
 
             foreach ($emps as $emp) {
-                array_push($this->employee_ids_in_my_branch, $emp->id);
+//                array_push($this->employee_ids_in_my_branch, $emp->id);
+                $this->employee_ids_in_my_branch[$emp->emp_code] = $emp->id;
                 if (!array_key_exists($dept_code, $this->employee_branch_names)) {
 //                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
                     $this->employee_branch_names[$dept_code] = [$emp->id];
@@ -349,7 +350,8 @@ class CreateProductTarget extends Component
                 ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw("(write_product_target = '1' or write_product_target = '2')")
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
@@ -374,7 +376,8 @@ class CreateProductTarget extends Component
                 ->whereNotNull('group')
                 ->where('role', 'u')
                 ->where('users.id', Auth::id())
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw("(write_product_target = '1' or write_product_target = '2')")
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
@@ -420,11 +423,11 @@ class CreateProductTarget extends Component
 //                        and (Taget <> 0 or Revision <> 0)
 //                        order by Date desc";
 
-            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-                ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
-                ->whereRaw("branch = ". $this->dept_id[0])
-                ->select('product_id', 'month', 'year', 'branch', 'target')
-                ->get();
+//            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+//                ->whereRaw("((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))")
+//                ->whereRaw("branch = ". $this->dept_id[0])
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+//                ->get();
 
 //            dd($this->old_targets);
 
@@ -451,11 +454,11 @@ class CreateProductTarget extends Component
 //                        order by Date desc";
 //            dd($stmt);
 
-            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
-                ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
-                ->whereRaw("branch = ". $this->dept_id[0])
-                ->select('product_id', 'month', 'year', 'branch', 'target')
-                ->get();
+//            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+//                ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                ->whereRaw("branch = ". $this->dept_id[0])
+//                ->select('product_id', 'month', 'year', 'branch', 'target')
+//                ->get();
 
 //            $query = DB::connection('sqlsrv')->select($stmt);
 //
@@ -467,9 +470,9 @@ class CreateProductTarget extends Component
         // End of getting old data from Scribe
 
         // target data from reporting
-        $this->current_target = ProductTarget::where('user_id', Auth::id())
-            ->where('branch', $this->dept_id[0])
-            ->get();
+//        $this->current_target = ProductTarget::where('user_id', Auth::id())
+//            ->where('branch', $this->dept_id[0])
+//            ->get();
 
 //        $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
 ////            ->where('branch', $this->dept_id[0])
@@ -525,130 +528,218 @@ class CreateProductTarget extends Component
         $month_counter = 1;
 
         /* Query Statement */
-        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
-            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
-            SELECT ProductNo";
+//        $month_stmt = "SELECT ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductCode, ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, LeadTime, WholeSale, MaxDiscount, Retail FROM (
+//            SELECT ProductMast.NodeNo as ProductNo, month1, month2, month3, month4, month5, month6, month7, month8, month9, month10, month11, month12, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, LeadTime, WholeSale, MaxDiscount, Retail  FROM (
+//            SELECT ProductNo";
 
 
-        foreach ($this->list as $year_key => $year) {
+//        foreach ($this->list as $year_key => $year) {
+//
+//            foreach ($year as $month) {
+//                $first_date = Carbon::parse($year_key . '-' . $month . '-01')->format('Y-m-d');
+//                $end_date = Carbon::parse($year_key . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
+//                $month_stmt .= ", SUM(case when voucher_date >= '" . $first_date . " 00:00:00' and voucher_date <= '" . $end_date . " 23:59:59' then svalue else 0 end) as 'month" . $month_counter . "'";
+//
+//                $month_counter++;
+//            }
+//        }
 
-            foreach ($year as $month) {
-                $first_date = Carbon::parse($year_key . '-' . $month . '-01')->format('Y-m-d');
-                $end_date = Carbon::parse($year_key . '-' . $month . '-01')->endOfMonth()->format('Y-m-d');
-                $month_stmt .= ", SUM(case when voucher_date >= '" . $first_date . " 00:00:00' and voucher_date <= '" . $end_date . " 23:59:59' then svalue else 0 end) as 'month" . $month_counter . "'";
-
-                $month_counter++;
-            }
-        }
-
-        $current_dept_id = $this->dept_id[0];
-
-        if ($current_dept_id == "3") {
-            $current_dept_id = "3 , 509";
-        }
-        elseif ($current_dept_id == "10") {
-            $current_dept_id = "10, 510";
-        }
-        elseif ($current_dept_id == "12") {
-            $current_dept_id = "12, 515";
-        }
+//        $current_dept_id = $this->dept_id[0];
+//
+//        if ($current_dept_id == "3") {
+//            $current_dept_id = "3 , 509";
+//        }
+//        elseif ($current_dept_id == "10") {
+//            $current_dept_id = "10, 510";
+//        }
+//        elseif ($current_dept_id == "12") {
+//            $current_dept_id = "12, 515";
+//        }
 
         // cat_type
+//        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
+//        $asmedah = "ProductCode like '17%' ";
+//        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
+//        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
+//
+//        $cat_stmt = "AND (";
+//        foreach ($this->cat_type as $key => $cat) {
+//            if ($key === array_key_first($this->cat_type)) {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= $bathoor;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= $asmedah;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= $mobedat;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= $other;
+//                }
+//            }
+//            elseif ($key === array_key_last($this->cat_type)) {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= ' or '.$bathoor;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= ' or '.$asmedah;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= ' or '.$mobedat;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= 'or '.$other;
+//                }
+//            }
+//            else {
+//                if ($cat == 'bathoor') {
+//                    $cat_stmt .= " or " . $bathoor;
+//                }
+//                elseif ($cat == 'asmedah') {
+//                    $cat_stmt .= " or " . $asmedah;
+//                }
+//                elseif ($cat == 'mobedat') {
+//                    $cat_stmt .= " or " . $mobedat;
+//                }
+//                elseif ($cat == 'other') {
+//                    $cat_stmt .= " or " . $other;
+//                }
+//            }
+//        }
+
+//        $cat_stmt .= ") ";
+
         $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
         $asmedah = "ProductCode like '17%' ";
         $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
         $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
 
-        $cat_stmt = "AND (";
+        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
+        $asmedah2 = "product_code like '17%' ";
+        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
+        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
+
+//        $cat_stmt = "AND (";
+        $cat_stmt = "(";
+        $cat_stmt2 = "(";
         foreach ($this->cat_type as $key => $cat) {
             if ($key === array_key_first($this->cat_type)) {
                 if ($cat == 'bathoor') {
                     $cat_stmt .= $bathoor;
+                    $cat_stmt2 .= $bathoor2;
                 }
                 elseif ($cat == 'asmedah') {
                     $cat_stmt .= $asmedah;
+                    $cat_stmt2 .= $asmedah2;
                 }
                 elseif ($cat == 'mobedat') {
                     $cat_stmt .= $mobedat;
+                    $cat_stmt2 .= $mobedat2;
                 }
                 elseif ($cat == 'other') {
                     $cat_stmt .= $other;
+                    $cat_stmt2 .= $other2;
                 }
             }
             elseif ($key === array_key_last($this->cat_type)) {
                 if ($cat == 'bathoor') {
                     $cat_stmt .= ' or '.$bathoor;
+                    $cat_stmt2 .= ' or '.$bathoor2;
                 }
                 elseif ($cat == 'asmedah') {
                     $cat_stmt .= ' or '.$asmedah;
+                    $cat_stmt2 .= ' or '.$asmedah2;
                 }
                 elseif ($cat == 'mobedat') {
                     $cat_stmt .= ' or '.$mobedat;
+                    $cat_stmt2 .= ' or '.$mobedat2;
                 }
                 elseif ($cat == 'other') {
                     $cat_stmt .= 'or '.$other;
+                    $cat_stmt2 .= 'or '.$other2;
                 }
             }
             else {
                 if ($cat == 'bathoor') {
                     $cat_stmt .= " or " . $bathoor;
+                    $cat_stmt2 .= " or " . $bathoor2;
                 }
                 elseif ($cat == 'asmedah') {
                     $cat_stmt .= " or " . $asmedah;
+                    $cat_stmt2 .= " or " . $asmedah2;
                 }
                 elseif ($cat == 'mobedat') {
                     $cat_stmt .= " or " . $mobedat;
+                    $cat_stmt2 .= " or " . $mobedat2;
                 }
                 elseif ($cat == 'other') {
                     $cat_stmt .= " or " . $other;
+                    $cat_stmt2 .= " or " . $other2;
                 }
             }
         }
 
         $cat_stmt .= ") ";
+        $cat_stmt2 .= ") ";
         // end of cat_type
 
-        $month_stmt .= " FROM (
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[SInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-            union all
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[PInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-            ) as tbl
-            group by ProductNo) as tbl2
-            RIGHT JOIN ProductMast
-            on tbl2.ProductNo = ProductMast.NodeNo
-            WHERE ProductMast.Pricelist = 1) as tbl3
-            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-            WHERE ProductCode is not null ";
-        if (in_array('sp_all', $this->sp_type) == false) {
-            $month_stmt .= "AND SpecialityCode in (". implode(',', $this->sp_type).") ";
-        }
-        if ($this->vendor_type != 'vendor_all') {
-            $month_stmt .= "AND VendorNo = '". $this->vendor_type ."' ";
-        }
-        if (in_array('cat_all', $this->cat_type) == false) {
-            $month_stmt .= $cat_stmt;
-        }
-        $month_stmt .= " ORDER BY VendorNo";
+//        $month_stmt .= " FROM (
+//            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
+//              FROM [AccountsC5].[dbo].[SInvoice], accmast
+//            where partyno=nodeno and accmast.[type]=10
+//            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
+//            and Department in (" . $current_dept_id .
+//            ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
+//            union all
+//            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
+//              FROM [AccountsC5].[dbo].[PInvoice], accmast
+//            where partyno=nodeno and accmast.[type]=10
+//            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
+//            and Department in (" . $current_dept_id .
+//            ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
+//            ) as tbl
+//            group by ProductNo) as tbl2
+//            RIGHT JOIN ProductMast
+//            on tbl2.ProductNo = ProductMast.NodeNo
+//            WHERE ProductMast.Pricelist = 1) as tbl3
+//            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
+//            WHERE ProductCode is not null ";
+//        if (in_array('sp_all', $this->sp_type) == false) {
+//            $month_stmt .= "AND SpecialityCode in (". implode(',', $this->sp_type).") ";
+//        }
+//        if ($this->vendor_type != 'vendor_all') {
+//            $month_stmt .= "AND VendorNo = '". $this->vendor_type ."' ";
+//        }
+//        if (in_array('cat_all', $this->cat_type) == false) {
+//            $month_stmt .= $cat_stmt;
+//        }
+//        $month_stmt .= " ORDER BY VendorNo";
+//
+////        dd($month_stmt);
+//
+//        $query = DB::connection('sqlsrv')->select($month_stmt);
+//
+//        $fetch_query = json_decode(json_encode($query), true);
+//
+//        array_push($this->results, $fetch_query);
+//
+//        $this->historicalThreeYearsSales();
 
-//        dd($month_stmt);
-
-        $query = DB::connection('sqlsrv')->select($month_stmt);
-
-        $fetch_query = json_decode(json_encode($query), true);
-
-        array_push($this->results, $fetch_query);
-
-        $this->historicalThreeYearsSales();
+        $sp_txt = in_array('sp_all', $this->sp_type) ?  ('products.SpecialityCode IN (0,1,2)') : ('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')');
+        $cat_txt1 = in_array('cat_all', $this->cat_type) ?  ('ProductCode is not null') : $cat_stmt;
+        $cat_txt2 = in_array('cat_all', $this->cat_type) ?  ('product_code is not null') : $cat_stmt2;
+        $this->results = Products::where('Pricelist', '1')
+//            ->where('products.VendorNo', $this->vendor_type)
+            ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+//            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+            ->whereRaw($sp_txt)
+//            ->whereIn('products.SpecialityCode', $this->sp_type)
+//            ->whereRaw($cat_stmt2)
+            ->whereRaw($cat_txt2)
+            ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
+//            ->toSql();
+            ->get()->toArray();
 
         // get the current targets
         $current_start_selected_month = Carbon::parse($this->selected_month)->format('Y-m-d');
@@ -661,41 +752,42 @@ class CreateProductTarget extends Component
 
 
         $this->current_target_to_edit = [];
-        if (count($this->current_year_list) == 1) {
-//            $this->current_target_to_edit = ProductTarget::where('user_id', Auth::id())
-            $this->current_target_to_edit = ProductTarget::where('branch', $this->dept_id)
-                ->where(function ($query) {
-                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
-                        ->where('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->user_ids)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
-                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
-                })
-                ->get();
-        }
-        elseif (count($this->current_year_list) > 1) {
-            $this->current_target_to_edit = ProductTarget::where('branch', $this->dept_id)
-                ->where(function ($query) {
-                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
-                        ->where('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->user_ids)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
-                    ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
-                })
-                ->orWhere(function ($query) {
-                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
-                        ->where('branch', $this->dept_id)
-                        ->whereIn('user_id', $this->user_ids)
-//                        ->where('user_id', Auth::id())
-//                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
-//                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
-                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
-                })
-                ->get();
-        }
+//        if (count($this->current_year_list) == 1) {
+////            $this->current_target_to_edit = ProductTarget::where('user_id', Auth::id())
+//            $this->current_target_to_edit = ProductTarget::where('branch', $this->dept_id)
+//                ->where(function ($query) {
+//                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+//                        ->where('branch', $this->dept_id)
+//                        ->whereIn('user_id', $this->user_ids)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+//                        ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+//                })
+//                ->get();
+//        }
+//        elseif (count($this->current_year_list) > 1) {
+//            $this->current_target_to_edit = ProductTarget::where('branch', $this->dept_id)
+//                ->where(function ($query) {
+//                    $query->where('year' ,$this->current_start_selected_month_exploded[0])
+//                        ->where('branch', $this->dept_id)
+//                        ->whereIn('user_id', $this->user_ids)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '>=', $this->current_start_selected_month_exploded[1]);
+//                    ->whereIn('month', array_values($this->current_year_list[array_key_first($this->current_year_list)]));
+//                })
+//                ->orWhere(function ($query) {
+//                    $query->where('year' ,$this->current_end_selected_month_exploded[0])
+//                        ->where('branch', $this->dept_id)
+//                        ->whereIn('user_id', $this->user_ids)
+////                        ->where('user_id', Auth::id())
+////                        ->where('month', '<=', $this->current_end_selected_month_exploded[1]);
+////                    ->whereIn('month', array_values($this->list[$this->keys[0]]));
+//                        ->whereIn('month', array_values($this->current_year_list[array_key_last($this->current_year_list)]));
+//                })
+//                ->get();
+//        }
 
+//        dd($this->results);
         $this->show_msg = true;
         $this->emit('finished');
 
@@ -703,22 +795,6 @@ class CreateProductTarget extends Component
 
     public function generateBranchesReport()
     {
-//        $col1 = collect([[
-//            'id' => '1',
-//            'name' => 'Basil',
-//        ],
-//            [
-//                'id' => '2',
-//                'name' => 'Campoha',
-//            ]
-//        ]);
-//
-//        $col2 = collect([
-//            ['id' => '1', 'sale' => 550]
-//        ]);
-////        dd(array_merge($col1, $col2));
-//        dd($col1->merge($col2));
-
 
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -1113,78 +1189,78 @@ class CreateProductTarget extends Component
 
         //// gooooooooood
         // cat_type
-//        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
-//        $asmedah = "ProductCode like '17%' ";
-//        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
-//        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
-//
-//        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
-//        $asmedah2 = "product_code like '17%' ";
-//        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
-//        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
-//
-////        $cat_stmt = "AND (";
-//        $cat_stmt = "(";
-//        $cat_stmt2 = "(";
-//        foreach ($this->cat_type as $key => $cat) {
-//            if ($key === array_key_first($this->cat_type)) {
-//                if ($cat == 'bathoor') {
-//                    $cat_stmt .= $bathoor;
-//                    $cat_stmt2 .= $bathoor2;
-//                }
-//                elseif ($cat == 'asmedah') {
-//                    $cat_stmt .= $asmedah;
-//                    $cat_stmt2 .= $asmedah2;
-//                }
-//                elseif ($cat == 'mobedat') {
-//                    $cat_stmt .= $mobedat;
-//                    $cat_stmt2 .= $mobedat2;
-//                }
-//                elseif ($cat == 'other') {
-//                    $cat_stmt .= $other;
-//                    $cat_stmt2 .= $other2;
-//                }
-//            }
-//            elseif ($key === array_key_last($this->cat_type)) {
-//                if ($cat == 'bathoor') {
-//                    $cat_stmt .= ' or '.$bathoor;
-//                    $cat_stmt2 .= ' or '.$bathoor2;
-//                }
-//                elseif ($cat == 'asmedah') {
-//                    $cat_stmt .= ' or '.$asmedah;
-//                    $cat_stmt2 .= ' or '.$asmedah2;
-//                }
-//                elseif ($cat == 'mobedat') {
-//                    $cat_stmt .= ' or '.$mobedat;
-//                    $cat_stmt2 .= ' or '.$mobedat2;
-//                }
-//                elseif ($cat == 'other') {
-//                    $cat_stmt .= 'or '.$other;
-//                    $cat_stmt2 .= 'or '.$other2;
-//                }
-//            }
-//            else {
-//                if ($cat == 'bathoor') {
-//                    $cat_stmt .= " or " . $bathoor;
-//                    $cat_stmt2 .= " or " . $bathoor2;
-//                }
-//                elseif ($cat == 'asmedah') {
-//                    $cat_stmt .= " or " . $asmedah;
-//                    $cat_stmt2 .= " or " . $asmedah2;
-//                }
-//                elseif ($cat == 'mobedat') {
-//                    $cat_stmt .= " or " . $mobedat;
-//                    $cat_stmt2 .= " or " . $mobedat2;
-//                }
-//                elseif ($cat == 'other') {
-//                    $cat_stmt .= " or " . $other;
-//                    $cat_stmt2 .= " or " . $other2;
-//                }
-//            }
-//        }
-//
-//        $cat_stmt .= ") ";
-//        $cat_stmt2 .= ") ";
+        $bathoor = "ProductCode like '20%' or ProductCode like '21%' or ProductCode like '22%' ";
+        $asmedah = "ProductCode like '17%' ";
+        $mobedat = "ProductCode like '10%' or ProductCode like '11%' or ProductCode like '12%' or ProductCode like '13%' or ProductCode like '14%' or ProductCode like '15%' or ProductCode like '16%' ";
+        $other = "(ProductCode not like '20%' and ProductCode not like '21%' and ProductCode not like '22%' and ProductCode not like '10%' and ProductCode not like '11%' and ProductCode not like '12%' and ProductCode not like '13%' and ProductCode not like '14%' and ProductCode not like '15%' and ProductCode not like '16%' and ProductCode not like '17%') ";
+
+        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
+        $asmedah2 = "product_code like '17%' ";
+        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
+        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
+
+//        $cat_stmt = "AND (";
+        $cat_stmt = "(";
+        $cat_stmt2 = "(";
+        foreach ($this->cat_type as $key => $cat) {
+            if ($key === array_key_first($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= $bathoor;
+                    $cat_stmt2 .= $bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= $asmedah;
+                    $cat_stmt2 .= $asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= $mobedat;
+                    $cat_stmt2 .= $mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= $other;
+                    $cat_stmt2 .= $other2;
+                }
+            }
+            elseif ($key === array_key_last($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= ' or '.$bathoor;
+                    $cat_stmt2 .= ' or '.$bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= ' or '.$asmedah;
+                    $cat_stmt2 .= ' or '.$asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= ' or '.$mobedat;
+                    $cat_stmt2 .= ' or '.$mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= 'or '.$other;
+                    $cat_stmt2 .= 'or '.$other2;
+                }
+            }
+            else {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= " or " . $bathoor;
+                    $cat_stmt2 .= " or " . $bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= " or " . $asmedah;
+                    $cat_stmt2 .= " or " . $asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= " or " . $mobedat;
+                    $cat_stmt2 .= " or " . $mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= " or " . $other;
+                    $cat_stmt2 .= " or " . $other2;
+                }
+            }
+        }
+
+        $cat_stmt .= ") ";
+        $cat_stmt2 .= ") ";
 
         // end of gooooooood
 
@@ -1994,6 +2070,11 @@ class CreateProductTarget extends Component
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 //        dd('test debug');
+        $final_emp_percent_data = [];
+        $final_special_data = [];
+        $final_totaltarget_data = [];
+        $final_targets_data = [];
+
         if ($emps_percents) {
             foreach ($emps_percents as $emp) {
                 $txt = explode('|', $emp);
@@ -2003,28 +2084,34 @@ class CreateProductTarget extends Component
 
                 $emp_code_percent = $details[1];
 
+                array_push($final_emp_percent_data, ['user_id' => $this->employee_ids_in_my_branch[$emp_code_percent], 'emp_percentage' => intval($percent_num), 'branch' => $this->dept_id[0],'added_by' => Auth::id()]);
 
-
-                $user_record = User::where('emp_code', $emp_code_percent)->first();
-                $user = ProductTargetEmpPercent::where('user_id', $user_record->id)->first();
-
-                if ($user) {
-                    $record = ProductTargetEmpPercent::where('user_id', $user_record->id)
-                        ->update([
-                            'emp_percentage' => $percent_num,
-                            'branch' => $this->dept_id[0],
-                            'added_by' => Auth::id()
-                        ]);
-                }
-                else {
-                    $record = ProductTargetEmpPercent::create([
-                            'user_id' => $user_record->id,
-                            'emp_percentage' => $percent_num,
-                            'branch' => $this->dept_id[0],
-                            'added_by' => Auth::id()
-                        ]);
-                }
+//                $user_record = User::where('emp_code', $emp_code_percent)->first();
+//                $user = ProductTargetEmpPercent::where('user_id', $user_record->id)->first();
+//
+//                if ($user) {
+//                    $record = ProductTargetEmpPercent::where('user_id', $user_record->id)
+//                        ->update([
+//                            'emp_percentage' => $percent_num,
+//                            'branch' => $this->dept_id[0],
+//                            'added_by' => Auth::id()
+//                        ]);
+//                }
+//                else {
+//                    $record = ProductTargetEmpPercent::create([
+//                            'user_id' => $user_record->id,
+//                            'emp_percentage' => $percent_num,
+//                            'branch' => $this->dept_id[0],
+//                            'added_by' => Auth::id()
+//                        ]);
+//                }
             }
+
+            ProductTargetEmpPercent::upsert(
+                $final_emp_percent_data,
+                ['user_id', 'branch'],
+                ['emp_percentage']
+            );
         }
 
         if ($products_codes) {
@@ -2038,29 +2125,38 @@ class CreateProductTarget extends Component
 
                 $product_code_val = $details[1];
 
-                $record = SpecialProduct::where('product_id', $product_code_val)->first();
+                array_push($final_special_data, ['product_id' => $product_code_val, 'added_by' => Auth::id()]);
 
-                if ($record) {
-                    if ($product_bool_val == 'true') {
-                        $record = SpecialProduct::where('product_id', $product_code_val)
-                            ->update([
-                                'product_id' => $product_code_val,
-                                'added_by' => Auth::id(),
-                            ]);
-                    }
-                    else {
-                        $record = SpecialProduct::where('product_id', $product_code_val)->delete();
-                    }
-                }
-                else {
-                  if ($product_bool_val == 'true') {
-                      $record = SpecialProduct::create([
-                          'product_id' => $product_code_val,
-                          'added_by' => Auth::id(),
-                      ]);
-                  }
-                }
+//                $record = SpecialProduct::where('product_id', $product_code_val)->first();
+
+//                if ($record) {
+//                    if ($product_bool_val == 'true') {
+//                        $record = SpecialProduct::where('product_id', $product_code_val)
+//                            ->update([
+//                                'product_id' => $product_code_val,
+//                                'added_by' => Auth::id(),
+//                            ]);
+//                    }
+//                    else {
+//                        $record = SpecialProduct::where('product_id', $product_code_val)->delete();
+//                    }
+//                }
+//                else {
+//                  if ($product_bool_val == 'true') {
+//                      $record = SpecialProduct::create([
+//                          'product_id' => $product_code_val,
+//                          'added_by' => Auth::id(),
+//                      ]);
+//                  }
+//                }
             }
+
+            SpecialProduct::upsert(
+                $final_special_data,
+                ['product_id'],
+                ['product_id'],
+            );
+
         }
 
         if ($totaltargets) {
@@ -2075,6 +2171,14 @@ class CreateProductTarget extends Component
                 $target_date = explode('-', $details[2]);
                 $target_year = $target_date[0];
                 $target_month = $target_date[1];
+
+                array_push($final_totaltarget_data, [
+                    'product_id' => $product_code,
+                    'month' => $target_month,
+                    'year' => $target_year,
+                    'branch' => $this->dept_id[0],
+                    'target' => $target_num
+                ]);
 //                $emp_code = $details[4];
 
 //                $user = User::where('emp_code', $emp_code)->first();
@@ -2086,30 +2190,30 @@ class CreateProductTarget extends Component
 //                    ->where('user_id', $user->id)
 //                    ->first();
 
-                $fetch = ProductTargetBranchTotal::where('product_id', $product_code)
-                    ->where('month', $target_month)
-                    ->where('year', $target_year)
-                    ->where('branch', $this->dept_id[0])
-//                    ->where('user_id', $user->id)
-                    ->first();
-
-                if ($fetch) {
-                    $record = ProductTargetBranchTotal::where('product_id', $product_code)
-                        ->where('month', $target_month)
-                        ->where('year', $target_year)
-                        ->where('branch', $this->dept_id[0])
-//                        ->where('user_id', $user->id)
-                        ->update(['target' => $target_num]);
-                } else {
-                    $record = ProductTargetBranchTotal::create([
-                        'product_id' => $product_code,
-                        'month' => $target_month,
-                        'year' => $target_year,
-                        'branch' => $this->dept_id[0],
-//                        'user_id' => $user->id,
-                        'target' => $target_num
-                    ]);
-                }
+//                $fetch = ProductTargetBranchTotal::where('product_id', $product_code)
+//                    ->where('month', $target_month)
+//                    ->where('year', $target_year)
+//                    ->where('branch', $this->dept_id[0])
+////                    ->where('user_id', $user->id)
+//                    ->first();
+//
+//                if ($fetch) {
+//                    $record = ProductTargetBranchTotal::where('product_id', $product_code)
+//                        ->where('month', $target_month)
+//                        ->where('year', $target_year)
+//                        ->where('branch', $this->dept_id[0])
+////                        ->where('user_id', $user->id)
+//                        ->update(['target' => $target_num]);
+//                } else {
+//                    $record = ProductTargetBranchTotal::create([
+//                        'product_id' => $product_code,
+//                        'month' => $target_month,
+//                        'year' => $target_year,
+//                        'branch' => $this->dept_id[0],
+////                        'user_id' => $user->id,
+//                        'target' => $target_num
+//                    ]);
+//                }
 
 //                $record = ProductTargetLog::create([
 //                    'product_id' => $product_code,
@@ -2121,6 +2225,12 @@ class CreateProductTarget extends Component
 //                ]);
 
             }
+
+            ProductTargetBranchTotal::upsert(
+                $final_totaltarget_data,
+                ['product_id', 'month', 'year', 'branch'],
+                ['target'],
+            );
 
 //            $this->emit('msg');
 //            $this->reset('target', 'emps_percentage', 'emp_target');
@@ -2141,32 +2251,41 @@ class CreateProductTarget extends Component
                 $target_month = $target_date[1];
                 $emp_code = $details[4];
 
-                $user = User::where('emp_code', $emp_code)->first();
+                array_push($final_targets_data, [
+                    'product_id' => $product_code,
+                    'month' => intval($target_month),
+                    'year' => intval($target_year),
+                    'branch' => $this->dept_id[0],
+                    'target' => intval($target_num),
+                    'user_id' => $this->employee_ids_in_my_branch[$emp_code]
+                ]);
 
-                $fetch = ProductTarget::where('product_id', $product_code)
-                    ->where('month', $target_month)
-                    ->where('year', $target_year)
-                    ->where('branch', $this->dept_id[0])
-                    ->where('user_id', $user->id)
-                    ->first();
-
-                if ($fetch) {
-                    $record = ProductTarget::where('product_id', $product_code)
-                        ->where('month', $target_month)
-                        ->where('year', $target_year)
-                        ->where('branch', $this->dept_id[0])
-                        ->where('user_id', $user->id)
-                        ->update(['target' => $target_num]);
-                } else {
-                    $record = ProductTarget::create([
-                        'product_id' => $product_code,
-                        'month' => $target_month,
-                        'year' => $target_year,
-                        'branch' => $this->dept_id[0],
-                        'user_id' => $user->id,
-                        'target' => $target_num
-                    ]);
-                }
+//                $user = User::where('emp_code', $emp_code)->first();
+//
+//                $fetch = ProductTarget::where('product_id', $product_code)
+//                    ->where('month', $target_month)
+//                    ->where('year', $target_year)
+//                    ->where('branch', $this->dept_id[0])
+//                    ->where('user_id', $user->id)
+//                    ->first();
+//
+//                if ($fetch) {
+//                    $record = ProductTarget::where('product_id', $product_code)
+//                        ->where('month', $target_month)
+//                        ->where('year', $target_year)
+//                        ->where('branch', $this->dept_id[0])
+//                        ->where('user_id', $user->id)
+//                        ->update(['target' => $target_num]);
+//                } else {
+//                    $record = ProductTarget::create([
+//                        'product_id' => $product_code,
+//                        'month' => $target_month,
+//                        'year' => $target_year,
+//                        'branch' => $this->dept_id[0],
+//                        'user_id' => $user->id,
+//                        'target' => $target_num
+//                    ]);
+//                }
 
 //                $record = ProductTargetLog::create([
 //                    'product_id' => $product_code,
@@ -2178,6 +2297,13 @@ class CreateProductTarget extends Component
 //                ]);
 
             }
+
+//            dd($final_targets_data);
+            ProductTarget::upsert(
+                $final_targets_data,
+                ['product_id', 'month', 'year', 'branch', 'user_id'],
+                ['target'],
+            );
 
             $this->emit('msg');
             $this->reset('target', 'emps_percentage', 'emp_target');
