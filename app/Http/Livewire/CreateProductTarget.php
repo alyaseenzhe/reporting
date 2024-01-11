@@ -1803,76 +1803,76 @@ class CreateProductTarget extends Component
         $this->emit('finished');
     }
 
-    public function processData()
-    {
-        dd($this->emp_target);
-        dd($this->target);
-
-//        $hasTargetSavedForUser = ProductTarget::query()
-//            ->where('', $request->input('date'))
-//            ->where('user_id', $request->input('user_id'))
-//            ->exists();
+//    public function processData()
+//    {
+//        dd($this->emp_target);
+//        dd($this->target);
 //
-//        if ($hasTargetSavedForUser) {
-//            return back()->withErrors([
-//                'date' => 'Expense already saved for this user on this date'
-//            ]);
+////        $hasTargetSavedForUser = ProductTarget::query()
+////            ->where('', $request->input('date'))
+////            ->where('user_id', $request->input('user_id'))
+////            ->exists();
+////
+////        if ($hasTargetSavedForUser) {
+////            return back()->withErrors([
+////                'date' => 'Expense already saved for this user on this date'
+////            ]);
+////        }
+//
+//
+//        if ($this->target) {
+//            foreach ($this->target as $product_key => $target) {
+//                foreach ($target as $monthyear_key => $monthyear) {
+//                    $str = explode('-', $monthyear_key);
+//                    $year = $str[0];
+//                    $month = $str[1];
+//
+//                    foreach ($monthyear as $target) {
+//                        if ($target != "") {
+//                            $fetch = ProductTarget::where('product_id', $product_key)
+//                                ->where('month', $month)
+//                                ->where('year', $year)
+//                                ->where('branch', $this->dept_id)
+//                                ->where('user_id', Auth::id())
+//                                ->first();
+//
+//                            if ($fetch) {
+//                                $record = ProductTarget::where('product_id', $product_key)
+//                                    ->where('month', $month)
+//                                    ->where('year', $year)
+//                                    ->where('branch', $this->dept_id)
+//                                    ->where('user_id', Auth::id())
+//                                    ->update(['target' => $target]);
+//                            } else {
+//                                $record = ProductTarget::create([
+//                                    'product_id' => $product_key,
+//                                    'month' => $month,
+//                                    'year' => $year,
+//                                    'branch' => $this->dept_id,
+//                                    'user_id' => Auth::id(),
+//                                    'target' => $target
+//                                ]);
+//                            }
+//
+//                            $record = ProductTargetLog::create([
+//                                'product_id' => $product_key,
+//                                'month' => $month,
+//                                'year' => $year,
+//                                'branch' => $this->dept_id,
+//                                'user_id' => Auth::id(),
+//                                'target' => $target
+//                            ]);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            $this->emit('msg');
+//            $this->reset('target');
+////            $this->generateReport();
 //        }
-
-
-        if ($this->target) {
-            foreach ($this->target as $product_key => $target) {
-                foreach ($target as $monthyear_key => $monthyear) {
-                    $str = explode('-', $monthyear_key);
-                    $year = $str[0];
-                    $month = $str[1];
-
-                    foreach ($monthyear as $target) {
-                        if ($target != "") {
-                            $fetch = ProductTarget::where('product_id', $product_key)
-                                ->where('month', $month)
-                                ->where('year', $year)
-                                ->where('branch', $this->dept_id)
-                                ->where('user_id', Auth::id())
-                                ->first();
-
-                            if ($fetch) {
-                                $record = ProductTarget::where('product_id', $product_key)
-                                    ->where('month', $month)
-                                    ->where('year', $year)
-                                    ->where('branch', $this->dept_id)
-                                    ->where('user_id', Auth::id())
-                                    ->update(['target' => $target]);
-                            } else {
-                                $record = ProductTarget::create([
-                                    'product_id' => $product_key,
-                                    'month' => $month,
-                                    'year' => $year,
-                                    'branch' => $this->dept_id,
-                                    'user_id' => Auth::id(),
-                                    'target' => $target
-                                ]);
-                            }
-
-                            $record = ProductTargetLog::create([
-                                'product_id' => $product_key,
-                                'month' => $month,
-                                'year' => $year,
-                                'branch' => $this->dept_id,
-                                'user_id' => Auth::id(),
-                                'target' => $target
-                            ]);
-                        }
-                    }
-                }
-            }
-
-            $this->emit('msg');
-            $this->reset('target');
-            $this->generateReport();
-        }
-
-    }
+//
+//    }
 
     public function historicalThreeYearsSales() {
 
@@ -2307,7 +2307,7 @@ class CreateProductTarget extends Component
 
             $this->emit('msg');
             $this->reset('target', 'emps_percentage', 'emp_target');
-            $this->generateReport();
+//            $this->generateReport();
         }
 
     }
