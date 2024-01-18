@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-my-product-target', \App\Http\Livewire\ListMyProductTarget::class)->name('list.my-product-target');
     Route::get('/show-my-products-targets', \App\Http\Livewire\ShowMyProductsTargets::class)->name('show.my-products-targets');
     Route::get('/list-weekly-report', \App\Http\Livewire\ListWeeklyReport::class)->name('list.weekly-report');
+    Route::get('/list-purchase-recommendation', \App\Http\Livewire\PurchaseRecommendation::class)->name('list.purchase-recommendation');
 
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
