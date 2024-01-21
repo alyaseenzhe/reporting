@@ -1631,7 +1631,7 @@
                             btn_id = btn_id.split('--');
                             selector_txt = 'totaltarget--'+ btn_id[1];
 
-                            const elements = document.querySelectorAll(".total-target");
+                            const elements = document.querySelectorAll(".total-target:not([disabled])");
 
                             elements.forEach(element =>{
                                 if (element.value) {
@@ -1722,7 +1722,7 @@
                             btn_id = btn_id.split('--');
                             selector_txt = 'totaltarget--'+ btn_id[1];
 
-                            const elements = document.querySelectorAll(".total-target:not(.special-item)");
+                            const elements = document.querySelectorAll(".total-target:not(.special-item):not([disabled])");
 
                             elements.forEach(element =>{
                                 if (element.value) {
@@ -1816,7 +1816,7 @@
                         item_price_txt = "#item-price-"+product_id;
                         historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
-                        const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
+                        const elements = document.querySelectorAll("input:not([disabled])[id^='"+selector_txt+"']");
 
                         $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
 
