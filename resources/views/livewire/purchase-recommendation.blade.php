@@ -6,97 +6,203 @@
 @stop
 <div>
     {{-- Stop trying to control. --}}
-    <button wire:click.prevent="createReport" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
-        <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
-            <path
-                d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"/>
-        </svg>
-        <span class="hidden xs:block mr-2">Generate</span>
-    </button>
+{{--    <button wire:click.prevent="createReport" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">--}}
+{{--        <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">--}}
+{{--            <path--}}
+{{--                d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"/>--}}
+{{--        </svg>--}}
+{{--        <span class="hidden xs:block mr-2">Generate</span>--}}
+{{--    </button>--}}
 
 
-{{--    <div id="tbl-container" class="overflow-x-auto overflow-y-auto" style="height: 700px">--}}
+    <div id="filter-container" class="mb-6 mt-6">
+        <div style="background-color: #f0f9ff;" class="flex flex-col gap-4 p-6">
+            <div class="w-full flex flex-col sm:flex-row gap-4">
+                <div class="w-full">
+                    <label class="block font-bold mb-4">عرض الأصناف</label>
+                    <div class="flex flex-row">
+                        <div class="flex items-center w-full">
+                            <input type="radio" name="item_type" value="all_items" checked
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع
+                                الأصناف</label>
+                        </div>
+                        <div class="flex items-center w-full">
+                            <input type="radio" name="item_type" value="item_vendor"
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">بالمورد</label>
+                        </div>
+                        <div class="flex items-center w-full">
+                            <input type="radio" name="item_type" value="item_code"
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">برقم الصنف</label>
+                        </div>
+                    </div>
+
+                    @error('item_type')
+                    <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+                </div>
+                <div wire:ignore id="product_code_div" class="w-full hide">
+                    <label class="block font-bold mb-2">رقم الصنف
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="product_code"
+                           class="form-input w-full @error('product_code') border-red-300 @enderror">
+                    @error('product_code')
+                    <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+                </div>
+                <div wire:ignore id="vendor_type_div" class="w-full hide">
+                    <label class="block font-bold mb-2">الموردين
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div>
+                        <select id="vendor_type" name="vendor_type"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
+                            @foreach($vendor_list as $vendor)
+                                <option value="{{ $vendor->NodeNo }}"
+                                        @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="mt-8 text-center w-full">
+                    <button id="create-report" style="background-color: #026832;"
+                            class="w-full btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                        <span></span>
+                        <span>إنشاء تقرير</span>
+{{--                    </span>--}}
+{{--                        <span class="mr-2 font-bold" wire:loading wire:target="createReport">--}}
+{{--                    <span></span>--}}
+{{--                    <span>الرجاء الانتظار</span>--}}
+{{--                    </span>--}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if($show_results)
+        @if($results)
+            <div class="mb-5 p-2">
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
+                    <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
+                        <label class="block font-bold mb-5">خيارات</label>
+                        <div class="flex flex-row">
+                            <div class="flex items-center mb-4 w-full">
+                                <input id="all-items" name="item_record" onclick="records('all_item')" type="radio" value="all_item" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع الاصناف</label>
+                            </div>
+                            <div class="flex items-center mb-4 w-full">
+                                <input name="item_record" onclick="records('positive_item')" type="radio" value="positive_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف الموجبة</label>
+                            </div>
+                            <div class="flex items-center mb-4 w-full">
+                                <input name="item_record" onclick="records('negative_item')" type="radio" value="negative_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف السالبة</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+        <div id="tbl-container" class="overflow-x-auto overflow-y-auto">
         <table id="tbl" style="border: 2px solid black;" class="table-container w-full border text-center">
             <tbody class="text-sm divide-y divide-gray-100">
-            <?php
-            $vendor_id = "*";
-            ?>
-            @foreach($results as $record)
-                <div>
+                <?php
+                $vendor_id = "*";
+                ?>
+            @forelse($results as $record)
+                <div wire:key="time()">
                     @if($record->VendorNo != $vendor_id)
                             <?php $vendor_id = $record->VendorNo; ?>
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->Vendor_Code }}</td>
-                            <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->Vendor_ArName }}</td>
+                            <td style="border: 2px solid black;background-color: #dcdcdc"
+                                class="border p-2 whitespace-nowrap col-id-no"
+                                scope="row">{{ $record->Vendor_Code }}</td>
+                            <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc"
+                                class="border p-2 whitespace-nowrap col-id-no"
+                                scope="row">{{ $record->Vendor_ArName }}</td>
                         </tr>
                     @endif
                         <?php
-                            $vendor_id = $record->VendorNo;
-                            $full_days = intval($record->LeadTime) + intval($dist_days);
-                            $no_days = ceil($full_days/30);
-                            $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
-                            $year = $target_date->format('Y');
-                            $month = $target_date->format('n');
+                        $vendor_id = $record->VendorNo;
+                        $full_days = intval($record->LeadTime) + intval($dist_days);
+                        $no_days = ceil($full_days / 30);
+                        $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
+                        $year = $target_date->format('Y');
+                        $month = $target_date->format('n');
 
 
-                            $start_date = \Carbon\Carbon::today()->firstOfMonth()->format('Y-m-d');
-                            $end_date = \Carbon\Carbon::today()->addMonths($no_days-1)->endOfMonth()->format('Y-m-d');
-                            $period = new \Carbon\CarbonPeriod($start_date, '1 month', $end_date);
-                            $stmt = "";
-                            $period = $period->toArray();
-                            foreach($period as $key => $month_n) {
-                                if (count($period) > 1) {
-                                    if ($key === array_key_first($period)) {
-                                        $stmt .= "((year ='".$month_n->format('Y')."' and month = '".$month_n->format('n')."') or ";
-                                    }
-                                    elseif ($key === array_key_last($period)) {
-                                        $stmt .= "(year ='".$month_n->format('Y')."' and month = '".$month_n->format('n')."'))";
-                                    }
-                                    else {
-                                        $stmt .= "(year ='".$month_n->format('Y')."' and month = '".$month_n->format('n')."') or ";
-                                    }
+                        $start_date = \Carbon\Carbon::today()->firstOfMonth()->format('Y-m-d');
+                        $end_date = \Carbon\Carbon::today()->addMonths($no_days - 1)->endOfMonth()->format('Y-m-d');
+                        $period = new \Carbon\CarbonPeriod($start_date, '1 month', $end_date);
+
+                        $stmt = "";
+                        $period = $period->toArray();
+                        foreach ($period as $key => $month_n) {
+                            if (count($period) > 1) {
+                                if ($key === array_key_first($period)) {
+                                    $stmt .= "((year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
+                                } elseif ($key === array_key_last($period)) {
+                                    $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "'))";
+                                } else {
+                                    $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
                                 }
-                                else {
-                                    $stmt .= "(year ='".$month_n->format('Y')."' and month = '".$month_n->format('n')."')";
-                                }
+                            } else {
+                                $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "')";
                             }
+                        }
+
+                            $val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty));
+                            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
+                            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
+                            $faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val_target->target);
+                            $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
+
                         ?>
-                    <tr>
-                        <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
+                        <th colspan="30" style="border: 2px solid black; background-color: #faebd7"
+                            class="col-id-no fixed-header border p-2 whitespace-nowrap">
                             <div class="flex flex-row">
                                 <div class="w-full text-sm text-center">رقم الصنف</div>
                                 <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->Code }}</div>
                                 <div class="w-full text-sm text-center">اسم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->Arabic_Name }}</div>
+                                <div style="color: #fd0e0e"
+                                     class="w-full text-sm text-center">{{ $record->Arabic_Name }}</div>
                                 <div class="w-full text-sm text-center">الوحدة</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
+                                <div style="color: #fd0e0e"
+                                     class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
                                 <div class="w-full text-sm text-center">المورد</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->Vendor_ArName }}</div>
+                                <div style="color: #fd0e0e"
+                                     class="w-full text-sm text-center">{{ $record->Vendor_ArName }}</div>
                                 <div class="w-full text-sm text-center">فترة الطلب</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->LeadTime }}</div>
+                                <div style="color: #fd0e0e"
+                                     class="w-full text-sm text-center">{{ $record->LeadTime }}</div>
                                 <div class="w-full text-sm text-center">فترة التوزيع</div>
                                 <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
                             </div>
                         </th>
                     </tr>
-                    <tr>
+                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الفترة الكلية</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المخزون الأدنى</div>
+                            <div class="text-sm">فترة كلية (شهر)</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">المخزون</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">موازنة المخزون</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">طلبات الشراء</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">المتاح</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">المتاح الأدنى</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">موازنة المتاح</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">المستهدف</div>
@@ -110,20 +216,13 @@
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">توصية الشراء</div>
                         </th>
-                </tr>
-                    <tr>
+                    </tr>
+                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $full_days }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record->MinOrder }}</div>
+                            <div class="text-sm">{{ ceil($full_days/30) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">{{ $record->Stock }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            @php $val_mozanah = intval($record->MinOrder) - intval($record->Stock); @endphp
-                            <div class="text-sm">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">{{ $record->final_qty }}</div>
@@ -132,84 +231,190 @@
                             <div class="text-sm">{{ intval($record->Stock) + intval($record->final_qty) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <?php
-                                $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '". $record->Code ."' and month = '". $month ."' and year = '". $year."'");
+                            <div class="text-sm">{{ $record->MinOrder }}</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            @php //$val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty)); @endphp
+                            <div class="text-sm">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <?php
+                                //$val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
-                            ?>
+                                ?>
                             <div class="text-sm">{{ $val_mostahdef->target }}</div>
                         </th>
                             <?php
-                            $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '". $record->Code ."' and ".$stmt);
+                            //$val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '". $record->Code ."' and " . $stmt);
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
                             ?>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $val->target }}</div>
+                            <div class="text-sm">{{ $val_target->target }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <?php
-                                $faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) -  intval($val->target);
-                            ?>
+                                <?php
+                                //$faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val->target);
+                                ?>
                             <div class="text-sm">{{ $faed_maqzon < 0 ? 0 : $faed_maqzon  }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>
+{{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
+                            <div class="text-sm">{{ $recommendation }}</div>
                         </th>
-                </tr>
-{{--                    <tr>--}}
-{{--                        <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-{{--                            <div class="text-sm">الشهر</div>--}}
-{{--                        </th>--}}
-{{--                            <?php $loop_counter = 0; ?>--}}
-{{--                        @foreach ($list as $year_key => $year)--}}
-{{--                            @foreach ($year as $month)--}}
-{{--                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">--}}
-{{--                                    <div class="text-sm">{{ $year_key."-".$month }}</div>--}}
-{{--                                </th>--}}
-{{--                                    <?php $loop_counter++; ?>--}}
-{{--                            @endforeach--}}
-{{--                        @endforeach--}}
-{{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #d2dafa;" class="border p-2">--}}
-{{--                            <div class="text-sm">مجموع كمية</div>--}}
-{{--                        </th>--}}
-{{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
-{{--                            <div class="text-sm">مجموع قيمة</div>--}}
-{{--                        </th>--}}
-{{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-{{--                            <div class="text-sm">الفرق</div>--}}
-{{--                        </th>--}}
-{{--                    </tr>--}}
-{{--                    <tr>--}}
+                    </tr>
+                    {{--                    <tr>--}}
+                    {{--                        <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">الشهر</div>--}}
+                    {{--                        </th>--}}
+                    {{--                            <?php $loop_counter = 0; ?>--}}
+                    {{--                        @foreach ($list as $year_key => $year)--}}
+                    {{--                            @foreach ($year as $month)--}}
+                    {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">--}}
+                    {{--                                    <div class="text-sm">{{ $year_key."-".$month }}</div>--}}
+                    {{--                                </th>--}}
+                    {{--                                    <?php $loop_counter++; ?>--}}
+                    {{--                            @endforeach--}}
+                    {{--                        @endforeach--}}
+                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #d2dafa;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">مجموع كمية</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">مجموع قيمة</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">الفرق</div>--}}
+                    {{--                        </th>--}}
+                    {{--                    </tr>--}}
+                    {{--                    <tr>--}}
 
-{{--                        @foreach ($list as $year_key => $year)--}}
-{{--                            @foreach ($year as $month)--}}
-{{--                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-{{--                                    <div class="text-sm">SC</div>--}}
-{{--                                </th>--}}
-{{--                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-{{--                                    <div class="text-sm">T</div>--}}
-{{--                                </th>--}}
-{{--                            @endforeach--}}
-{{--                        @endforeach--}}
-{{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-{{--                            <div class="text-sm">SC</div>--}}
-{{--                        </th>--}}
-{{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-{{--                            <div class="text-sm">T</div>--}}
-{{--                        </th>--}}
-{{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-{{--                            <div class="text-sm">SC</div>--}}
-{{--                        </th>--}}
-{{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-{{--                            <div class="text-sm">T</div>--}}
-{{--                        </th>--}}
-{{--                        <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-{{--                            <div class="text-sm">%</div>--}}
-{{--                        </th>--}}
-{{--                    </tr>--}}
+                    {{--                        @foreach ($list as $year_key => $year)--}}
+                    {{--                            @foreach ($year as $month)--}}
+                    {{--                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
+                    {{--                                    <div class="text-sm">SC</div>--}}
+                    {{--                                </th>--}}
+                    {{--                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
+                    {{--                                    <div class="text-sm">T</div>--}}
+                    {{--                                </th>--}}
+                    {{--                            @endforeach--}}
+                    {{--                        @endforeach--}}
+                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">SC</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">T</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">SC</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">T</div>--}}
+                    {{--                        </th>--}}
+                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
+                    {{--                            <div class="text-sm">%</div>--}}
+                    {{--                        </th>--}}
+                    {{--                    </tr>--}}
                 </div>
-            @endforeach
+            @empty
+                <div class="w-full p-6" style="background-color: #fff0f5; border: 1px solid #9f4764; color: #9f4764; text-align: center; font-weight: bold;">
+                    <svg class="w-20" style="margin: auto; margin-bottom: 20px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#f9dcc4;}.cls-2{fill:#fff2e9;}.cls-3{fill:#edbe9d;}.cls-4{fill:#577590;}</style></defs><path class="cls-1" d="M23.5,2h-12a.47.47,0,0,0-.35.15l-5,5A.47.47,0,0,0,6,7.5v20A2.5,2.5,0,0,0,8.5,30h15A2.5,2.5,0,0,0,26,27.5V4.5A2.5,2.5,0,0,0,23.5,2Z"/><path class="cls-2" d="M15,2h7a1,1,0,0,1,0,2H15a1,1,0,0,1,0-2Z"/><path class="cls-2" d="M6,13.5v-2a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Z"/><path class="cls-2" d="M6,24.5v-8a1,1,0,0,1,2,0v8a1,1,0,0,1-2,0Z"/><path class="cls-3" d="M24,20v4a4,4,0,0,1-4,4H11a1,1,0,0,0-1,1h0a1,1,0,0,0,1,1H23.5A2.5,2.5,0,0,0,26,27.5V20a1,1,0,0,0-1-1h0A1,1,0,0,0,24,20Z"/><path class="cls-3" d="M11.69,2a.47.47,0,0,0-.54.11l-5,5A.47.47,0,0,0,6,7.69.5.5,0,0,0,6.5,8h3A2.5,2.5,0,0,0,12,5.5v-3A.5.5,0,0,0,11.69,2Z"/><path class="cls-4" d="M21.5,11.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,16.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,21.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/></svg>
+                    <span class="mt-4">لا يوجد تقرير للعرض</span>
+                </div>
+            @endforelse
             </tbody>
         </table>
-{{--    </div>--}}
+    </div>
+    @endif
 </div>
+@section('scripts')
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <script>
+
+        var item_type = $("input[type='radio'][name='item_type']:checked").val();
+
+        $("input[name='item_type']").change(function () {
+            item_type = $(this).val();
+            $('#product_code').val("");
+
+            if (item_type == "all_items") {
+                $('#product_code_div').addClass('hide');
+                $('#vendor_type_div').addClass('hide');
+
+            }
+            else if(item_type == "item_vendor") {
+                $('#product_code_div').addClass('hide');
+                $('#vendor_type_div').removeClass('hide');
+            }
+            else if(item_type == "item_code") {
+                $('#product_code_div').removeClass('hide');
+                $('#vendor_type_div').addClass('hide');
+            }
+        });
+
+        $('#create-report').on('click', function () {
+
+            item_type = $("input[type='radio'][name='item_type']:checked").val();
+            // alert(item_type);
+            var vendor_type = $("#vendor_type").val();
+            var product_code = $("#product_code").val();
+
+            $('#all-items').prop('checked', true);
+
+
+            $("#create-report").html('<b>الرجاء الإنتظار..</b>');
+
+            Swal.fire({
+                title: 'الرجاء الإنتظار',
+                allowOutsideClick: false,
+                showCancelButton: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading()
+                },
+            });
+
+
+            Livewire.emit('create-report', item_type, vendor_type, product_code);
+        });
+
+        Livewire.on('finished', () => {
+            swal.close();
+        });
+
+        // $("input[name='item_record']").change(function () {
+        //     alert('hihi');
+        //     alert(this.checked);
+        //     // if(this.checked) {
+        //     //     $(".employee").addClass("hide");
+        //     //     $(".department").addClass("hide");
+        //     // }
+        //     // else {
+        //     //     $(".employee").removeClass("hide");
+        //     //     $(".department").removeClass("hide");
+        //     // }
+        // });
+
+        function records(item_record) {
+            if(item_record == 'all_item') {
+                $(".positive-record").removeClass("hide");
+                $(".negative-record").removeClass("hide");
+            }
+            else if(item_record == 'positive_item') {
+                $(".positive-record").removeClass("hide");
+                $(".negative-record").addClass("hide");
+            }
+            else if(item_record == 'negative_item') {
+                $(".negative-record").removeClass("hide");
+                $(".positive-record").addClass("hide");
+            }
+        }
+    </script>
+@stop
+@section('css-scripts')
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+@stop
