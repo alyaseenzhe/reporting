@@ -215,7 +215,13 @@ SELECT Distinct
 	SUM(Qty) as Qty,
 	SUM(ExecutedQty) as ExecutedQty,
 	SUM(DeliveredQty) as DeliveredQty,
-	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty
+	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty_a,
+
+	SUM(QtyOrderd) as QtyOrdered,
+	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
+	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
+	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
+	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
 FROM (
 Select
 	ProductNo,
@@ -237,9 +243,13 @@ Select
 	(Select Name From AccMast Where NodeNo = AccountNo) as Customer,(Select Arabic_Name From AccMast Where NodeNo = AccountNo) as Arabic_Customer,
 	Sum(Q.value)  as Amount ,
 	sum(field2) as net,
-	sum(ActualQty) as Qty ,
-	sum(ExecutedQty) as ExecutedQty,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo)), 0)  as DeliveredQty
+	sum(case when POrderNo like '280-%%' then ActualQty end) as Qty ,
+	sum(case when POrderNo like '280-%%' then ExecutedQty end) as ExecutedQty,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '280-%%')), 0)  as DeliveredQty,
+
+	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
+	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -249,9 +259,9 @@ Select
 	And ProductNo in (SELECT ProductNo FROM ProductMast WHERE Pricelist = 1 AND VendorNo = '". $vendor_type ."') And
 	Department in (515,511,510,509,508,507,506,505,504,500,15,17,16,14,13,12,11,10,9,8,7,6,5,4,3,2,1)
 	AND VendorNo = '". $vendor_type ."'
-	And (PODate >= '07/01/2011' And PODate <= '". $today ." 23:59:25')
+	And (PODate >= '01/01/2023' And PODate <= '". $today ." 23:59:25')
 	And Executed = 0
-	And PorderNo like '280-%%'
+	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
 	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
@@ -332,7 +342,13 @@ SELECT Distinct
 	SUM(Qty) as Qty,
 	SUM(ExecutedQty) as ExecutedQty,
 	SUM(DeliveredQty) as DeliveredQty,
-	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty
+	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty_a,
+
+	SUM(QtyOrderd) as QtyOrdered,
+	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
+	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
+	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
+	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
 FROM (
 Select
 	ProductNo,
@@ -354,9 +370,14 @@ Select
 	(Select Name From AccMast Where NodeNo = AccountNo) as Customer,(Select Arabic_Name From AccMast Where NodeNo = AccountNo) as Arabic_Customer,
 	Sum(Q.value)  as Amount ,
 	sum(field2) as net,
-	sum(ActualQty) as Qty ,
-	sum(ExecutedQty) as ExecutedQty,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo)), 0)  as DeliveredQty
+
+	sum(case when POrderNo like '280-%%' then ActualQty end) as Qty ,
+	sum(case when POrderNo like '280-%%' then ExecutedQty end) as ExecutedQty,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '280-%%')), 0)  as DeliveredQty,
+
+	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
+	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -366,9 +387,9 @@ Select
 	And ProductNo in (SELECT ProductNo FROM ProductMast WHERE Pricelist = 1 AND Code = '". $product_code ."') And
 	Department in (515,511,510,509,508,507,506,505,504,500,15,17,16,14,13,12,11,10,9,8,7,6,5,4,3,2,1)
 	AND Code = '". $product_code ."'
-	And (PODate >= '07/01/2011' And PODate <= '". $today ." 23:59:25')
+	And (PODate >= '01/01/2023' And PODate <= '". $today ." 23:59:25')
 	And Executed = 0
-	And PorderNo like '280-%%'
+	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
 	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
@@ -447,7 +468,13 @@ SELECT Distinct
 	SUM(Qty) as Qty,
 	SUM(ExecutedQty) as ExecutedQty,
 	SUM(DeliveredQty) as DeliveredQty,
-	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty
+	SUM(case when Delivered = 'Delivered' THEN (Qty-ExecutedQty) +(ExecutedQty-DeliveredQty) ELSE  (Qty-ExecutedQty) END) as final_qty_a,
+
+	SUM(QtyOrderd) as QtyOrdered,
+	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
+	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
+	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
+	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
 FROM (
 Select
 	ProductNo,
@@ -469,9 +496,14 @@ Select
 	(Select Name From AccMast Where NodeNo = AccountNo) as Customer,(Select Arabic_Name From AccMast Where NodeNo = AccountNo) as Arabic_Customer,
 	Sum(Q.value)  as Amount ,
 	sum(field2) as net,
-	sum(ActualQty) as Qty ,
-	sum(ExecutedQty) as ExecutedQty,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo)), 0)  as DeliveredQty
+
+	sum(case when POrderNo like '280-%%' then ActualQty end) as Qty ,
+	sum(case when POrderNo like '280-%%' then ExecutedQty end) as ExecutedQty,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '280-%%')), 0)  as DeliveredQty,
+
+	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
+	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -479,9 +511,9 @@ Select
 	and POrderNo = Idetails.VoucherNo
 	And ProductNo = NodeNo
 	And ProductNo in (SELECT ProductNo FROM ProductMast WHERE Pricelist = 1) And Department in (515,511,510,509,508,507,506,505,504,500,15,17,16,14,13,12,11,10,9,8,7,6,5,4,3,2,1)
-	And (PODate >= '07/01/2011' And PODate <= '". $today ." 23:59:25')
+	And (PODate >= '01/01/2023' And PODate <= '". $today ." 23:59:25')
 	And Executed = 0
-	And PorderNo like '280-%%'
+	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
 	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
