@@ -152,7 +152,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_Code,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
-	ProductMast.ReOrderLevel2 as 'MinOrder',
+	ProductMast.ReOrderLevel1 as 'MinOrder',
 	Qty_In-Qty_Out as 'Stock'
 	FROM (
 SELECT NodeNo,
@@ -220,8 +220,8 @@ SELECT Distinct
 	SUM(QtyOrderd) as QtyOrdered,
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
-	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
-	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
+	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
 FROM (
 Select
 	ProductNo,
@@ -279,7 +279,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_Code,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
-	ProductMast.ReOrderLevel2 as 'MinOrder',
+	ProductMast.ReOrderLevel1 as 'MinOrder',
 	Qty_In-Qty_Out as 'Stock'
 	FROM (
 SELECT NodeNo,
@@ -347,8 +347,8 @@ SELECT Distinct
 	SUM(QtyOrderd) as QtyOrdered,
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
-	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
-	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
+	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
 FROM (
 Select
 	ProductNo,
@@ -407,7 +407,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_Code,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
-	ProductMast.ReOrderLevel2 as 'MinOrder',
+	ProductMast.ReOrderLevel1 as 'MinOrder',
 	Qty_In-Qty_Out as 'Stock'
 	FROM (
 SELECT NodeNo,
@@ -473,8 +473,8 @@ SELECT Distinct
 	SUM(QtyOrderd) as QtyOrdered,
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
-	SUM((QtyOrderd-ExecutedQtyOrdered) +(ExecutedQtyOrdered-DeliveredQtyOrdered)) as final_qty_ordered,
-	(SUM(Qty)-SUM(ExecutedQty)) + (SUM(QtyOrderd)-SUM(ExecutedQtyOrdered)) as final_qty
+	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
 FROM (
 Select
 	ProductNo,
