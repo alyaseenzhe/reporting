@@ -91,16 +91,16 @@
                         <label class="block font-bold mb-5">خيارات</label>
                         <div class="flex flex-row">
                             <div class="flex items-center mb-4 w-full">
-                                <input id="all-items" name="item_record" onclick="records('all_item')" type="radio" value="all_item" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع الاصناف</label>
+                                <input id="all-items" name="item_record" onclick="records('all_item')" type="radio" value="all_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع التوصيات</label>
                             </div>
                             <div class="flex items-center mb-4 w-full">
-                                <input name="item_record" onclick="records('positive_item')" type="radio" value="positive_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف الموجبة</label>
+                                <input id="positive_item" name="item_record" onclick="records('positive_item')" type="radio" value="positive_item" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التوصيات الموجبة</label>
                             </div>
                             <div class="flex items-center mb-4 w-full">
                                 <input name="item_record" onclick="records('negative_item')" type="radio" value="negative_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف السالبة</label>
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التوصيات السالبة</label>
                             </div>
                         </div>
                     </div>
@@ -131,6 +131,11 @@
                         $full_days = intval($record->LeadTime) + intval($dist_days);
                         $no_days = ceil($full_days / 30);
                         $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
+
+                        $next_target_date01 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+1);
+                        $next_target_date02 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+2);
+                        $next_target_date03 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+3);
+
                         $year = $target_date->format('Y');
                         $month = $target_date->format('n');
 
@@ -158,6 +163,9 @@
                             $val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty));
                             $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
                             $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
+
+                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
+
                             $faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val_target->target);
                             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
 
@@ -216,6 +224,12 @@
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">توصية الشراء</div>
                         </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">
+                                مستهدف
+                                <span class="text-xs">(3 شهور تالية)</span>
+                            </div>
+                        </th>
                     </tr>
                     <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -261,6 +275,10 @@
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
 {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
                             <div class="text-sm">{{ $recommendation }}</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
+                            <div class="text-sm">{{ $next_val_target->target }}</div>
                         </th>
                     </tr>
                     {{--                    <tr>--}}
@@ -359,7 +377,7 @@
             var vendor_type = $("#vendor_type").val();
             var product_code = $("#product_code").val();
 
-            $('#all-items').prop('checked', true);
+            $('#positive_item').prop('checked', true);
 
 
             $("#create-report").html('<b>الرجاء الإنتظار..</b>');
@@ -380,6 +398,7 @@
 
         Livewire.on('finished', () => {
             swal.close();
+            records('positive_item');
         });
 
         // $("input[name='item_record']").change(function () {
