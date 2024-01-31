@@ -399,7 +399,7 @@ class ListMyProductTarget extends Component
             WHERE ProductCode in " . $product_codes .
                     " ORDER BY VendorNo";
 
-//        dd($month_stmt);
+        dd($month_stmt);
 //        dd($product_codes);
 
 //        $test = '';
@@ -476,18 +476,20 @@ class ListMyProductTarget extends Component
                 if (count($this->products_items) > 0) {
                     $query = DB::connection('sqlsrv')->select($month_stmt);
                     $this->results = $query;
+
+//                    dd($this->results);
 //            $test = $query;
 //
 //            $fetch_query = json_decode(json_encode($query), true);
 //
 //            array_push($this->results, $fetch_query);
-                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
-                    FROM ProductMast, accmast
-                    WHERE ProductMast.VendorNo = accmast.NodeNo
-                    and ProductMast.Code in ". $product_codes;
-                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
-                    $fetch_item_query = json_decode(json_encode($item_query), true);
-                    array_push($this->items, $fetch_item_query);
+//                    $item_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, Description, BaseUnits, Currency, SpecialityCode, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, WholeSale, MaxDiscount, Retail
+//                    FROM ProductMast, accmast
+//                    WHERE ProductMast.VendorNo = accmast.NodeNo
+//                    and ProductMast.Code in ". $product_codes;
+//                    $item_query = DB::connection('sqlsrv')->select($item_stmt);
+//                    $fetch_item_query = json_decode(json_encode($item_query), true);
+//                    array_push($this->items, $fetch_item_query);
                 }
 
             }
