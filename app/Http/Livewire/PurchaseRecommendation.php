@@ -153,7 +153,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
 	ProductMast.ReOrderLevel1 as 'MinOrder',
-	Qty_In-Qty_Out as 'Stock'
+	Qty_In-Qty_Out+Qty_In2 as 'Stock'
 	FROM (
 SELECT NodeNo,
 	Code,
@@ -163,7 +163,8 @@ SELECT NodeNo,
 	Vendor_Code,
 	Vendor_ArName,
 	SUM(Qty_In) as 'Qty_In',
-	SUM(Qty_Out) as 'Qty_Out'
+	SUM(Qty_Out) as 'Qty_Out',
+    SUM(Qty_in2) as 'Qty_In2'
 	FROM (
 SELECT Distinct
 	NodeNo,
@@ -174,7 +175,8 @@ SELECT Distinct
 	Vendor_Code,
 	Vendor_ArName,
 	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<='".$today." 23:59:25'  And Department = V.Department   Group By ProductNo) as Qty_In ,
-	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out
+	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out,
+	case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today ." 23:59:25'  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today." 23:59:25'  )  ) else 0 end  as Qty_in2
 	FROM (Select distinct
 	NodeNo ,
 	Code ,
@@ -280,7 +282,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
 	ProductMast.ReOrderLevel1 as 'MinOrder',
-	Qty_In-Qty_Out as 'Stock'
+	Qty_In-Qty_Out+Qty_In2 as 'Stock'
 	FROM (
 SELECT NodeNo,
 	Code,
@@ -290,7 +292,8 @@ SELECT NodeNo,
 	Vendor_Code,
 	Vendor_ArName,
 	SUM(Qty_In) as 'Qty_In',
-	SUM(Qty_Out) as 'Qty_Out'
+	SUM(Qty_Out) as 'Qty_Out',
+    SUM(Qty_in2) as 'Qty_In2'
 	FROM (
 SELECT Distinct
 	NodeNo,
@@ -301,7 +304,8 @@ SELECT Distinct
 	Vendor_Code,
 	Vendor_ArName,
 	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<='".$today." 23:59:25'  And Department = V.Department   Group By ProductNo) as Qty_In ,
-	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out
+	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out,
+	case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today ." 23:59:25'  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today." 23:59:25'  )  ) else 0 end  as Qty_in2
 	FROM (Select distinct
 	NodeNo ,
 	Code ,
@@ -408,7 +412,7 @@ SELECT tbl2.NodeNo,
 	tbl2.Vendor_ArName,
 	ProductMast.LeadTime,
 	ProductMast.ReOrderLevel1 as 'MinOrder',
-	Qty_In-Qty_Out as 'Stock'
+	Qty_In-Qty_Out+Qty_In2 as 'Stock'
 	FROM (
 SELECT NodeNo,
 	Code,
@@ -418,7 +422,8 @@ SELECT NodeNo,
 	Vendor_Code,
 	Vendor_ArName,
 	SUM(Qty_In) as 'Qty_In',
-	SUM(Qty_Out) as 'Qty_Out'
+	SUM(Qty_Out) as 'Qty_Out',
+    SUM(Qty_in2) as 'Qty_In2'
 	FROM (
 SELECT Distinct
 	NodeNo,
@@ -429,7 +434,8 @@ SELECT Distinct
 	Vendor_Code,
 	Vendor_ArName,
 	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<='".$today." 23:59:25'  And Department = V.Department   Group By ProductNo) as Qty_In ,
-	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out
+	(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<='".$today." 23:59:25' And Department = V.Department    Group By ProductNo) as Qty_Out,
+	case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today ." 23:59:25'  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= '". $today." 23:59:25'  )  ) else 0 end  as Qty_in2
 	FROM (Select distinct
 	NodeNo ,
 	Code ,
@@ -521,7 +527,7 @@ GROUP BY ProductNo) as tbl4
 ON tbl3.NodeNo = tbl4.ProductNo
 ORDER BY Vendor_Code, Code";
         }
-
+        
         $this->results = DB::connection('sqlsrv')->select($stmt);
         $this->show_results = true;
 
