@@ -80,6 +80,14 @@
 {{--                    </span>--}}
                     </button>
                 </div>
+                <div id="export-div" style="display: none" class="mt-8 text-center w-full">
+                    <button id="export-to-excel" onclick="ExportToExcel('xlsx')" style="background-color: #680202;"
+                            class="w-full btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                        <span></span>
+                        <span>تصدير إلى اكسل</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -213,10 +221,29 @@
                             <div class="text-sm">موازنة المتاح</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المستهدف</div>
+                            <div class="text-sm">
+                                المستهدف
+                                <br>
+                            <span class="text-xs">({{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }})</span>
+                            </div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الإستهلاك</div>
+                            <div class="text-sm">
+                                الإستهلاك
+                                <br>
+                                @if(ceil($full_days/30) > 1)
+                                    <span class="text-xs">(</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                    <span class="text-xs"> الى</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m')}}</span>
+                                    <span class="text-xs">)</span>
+                                @else
+                                    <span class="text-xs">(</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                    <span class="text-xs">)</span>
+                                @endif
+
+                            </div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">فائض المخزون</div>
@@ -228,6 +255,12 @@
                             <div class="text-sm">
                                 مستهدف
                                 <span class="text-xs">(3 شهور تالية)</span>
+                                <br>
+                                <span class="text-xs">(</span>
+                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->addMonths(ceil($full_days/30)+1)->firstOfMonth()->format('Y-m')}}</span>
+                                <span class="text-xs"> الى</span>
+                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)+3)->format('Y-m')}}</span>
+                                <span class="text-xs">)</span>
                             </div>
                         </th>
                     </tr>
@@ -347,6 +380,7 @@
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script>
 
         var item_type = $("input[type='radio'][name='item_type']:checked").val();
@@ -398,6 +432,7 @@
 
         Livewire.on('finished', () => {
             swal.close();
+            $('#export-div').css('display', 'unset');
             records('positive_item');
         });
 
@@ -427,6 +462,14 @@
                 $(".negative-record").removeClass("hide");
                 $(".positive-record").addClass("hide");
             }
+        }
+
+        function ExportToExcel(type, fn, dl) {
+            var elt = document.getElementById('tbl');
+            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+            return dl ?
+                XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+                XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
         }
     </script>
 @stop
