@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\AccMast;
 use App\Models\ProductMast;
+use App\Models\Products;
 use App\Models\ProductTarget;
 use App\Models\ProductTargetBranchTotal;
 use App\Models\ProductTargetFilter;
@@ -12,7 +13,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Component;
+use Symfony\Component\Console\Input\Input;
 
 class ListMyProductTarget extends Component
 {
@@ -109,7 +112,8 @@ class ListMyProductTarget extends Component
         foreach ($branches as $branch) {
             $emps = User::join('user_groups', 'user_groups.id', 'users.group')
                 ->where('branches', 'like', '%"'.$branch.'"%')
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw('write_product_target IN (1,2)')
                 ->select('users.id')
                 ->get();
             foreach ($emps as $emp) {
@@ -149,12 +153,23 @@ class ListMyProductTarget extends Component
             $this->dept_id = $this->user_branches;
         }
 
+        $this->emit('show-container');
+//        $this->items = [];
+        $month_stmt = null;
+        $this->results = [];
+//        $this->products_items = [];
+
+//        $query = DB::connection('sqlsrv')->select($month_stmt);
+//        $this->results = $query;
+
+
         if (count($this->dept_id) == 1) {
             $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
                 ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw('write_product_target IN (1,2)')
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
@@ -162,6 +177,48 @@ class ListMyProductTarget extends Component
                 ->distinct()
                 ->get();
         }
+
+//        $fetch_item_query = json_decode(json_encode($item_query), true);
+
+        $month_stmt = $this->getSales();
+        $query = DB::connection('sqlsrv')->select($month_stmt);
+        $this->results = $query;
+
+        $this->show_msg = true;
+
+        $this->emit('finished');
+//        $this->results = collect($this->results);
+
+
+    }
+    public function generateReport_old() {
+        set_time_limit(2000);
+        ini_set('memory_limit', '2048M');
+        $this->validate();
+
+        $this->save_filters();
+
+        if (in_array('dept_all', $this->dept_id)) {
+            $this->dept_id = $this->user_branches;
+        }
+
+//        $this->getProducts();
+//        $this->getSales();
+
+//        if (count($this->dept_id) == 1) {
+//            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
+//                ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
+//                ->whereNotNull('group')
+//                ->where('role', 'u')
+////                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereRaw('write_product_target IN (1,2)')
+////                ->where('group', '!=', 4)
+////                ->where('group', '!=', 5)
+////                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
+//                ->select('users.id', 'users.name', 'users.emp_code')
+//                ->distinct()
+//                ->get();
+//        }
 
         $this->emit('show-container');
         $this->items = [];
@@ -175,7 +232,8 @@ class ListMyProductTarget extends Component
                 ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
                 ->whereNotNull('group')
                 ->where('role', 'u')
-                ->whereIn('write_product_target', ['1', '2'])
+//                ->whereIn('write_product_target', ['1', '2'])
+                ->whereRaw('write_product_target IN (1,2)')
 //                ->where('group', '!=', 4)
 //                ->where('group', '!=', 5)
 //                ->whereNotIn('id', [1,13,14,15,16,18,21,38])
@@ -307,6 +365,7 @@ class ListMyProductTarget extends Component
         }
 
         $arr_new_targets = $this->new_targets->toArray();
+//        dd($arr_new_targets);
         $product_codes = "";
         foreach ($arr_new_targets as $key => $product) {
             array_push($this->products_items, $product['product_id']);
@@ -399,7 +458,7 @@ class ListMyProductTarget extends Component
             WHERE ProductCode in " . $product_codes .
                     " ORDER BY VendorNo";
 
-        dd($month_stmt);
+                dd($month_stmt);
 //        dd($product_codes);
 
 //        $test = '';
@@ -468,7 +527,7 @@ class ListMyProductTarget extends Component
             WHERE ProductCode in " . $product_codes .
                     " ORDER BY VendorNo";
 
-//        dd($month_stmt);
+                dd($month_stmt);
 //        dd($product_codes);
 
 //        $test = '';
@@ -609,6 +668,7 @@ class ListMyProductTarget extends Component
         return $results;
     }
 
+
     public function get_filters() {
 
         $record = ProductTargetFilter::where('user_id', Auth::id())
@@ -662,5 +722,351 @@ class ListMyProductTarget extends Component
                 'page' => 'list',
             ]);
         }
+    }
+
+    public function getProducts() {
+
+        $bathoor = "Code like '20%' or Code like '21%' or Code like '22%' ";
+        $asmedah = "Code like '17%' ";
+        $mobedat = "Code like '10%' or Code like '11%' or Code like '12%' or Code like '13%' or Code like '14%' or Code like '15%' or Code like '16%' ";
+        $other = "(Code not like '20%' and Code not like '21%' and Code not like '22%' and Code not like '10%' and Code not like '11%' and Code not like '12%' and Code not like '13%' and Code not like '14%' and Code not like '15%' and Code not like '16%' and Code not like '17%') ";
+
+//        $bathoor2 = "product_code like '20%' or product_code like '21%' or product_code like '22%' ";
+//        $asmedah2 = "product_code like '17%' ";
+//        $mobedat2 = "product_code like '10%' or product_code like '11%' or product_code like '12%' or product_code like '13%' or product_code like '14%' or product_code like '15%' or product_code like '16%' ";
+//        $other2 = "(product_code not like '20%' and product_code not like '21%' and product_code not like '22%' and product_code not like '10%' and product_code not like '11%' and product_code not like '12%' and product_code not like '13%' and product_code not like '14%' and product_code not like '15%' and product_code not like '16%' and product_code not like '17%') ";
+
+//        $cat_stmt = "AND (";
+        $cat_stmt = "(";
+//        $cat_stmt2 = "(";
+        foreach ($this->cat_type as $key => $cat) {
+            if ($key === array_key_first($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= $bathoor;
+//                    $cat_stmt2 .= $bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= $asmedah;
+//                    $cat_stmt2 .= $asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= $mobedat;
+//                    $cat_stmt2 .= $mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= $other;
+//                    $cat_stmt2 .= $other2;
+                }
+            }
+            elseif ($key === array_key_last($this->cat_type)) {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= ' or '.$bathoor;
+//                    $cat_stmt2 .= ' or '.$bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= ' or '.$asmedah;
+//                    $cat_stmt2 .= ' or '.$asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= ' or '.$mobedat;
+//                    $cat_stmt2 .= ' or '.$mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= 'or '.$other;
+//                    $cat_stmt2 .= 'or '.$other2;
+                }
+            }
+            else {
+                if ($cat == 'bathoor') {
+                    $cat_stmt .= " or " . $bathoor;
+//                    $cat_stmt2 .= " or " . $bathoor2;
+                }
+                elseif ($cat == 'asmedah') {
+                    $cat_stmt .= " or " . $asmedah;
+//                    $cat_stmt2 .= " or " . $asmedah2;
+                }
+                elseif ($cat == 'mobedat') {
+                    $cat_stmt .= " or " . $mobedat;
+//                    $cat_stmt2 .= " or " . $mobedat2;
+                }
+                elseif ($cat == 'other') {
+                    $cat_stmt .= " or " . $other;
+//                    $cat_stmt2 .= " or " . $other2;
+                }
+            }
+        }
+
+        $cat_stmt .= ") ";
+//        $cat_stmt2 .= ") ";
+
+        $sp_txt = in_array('sp_all', $this->sp_type) ?  ('SpecialityCode IN (0,1,2)') : ('SpecialityCode IN (' . implode(',' , $this->sp_type) . ')');
+        $cat_txt1 = in_array('cat_all', $this->cat_type) ?  ('Code is not null') : $cat_stmt;
+//        $cat_txt2 = in_array('cat_all', $this->cat_type) ?  ('product_code is not null') : $cat_stmt2;
+
+//        $sales_year_keys = array_keys($this->list);
+
+//        $stmt = "SELECT NodeNo FROM ProductMast
+//                WHERE Pricelist = 1
+//                AND " . ($this->vendor_type == "vendor_all" ? "VendorNo is not null"  : "VendorNo ='" . $this->vendor_type . "'")
+//                . " AND " . $sp_txt . " AND " . $cat_txt1;
+
+//        dd($stmt);
+
+
+//        $this->items = Products::where('Pricelist', '1')
+////            ->where('products.VendorNo', $this->vendor_type)
+//            ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//            ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt2)
+////            ->whereRaw($cat_txt2)
+//            ->whereRaw($cat_txt1)
+//            ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
+////            ->toSql();
+//            ->get()->toArray();
+
+//        $this->items = ProductMast::where('Pricelist', '1')
+        $items = ProductMast::where('Pricelist', '1')
+//            ->where('products.VendorNo', $this->vendor_type)
+            ->whereRaw($this->vendor_type == "vendor_all" ? "ProductMast.VendorNo is not null"  : "ProductMast.VendorNo ='" . $this->vendor_type . "'")
+//            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+            ->whereRaw($sp_txt)
+//            ->whereIn('products.SpecialityCode', $this->sp_type)
+//            ->whereRaw($cat_stmt2)
+//            ->whereRaw($cat_txt2)
+            ->whereRaw($cat_txt1)
+//            ->selectRaw('Code as ProductCode, Arabic_Name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo')
+            ->pluck('NodeNo')
+            ->toArray();
+//            ->toSql();
+//            ->get()->toArray();
+
+        return $items;
+//        dd(implode(',', $items));
+//        dd($items);
+
+    }
+
+    public function getSales() {
+
+//        dd($this->dept_id);
+        $this->list = [];
+        for ($i = 0; $i < 12; $i++) {
+
+            $month = Carbon::parse($this->selected_month)->addMonth($i)->format('n');
+            $year = Carbon::parse($this->selected_month)->addMonth($i)->format('Y');
+
+//            $month = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('n');
+//            $year = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('Y');
+
+//            $month = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('n');
+//            $year = Carbon::parse($this->selected_month)->subYear()->addMonth($i)->format('Y');
+            $this->list[$year][] = $month;
+        }
+
+        /* Sales Query Statement */
+
+        $products = $this->getProducts();
+        $month_counter = 1;
+
+        $selected_year1 = Carbon::parse($this->selected_month);
+        $selected_year2 = Carbon::parse($this->selected_month)->addMonth(11);
+
+
+        $start_of_period = $selected_year1->format('Y-m-d');
+        $end_of_period = $selected_year2->endOfMonth()->format('Y-m-d');
+
+        $merged_dept = $this->dept_id;
+        // merge two depts
+        if (in_array('3', $this->dept_id)) {
+            array_push($merged_dept, "509");
+        }
+        elseif (in_array('10', $this->dept_id)) {
+            array_push($merged_dept, "510");
+        }
+        elseif (in_array('12', $this->dept_id)) {
+            array_push($merged_dept, "515");
+        }
+
+        $month_stmt = "";
+        $months_txt = "";
+        $sum_txt = "";
+
+        if (count($this->dept_id) == 1) {
+
+            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
+                ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
+                ->whereNotNull('group')
+                ->where('role', 'u')
+                ->whereRaw('write_product_target IN (1,2)')
+                ->select('users.id','users.emp_code', 'users.name')
+                ->distinct()
+//                ->pluck('users.emp_code')
+//                ->toArray();
+                ->get();
+
+
+            $user_ids = User::join('user_groups', 'users.group', 'user_groups.id')
+                ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
+                ->whereNotNull('group')
+                ->where('role', 'u')
+                ->whereRaw('write_product_target IN (1,2)')
+//                ->select('users.emp_code')
+                ->distinct()
+                ->pluck('users.emp_code')
+                ->toArray();
+
+//                ->get();
+            array_walk($user_ids, function (&$value, $key) {
+                $value="'"."$value"."'";
+            });
+
+            $month_stmt = "SELECT * FROM (
+                            SELECT
+                            ProductNo,";
+
+            foreach ($this->list as $year_key => $year) {
+
+                foreach ($year as $month_key => $month) {
+                    $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
+                    $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
+//                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+                    $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+
+                    foreach ($user_ids as $user_key => $user_id) {
+                        if ($user_key === array_key_last($user_ids) && $month_key === array_key_last($year)) {
+                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."'";
+                        }
+                        else {
+                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."',";
+                        }
+                    }
+
+                    $month_counter++;
+                }
+            }
+
+
+
+            $month_stmt .= $months_txt;
+            $month_stmt .= "FROM (
+SELECT productMast.NodeNo, VendorNo, accmast.Arabic_Name as VendorName, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, BaseUnits, SpecialityCode, WholeSale, Retail, MaxDiscount FROM ProductMast, accmast
+where VendorNo = accmast.NodeNo
+and ProductMast.NodeNo in (". implode(',', $products).")) as product
+LEFT JOIN
+(SELECT ProductNo, SalesEmployee, EmpCode";
+
+//            foreach ($this->list as $year_key => $year) {
+//
+//                foreach ($year as $month) {
+//                    $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
+//                    $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
+//                    $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+//
+//                    $month_counter++;
+//                }
+//            }
+
+            $month_stmt .= $sum_txt;
+            $month_stmt .= " FROM (
+            SELECT ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate as 'voucher_date', WarrentyInfo.SalesEmployee, StudentMast.Code as EmpCode, SInvoice.SInvoiceNo, sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast, WarrentyInfo, StudentMast
+            where partyno=accmast.NodeNo and accmast.[type]=10
+            and SInvoice.PartyNo = WarrentyInfo.AccountNo
+            and WarrentyInfo.SalesEmployee = StudentMast.NodeNo
+            and SIDate>='". $start_of_period."' and  SIDate<='".$end_of_period." 23:59:59'";
+            if ($this->dept_id != "all") {
+                $month_stmt .="and Department in (".implode(',',$merged_dept).")";
+            }
+            $month_stmt .=" and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, SInvoice.SInvoiceNo
+            union all
+            SELECT ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate as 'voucher_date', WarrentyInfo.SalesEmployee, StudentMast.Code as EmpCode, PInvoice.PInvoiceNo, -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast, WarrentyInfo, StudentMast
+            where partyno=accmast.NodeNo and accmast.[type]=10
+			and PInvoice.PartyNo = WarrentyInfo.AccountNo
+			and WarrentyInfo.SalesEmployee = StudentMast.NodeNo
+            and PIDate>='". $start_of_period ."' and  PIDate<='".$end_of_period." 23:59:59'";
+            if ($this->dept_id != "all") {
+                $month_stmt .="and Department in ( ".implode(',',$merged_dept) . ")";
+            }
+            $month_stmt .= " and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, PInvoice.PInvoiceNo
+            ) as tbl
+			where EmpCode in (". implode(',', $user_ids) .")
+            group by ProductNo, SalesEmployee, EmpCode) as sales_tbl
+			ON sales_tbl.ProductNo = product.NodeNo
+			group by ProductNo
+	HAVING ProductNo is not null) as sales_tbl2
+	LEFT JOIN (
+		select ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, accmast.NodeNo as VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, BaseUnits, SpecialityCode, Retail, WholeSale, MaxDiscount from ProductMast, accmast
+		where VendorNo = accmast.NodeNo
+		and Pricelist = 1
+		and ProductMast.NodeNo in (".implode(',', $products).")
+	) as prods
+	ON  sales_tbl2.ProductNo = prods.NodeNo";
+
+
+        }
+        elseif (count($this->dept_id) > 1) {
+
+            foreach ($this->list as $year_key => $year) {
+
+                foreach ($year as $month_key => $month) {
+                    $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
+                    $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
+//                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+                    $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+
+                    foreach ($this->dept_id as $dept_key => $dept_id) {
+                        if ($dept_key === array_key_last($this->dept_id) && $month_key === array_key_last($year)) {
+                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."'";
+                        }
+                        else {
+                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
+                        }
+                    }
+
+                    $month_counter++;
+                }
+            }
+
+            $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
+            $month_stmt .= "(SELECT
+                        ProductNo, ";
+            $month_stmt .= $months_txt;
+            $month_stmt .= "FROM ProductMast as prod_tbl
+                    LEFT JOIN (";
+            $month_stmt .= "SELECT (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, ProductNo";
+            $month_stmt .= $sum_txt;
+
+            $month_stmt .= " FROM (
+            SELECT Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate as 'voucher_date', SInvoice.SInvoiceNo, sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[SInvoice], accmast
+            where partyno=accmast.NodeNo and accmast.[type]=10
+            and SIDate>='". $start_of_period."' and  SIDate<='".$end_of_period." 23:59:59'";
+            if ($this->dept_id != "all") {
+                $month_stmt .="and Department in (".implode(',',$merged_dept).")";
+            }
+            $month_stmt .=" and ProductNo in (". implode(',', $products) .")" . " group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, SInvoice.SInvoiceNo
+            union all
+            SELECT Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate as 'voucher_date', PInvoice.PInvoiceNo, -sum(ActualQty) as svalue
+              FROM [AccountsC5].[dbo].[PInvoice], accmast
+            where partyno=accmast.NodeNo and accmast.[type]=10
+            and PIDate>='". $start_of_period ."' and  PIDate<='".$end_of_period." 23:59:59'";
+            if ($this->dept_id != "all") {
+                $month_stmt .="and Department in (". implode(',',$merged_dept) . ")";
+            }
+            $month_stmt .= " and ProductNo in (". implode(',', $products) .")" ." group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, PInvoice.PInvoiceNo
+            ) as tbl
+            group by (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END), ProductNo) as a
+            ON prod_tbl.NodeNo = a.ProductNo
+	        group by ProductNo) sales_tbl
+	        WHERE sales_tbl.ProductNo = ProductMast.NodeNo
+			AND VendorNo = accmast.NodeNo";
+        }
+
+
+//        dd($month_stmt);
+        return $month_stmt;
     }
 }

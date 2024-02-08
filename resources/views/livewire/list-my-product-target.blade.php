@@ -149,7 +149,7 @@
             @php $mode_total_dept_s_value = 0; @endphp
 
         <div id="report-btn" wire:loading.remove wire:target="generateReport" class="overflow-x-auto w-full">
-            @if(count($products_items) > 0)
+{{--            @if(count($products_items) > 0)--}}
                 @if($results && $dept_id)
                     <div class="mb-5 p-2">
                         <div class="flex flex-col sm:flex-row gap-4 w-full">
@@ -212,29 +212,29 @@
                             <?php
                                 $vendor_id = "*";
                             ?>
-                        @foreach($items[0] as $record)
+                        @foreach($results as $record)
                             <div>
-                                @if($record['VendorNo'] != $vendor_id)
-                                        <?php $vendor_id = $record['VendorNo']; ?>
+                                @if($record->VendorNo != $vendor_id)
+                                        <?php $vendor_id = $record->VendorNo; ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
-                                        <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorCode }}</td>
+                                        <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorName }}</td>
                                     </tr>
                                 @endif
-                                <?php $vendor_id = $record['VendorNo']; ?>
+                                <?php $vendor_id = $record->VendorNo; ?>
                                 <tr>
                                     <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div class="w-full text-sm text-center">رقم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductCode }}</div>
                                             <div class="w-full text-sm text-center">اسم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductName }}</div>
                                             <div class="w-full text-sm text-center">الوحدة</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
                                             <div class="w-full text-sm text-center">التميز</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->SpecialityCode }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->VendorName }}</div>
                                             <div class="w-full text-sm text-center mr-1">
                                                 @if($item_price == "WholeSale")
                                                     سعر مؤسسات
@@ -246,7 +246,7 @@
                                                     السعر
                                                 @endif
                                             </div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->$item_price }}</div>
                                         </div>
                                     </th>
                                 </tr>
@@ -335,54 +335,58 @@
                                             @foreach ($year as $month)
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
                                                         <?php
-                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
-                                                        $month_num = "month".$month_counter;
+//                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
+                                                        $month_num = "month".$month_counter."_".$emp->emp_code;
+                                                        $new_result = $record->$month_num;
                                                         ?>
-                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
-                                                        <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
-                                                    @php $total_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
+{{--                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>--}}
+                                                    <div class="text-sm">{{ $new_result ? ($new_result == 0 ? "" : number_format($new_result)) : ""  }}</div>
+                                                        <?php array_push($new_sales, ($new_result ? $new_result : 0) ) ?>
+                                                    @php $total_new_sales += $new_result ? $new_result : 0; @endphp
                                                     @switch($month_counter)
                                                         @case(1)
-                                                            @php $total_s1 = $total_s1 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s1 = $total_s1 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(2)
-                                                            @php $total_s2 = $total_s2 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s2 = $total_s2 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(3)
-                                                            @php $total_s3 = $total_s3 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s3 = $total_s3 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(4)
-                                                            @php $total_s4 = $total_s4 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s4 = $total_s4 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(5)
-                                                            @php $total_s5 = $total_s5 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s5 = $total_s5 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(6)
-                                                            @php $total_s6 = $total_s6 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s6 = $total_s6 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(7)
-                                                            @php $total_s7 = $total_s7 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s7 = $total_s7 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(8)
-                                                            @php $total_s8 = $total_s8 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s8 = $total_s8 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(9)
-                                                            @php $total_s9 = $total_s9 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s9 = $total_s9 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(10)
-                                                            @php $total_s10 = $total_s10 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s10 = $total_s10 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(11)
-                                                            @php $total_s11 = $total_s11 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s11 = $total_s11 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                         @case(12)
-                                                            @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
+                                                            @php $total_s12 = $total_s12 + ($new_result ? $new_result : 0); @endphp
                                                             @break
                                                     @endswitch
                                                 </th>
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
                                                         <?php
-                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id[0])->where('user_id', $emp->id)->first(): 0;
+                                                        //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id[0])->where('user_id', $emp->id)->first(): 0;
+                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_targets` where `product_id` = '". $record->ProductCode ."' AND `branch` = '". $dept_id[0] ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."' and user_id ='". $emp->id ."'");
+                                                        $new_result = count($new_result) > 0 ? $new_result[0] : 0;
                                                         ?>
                                                     <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "": $new_result->target) : ""  }}</div>
                                                         <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
@@ -436,11 +440,11 @@
                                             <div class="text-sm">{{ $total_new_tr == 0 ? "" : number_format($total_new_tr) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                            <?php $sales_total = $total_new_sales*$record[$item_price]; ?>
+                                            <?php $sales_total = $total_new_sales*$record->$item_price; ?>
                                             <div class="text-sm">{{ $sales_total == 0 ? "" : number_format($sales_total) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <?php $target_total = $total_new_tr*$record[$item_price]; ?>
+                                            <?php $target_total = $total_new_tr*$record->$item_price; ?>
                                             <div class="text-sm">{{ $target_total == 0 ? "" : number_format($target_total) }}</div>
                                         </th>
                                         @php $a = $target_total == 0 ? 0 : (($sales_total/$target_total)*100)-100; @endphp
@@ -452,21 +456,21 @@
                                         $total_s_qty = $total_s_qty + $total_new_sales;
                                         $total_f_qty = $total_f_qty + $total_new_tr;
 
-                                        $total_s_value = $total_s_value + $total_new_sales*$record[$item_price];
-                                        $total_f_value = $total_f_value + $total_new_tr*$record[$item_price];
+                                        $total_s_value = $total_s_value + $total_new_sales*$record->$item_price;
+                                        $total_f_value = $total_f_value + $total_new_tr*$record->$item_price;
 
                                         if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
-                                                $all_total_emp_sales[$emp->emp_code] = $total_new_sales*$record[$item_price];
+                                                $all_total_emp_sales[$emp->emp_code] = $total_new_sales*$record->$item_price;
                                             }
                                             else {
-                                                $all_total_emp_sales[$emp->emp_code] += $total_new_sales*$record[$item_price];
+                                                $all_total_emp_sales[$emp->emp_code] += $total_new_sales*$record->$item_price;
                                             }
 
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
-                                                $all_total_emp_tr[$emp->emp_code] = $total_new_tr*$record[$item_price];
+                                                $all_total_emp_tr[$emp->emp_code] = $total_new_tr*$record->$item_price;
                                             }
                                             else {
-                                                $all_total_emp_tr[$emp->emp_code] += $total_new_tr*$record[$item_price];
+                                                $all_total_emp_tr[$emp->emp_code] += $total_new_tr*$record->$item_price;
                                             }
                                     @endphp
                                 @endforeach
@@ -658,10 +662,10 @@
                                 @endforeach
                                 <tr class="emp-summary-total" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                     <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
-                                    <td id="summary-grand-total-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fff6a1" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_s) }}</td>
-                                    <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_sum_f) }}</td>
+                                    <td id="summary-grand-total-emp-val-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #fff6a1" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(floatval($total_sum_s)) }}</td>
+                                    <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(floatval($total_sum_f)) }}</td>
                                         <?php $total_emp_diff = $total_sum_f == 0? 0 :  number_format((($total_sum_s/$total_sum_f)*100)-100); ?>
-                                    <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($total_emp_diff > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_emp_diff) }}</td>
+                                    <td id="summary-grand-total-emp-diff-{{$emp->emp_code}}" style="border: 2px solid black;@if($total_emp_diff > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format(floatval($total_emp_diff)) }}</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -837,7 +841,7 @@
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
                                                         <?php
 //                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
-                                                        $month_num = "month".$month_counter;
+                                                        $month_num = "month".$month_counter."_".$dept;
                                                         $new_result = $record->$month_num;
                                                         ?>
 {{--                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>--}}
@@ -886,52 +890,57 @@
                                                     @endswitch
                                                 </th>
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
-{{--                                                        <?php--}}
-{{--                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;--}}
-{{--                                                        ?>--}}
-{{--                                                    <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>--}}
-{{--                                                        <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>--}}
-{{--                                                        <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>--}}
+                                                        <?php
+//                                                        $new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first(): 0;
 
-{{--                                                    @php $total_dept_new_tr += ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                    @switch($month_counter)--}}
-{{--                                                        @case(1)--}}
-{{--                                                            @php $total_f1 = $total_f1 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(2)--}}
-{{--                                                            @php $total_f2 = $total_f2 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(3)--}}
-{{--                                                            @php $total_f3 = $total_f3 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(4)--}}
-{{--                                                            @php $total_f4 = $total_f4 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(5)--}}
-{{--                                                            @php $total_f5 = $total_f5 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(6)--}}
-{{--                                                            @php $total_f6 = $total_f6 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(7)--}}
-{{--                                                            @php $total_f7 = $total_f7 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(8)--}}
-{{--                                                            @php $total_f8 = $total_f8 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(9)--}}
-{{--                                                            @php $total_f9 = $total_f9 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(10)--}}
-{{--                                                            @php $total_f10 = $total_f10 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(11)--}}
-{{--                                                            @php $total_f11 = $total_f11 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                        @case(12)--}}
-{{--                                                            @php $total_f12 = $total_f12 + ($new_result ? $new_result->target : 0); @endphp--}}
-{{--                                                            @break--}}
-{{--                                                    @endswitch--}}
+//                                                        $month_num = "month".$month_counter."_".$dept;
+//                                                        $month_num = "month".$month_counter;
+                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_target_branch_totals` where `product_id` = '". $record->ProductCode ."' AND `branch` = '". $dept ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."'");
+                                                        $new_result = count($new_result) > 0 ? $new_result[0] : 0;
+                                                        ?>
+                                                    <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
+                                                        <?php array_push($new_tr, ($new_result ? $new_result->target : 0) ) ?>
+                                                        <?php $dept_forecast += ($new_result ? $new_result->target : 0); ?>
+
+                                                    @php $total_dept_new_tr += ($new_result ? $new_result->target : 0); @endphp
+                                                    @switch($month_counter)
+                                                        @case(1)
+                                                            @php $total_f1 = $total_f1 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(2)
+                                                            @php $total_f2 = $total_f2 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(3)
+                                                            @php $total_f3 = $total_f3 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(4)
+                                                            @php $total_f4 = $total_f4 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(5)
+                                                            @php $total_f5 = $total_f5 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(6)
+                                                            @php $total_f6 = $total_f6 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(7)
+                                                            @php $total_f7 = $total_f7 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(8)
+                                                            @php $total_f8 = $total_f8 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(9)
+                                                            @php $total_f9 = $total_f9 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(10)
+                                                            @php $total_f10 = $total_f10 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(11)
+                                                            @php $total_f11 = $total_f11 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                        @case(12)
+                                                            @php $total_f12 = $total_f12 + ($new_result ? $new_result->target : 0); @endphp
+                                                            @break
+                                                    @endswitch
                                                 </th>
                                                 @php $month_counter++; @endphp
                                             @endforeach
@@ -1223,9 +1232,9 @@
                 @else
                     <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات في هذه الشهور ..</div>
                 @endif
-            @else
-                <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات في هذه الشهور ..</div>
-            @endif
+{{--            @else--}}
+{{--                <div class="w-full p-4 mt-4 text-center bold" style="border: 1px solid; background-color: #ffecec; color: black;">لا يوجد مستهدفات في هذه الشهور ..</div>--}}
+{{--            @endif--}}
         </div>
     @endif
     @if($loading)
