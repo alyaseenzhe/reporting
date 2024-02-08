@@ -74,7 +74,7 @@ class ListMyProductTarget extends Component
             return redirect()->route('non-active-user');
         }
 
-        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || (Auth::user()->user_group && in_array('list.my-product-target-only', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
             return;
         } else {
             return redirect()->route('dashboard');
@@ -935,21 +935,26 @@ class ListMyProductTarget extends Component
                     $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
 
                     foreach ($user_ids as $user_key => $user_id) {
-                        if ($user_key === array_key_last($user_ids) && $month_key === array_key_last($year)) {
-                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."'";
-                        }
-                        else {
-                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."',";
-                        }
+//                        if ($user_key === array_key_last($user_ids) && $month_key === array_key_last($year)) {
+//                        if ($month_counter == 12) {
+//                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".(trim($user_id, "'"))."',";
+//                        }
+//                        else {
+//                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".(trim($user_id, "'"))."',";
+//                        }
+                        $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".(trim($user_id, "'"))."',";
                     }
 
                     $month_counter++;
                 }
             }
 
+            $trimmed_months = rtrim($months_txt, ', ');
+//            dd($trimmed);
+//            dd($months_txt);
 
-
-            $month_stmt .= $months_txt;
+//            $month_stmt .= $months_txt;
+            $month_stmt .= $trimmed_months;
             $month_stmt .= "FROM (
 SELECT productMast.NodeNo, VendorNo, accmast.Arabic_Name as VendorName, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, BaseUnits, SpecialityCode, WholeSale, Retail, MaxDiscount FROM ProductMast, accmast
 where VendorNo = accmast.NodeNo
@@ -1018,22 +1023,26 @@ LEFT JOIN
                     $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
 
                     foreach ($this->dept_id as $dept_key => $dept_id) {
-                        if ($dept_key === array_key_last($this->dept_id) && $month_key === array_key_last($year)) {
-                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."'";
-                        }
-                        else {
-                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
-                        }
+//                        if ($dept_key === array_key_last($this->dept_id) && $month_key === array_key_last($year)) {
+//                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."'";
+//                        }
+//                        else {
+//                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
+//                        }
+                        $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
                     }
 
                     $month_counter++;
                 }
             }
 
+            $trimmed_months = rtrim($months_txt, ', ');
+
             $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
             $month_stmt .= "(SELECT
                         ProductNo, ";
-            $month_stmt .= $months_txt;
+//            $month_stmt .= $months_txt;
+            $month_stmt .= $trimmed_months;
             $month_stmt .= "FROM ProductMast as prod_tbl
                     LEFT JOIN (";
             $month_stmt .= "SELECT (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, ProductNo";

@@ -94,6 +94,12 @@ class CreateProductTarget extends Component
             return redirect()->route('non-active-user');
         }
 
+        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+
 
 //        if (Auth::user()->user_group->write_product_target == '1' || Auth::user()->user_group->write_product_target == '2'){
 //            return;

@@ -1,11 +1,13 @@
 <div>
-    <div class="mb-4">
-        <a href="{{ route('create.product-target') }}">
-            <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
-       المستهدف
-        </span>
-        </a>
-    </div>
+    @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <div class="mb-4">
+            <a href="{{ route('create.product-target') }}">
+                <span style="background-color: #0c5460; color: white; padding: 7px; border-radius: 5px;" class="text-sm bg-blue-950; cursor-pointer">
+           المستهدف
+            </span>
+            </a>
+        </div>
+    @endif
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
