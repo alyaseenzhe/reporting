@@ -1002,7 +1002,7 @@ LEFT JOIN
 			ON sales_tbl.ProductNo = product.NodeNo
 			group by ProductNo
 	HAVING ProductNo is not null) as sales_tbl2
-	LEFT JOIN (
+	RIGHT JOIN (
 		select ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, accmast.NodeNo as VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, BaseUnits, SpecialityCode, Retail, WholeSale, MaxDiscount from ProductMast, accmast
 		where VendorNo = accmast.NodeNo
 		and Pricelist = 1
@@ -1038,9 +1038,18 @@ LEFT JOIN
 
             $trimmed_months = rtrim($months_txt, ', ');
 
-            $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
+//            $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
+            $month_stmt = "SELECT * FROM (
+SELECT
+	ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount
+	FROM ProductMast , accmast
+	WHERE VendorNo = accmast.NodeNo
+	AND ProductMast.NodeNo in (". implode(',', $products) .")
+	) as tbl0
+	LEFT JOIN ";
             $month_stmt .= "(SELECT
                         ProductNo, ";
+
 //            $month_stmt .= $months_txt;
             $month_stmt .= $trimmed_months;
             $month_stmt .= "FROM ProductMast as prod_tbl
@@ -1069,9 +1078,8 @@ LEFT JOIN
             ) as tbl
             group by (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END), ProductNo) as a
             ON prod_tbl.NodeNo = a.ProductNo
-	        group by ProductNo) sales_tbl
-	        WHERE sales_tbl.ProductNo = ProductMast.NodeNo
-			AND VendorNo = accmast.NodeNo";
+	        group by ProductNo) tbl1
+	        ON tbl0.NodeNo = tbl1.ProductNo";
         }
 
 
