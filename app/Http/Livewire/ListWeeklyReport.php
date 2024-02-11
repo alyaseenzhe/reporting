@@ -141,7 +141,7 @@ class ListWeeklyReport extends Component
         $category_amount = $this->categorize($customers_code, $this->start_date, $this->end_date);
         $speciality_amount = $this->categorize_speciality($customers_code, $this->start_date, $this->end_date);
         $this->category_qty = $this->categorizeQty($customers_code, $this->start_date, $this->end_date);
-        $this->category_qty_total = $this->categorizeQtyTotal($this->start_date, $this->end_date);
+        $this->category_qty_total = $this->categorizeQtyTotal($customers_code,$this->start_date, $this->end_date);
 //        dd($this->category_qty);
 
 //        dd($customer_details);
@@ -2073,7 +2073,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2095,7 +2096,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2122,7 +2124,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2148,7 +2151,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2179,7 +2183,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2199,7 +2204,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2225,7 +2231,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
@@ -2255,7 +2262,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
@@ -2658,7 +2666,7 @@ group by Code, Name", [
 
     }
 
-    public function categorizeQtyTotal($start_date, $end_date) {
+    public function categorizeQtyTotal($customer_code,$start_date, $end_date) {
 
 //        $customer_code = ["0100590", "0100961"];
         set_time_limit(2000);
@@ -2720,7 +2728,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2742,7 +2751,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '20%')
                     ->orWhere('ProductMast.code', 'like',  '21%')
@@ -2770,7 +2780,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2796,7 +2807,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '10%')
                     ->orWhere('ProductMast.code', 'like',  '11%')
@@ -2827,7 +2839,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2847,7 +2860,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->orWhere('ProductMast.code', 'like',  '17%');
             })
@@ -2873,7 +2887,8 @@ group by Code, Name", [
             ->join('ProductMast', 'pinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'PInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
@@ -2903,7 +2918,8 @@ group by Code, Name", [
             ->join('ProductMast', 'sinvoice.ProductNo', 'ProductMast.NodeNo')
             ->join('StudentMast', 'SInvoice.Student', 'StudentMast.NodeNo')
             ->whereIn('accmast.type', [9, 10])
-            ->where('accmast.Accmast_Department', $real_area)
+//            ->where('accmast.Accmast_Department', $real_area)
+            ->whereIn('accmast.Code', $customer_code)
             ->where(function ($query) {
                 $query->where('ProductMast.code', 'not like', '20%')
                     ->where('ProductMast.code', 'not like', '21%')
