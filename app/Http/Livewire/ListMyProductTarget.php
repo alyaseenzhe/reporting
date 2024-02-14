@@ -181,8 +181,11 @@ class ListMyProductTarget extends Component
 //        $fetch_item_query = json_decode(json_encode($item_query), true);
 
         $month_stmt = $this->getSales();
-        $query = DB::connection('sqlsrv')->select($month_stmt);
-        $this->results = $query;
+
+        if ($month_stmt != "") {
+            $query = DB::connection('sqlsrv')->select($month_stmt);
+            $this->results = $query;
+        }
 
         $this->show_msg = true;
 
@@ -868,89 +871,98 @@ class ListMyProductTarget extends Component
         /* Sales Query Statement */
 
         $products = $this->getProducts();
+
         $month_counter = 1;
-
-        $selected_year1 = Carbon::parse($this->selected_month);
-        $selected_year2 = Carbon::parse($this->selected_month)->addMonth(11);
-
-
-        $start_of_period = $selected_year1->format('Y-m-d');
-        $end_of_period = $selected_year2->endOfMonth()->format('Y-m-d');
-
-        $merged_dept = $this->dept_id;
-        // merge two depts
-        if (in_array('3', $this->dept_id)) {
-            array_push($merged_dept, "509");
-        }
-        elseif (in_array('10', $this->dept_id)) {
-            array_push($merged_dept, "510");
-        }
-        elseif (in_array('12', $this->dept_id)) {
-            array_push($merged_dept, "515");
-        }
-
         $month_stmt = "";
         $months_txt = "";
         $sum_txt = "";
+        $stock_txt = "";
 
-        if (count($this->dept_id) == 1) {
+        if (count($products) > 0) {
+            $selected_year1 = Carbon::parse($this->selected_month);
+            $selected_year2 = Carbon::parse($this->selected_month)->addMonth(11);
 
-            $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
-                ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
-                ->whereNotNull('group')
-                ->where('role', 'u')
-                ->whereRaw('write_product_target IN (1,2)')
-                ->select('users.id','users.emp_code', 'users.name')
-                ->distinct()
+
+            $start_of_period = $selected_year1->format('Y-m-d');
+            $end_of_period = $selected_year2->endOfMonth()->format('Y-m-d');
+
+            $merged_dept = $this->dept_id;
+            // merge two depts
+            if (in_array('3', $this->dept_id)) {
+                array_push($merged_dept, "509");
+            }
+            elseif (in_array('10', $this->dept_id)) {
+                array_push($merged_dept, "510");
+            }
+            elseif (in_array('12', $this->dept_id)) {
+                array_push($merged_dept, "515");
+            }
+
+//        $month_stmt = "";
+//        $months_txt = "";
+//        $sum_txt = "";
+//        $stock_txt = "";
+
+            if (count($this->dept_id) == 1) {
+
+                $this->users = User::join('user_groups', 'users.group', 'user_groups.id')
+                    ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
+                    ->whereNotNull('group')
+                    ->where('role', 'u')
+                    ->whereRaw('write_product_target IN (1,2)')
+                    ->select('users.id','users.emp_code', 'users.name')
+                    ->distinct()
 //                ->pluck('users.emp_code')
 //                ->toArray();
-                ->get();
+                    ->get();
 
 
-            $user_ids = User::join('user_groups', 'users.group', 'user_groups.id')
-                ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
-                ->whereNotNull('group')
-                ->where('role', 'u')
-                ->whereRaw('write_product_target IN (1,2)')
+                $user_ids = User::join('user_groups', 'users.group', 'user_groups.id')
+                    ->where('branches', 'LIKE' ,'%"'.$this->dept_id[0].'"%')
+                    ->whereNotNull('group')
+                    ->where('role', 'u')
+                    ->whereRaw('write_product_target IN (1,2)')
 //                ->select('users.emp_code')
-                ->distinct()
-                ->pluck('users.emp_code')
-                ->toArray();
+                    ->distinct()
+                    ->pluck('users.emp_code')
+                    ->toArray();
 
 //                ->get();
-            array_walk($user_ids, function (&$value, $key) {
-                $value="'"."$value"."'";
-            });
+                array_walk($user_ids, function (&$value, $key) {
+                    $value="'"."$value"."'";
+                });
 
-            $month_stmt = "SELECT * FROM (
+                $month_stmt = "SELECT * FROM (
                             SELECT
                             ProductNo,";
 
-            foreach ($this->list as $year_key => $year) {
+                foreach ($this->list as $year_key => $year) {
 
-                foreach ($year as $month_key => $month) {
-                    $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
-                    $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
+                    foreach ($year as $month_key => $month) {
+                        $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
+                        $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
 //                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
-                    $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+                        $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
 
-                    foreach ($user_ids as $user_key => $user_id) {
-                        if ($user_key === array_key_last($user_ids) && $month_key === array_key_last($year)) {
-                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."'";
+                        foreach ($user_ids as $user_key => $user_id) {
+//                        if ($user_key === array_key_last($user_ids) && $month_key === array_key_last($year)) {
+                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."', ";
+//                        }
+//                        else {
+//                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."', ";
+//                        }
                         }
-                        else {
-                            $months_txt .= "MAX(CASE WHEN EmpCode = ". $user_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".trim($user_id, "'")."',";
-                        }
+
+                        $month_counter++;
                     }
-
-                    $month_counter++;
                 }
-            }
+
+                $months_txt = rtrim($months_txt, ', ');
 
 
 
-            $month_stmt .= $months_txt;
-            $month_stmt .= "FROM (
+                $month_stmt .= $months_txt;
+                $month_stmt .= "FROM (
 SELECT productMast.NodeNo, VendorNo, accmast.Arabic_Name as VendorName, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, BaseUnits, SpecialityCode, WholeSale, Retail, MaxDiscount FROM ProductMast, accmast
 where VendorNo = accmast.NodeNo
 and ProductMast.NodeNo in (". implode(',', $products).")) as product
@@ -968,18 +980,18 @@ LEFT JOIN
 //                }
 //            }
 
-            $month_stmt .= $sum_txt;
-            $month_stmt .= " FROM (
+                $month_stmt .= $sum_txt;
+                $month_stmt .= " FROM (
             SELECT ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate as 'voucher_date', WarrentyInfo.SalesEmployee, StudentMast.Code as EmpCode, SInvoice.SInvoiceNo, sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[SInvoice], accmast, WarrentyInfo, StudentMast
             where partyno=accmast.NodeNo and accmast.[type]=10
             and SInvoice.PartyNo = WarrentyInfo.AccountNo
             and WarrentyInfo.SalesEmployee = StudentMast.NodeNo
             and SIDate>='". $start_of_period."' and  SIDate<='".$end_of_period." 23:59:59'";
-            if ($this->dept_id != "all") {
-                $month_stmt .="and Department in (".implode(',',$merged_dept).")";
-            }
-            $month_stmt .=" and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, SInvoice.SInvoiceNo
+                if ($this->dept_id != "all") {
+                    $month_stmt .="and Department in (".implode(',',$merged_dept).")";
+                }
+                $month_stmt .=" and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, SInvoice.SInvoiceNo
             union all
             SELECT ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate as 'voucher_date', WarrentyInfo.SalesEmployee, StudentMast.Code as EmpCode, PInvoice.PInvoiceNo, -sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[PInvoice], accmast, WarrentyInfo, StudentMast
@@ -987,10 +999,10 @@ LEFT JOIN
 			and PInvoice.PartyNo = WarrentyInfo.AccountNo
 			and WarrentyInfo.SalesEmployee = StudentMast.NodeNo
             and PIDate>='". $start_of_period ."' and  PIDate<='".$end_of_period." 23:59:59'";
-            if ($this->dept_id != "all") {
-                $month_stmt .="and Department in ( ".implode(',',$merged_dept) . ")";
-            }
-            $month_stmt .= " and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, PInvoice.PInvoiceNo
+                if ($this->dept_id != "all") {
+                    $month_stmt .="and Department in ( ".implode(',',$merged_dept) . ")";
+                }
+                $month_stmt .= " and ProductNo in (".implode(',', $products).") group by ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, WarrentyInfo.SalesEmployee, StudentMast.Code, PInvoice.PInvoiceNo
             ) as tbl
 			where EmpCode in (". implode(',', $user_ids) .")
             group by ProductNo, SalesEmployee, EmpCode) as sales_tbl
@@ -998,73 +1010,296 @@ LEFT JOIN
 			group by ProductNo
 	HAVING ProductNo is not null) as sales_tbl2
 	LEFT JOIN (
-		select ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, accmast.NodeNo as VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, BaseUnits, SpecialityCode, Retail, WholeSale, MaxDiscount from ProductMast, accmast
-		where VendorNo = accmast.NodeNo
-		and Pricelist = 1
-		and ProductMast.NodeNo in (".implode(',', $products).")
+
+
+		SELECT * FROM (
+ select * from (
+ SELECT NodeNo as NodeNo_stock, Code, Department, (Qty_In-Qty_out+Qty_in2) as stock FROM (
+ SELECT Distinct
+NodeNo,
+Code,
+Arabic_Name,
+BaseUnits,
+VendorNo,
+Vendor_Code,
+Vendor_ArName,
+Department,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<=GETDATE()  And Department = V.Department   Group By ProductNo) as Qty_In ,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<=GETDATE() And Department = V.Department    Group By ProductNo) as Qty_Out,
+case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) else 0 end  as Qty_in2
+FROM (Select distinct
+NodeNo ,
+Code ,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName,
+-Sum(TotalCost) as Cost
+from SInvoice ,productmast
+Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17)))  And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+And  Department in ( 3,509)
+AND ProductNo in (".implode(',', $products).")
+And (SIDate <= GETDATE() )  group By NodeNo , Code , Name , Arabic_Name ,Department,BaseUnits,VendorNo
+union all
+Select distinct
+NodeNo ,
+Code,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName  ,
+Sum(TotalCost) as Cost   from PInvoice,productmast Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+And  Department in (".implode(',', $merged_dept).")
+AND ProductNo in (".implode(',', $products).")
+And (PIDate <= GETDATE())
+group By NodeNo , Code ,Arabic_Name ,Department,BaseUnits,VendorNo) V
+group By NodeNo , Code , Arabic_Name ,Department,BaseUnits,VendorNo  , Vendor_Code, Vendor_ArName, Department
+) as tbl0) as dept_stock
+LEFT JOIN (
+ SELECT NodeNo as NodeNo_total, SUM(Qty_In-Qty_out+Qty_in2) as stock_total FROM (
+ SELECT Distinct
+NodeNo,
+Code,
+Arabic_Name,
+BaseUnits,
+VendorNo,
+Vendor_Code,
+Vendor_ArName,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<=GETDATE()  And Department = V.Department   Group By ProductNo) as Qty_In ,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<=GETDATE() And Department = V.Department    Group By ProductNo) as Qty_Out,
+case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) else 0 end  as Qty_in2
+FROM (Select distinct
+NodeNo ,
+Code ,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName,
+-Sum(TotalCost) as Cost
+from SInvoice ,productmast
+Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17)))  And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+AND ProductNo in (".implode(',', $products).")
+And (SIDate <= GETDATE() )  group By NodeNo , Code , Name , Arabic_Name ,Department,BaseUnits,VendorNo
+union all
+Select distinct
+NodeNo ,
+Code,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName  ,
+Sum(TotalCost) as Cost   from PInvoice,productmast Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+AND ProductNo in (".implode(',', $products).")
+And (PIDate <= GETDATE())
+group By NodeNo , Code ,Arabic_Name ,Department,BaseUnits,VendorNo) V
+group By NodeNo , Code , Arabic_Name ,Department,BaseUnits,VendorNo  , Vendor_Code, Vendor_ArName
+) as tbl0
+group by NodeNo) as full_stock
+ON dept_stock.NodeNo_stock = full_stock.NodeNo_total) as full_stock_details
+
+LEFT JOIN (
+select ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, accmast.NodeNo as VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, BaseUnits, SpecialityCode, Retail, WholeSale, MaxDiscount from ProductMast, accmast
+where VendorNo = accmast.NodeNo
+and Pricelist = 1
+and ProductMast.NodeNo in (".implode(',', $products).")) as prods_details
+ON full_stock_details.NodeNo_stock = prods_details.NodeNo
+
+
+
+
 	) as prods
 	ON  sales_tbl2.ProductNo = prods.NodeNo";
 
 
-        }
-        elseif (count($this->dept_id) > 1) {
-
-            foreach ($this->list as $year_key => $year) {
-
-                foreach ($year as $month_key => $month) {
-                    $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
-                    $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
-//                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
-                    $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
-
-                    foreach ($this->dept_id as $dept_key => $dept_id) {
-                        if ($dept_key === array_key_last($this->dept_id) && $month_key === array_key_last($year)) {
-                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."'";
-                        }
-                        else {
-                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
-                        }
-                    }
-
-                    $month_counter++;
-                }
             }
+            elseif (count($this->dept_id) > 1) {
 
-            $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
-            $month_stmt .= "(SELECT
+                foreach ($this->dept_id as $dept_key => $dept_id) {
+//                if ($dept_key === array_key_last($this->dept_id)) {
+                    $stock_txt .= "MAX(CASE WHEN Department = '".$dept_id."' THEN stock END) as 'stock_".$dept_id."', MAX(CASE WHEN Department = '".$dept_id."' THEN stock_total END) as 'stocktotal_".$dept_id."', ";
+//                }
+//                else {
+//                    $stock_txt .= "MAX(CASE WHEN Department = '".$dept_id."' THEN stock END) as 'stock_".$dept_id."', MAX(CASE WHEN Department = '".$dept_id."' THEN stock_total END) as 'stocktotal_".$dept_id."', ";
+//                }
+                }
+
+                $stock_txt = rtrim($stock_txt, ', ');
+                foreach ($this->list as $year_key => $year) {
+
+                    foreach ($year as $month_key => $month) {
+                        $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
+                        $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
+//                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+                        $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+
+                        foreach ($this->dept_id as $dept_key => $dept_id) {
+//                        if ($dept_key === array_key_last($this->dept_id) && $month_key === array_key_last($year)) {
+                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."', ";
+//                        }
+//                        else {
+//                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
+//                        }
+                        }
+
+                        $month_counter++;
+                    }
+                }
+
+                $months_txt = rtrim($months_txt, ', ');
+
+//            $month_stmt = "SELECT ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, ProductMast.BaseUnits, ProductMast.SpecialityCode, ProductMast.WholeSale, ProductMast.Retail, ProductMast.MaxDiscount, sales_tbl.* FROM ProductMast , accmast,";
+                $month_stmt = "SELECT prods.*, sales_tbl.* FROM (
+
+
+		SELECT * FROM (
+ select NodeNo_stock, ".$stock_txt." from (
+ SELECT NodeNo as NodeNo_stock, Code, (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, (Qty_In-Qty_out+Qty_in2) as stock FROM (
+ SELECT Distinct
+NodeNo,
+Code,
+Arabic_Name,
+BaseUnits,
+VendorNo,
+Vendor_Code,
+Vendor_ArName,
+Department,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<=GETDATE()  And Department = V.Department   Group By ProductNo) as Qty_In ,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<=GETDATE() And Department = V.Department    Group By ProductNo) as Qty_Out,
+case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) else 0 end  as Qty_in2
+FROM (Select distinct
+NodeNo ,
+Code ,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName,
+-Sum(TotalCost) as Cost
+from SInvoice ,productmast
+Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17)))  And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+And  Department in ( 3,509)
+AND ProductNo in (".implode(',', $products).")
+And (SIDate <= GETDATE() )  group By NodeNo , Code , Name , Arabic_Name ,Department,BaseUnits,VendorNo
+union all
+Select distinct
+NodeNo ,
+Code,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName  ,
+Sum(TotalCost) as Cost   from PInvoice,productmast Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+And  Department in (".implode(',', $merged_dept).")
+AND ProductNo in (".implode(',', $products).")
+And (PIDate <= GETDATE())
+group By NodeNo , Code ,Arabic_Name ,Department,BaseUnits,VendorNo) V
+group By NodeNo , Code , Arabic_Name ,Department,BaseUnits,VendorNo  , Vendor_Code, Vendor_ArName, Department
+) as tbl0) as dept_stock
+LEFT JOIN (
+ SELECT NodeNo as NodeNo_total, SUM(Qty_In-Qty_out+Qty_in2) as stock_total FROM (
+ SELECT Distinct
+NodeNo,
+Code,
+Arabic_Name,
+BaseUnits,
+VendorNo,
+Vendor_Code,
+Vendor_ArName,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From PInvoice Where (ProductNo = NodeNo) And (DoNotUpdateStock=0)  And PIDate<=GETDATE()  And Department = V.Department   Group By ProductNo) as Qty_In ,
+(Select Sum((ActualQty*ConversionQty)+(FreeQty*ConversionQty)) As TotalQty From SInvoice Where  (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17))) and (ProductNo = NodeNo)     And (DoNotUpdateStock=0)  And SIDate<=GETDATE() And Department = V.Department    Group By ProductNo) as Qty_Out,
+case when (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) is not null then  (select SUM(actualQty)  from sinvoice where ProductNo=V.NodeNo and SInvoiceNo like '250%%' And Department = V.department And Salesman<>17  And Executed=0  And DonotUpdateStock=0  And (SIDate <= GETDATE()  )  ) else 0 end  as Qty_in2
+FROM (Select distinct
+NodeNo ,
+Code ,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName,
+-Sum(TotalCost) as Cost
+from SInvoice ,productmast
+Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And (Sinvoiceno not like '250-%%' or (Sinvoiceno like '250-%%' and ( executed=1 or Salesman=17)))  And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+AND ProductNo in (".implode(',', $products).")
+And (SIDate <= GETDATE() )  group By NodeNo , Code , Name , Arabic_Name ,Department,BaseUnits,VendorNo
+union all
+Select distinct
+NodeNo ,
+Code,
+Arabic_Name,
+Department ,
+BaseUnits ,
+VendorNo,
+case when (Select Code From AccMast Where NodeNo = Vendorno) is not null then (Select Code From AccMast Where   NodeNo = Vendorno) else ''    end as Vendor_Code ,
+case when (Select Arabic_Name From AccMast Where NodeNo = Vendorno) is not null then (Select Arabic_Name From AccMast Where NodeNo = Vendorno)    else '' end as Vendor_ArName  ,
+Sum(TotalCost) as Cost   from PInvoice,productmast Where ProductNo = NodeNo And [Group] = 0  And DoNotUpdateStock = 0   And  NodeNo in (SELECT NodeNo FROM ProductMast WHERE Pricelist = 1)
+AND ProductNo in (".implode(',', $products).")
+And (PIDate <= GETDATE())
+group By NodeNo , Code ,Arabic_Name ,Department,BaseUnits,VendorNo) V
+group By NodeNo , Code , Arabic_Name ,Department,BaseUnits,VendorNo  , Vendor_Code, Vendor_ArName
+) as tbl0
+group by NodeNo) as full_stock
+ON dept_stock.NodeNo_stock = full_stock.NodeNo_total
+group by NodeNo_stock
+) as full_stock_details
+
+LEFT JOIN (
+select ProductMast.NodeNo, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, accmast.NodeNo as VendorNo, accmast.Code as VendorCode, accmast.Arabic_Name as VendorName, BaseUnits, SpecialityCode, Retail, WholeSale, MaxDiscount from ProductMast, accmast
+where VendorNo = accmast.NodeNo
+and Pricelist = 1
+and ProductMast.NodeNo in (".implode(',', $products).")) as prods_details
+ON full_stock_details.NodeNo_stock = prods_details.NodeNo
+
+
+
+
+	) as prods,";
+                $month_stmt .= "(SELECT
                         ProductNo, ";
-            $month_stmt .= $months_txt;
-            $month_stmt .= "FROM ProductMast as prod_tbl
+                $month_stmt .= $months_txt;
+                $month_stmt .= "FROM ProductMast as prod_tbl
                     LEFT JOIN (";
-            $month_stmt .= "SELECT (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, ProductNo";
-            $month_stmt .= $sum_txt;
+                $month_stmt .= "SELECT (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, ProductNo";
+                $month_stmt .= $sum_txt;
 
-            $month_stmt .= " FROM (
+                $month_stmt .= " FROM (
             SELECT Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate as 'voucher_date', SInvoice.SInvoiceNo, sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[SInvoice], accmast
             where partyno=accmast.NodeNo and accmast.[type]=10
             and SIDate>='". $start_of_period."' and  SIDate<='".$end_of_period." 23:59:59'";
-            if ($this->dept_id != "all") {
-                $month_stmt .="and Department in (".implode(',',$merged_dept).")";
-            }
-            $month_stmt .=" and ProductNo in (". implode(',', $products) .")" . " group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, SInvoice.SInvoiceNo
+                if ($this->dept_id != "all") {
+                    $month_stmt .="and Department in (".implode(',',$merged_dept).")";
+                }
+                $month_stmt .=" and ProductNo in (". implode(',', $products) .")" . " group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, SIDate, SInvoice.SInvoiceNo
             union all
             SELECT Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate as 'voucher_date', PInvoice.PInvoiceNo, -sum(ActualQty) as svalue
               FROM [AccountsC5].[dbo].[PInvoice], accmast
             where partyno=accmast.NodeNo and accmast.[type]=10
             and PIDate>='". $start_of_period ."' and  PIDate<='".$end_of_period." 23:59:59'";
-            if ($this->dept_id != "all") {
-                $month_stmt .="and Department in (". implode(',',$merged_dept) . ")";
-            }
-            $month_stmt .= " and ProductNo in (". implode(',', $products) .")" ." group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, PInvoice.PInvoiceNo
+                if ($this->dept_id != "all") {
+                    $month_stmt .="and Department in (". implode(',',$merged_dept) . ")";
+                }
+                $month_stmt .= " and ProductNo in (". implode(',', $products) .")" ." group by Department, ProductNo, accmast.NodeNo, accmast.Code, accmast.Arabic_Name, PIDate, PInvoice.PInvoiceNo
             ) as tbl
             group by (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END), ProductNo) as a
             ON prod_tbl.NodeNo = a.ProductNo
 	        group by ProductNo) sales_tbl
-	        WHERE sales_tbl.ProductNo = ProductMast.NodeNo
-			AND VendorNo = accmast.NodeNo";
+	        --WHERE sales_tbl.ProductNo = ProductMast.NodeNo
+	        WHERE sales_tbl.ProductNo = prods.NodeNo
+			--AND VendorNo = accmast.NodeNo";
+            }
         }
-
 
 //        dd($month_stmt);
         return $month_stmt;
