@@ -80,6 +80,14 @@
 {{--                    </span>--}}
                     </button>
                 </div>
+                <div id="export-div" style="display: none" class="mt-8 text-center w-full">
+                    <button id="export-to-excel" onclick="ExportToExcel('xlsx')" style="background-color: #680202;"
+                            class="w-full btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                        <span></span>
+                        <span>تصدير إلى اكسل</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -91,16 +99,16 @@
                         <label class="block font-bold mb-5">خيارات</label>
                         <div class="flex flex-row">
                             <div class="flex items-center mb-4 w-full">
-                                <input id="all-items" name="item_record" onclick="records('all_item')" type="radio" value="all_item" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع الاصناف</label>
+                                <input id="all-items" name="item_record" onclick="records('all_item')" type="radio" value="all_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جميع التوصيات</label>
                             </div>
                             <div class="flex items-center mb-4 w-full">
-                                <input name="item_record" onclick="records('positive_item')" type="radio" value="positive_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف الموجبة</label>
+                                <input id="positive_item" name="item_record" onclick="records('positive_item')" type="radio" value="positive_item" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التوصيات الموجبة</label>
                             </div>
                             <div class="flex items-center mb-4 w-full">
                                 <input name="item_record" onclick="records('negative_item')" type="radio" value="negative_item" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاصناف السالبة</label>
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التوصيات السالبة</label>
                             </div>
                         </div>
                     </div>
@@ -131,6 +139,11 @@
                         $full_days = intval($record->LeadTime) + intval($dist_days);
                         $no_days = ceil($full_days / 30);
                         $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
+
+                        $next_target_date01 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+1);
+                        $next_target_date02 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+2);
+                        $next_target_date03 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+3);
+
                         $year = $target_date->format('Y');
                         $month = $target_date->format('n');
 
@@ -158,6 +171,9 @@
                             $val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty));
                             $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
                             $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
+
+                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
+
                             $faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val_target->target);
                             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
 
@@ -205,16 +221,47 @@
                             <div class="text-sm">موازنة المتاح</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المستهدف</div>
+                            <div class="text-sm">
+                                المستهدف
+                                <br>
+                            <span class="text-xs">({{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }})</span>
+                            </div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">الإستهلاك</div>
+                            <div class="text-sm">
+                                الإستهلاك
+                                <br>
+                                @if(ceil($full_days/30) > 1)
+                                    <span class="text-xs">(</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                    <span class="text-xs"> الى</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m')}}</span>
+                                    <span class="text-xs">)</span>
+                                @else
+                                    <span class="text-xs">(</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                    <span class="text-xs">)</span>
+                                @endif
+
+                            </div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">فائض المخزون</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">توصية الشراء</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">
+                                مستهدف
+                                <span class="text-xs">(3 شهور تالية)</span>
+                                <br>
+                                <span class="text-xs">(</span>
+                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->addMonths(ceil($full_days/30)+1)->firstOfMonth()->format('Y-m')}}</span>
+                                <span class="text-xs"> الى</span>
+                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)+3)->format('Y-m')}}</span>
+                                <span class="text-xs">)</span>
+                            </div>
                         </th>
                     </tr>
                     <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
@@ -261,6 +308,10 @@
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
 {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
                             <div class="text-sm">{{ $recommendation }}</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
+                            <div class="text-sm">{{ $next_val_target->target }}</div>
                         </th>
                     </tr>
                     {{--                    <tr>--}}
@@ -329,6 +380,7 @@
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script>
 
         var item_type = $("input[type='radio'][name='item_type']:checked").val();
@@ -359,7 +411,7 @@
             var vendor_type = $("#vendor_type").val();
             var product_code = $("#product_code").val();
 
-            $('#all-items').prop('checked', true);
+            $('#positive_item').prop('checked', true);
 
 
             $("#create-report").html('<b>الرجاء الإنتظار..</b>');
@@ -380,6 +432,8 @@
 
         Livewire.on('finished', () => {
             swal.close();
+            $('#export-div').css('display', 'unset');
+            records('positive_item');
         });
 
         // $("input[name='item_record']").change(function () {
@@ -408,6 +462,14 @@
                 $(".negative-record").removeClass("hide");
                 $(".positive-record").addClass("hide");
             }
+        }
+
+        function ExportToExcel(type, fn, dl) {
+            var elt = document.getElementById('tbl');
+            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+            return dl ?
+                XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+                XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
         }
     </script>
 @stop

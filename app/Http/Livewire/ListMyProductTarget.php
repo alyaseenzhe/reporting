@@ -74,7 +74,7 @@ class ListMyProductTarget extends Component
             return redirect()->route('non-active-user');
         }
 
-        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+        if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || (Auth::user()->user_group && in_array('list.my-product-target-only', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
             return;
         } else {
             return redirect()->route('dashboard');
@@ -942,6 +942,7 @@ class ListMyProductTarget extends Component
                         $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
                         $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
 //                $month_stmt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
+
                         $sum_txt .= ", SUM(case when voucher_date >= '".$first_date." 00:00:00' and voucher_date <= '".$end_date." 23:59:59' then svalue else 0 end) as 'month".$month_counter."'";
 
                         foreach ($user_ids as $user_key => $user_id) {
@@ -953,16 +954,22 @@ class ListMyProductTarget extends Component
 //                        }
                         }
 
+
                         $month_counter++;
                     }
                 }
 
                 $months_txt = rtrim($months_txt, ', ');
 
+//             $trimmed_months = rtrim($months_txt, ', ');
+//            dd($trimmed);
+//            dd($months_txt);
+
 
 
                 $month_stmt .= $months_txt;
                 $month_stmt .= "FROM (
+
 SELECT productMast.NodeNo, VendorNo, accmast.Arabic_Name as VendorName, ProductMast.Code as ProductCode, ProductMast.Arabic_Name as ProductName, BaseUnits, SpecialityCode, WholeSale, Retail, MaxDiscount FROM ProductMast, accmast
 where VendorNo = accmast.NodeNo
 and ProductMast.NodeNo in (". implode(',', $products).")) as product
@@ -1112,9 +1119,6 @@ and Pricelist = 1
 and ProductMast.NodeNo in (".implode(',', $products).")) as prods_details
 ON full_stock_details.NodeNo_stock = prods_details.NodeNo
 
-
-
-
 	) as prods
 	ON  sales_tbl2.ProductNo = prods.NodeNo";
 
@@ -1134,6 +1138,7 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
                 $stock_txt = rtrim($stock_txt, ', ');
                 foreach ($this->list as $year_key => $year) {
 
+
                     foreach ($year as $month_key => $month) {
                         $first_date = Carbon::parse($year_key.'-'.$month.'-01')->format('Y-m-d');
                         $end_date = Carbon::parse($year_key.'-'.$month.'-01')->endOfMonth()->format('Y-m-d');
@@ -1147,6 +1152,7 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
 //                        else {
 //                            $months_txt .= "MAX(CASE WHEN Department = ". $dept_id ." THEN month".$month_counter." END) as 'month".$month_counter."_".$dept_id."',";
 //                        }
+
                         }
 
                         $month_counter++;
@@ -1269,6 +1275,7 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
                         ProductNo, ";
                 $month_stmt .= $months_txt;
                 $month_stmt .= "FROM ProductMast as prod_tbl
+
                     LEFT JOIN (";
                 $month_stmt .= "SELECT (CASE WHEN Department = 509 THEN 3 WHEN Department = 510 THEN 10 WHEN Department = 515 THEN 12 ELSE Department END) as Department, ProductNo";
                 $month_stmt .= $sum_txt;
@@ -1299,6 +1306,7 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
 	        WHERE sales_tbl.ProductNo = prods.NodeNo
 			--AND VendorNo = accmast.NodeNo";
             }
+
         }
 
 //        dd($month_stmt);
