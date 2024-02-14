@@ -249,6 +249,10 @@
                                                 @endif
                                             </div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->$item_price }}</div>
+                                            <div class="w-full text-sm text-center">مخزون فرع</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock) }}</div>
+                                            <div class="w-full text-sm text-center">مخزون كلي</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock_total) }}</div>
                                         </div>
                                     </th>
                                 </tr>
@@ -701,12 +705,12 @@
                                         <?php $vendor_id = $record->VendorNo ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                                         <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorNo }}</td>
-                                        <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorName }}</td>
+                                        <td colspan="31" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorName }}</td>
                                     </tr>
                                 @endif
                                     <?php $vendor_id = $record->VendorNo ?>
                                 <tr>
-                                    <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                    <th colspan="32" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div class="w-full text-sm text-center">رقم الصنف</div>
                                             <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductCode }}</div>
@@ -737,6 +741,9 @@
                                     <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الشهر</div>
                                     </th>
+                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
+                                        <div class="text-sm">مخزون</div>
+                                    </th>
                                         <?php $loop_counter = 0; ?>
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
@@ -757,6 +764,12 @@
                                     </th>
                                 </tr>
                                 <tr>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
+                                        <div class="text-sm">فرع</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
+                                        <div class="text-sm">كلي</div>
+                                    </th>
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
@@ -803,9 +816,10 @@
                                     <?php $total_s12 = 0; $total_f12 = 0;?>
                                     <?php $total_dept_s_qty = 0; $total_dept_f_qty = 0;?>
                                     <?php $total_dept_s_value = 0; $total_dept_f_value = 0;?>
-                                    <?php $depts =  $dept_id ?>
+                                    <?php $depts =  $dept_id; ?>
+                                    <?php $stockdept_total =  0; ?>
 
-                                @foreach($depts as $dept)
+                                @foreach($depts as $dept_key => $dept)
                                         <?php $dept_sales = 0; $dept_forecast = 0; ?>
                                     <tr class="department">
                                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
@@ -837,6 +851,19 @@
                                                 <div class="text-sm">{{ $dept }}</div>
                                             @endif
                                         </th>
+                                        @php
+                                            $stockdept_txt = "stock_".$dept;
+                                            $stocktotal_txt = "stocktotal_".$dept;
+                                        @endphp
+                                        <th style="border: 2px solid black;">
+                                            <div class="text-sm">{{ number_format($record->$stockdept_txt) }}</div>
+                                            @php $stockdept_total += intval($record->$stockdept_txt); @endphp
+                                        </th>
+                                        @if ($loop->first)
+                                            <th rowspan="{{ count($depts) }}" style="border: 2px solid black;">
+                                                <div class="text-sm">{{ $record->$stocktotal_txt }}</div>
+                                            </th>
+                                        @endif
                                             <?php $month_counter = 1; ?>
                                         @foreach ($list as $year_key => $year)
                                             @foreach ($year as $month)
@@ -990,6 +1017,12 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">المجموع</div>
                                     </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                        <div class="text-sm">{{ $stockdept_total }}</div>
+                                    </th>
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                        <div class="text-sm">{{ $record->$stocktotal_txt }}</div>
+                                    </th>
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                         <div class="text-sm">{{ $total_s1 }}</div>
                                     </th>
@@ -1088,7 +1121,7 @@
                                     @endphp
                                 </tr>
                                 <tr>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <th colspan="3" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
                                     </th>
                                     @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
@@ -1476,19 +1509,29 @@
                 var sp_type = $('#sp_type').select2("val");
                 var vendor_type = $('#vendor_type').select2("val");
 
-                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                if(dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {
+                    Swal.fire({
+                        title: "حدث خطأ",
+                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                        icon: "error",
+                        confirmButtonText: "موافق",
+                    });
+                }
+                else {
+                    $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                Swal.fire({
-                    title: 'الرجاء الإنتظار',
-                    allowOutsideClick: false,
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading()
-                    },
-                });
+                    Swal.fire({
+                        title: 'الرجاء الإنتظار',
+                        allowOutsideClick: false,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading()
+                        },
+                    });
 
-                Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                    Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                }
             });
 
             $('#reset-btn').on('click', function () {
