@@ -223,7 +223,9 @@ SELECT Distinct
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
 	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
-	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty,
+	CASE WHEN (MIN(VField13)) = '2100-01-01' or (MIN(VField13)) = '1900-01-01' then null else MIN(VField13) end as purchase_arrival_date,
+    COUNT(VField13) as count_purchase_order
 FROM (
 Select
 	ProductNo,
@@ -251,7 +253,8 @@ Select
 
 	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
 	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered,
+	PARSE((case when VField13 = '' then '01-01-2100' else VField13 end) as date USING 'AR-LB') as VField13
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -265,7 +268,7 @@ Select
 	And Executed = 0
 	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
-	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
+	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description, VField13 --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
 GROUP BY ProductNo) as tbl4
 ON tbl3.NodeNo = tbl4.ProductNo
@@ -352,7 +355,9 @@ SELECT Distinct
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
 	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
-	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty,
+	CASE WHEN (MIN(VField13)) = '2100-01-01' or (MIN(VField13)) = '1900-01-01' then null else MIN(VField13) end as purchase_arrival_date,
+    COUNT(VField13) as count_purchase_order
 FROM (
 Select
 	ProductNo,
@@ -381,7 +386,8 @@ Select
 
 	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
 	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered,
+	PARSE((case when VField13 = '' then '01-01-2100' else VField13 end) as date USING 'AR-LB') as VField13
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -395,7 +401,7 @@ Select
 	And Executed = 0
 	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
-	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
+	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description, VField13 --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
 GROUP BY ProductNo) as tbl4
 ON tbl3.NodeNo = tbl4.ProductNo
@@ -480,7 +486,9 @@ SELECT Distinct
 	SUM(ExecutedQtyOrdered) as ExecutedQtyOrdered,
 	SUM(DeliveredQtyOrdered) as DeliveredQtyOrdered,
 	SUM((isnull(QtyOrderd,0)-isnull(ExecutedQtyOrdered, 0)) +(isnull(ExecutedQtyOrdered,0)-isnull(DeliveredQtyOrdered, 0))) as final_qty_ordered,
-	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty
+	(SUM(isnull(Qty, 0))-SUM(isnull(ExecutedQty, 0))) + (SUM(isnull(QtyOrderd,0))-SUM(isnull(ExecutedQtyOrdered, 0))) as final_qty,
+	CASE WHEN (MIN(VField13)) = '2100-01-01' or (MIN(VField13)) = '1900-01-01' then null else MIN(VField13) end as purchase_arrival_date,
+    COUNT(VField13) as count_purchase_order
 FROM (
 Select
 	ProductNo,
@@ -509,7 +517,8 @@ Select
 
 	sum(case when POrderNo like '290-%%' then ActualQty end) as QtyOrderd ,
 	sum(case when POrderNo like '290-%%' then ExecutedQty end) as ExecutedQtyOrdered,
-	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered
+	ISNULL((Select Top 1 ActualQty From PInvoice Where RefrenceNo = (Select Top 1 POrderNo From POrder Where RefrenceNo = Q.POrderNo and ProductNo = Q.ProductNo and Q.POrderNo like '290-%%')), 0)  as DeliveredQtyOrdered,
+	PARSE((case when VField13 = '' then '01-01-2100' else VField13 end) as date USING 'AR-LB') as VField13
 
 	From POrder Q,Idetails,ProductMast ,extrafields
 	where porderno=extrafields.voucherno
@@ -521,13 +530,13 @@ Select
 	And Executed = 0
 	And (PorderNo like '280-%%' or PorderNo like '290-%%')
 	--And (Select Name From DeptMast Where NodeNo = Q.Department) Not In (Select DeptName From DeptRights Where UserName ='HQ-BAlrashed')
-	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description --order by ProductNo ,POrderNo, Q.Department,POdate
+	Group By Department ,PODate ,POrderNo ,VField18 ,Executed ,AccountNo,ProductNo,Code,BaseUnits ,Description, VField13 --order by ProductNo ,POrderNo, Q.Department,POdate
 ) as tbl
 GROUP BY ProductNo) as tbl4
 ON tbl3.NodeNo = tbl4.ProductNo
 ORDER BY Vendor_Code, Code";
         }
-        
+
         $this->results = DB::connection('sqlsrv')->select($stmt);
         $this->show_results = true;
 

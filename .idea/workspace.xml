@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListMyProductTarget.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/PurchaseRecommendation.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/PurchaseRecommendation.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/purchase-recommendation.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/purchase-recommendation.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,6 +143,8 @@
       <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
       <path value="$PROJECT_DIR$/vendor/phpoffice/phpexcel" />
       <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
+      <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
+      <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-debugbar" />
     </include_path>
   </component>
   <component name="ProjectId" id="2PmeQN7pBwykfJ1iFeHJ8sdjTFo" />
@@ -154,7 +157,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "feature/add-permission-to-followi…-only",
+    "git-widget-placeholder": "feature/purchase-date-column",
     "last_opened_file_path": "C:/Users/Ibrah/Documents/trainer folders/narjas/example-app",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
