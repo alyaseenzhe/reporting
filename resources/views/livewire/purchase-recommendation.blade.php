@@ -209,7 +209,13 @@
                             <div class="text-sm">المخزون</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">طلبات الشراء</div>
+                            <div class="text-sm">
+                                طلبات الشراء
+                                <br>
+                                @if($record->final_qty)
+                                    <span class="text-xs">({{ $record->purchase_arrival_date? $record->purchase_arrival_date: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>
+                                @endif
+                            </div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">المتاح</div>
