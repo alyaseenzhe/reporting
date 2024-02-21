@@ -5,16 +5,6 @@
 
 @stop
 <div>
-    {{-- Stop trying to control. --}}
-{{--    <button wire:click.prevent="createReport" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">--}}
-{{--        <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">--}}
-{{--            <path--}}
-{{--                d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"/>--}}
-{{--        </svg>--}}
-{{--        <span class="hidden xs:block mr-2">Generate</span>--}}
-{{--    </button>--}}
-
-
     <div id="filter-container" class="mb-6 mt-6">
         <div style="background-color: #f0f9ff;" class="flex flex-col gap-4 p-6">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -73,20 +63,17 @@
                         <span class="mr-2 font-bold">
                         <span></span>
                         <span>إنشاء تقرير</span>
-{{--                    </span>--}}
-{{--                        <span class="mr-2 font-bold" wire:loading wire:target="createReport">--}}
-{{--                    <span></span>--}}
-{{--                    <span>الرجاء الانتظار</span>--}}
-{{--                    </span>--}}
+                        </span>
                     </button>
                 </div>
-                <div id="export-div" style="display: none" class="mt-8 text-center w-full">
-                    <button id="export-to-excel" onclick="ExportToExcel('xlsx')" style="background-color: #680202;"
+                <div id="export-div" style="display: none; cursor: pointer" class="mt-8 text-center w-full">
+                    <div id="export-to-excel" style="background-color: #680202;"
                             class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold">
                         <span></span>
                         <span>تصدير إلى اكسل</span>
-                    </button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -320,57 +307,6 @@
                             <div class="text-sm">{{ $next_val_target->target }}</div>
                         </th>
                     </tr>
-                    {{--                    <tr>--}}
-                    {{--                        <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">الشهر</div>--}}
-                    {{--                        </th>--}}
-                    {{--                            <?php $loop_counter = 0; ?>--}}
-                    {{--                        @foreach ($list as $year_key => $year)--}}
-                    {{--                            @foreach ($year as $month)--}}
-                    {{--                                <th colspan="2" style="border: 2px solid black; z-index: 10; @if($loop_counter%2 == 0) background-color: #d2dafa; @else background-color: #f8d2fa; @endif" class="border p-2">--}}
-                    {{--                                    <div class="text-sm">{{ $year_key."-".$month }}</div>--}}
-                    {{--                                </th>--}}
-                    {{--                                    <?php $loop_counter++; ?>--}}
-                    {{--                            @endforeach--}}
-                    {{--                        @endforeach--}}
-                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #d2dafa;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">مجموع كمية</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">مجموع قيمة</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">الفرق</div>--}}
-                    {{--                        </th>--}}
-                    {{--                    </tr>--}}
-                    {{--                    <tr>--}}
-
-                    {{--                        @foreach ($list as $year_key => $year)--}}
-                    {{--                            @foreach ($year as $month)--}}
-                    {{--                                <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-                    {{--                                    <div class="text-sm">SC</div>--}}
-                    {{--                                </th>--}}
-                    {{--                                <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-                    {{--                                    <div class="text-sm">T</div>--}}
-                    {{--                                </th>--}}
-                    {{--                            @endforeach--}}
-                    {{--                        @endforeach--}}
-                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">SC</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">T</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">SC</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">T</div>--}}
-                    {{--                        </th>--}}
-                    {{--                        <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
-                    {{--                            <div class="text-sm">%</div>--}}
-                    {{--                        </th>--}}
-                    {{--                    </tr>--}}
                 </div>
             @empty
                 <div class="w-full p-6" style="background-color: #fff0f5; border: 1px solid #9f4764; color: #9f4764; text-align: center; font-weight: bold;">
@@ -436,24 +372,28 @@
             Livewire.emit('create-report', item_type, vendor_type, product_code);
         });
 
+        $('#export-to-excel').on('click', function () {
+
+            record_type = $("input[name='item_record']:checked").val();
+
+            Swal.fire({
+                title: 'الرجاء الإنتظار',
+                allowOutsideClick: false,
+                showCancelButton: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading()
+                },
+            });
+
+            Livewire.emit('export-report', record_type);
+        });
+
         Livewire.on('finished', () => {
             swal.close();
             $('#export-div').css('display', 'unset');
             records('positive_item');
         });
-
-        // $("input[name='item_record']").change(function () {
-        //     alert('hihi');
-        //     alert(this.checked);
-        //     // if(this.checked) {
-        //     //     $(".employee").addClass("hide");
-        //     //     $(".department").addClass("hide");
-        //     // }
-        //     // else {
-        //     //     $(".employee").removeClass("hide");
-        //     //     $(".department").removeClass("hide");
-        //     // }
-        // });
 
         function records(item_record) {
             if(item_record == 'all_item') {
@@ -470,13 +410,6 @@
             }
         }
 
-        function ExportToExcel(type, fn, dl) {
-            var elt = document.getElementById('tbl');
-            var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
-            return dl ?
-                XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
-                XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
-        }
     </script>
 @stop
 @section('css-scripts')
