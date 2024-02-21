@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\PurchaseRecommendationExport;
 use App\Models\AccMast;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -9,6 +10,9 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+//use Maatwebsite\Excel\Excel;
+use Excel;
+//use Maatwebsite\Excel;
 
 class PurchaseRecommendation extends Component
 {
@@ -19,6 +23,7 @@ class PurchaseRecommendation extends Component
     public $vendor_list = [];
     public $vendor_type = "vendor_all";
     public $show_results = false;
+//    public $record_type = 'all';
 
     public $product_code = "";
 
@@ -28,7 +33,7 @@ class PurchaseRecommendation extends Component
         'item_type.required' => "مطلوب",
     ];
 
-    protected $listeners = ['create-report' => 'createReport'];
+    protected $listeners = ['create-report' => 'createReport', 'export-report' => 'exportReport'];
 
     public function booted() {
 
@@ -114,7 +119,9 @@ class PurchaseRecommendation extends Component
 
 //        dd($year);
 //        dd(Carbon::today()->firstOfMonth()->addMonths($no_days)->format('Y-n'));
+
         return view('livewire.purchase-recommendation')
+//        return view('livewire.purchase-recommendation-table-export')
             ->layout('layouts.dashboard');
     }
 
@@ -541,5 +548,15 @@ ORDER BY Vendor_Code, Code";
         $this->show_results = true;
 
         $this->emit('finished');
+    }
+
+    public function exportReport($record_type) {
+
+        $this->show_results = false;
+
+        $today = Carbon::today()->format('d-m-Y');
+        $this->emit('finished');
+        return Excel::download(new PurchaseRecommendationExport($this->results, $this->dist_days, $record_type, $this->show_results), "purchase-recommendation (${today}).xlsx");
+
     }
 }
