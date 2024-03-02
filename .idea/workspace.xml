@@ -5,18 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Exports/PurchaseRecommendationExport.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/excel.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/exports/purchaseexport.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/phpspec.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/phpspec.xml" afterDir="false" />
+
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/X40d5ee0513b0b1590b502dbbdd51ee4f.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/X797c38ebf116aa9ce7516c9a358ba138.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/X9c12333af176ff1acc273171489a30df.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/Xa8b27c62bb80bbad2d7602455a0e8a52.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/Xba0db7824e0fc3c5af297a52ca7a7955.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/debugbar/Xd69274468b82961a9b9e9f2bcfbacb83.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/PurchaseRecommendation.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/PurchaseRecommendation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/purchase-recommendation.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/purchase-recommendation.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListWeeklyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListWeeklyReport.php" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,6 +151,7 @@
       <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
       <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
       <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-debugbar" />
+
       <path value="$PROJECT_DIR$/vendor/maennchen/zipstream-php" />
       <path value="$PROJECT_DIR$/vendor/phpoffice/phpspreadsheet" />
       <path value="$PROJECT_DIR$/vendor/markbaker/complex" />
@@ -171,8 +170,8 @@
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/export-to-excel-purchase-order&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ibrah/Documents/projects/reporting/app/Exports&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/weekly-report&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Ibrah/Documents/projects/reporting/resources/views/mails&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -183,15 +182,13 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\app\Exports" />
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\livewire" />
       <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\mails" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\css" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
+      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public" />
+      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\resources\views\layouts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\exports" />
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\livewire" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\images" />
     </key>
@@ -225,6 +222,7 @@
       <workItem from="1691846683913" duration="14691000" />
       <workItem from="1707037631522" duration="4192000" />
       <workItem from="1708493099260" duration="3235000" />
+
     </task>
     <servers />
   </component>
