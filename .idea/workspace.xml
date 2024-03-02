@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
+
       <change afterPath="$PROJECT_DIR$/storage/debugbar/X40d5ee0513b0b1590b502dbbdd51ee4f.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/storage/debugbar/X797c38ebf116aa9ce7516c9a358ba138.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/storage/debugbar/X9c12333af176ff1acc273171489a30df.json" afterDir="false" />
@@ -13,6 +14,7 @@
       <change afterPath="$PROJECT_DIR$/storage/debugbar/Xd69274468b82961a9b9e9f2bcfbacb83.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ListWeeklyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ListWeeklyReport.php" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,10 +146,18 @@
       <path value="$PROJECT_DIR$/vendor/laravel/fortify" />
       <path value="$PROJECT_DIR$/vendor/laravel/jetstream" />
       <path value="$PROJECT_DIR$/vendor/jaybizzle/crawler-detect" />
-      <path value="$PROJECT_DIR$/vendor/phpoffice/phpexcel" />
+      <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-debugbar" />
+      <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
       <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
       <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
       <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-debugbar" />
+
+      <path value="$PROJECT_DIR$/vendor/maennchen/zipstream-php" />
+      <path value="$PROJECT_DIR$/vendor/phpoffice/phpspreadsheet" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/complex" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/matrix" />
+      <path value="$PROJECT_DIR$/vendor/ezyang/htmlpurifier" />
+      <path value="$PROJECT_DIR$/vendor/phpoffice/phpexcel" />
     </include_path>
   </component>
   <component name="ProjectId" id="2PmeQN7pBwykfJ1iFeHJ8sdjTFo" />
@@ -210,6 +220,9 @@
       <workItem from="1688472031628" duration="10323000" />
       <workItem from="1691652006338" duration="15271000" />
       <workItem from="1691846683913" duration="14691000" />
+      <workItem from="1707037631522" duration="4192000" />
+      <workItem from="1708493099260" duration="3235000" />
+
     </task>
     <servers />
   </component>

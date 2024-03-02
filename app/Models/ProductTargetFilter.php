@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AccMast extends Model
+class ProductTargetFilter extends Model
 {
     use HasFactory;
 
-    protected $connection = 'sqlsrv';
-    protected $table = 'accmast';
-    protected $primaryKey = 'NodeNo';
+    protected $guarded = [];
 }

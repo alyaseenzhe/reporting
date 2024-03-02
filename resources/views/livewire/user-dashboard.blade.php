@@ -47,6 +47,24 @@
             <p>هنا بإمكانك الإطلاع على التقارير المتعلقة بالشركة</p>
         </div>
     </div>
+
+    @if (Auth::user()->role == 'a')
+        <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+            <a class="w-full" href="{{ route('list.settings') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="icon multi-color w-20 h-20" viewBox="0 0 24 24" id="settings" xmlns="http://www.w3.org/2000/svg"><path id="secondary-fill" d="M10,3.94A.13.13,0,0,0,10,4v.59a1,1,0,0,1-.67.94h0a1,1,0,0,1-1.14-.2l-.41-.41a1,1,0,0,0-1-.24.94.94,0,0,0-.42.24L4.93,6.34a1.1,1.1,0,0,0-.24.4,1,1,0,0,0,.24,1l.41.41a1,1,0,0,1,.2,1.14v0a1,1,0,0,1-.94.67H4a1,1,0,0,0-.87.52A.89.89,0,0,0,3,11v2a.89.89,0,0,0,.13.48A1,1,0,0,0,4,14h.59a1,1,0,0,1,.94.67v0a1,1,0,0,1-.2,1.14l-.41.41a1,1,0,0,0-.24,1,1.1,1.1,0,0,0,.24.4l1.41,1.41a.94.94,0,0,0,.42.24,1,1,0,0,0,1-.24l.41-.41a1,1,0,0,1,1.14-.2h0a1,1,0,0,1,.67.94V20a.13.13,0,0,0,0,.06A9,9,0,0,0,10,3.94Z" style="fill: rgb(44, 169, 188); stroke-width: 2;"></path><circle id="tertiary-fill" cx="12" cy="12" r="3" style="fill: #b7b7b7; stroke-width: 2;"></circle><path id="primary-stroke" d="M15,12a3,3,0,1,1-3-3A3,3,0,0,1,15,12Zm5-2h-.59a1,1,0,0,1-.94-.67v0a1,1,0,0,1,.2-1.14l.41-.41a1,1,0,0,0,0-1.42L17.66,4.93a1,1,0,0,0-1.42,0l-.41.41a1,1,0,0,1-1.14.2h0A1,1,0,0,1,14,4.59V4a1,1,0,0,0-1-1H11a1,1,0,0,0-1,1v.59a1,1,0,0,1-.67.94h0a1,1,0,0,1-1.14-.2l-.41-.41a1,1,0,0,0-1.42,0L4.93,6.34a1,1,0,0,0,0,1.42l.41.41a1,1,0,0,1,.2,1.14v0a1,1,0,0,1-.94.67H4a1,1,0,0,0-1,1v2a1,1,0,0,0,1,1h.59a1,1,0,0,1,.94.67v0a1,1,0,0,1-.2,1.14l-.41.41a1,1,0,0,0,0,1.42l1.41,1.41a1,1,0,0,0,1.42,0l.41-.41a1,1,0,0,1,1.14-.2h0a1,1,0,0,1,.67.94V20a1,1,0,0,0,1,1h2a1,1,0,0,0,1-1v-.59a1,1,0,0,1,.67-.94h0a1,1,0,0,1,1.14.2l.41.41a1,1,0,0,0,1.42,0l1.41-1.41a1,1,0,0,0,0-1.42l-.41-.41a1,1,0,0,1-.2-1.14v0a1,1,0,0,1,.94-.67H20a1,1,0,0,0,1-1V11A1,1,0,0,0,20,10Z" style="fill: none; stroke: rgb(0, 0, 0); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path></svg>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">إعدادات الموقع</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    @endif
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
         @if(\Illuminate\Support\Facades\Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('list.users') }}">
@@ -601,7 +619,7 @@
         @endif
     </div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || (Auth::user()->user_group && in_array('list.my-product-target-only', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('list.my-product-target') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
@@ -667,7 +685,59 @@
 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">مستهدف الاصناف</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">مستهدف الياسين</div>
+                    </div>
+                </div>
+            </a>
+        @endif
+        @if ((Auth::user()->user_group && in_array('list.purchase-recommendation', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('list.purchase-recommendation') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     viewBox="0 0 484.185 484.185" xml:space="preserve">
+<g>
+    <g id="XMLID_31_">
+        <g>
+            <rect x="142.267" y="37.448" style="fill:#E7ECED;" width="39.931" height="59.896"/>
+            <rect x="301.989" y="237.101" style="fill:#E7ECED;" width="39.931" height="59.896"/>
+            <polygon style="fill:#C69C6D;" points="232.111,77.379 232.111,157.24 92.353,157.24 92.353,37.448 142.267,37.448
+				142.267,97.344 182.197,97.344 182.197,37.448 232.111,37.448 			"/>
+            <polygon style="fill:#C69C6D;" points="391.833,237.101 391.833,356.893 252.076,356.893 252.076,277.032 252.076,237.101
+				301.989,237.101 301.989,296.997 341.919,296.997 341.919,237.101 			"/>
+            <rect x="232.111" y="77.379" style="fill:#A67C52;" width="149.74" height="79.861"/>
+            <rect x="102.336" y="277.032" style="fill:#A67C52;" width="149.74" height="79.861"/>
+            <polygon style="fill:#E7ECED;" points="436.755,157.24 436.755,187.188 42.44,187.188 42.44,157.24 92.353,157.24
+				232.111,157.24 381.851,157.24 			"/>
+            <polygon style="fill:#E7ECED;" points="436.755,356.893 436.755,386.841 42.44,386.841 42.44,356.893 102.336,356.893
+				252.076,356.893 391.833,356.893 			"/>
+            <polygon style="fill:#AFB6BB;" points="42.44,386.841 42.44,476.685 7.501,476.685 7.501,7.5 42.44,7.5 42.44,157.24
+				42.44,187.188 42.44,356.893 			"/>
+            <polygon style="fill:#AFB6BB;" points="476.685,7.5 476.685,476.685 436.755,476.685 436.755,386.841 436.755,356.893
+				436.755,187.188 436.755,157.24 436.755,7.5 			"/>
+        </g>
+        <g>
+            <path d="M429.255,0v149.74h-39.904V69.878h-149.74v-39.93H84.854V149.74H49.94V0H0.001v484.185h49.938v-89.844h379.315v89.844
+				h54.931V0H429.255z M239.611,84.878h134.74v64.861h-134.74V84.878z M149.767,44.948h24.931v44.896h-24.931V44.948z
+				 M99.854,44.948h34.913v59.896h54.931V44.948h34.913V149.74H99.854V44.948z M429.255,164.74v14.948H49.94V164.74H429.255z
+				 M244.576,229.601v39.931H94.836v79.861H49.94V194.688h379.315v154.705h-29.922V229.601H244.576z M259.576,244.601h34.913v59.896
+				h54.931v-59.896h34.913v104.792H259.576V244.601z M309.49,289.497v-44.896h24.931v44.896H309.49z M244.576,284.532v64.861
+				h-134.74v-64.861H244.576z M34.94,469.185H15.001V15h19.938L34.94,469.185L34.94,469.185z M49.94,379.341v-14.948h379.315v14.948
+				H49.94z M469.185,469.185h-24.931V15h24.931V469.185z"/>
+            <rect x="326.945" y="109.809" width="29.948" height="15"/>
+            <rect x="267.049" y="109.809" width="49.913" height="15"/>
+            <rect x="197.171" y="309.462" width="29.948" height="15"/>
+            <rect x="137.275" y="309.462" width="49.913" height="15"/>
+        </g>
+    </g>
+</g>
+</svg>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">توصية الشراء</div>
                     </div>
                 </div>
             </a>

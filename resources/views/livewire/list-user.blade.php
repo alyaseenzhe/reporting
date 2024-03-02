@@ -59,7 +59,7 @@
                             <div class="text-lg">الأسم</div>
                         </th>
                         <th class="border p-2 whitespace-nowrap">
-                            <div class="text-lg">نوع المستخدم</div>
+                            <div class="text-lg">الصلاحية</div>
                         </th>
                         <th class="border p-2 whitespace-nowrap">
                             <div class="text-lg">البريد الإلكتروني</div>
@@ -74,17 +74,13 @@
                         <tr>
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="text-center text-gray-800 text-lg">{{ $user->name }}</div>
+                                    <div class="text-center text-gray-800 text-lg" style="@if($user->role == "a") color: #ff0000; @endif">{{ $user->name }}</div>
                                 </div>
                             </td>
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
                                     <div class="text-center text-gray-800 text-lg">
-                                        @if($user->role == "u")
-                                            إداري
-                                        @elseif($user->role == "a")
-                                            مدير
-                                        @endif
+                                        {{ $user->user_group ? $user->user_group->name : "" }}
                                     </div>
                                 </div>
                             </td>

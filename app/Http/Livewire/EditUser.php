@@ -11,6 +11,7 @@ class EditUser extends Component
 {
     public $user_id;
     public $role;
+    public $is_active;
     public $name;
     public $emp_code;
     public $email;
@@ -42,6 +43,7 @@ class EditUser extends Component
             $this->email = $this->record->email;
             $this->role = $this->record->role;
             $this->group_id = $this->record->group;
+            $this->is_active = $this->record->is_active;
             $this->branches = json_decode($this->record->branches);
 
         } catch (ModelNotFoundException $exception) {
@@ -89,6 +91,7 @@ class EditUser extends Component
                     $record->emp_code = $this->emp_code;
                     $record->role = "u";
                     $record->email = $this->email;
+                    $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
 
@@ -119,6 +122,7 @@ class EditUser extends Component
                     $record->emp_code = $this->emp_code;
                     $record->role = "a";
                     $record->email = $this->email;
+                    $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                 }
@@ -148,6 +152,7 @@ class EditUser extends Component
                     $record->emp_code = $this->emp_code;
                     $record->role = "u";
                     $record->email = $this->email;
+                    $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
 
@@ -175,6 +180,7 @@ class EditUser extends Component
                     $record->emp_code = $this->emp_code;
                     $record->role = "a";
                     $record->email = $this->email;
+                    $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                 }

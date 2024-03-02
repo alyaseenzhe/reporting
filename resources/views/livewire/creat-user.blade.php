@@ -1,6 +1,15 @@
 @section('title')
     إنشاء مستخدم جديد
 @stop
+@section('title-btn')
+    <a href="{{ route('create.user') }}" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
+        <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
+            <path
+                d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"/>
+        </svg>
+        <span class="hidden xs:block mr-2">إضافة</span>
+    </a>
+@stop
 
 <div>
     <div class="mb-6">
@@ -83,6 +92,28 @@
                     @endforeach
                 </select>
                 @error('group_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">حالة التفعيل</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input checked wire:model="is_active" type="radio" name="is_active" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">مفعل</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="is_active" type="radio" name="is_active" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">غير مفعل</label>
+                    </div>
+                </div>
+
+                @error('is_active')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
     </div>
