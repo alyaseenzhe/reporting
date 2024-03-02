@@ -142,7 +142,8 @@ class ListWeeklyReport extends Component
         $speciality_amount = $this->categorize_speciality($customers_code, $this->start_date, $this->end_date);
         $this->category_qty = $this->categorizeQty($customers_code, $this->start_date, $this->end_date);
         $this->category_qty_total = $this->categorizeQtyTotal($customers_code,$this->start_date, $this->end_date);
-//        dd($this->category_qty);
+
+//        dd($category_amount);
 
 //        dd($customer_details);
 //        $this->branch_postponed_due_amount_grand_total = array_sum(array_column($postponed_due_amount, 'DueAmount'));
