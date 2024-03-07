@@ -149,6 +149,7 @@
       <path value="$PROJECT_DIR$/vendor/maatwebsite/excel" />
       <path value="$PROJECT_DIR$/vendor/maximebf/debugbar" />
       <path value="$PROJECT_DIR$/vendor/barryvdh/laravel-debugbar" />
+
       <path value="$PROJECT_DIR$/vendor/maennchen/zipstream-php" />
       <path value="$PROJECT_DIR$/vendor/phpoffice/phpspreadsheet" />
       <path value="$PROJECT_DIR$/vendor/markbaker/complex" />
@@ -179,15 +180,13 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\app\Exports" />
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\livewire" />
       <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\mails" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\css" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
+      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public" />
+      <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\resources\views\layouts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\exports" />
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\livewire" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\images" />
     </key>
