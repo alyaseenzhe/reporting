@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-purchase-recommendation', \App\Http\Livewire\PurchaseRecommendation::class)->name('list.purchase-recommendation');
     Route::get('/list-distribution-calc', \App\Http\Livewire\DistributionCalc::class)->name('list.distribution-calc');
 
+    Route::get('/test-item-list', \App\Http\Livewire\SapItemMasterData::class)->name('test-item-list');
+
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
 
