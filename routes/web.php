@@ -40,6 +40,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/test-item-list', \App\Http\Livewire\SapItemMasterData::class)->name('test-item-list');
 
+    /* reports */
+    Route::get('/report-21', \App\Http\Livewire\Report21::class)->name('report-21');
+
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
 
