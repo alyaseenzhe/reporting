@@ -18,14 +18,30 @@
                     </div>
                     @error('customer_name') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div class="mt-8 text-center w-full">
-                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
-                            <span></span>
-                            <span>إعادة ضبط</span>
-                        </span>
-                    </button>
+                <div class="w-full">
+                    <label class="block font-bold mb-2">تاريخ البداية
+                    </label>
+                    <input id="start_date" type="date" name="start_date"
+                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                    @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
+                <div wire:ignore class="w-full">
+                    <label class="block font-bold mb-2">تاريخ النهاية
+                    </label>
+                    <input id="end_date" type="date" name="end_date"
+                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                    @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+{{--                <div class="mt-8 text-center w-full">--}}
+{{--                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+{{--                        <span class="mr-2 font-bold">--}}
+{{--                            <span></span>--}}
+{{--                            <span>إعادة ضبط</span>--}}
+{{--                        </span>--}}
+{{--                    </button>--}}
+{{--                </div>--}}
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
@@ -42,7 +58,8 @@
         </div>
     </div>
 
-    <div id="tbl2-container" class="overflow-x-auto">
+    @if($show_msg)
+        <div id="tbl2-container" class="overflow-x-auto">
         <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
             <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
             <tr style="border: 2px solid black;">
@@ -58,47 +75,77 @@
                 <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                     <div class="text-sm">الوصف</div>
                 </th>
-                <th class="border p-2 whitespace-nowrap">
+                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                     <div class="text-sm">مدين</div>
                 </th>
-                <th class="border p-2 whitespace-nowrap">
+                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                     <div class="text-sm">دائن</div>
                 </th>
-                <th class="border p-2 whitespace-nowrap">
+                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                     <div class="text-sm">الاجمالي التراكمي</div>
                 </th>
             </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
-
+            @php
+                $counter = 0;
+            @endphp
             @foreach($scribes_results as $record)
-                <tr>
-                    <td class="border p-2 whitespace-nowrap">
+                <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         {{$record->CardCode}}
                     </td>
-                    <td class="border p-2 whitespace-nowrap">
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         {{$record->TransId}}
                     </td>
-                    <td class="border p-2">
+                    <td style="border-left: 2px solid black;" class="border p-2">
                         {{ \Carbon\Carbon::parse($record->RefDate)->format('Y-m-d')}}
                     </td>
-                    <td class="border p-2 whitespace-nowrap">
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         {{$record->LineMemo}}
                     </td>
-                    <td style="direction: ltr" class="border p-2 whitespace-nowrap">
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                         {{number_format($record->Debit, 2)}}
                     </td>
-                    <td style="direction: ltr" class="border p-2 whitespace-nowrap">
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                         {{number_format($record->Credit, 2)}}
                     </td>
-                    <td style="direction: ltr" class="border p-2 whitespace-nowrap">
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                         {{number_format($record->CumulativeBalance, 2)}}
                     </td>
                 </tr>
+                @php $counter++ @endphp
+            @endforeach
+            @foreach($sap_results as $record)
+                <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        {{$record['CardCode']}}
+                    </td>
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        {{$record['TransId']}}
+                    </td>
+                    <td style="border-left: 2px solid black;" class="border p-2">
+                        {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}
+                    </td>
+                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        {{$record['LineMemo']}}
+                    </td>
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                        {{number_format($record['Debit'], 2)}}
+                    </td>
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                        {{number_format($record['Credit'], 2)}}
+                    </td>
+                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                        {{number_format($record['CumulativeBalance'], 2)}}
+                    </td>
+                </tr>
+                @php $counter++ @endphp
             @endforeach
             </tbody>
         </table>
     </div>
+    @endif
 </div>
 
 @section('scripts')
@@ -126,6 +173,8 @@
             $('#gen-report').on('click', function () {
 
                 var customer_id = $('#customer_name').select2("val");
+                var start_date = $('#start_date').val();
+                var end_date = $('#end_date').val();
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -139,7 +188,7 @@
                     },
                 });
 
-                Livewire.emit('create-report', customer_id);
+                Livewire.emit('create-report', customer_id, start_date, end_date);
 
 
                 // if(dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {

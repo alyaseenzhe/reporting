@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -12,6 +13,9 @@ class Report21 extends Component
 
     public $scribes_results = [];
     public $sap_results = [];
+    public $start_date;
+    public $end_date;
+    public $show_msg = false;
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -21,7 +25,7 @@ class Report21 extends Component
 
     public function render()
     {
-        $this->getCustomers();;
+        $this->getCustomers();
 
         return view('livewire.report21')
             ->layout('layouts.dashboard');
@@ -80,34 +84,81 @@ class Report21 extends Component
 
     }
 
-    public function create_report($customer_id) {
+    public function create_report($customer_id, $start_date, $end_date) {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
 
         $this->customer_id = $customer_id;
+        $this->start_date = $start_date == ''? null : $start_date;
+        $this->end_date = $end_date == ''? null : $end_date;
+
+        $this->scribes_results = [];
+        $this->sap_results = [];
 
         $this->generateReport();
     }
 
     public function generateReport() {
 
+        $this->show_msg = false;
+
+        if (is_null($this->start_date) == false && is_null($this->end_date) == false) {
+
+            if ($this->start_date >= '2011-07-01' && $this->end_date <= '2023-12-31') {
+                $this->scribesQuery($this->start_date, $this->end_date);
+            }
+            elseif ($this->start_date >= '2011-07-01' && $this->end_date > '2023-12-31') {
+                $this->scribesQuery($this->start_date, '2023-12-31');
+                $this->sapQuery('2024-01-01', $this->end_date);
+            }
+            elseif ($this->start_date > '2023-12-31' && $this->end_date > '2023-12-31') {
+                $this->sapQuery($this->start_date, $this->end_date);
+            }
+
+        }
+        else {
 
 
-        $this->scribesQuery();;
+//            $this->start_date = is_null($this->start_date) ? '2011-07-01' : $this->start_date;
+//            $this->end_date = is_null($this->end_date) ? null :
+
+            if (is_null($this->start_date) && is_null($this->end_date) == false) {
+                if ($this->end_date <= '2023-12-31') {
+                    $this->scribesQuery('2011-07-01', $this->end_date);
+                }
+                else {
+                    $this->scribesQuery('2011-07-01', '2023-12-31');
+                    $this->sapQuery('2024-01-01', $this->end_date);
+                }
+            }
+            elseif (is_null($this->start_date) == false && is_null($this->end_date)) {
+
+                if ($this->start_date <= '2023-12-31') {
+                    $this->scribesQuery($this->start_date, '2023-12-31');
+                    $this->sapQuery('2024-01-01', Carbon::today()->format('Y-m-d'));
+                }
+                else {
+                    $this->sapQuery($this->start_date, Carbon::today()->format('Y-m-d'));
+                }
+            }
+            elseif (is_null($this->start_date) && is_null($this->end_date)) {
+                $this->scribesQuery('2011-07-01', '2023-12-31');
+                $this->sapQuery('2024-01-01', Carbon::today()->format('Y-m-d'));
+            }
+        }
+
+        $this->show_msg = true;
         $this->emit('finished');
-
-//        dd($this->scribes_results);
-
 
     }
 
-    public function scribesQuery() {
+    public function scribesQuery($start_date, $end_date) {
 
         $scribesStmt = "SELECT Account1_Code as 'CardCode', VNo as 'TransId',  VDate as 'RefDate', Narration as 'LineMemo', Debit, Credit, CumulativeBalance FROM (
-SELECT Account1_Code, VDate, VNo, Narration, Debit, Credit, SUM(Debit-Credit) OVER (ORDER BY VNo) as CumulativeBalance
+SELECT Account1_Code, VDate, VNo, Narration, Debit, Credit, SUM(Debit-Credit) OVER (ORDER BY VDate, VNo) as CumulativeBalance
 FROM (
 Select
-	'1-1-04' As VDate,
+	'7-1-11' As VDate,
 	'' As  VNo,
 	'OPB' As Narration,
 	sum(round(AmountDr*PurchaseData.ExchangeRate,2)) as Debit,
@@ -135,31 +186,26 @@ Select
 	GROUP BY VoucherDate, PurchaseData.VoucherNo, PurchaseData.Narration, AccMast.Code
 	) as tbl
 	) as tbl2
-	ORDER BY TransId";
+	WHERE (tbl2.VDate >= '".$start_date."' and tbl2.VDate <= '".$end_date."')
+	ORDER BY RefDate, TransId";
 
         $query = DB::connection('sqlsrv')->select($scribesStmt);
         $this->scribes_results = $query;
 
     }
 
-    public function sapQuery() {
+    public function sapQuery($start_date, $end_date) {
 
         if (! extension_loaded('odbc'))
         {
             die('ODBC extension not enabled / loaded');
         }
-        // else {
-        //     echo 'good';
-        // }
 
         $driver = env('DB_CONNECTION_FOURTH');
-//        $driver = 'HDBODBC';
-        // $driver = 'HDBODBC32';
 
 // Host
 // Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
         $host = env('DB_HOST_FOURTH');
-//        $host = "SAPHANA-CT90006.cloudtaktiks.com:30015";
 
 // Default name of your hana instance
         $db_name = env('DB_DATABASE_FOURTH');
@@ -197,7 +243,21 @@ Select
             //  $sql = "SELECT CardName FROM TABLES WHERE SCHEMA_NAME = 'AL_YASEEN_TEST'";
             // $sql = "SELECT \"CardName\", \"CardCode\" FROM AL_YASEEN_TEST.OCRD WHERE \"CardCode\" = '0100465'";
             // $sql = "SELECT ".'"CardName", '.'"CardCode" '."FROM AL_YASEEN_TEST.OCRD WHERE ".'"CardCode"'." = '0100465'";
-            $sql = 'SELECT * FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
+//            $sql = 'SELECT * FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
+            $sql = 'SELECT * FROM (
+SELECT T3."CardCode", T0."TransId", T0."RefDate", T1."LineMemo", T1."Debit", T1."Credit",
+       SUM(T1."Debit" - T1."Credit") OVER (PARTITION BY T1."Account" ORDER BY T0."RefDate", T0."TransId") AS "CumulativeBalance"
+FROM AL_YASEEN_TEST.OJDT T0
+INNER JOIN AL_YASEEN_TEST.JDT1 T1 ON T0."TransId" = T1."TransId"
+INNER JOIN AL_YASEEN_TEST.OACT T2 ON T1."Account" = T2."AcctCode"
+INNER JOIN AL_YASEEN_TEST.OCRD T3 ON T1."ShortName" = T3."CardCode"
+WHERE T0."RefDate" >= \'20230101\'
+AND T3."CardCode" = \''.$this->customer_id.'\'
+ORDER BY T0."TaxDate", T0."TransId") as "tbl1"
+WHERE ("RefDate" >= \''.$start_date.'\' AND "RefDate" <= \''.$end_date.'\')';
+
+
+
             // $columns = odbc_columns($conn, 'CardName', 'CardCode');
             // while (($row = odbc_fetch_array($columns))) {
             //     print_r($row);
@@ -216,9 +276,14 @@ Select
             {
                 // echo odbc_num_rows($result);
                 // var_dump(odbc_fetch_row($result));
-                $aa = odbc_result_all($result, "border=1");
+//                $aa = odbc_result_all($result, "border=1");
+//                $x = odbc_fetch_object($result);
+//                $this->sap_results
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->sap_results, $row);
+                }
 
-                var_dump($aa);
+//                var_dump($this->sap_results);
 
                 // var_dump($result);
                 // while ($row = odbc_fetch_object($result))
