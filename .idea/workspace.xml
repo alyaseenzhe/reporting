@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

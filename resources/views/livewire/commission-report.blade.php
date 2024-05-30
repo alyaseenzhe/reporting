@@ -218,7 +218,8 @@
             <?php $calc_mat_dev1 = 0.00; ?>
             <?php $calc_mat_dev2 = 0.00; ?>
             <?php $commission_percentage = []; ?>
-
+            <?php $total_sales_manager = 0.00; ?>
+            <?php $percent = 0.00; ?>
 
 
             @foreach($result_tbl2 as $result2)
@@ -272,12 +273,15 @@
                                         <?php $commission_percentage[$result2['role']] = 30; ?>
                                     @elseif($tot > 120000 && $tot <= 240000)
                                         60
+                                        @php $percent = 60; @endphp
                                         <?php $commission_percentage[$result2['role']] = 60; ?>
                                     @elseif($tot > 240000 && $tot < 400000)
                                         80
+                                        @php $percent = 80; @endphp
                                         <?php $commission_percentage[$result2['role']] = 80; ?>
                                     @elseif($tot >= 400000)
                                         100
+                                        @php $percent = 100; @endphp
                                         <?php $commission_percentage[$result2['role']] = 100; ?>
                                     @endif
                                 </div>
@@ -356,8 +360,10 @@
                                 <div class="text-center text-gray-800 text-sm">
                                     @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
                                         {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                        <?php $total_sales_manager += (floatval($result2['calc_sales_manager'])*($percent/100)); ?>
                                     @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
                                         {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                        <?php $total_sales_manager += (floatval($result2['calc_sales_manager'])*($percent/100)); ?>
                                     @else
                                         <span>0</span>
                                     @endif
@@ -479,15 +485,19 @@
                                 <div class="text-center text-gray-800 text-sm">
                                     @if($tot >= 0 && $tot <= 120000)
                                         30
+                                        @php $percent = 30; @endphp
                                         <?php $commission_percentage[$result2['role']] = 30; ?>
                                     @elseif($tot > 120000 && $tot <= 240000)
                                         60
+                                        @php $percent = 60; @endphp
                                         <?php $commission_percentage[$result2['role']] = 60; ?>
                                     @elseif($tot > 240000 && $tot < 400000)
                                         80
+                                        @php $percent = 80; @endphp
                                         <?php $commission_percentage[$result2['role']] = 80; ?>
                                     @elseif($tot >= 400000)
                                         100
+                                        @php $percent = 100; @endphp
                                         <?php $commission_percentage[$result2['role']] = 100; ?>
                                     @endif
                                 </div>
@@ -566,8 +576,10 @@
                                 <div class="text-center text-gray-800 text-sm">
                                     @if(floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
                                         {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                        <?php $total_sales_manager += (floatval($result2['calc_sales_manager'])*($percent/100)); ?>
                                     @elseif(number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)
                                         {{$result2 ? number_format(floatval($result2['calc_sales_manager'])) : ""}}
+                                        <?php $total_sales_manager += (floatval($result2['calc_sales_manager'])*($percent/100)); ?>
                                     @else
                                         <span>0</span>
                                     @endif
@@ -673,7 +685,8 @@
                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($calc_mat_dev2) }}</td>
             </tr>
             <tr style="background-color: papayawhip; border: 2px solid black; font-weight: bold">
-                <td colspan="13" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">مبلغ استحقاق الحافز الشهري</td>
+                <td colspan="12" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">مبلغ استحقاق الحافز الشهري</td>
+                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($total_sales_manager) }}</td>
                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($calc_area_manager*($commission_percentage && array_key_exists('area_manager', $commission_percentage)? ($commission_percentage['area_manager']/100) : 0)) }}</td>
                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($calc_store_manager*($commission_percentage && array_key_exists('store_manager', $commission_percentage)? ($commission_percentage['store_manager']/100): 0)) }}</td>
                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($calc_mat_dev1*($commission_percentage && array_key_exists('mat_dev_manager1', $commission_percentage)? ($commission_percentage['mat_dev_manager1']/100): 0)) }}</td>
