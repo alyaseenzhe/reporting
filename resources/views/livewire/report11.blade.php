@@ -3,26 +3,8 @@
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
-                    <label class="block font-bold mb-2">نوع التقرير
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <div wire:ignore>
-                        <select id="report_type" name="report_type"
-                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>
-                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>
-                        </select>
-                    </div>
-                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-col gap-4">
-            <div class="w-full flex flex-col sm:flex-row gap-4">
-
-                <div class="w-full">
                     <label class="block font-bold mb-2">تاريخ البداية
+                        <span class="text-red-500">*</span>
                     </label>
                     <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -31,6 +13,7 @@
                 </div>
                 <div wire:ignore class="w-full">
                     <label class="block font-bold mb-2">تاريخ النهاية
+                        <span class="text-red-500">*</span>
                     </label>
                     <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -67,25 +50,25 @@
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-2">المجموعات
+                    <label class="block font-bold mb-4">نوع البحث
                         <span class="text-red-500">*</span>
                     </label>
-                    <div wire:ignore>
-                        <select id="group_type" name="group_type"
-                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-{{--                            <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>--}}
-{{--                            <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>--}}
-{{--                            <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>--}}
-{{--                            <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>--}}
-{{--                            <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>--}}
-                            <option value="groups_all" selected>الكل</option>
-                            <option value="commerce">الادارة التجارية</option>
-                            <option value="farms">الانتاج الزراعي</option>
-                            <option value="sundries">النثريات</option>
-                        </select>
+                    <div class="flex flex-row">
+                        <div class="flex items-center w-full">
+                            <input type="radio" name="search_type" value="item_code_search"
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                برقم الصنف</label>
+                        </div>
+                        <div class="flex items-center w-full">
+                            <input type="radio" name="search_type" value="advanced_search"
+                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">متقدم</label>
+                        </div>
                     </div>
-                    @error('group_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+
+                    @error('item_type')
+                    <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
                 </div>
                 {{--                <div class="mt-8 text-center w-full">--}}
                 {{--                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">--}}
@@ -97,9 +80,31 @@
                 {{--                </div>--}}
             </div>
         </div>
-        <div id="filteration-row2" class="w-full flex flex-col gap-4 mt-3 hide">
+        <div id="filteration-row2" style="padding-left: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
             <div class="w-full flex flex-col sm:flex-row gap-4">
-                <div class="w-full">
+                <div id="group_container" class="w-full">
+                    <label class="block font-bold mb-2">المجموعات
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div wire:ignore>
+                        <select id="group_type" name="group_type"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
+                            {{--                            <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>--}}
+                            {{--                            <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>--}}
+                            {{--                            <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>--}}
+                            {{--                            <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>--}}
+                            {{--                            <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>--}}
+                            <option value="select_group" selected>اختر مجموعة</option>
+                            <option value="groups_all">الكل</option>
+                            <option value="commerce">الادارة التجارية</option>
+                            <option value="farms">الانتاج الزراعي</option>
+                            <option value="sundries">النثريات</option>
+                        </select>
+                    </div>
+                    @error('group_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div id="cat_container" class="w-full hide">
                     <label class="block font-bold mb-2">نوع المواد
                         <span class="text-red-500">*</span>
                     </label>
@@ -120,7 +125,7 @@
                     </div>
                     @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div id="sp_container" class="w-full">
+                <div id="sp_container" class="w-full hide">
                     <label class="block font-bold mb-2">نوع المميز
                         <span class="text-red-500">*</span>
                     </label>
@@ -136,7 +141,7 @@
                     </div>
                     @error('sp_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div id="vendor_container" class="w-full">
+                <div id="vendor_container" class="w-full hide">
                     <label class="block font-bold mb-2">الموردين
                         <span class="text-red-500">*</span>
                     </label>
@@ -151,6 +156,49 @@
                         </select>
                     </div>
                     @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+{{--                <div class="mt-8 text-center w-full">--}}
+{{--                    <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
+{{--                        <span></span>--}}
+{{--                        <span>إنشاء تقرير</span>--}}
+{{--                    </span>--}}
+{{--                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
+{{--                    <span></span>--}}
+{{--                    <span>الرجاء الانتظار</span>--}}
+{{--                    </span>--}}
+{{--                    </button>--}}
+{{--                </div>--}}
+            </div>
+        </div>
+        <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
+            <div class="w-full flex flex-col sm:flex-row gap-4">
+                <div wire:ignore id="product_code_div" class="w-full">
+                    <label class="block font-bold mb-2">رقم الصنف
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="product_code"
+                           class="form-input w-full @error('product_code') border-red-300 @enderror">
+                    @error('product_code')
+                    <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+                </div>
+            </div>
+        </div>
+        <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide">
+            <div class="w-full flex flex-col sm:flex-row gap-4">
+                <div class="w-full">
+                    <label class="block font-bold mb-2">نوع التقرير
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div wire:ignore>
+                        <select id="report_type" name="report_type"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
+                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>
+                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>
+                        </select>
+                    </div>
+                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -380,7 +428,7 @@
                                 @php $counter++ @endphp
                             @endforeach
                         @endforeach
-                        
+
                     @endif
                     </tbody>
                 </table>
@@ -409,6 +457,20 @@
         Livewire.on('finished', () => {
             console.log(selected_cat_type);
             $("#cat_type").select2('val', selected_cat_type);
+            old_search_type = $("input[name='search_type']:checked").val();
+            console.log('old_search_type:'+ old_search_type);
+
+            if(old_search_type == 'item_code_search') {
+                $('#filteration-row2').addClass('hide');
+                $('#product-code-row').removeClass('hide');
+                $('#submit-row').removeClass('hide');
+            }
+
+            if(old_search_type == 'advanced_search') {
+                $('#filteration-row2').removeClass('hide');
+                $('#product-code-row').addClass('hide');
+                $('#submit-row').removeClass('hide');
+            }
             // $("#cat_type option[value='"+selected_cat_type+"']").prop('selected', true);
             swal.close();
         });
@@ -465,6 +527,29 @@
                 }
             });
 
+            $("input[name='search_type']").change(function () {
+                search_type = $(this).val();
+                $('#product_code').val("");
+
+                if (search_type == "item_code_search") {
+                    $('#filteration-row2').addClass('hide');
+                    $('#product-code-row').removeClass('hide');
+                    $('#submit-row').removeClass('hide');
+                }
+                else if(search_type == "advanced_search") {
+                    $('#filteration-row2').removeClass('hide');
+                    $('#product-code-row').addClass('hide');
+                    $('#submit-row').addClass('hide');
+                }
+
+                // re-intialize the select2
+                $('#group_type').select2({
+                    dir: "rtl",
+                    dropdownCssClass: "select-font-size"
+                });
+                $("#group_type option[value='select_group']").prop('selected', true);
+            });
+
             $('#group_type').on('change', function (e) {
                 var data = $('#group_type').select2("val");
 
@@ -507,23 +592,41 @@
                 var data = $('#group_type').select2("val");
 
                 if(data == 'commerce') {
+                    $('#cat_container').removeClass('hide');
                     $('#sp_container').removeClass('hide');
                     $('#vendor_container').removeClass('hide');
+                    $('#submit-row').removeClass('hide');
                 }
                 else if(data == 'farms') {
+                    $('#cat_container').removeClass('hide');
                     $('#sp_container').addClass('hide');
                     $('#vendor_container').addClass('hide');
+                    $('#submit-row').removeClass('hide');
                 }
                 else if(data == 'sundries') {
+                    $('#cat_container').removeClass('hide');
                     $('#sp_container').addClass('hide');
                     $('#vendor_container').addClass('hide');
+                    $('#submit-row').removeClass('hide');
                 }
                 else if(data == 'groups_all') {
+                    $('#cat_container').removeClass('hide');
                     $('#sp_container').removeClass('hide');
                     $('#vendor_container').removeClass('hide');
+                    $('#submit-row').removeClass('hide');
+                }
+                else if(data == 'select_group') {
+                    $('#cat_container').addClass('hide');
+                    $('#sp_container').addClass('hide');
+                    $('#vendor_container').addClass('hide');
+                    $('#submit-row').addClass('hide');
                 }
 
                 // re-intialize the select2
+                $('#group_type').select2({
+                    dir: "rtl",
+                    dropdownCssClass: "select-font-size"
+                });
                 $('#cat_type').select2({
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
@@ -606,6 +709,8 @@
                 var report_type = $('#report_type').val();
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
+                var search_type = $("input[name='search_type']:checked").val();
+                var product_code = $("#product_code").val();
 
                 var dept_id = $('#dept_id').select2("val");
                 var group_type = $('#group_type').select2("val");
@@ -616,42 +721,113 @@
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                Swal.fire({
-                    title: 'الرجاء الإنتظار',
-                    allowOutsideClick: false,
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading()
-                    },
-                });
+                // Swal.fire({
+                //     title: 'الرجاء الإنتظار',
+                //     allowOutsideClick: false,
+                //     showCancelButton: false,
+                //     showConfirmButton: false,
+                //     willOpen: () => {
+                //         Swal.showLoading()
+                //     },
+                // });
 
-                Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type);
+                // Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code);
 
+                if (search_type == 'item_code_search') {
 
-                // if(dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {
-                //     Swal.fire({
-                //         title: "حدث خطأ",
-                //         text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
-                //         icon: "error",
-                //         confirmButtonText: "موافق",
-                //     });
-                // }
-                // else {
-                //     $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
-                //
-                //     Swal.fire({
-                //         title: 'الرجاء الإنتظار',
-                //         allowOutsideClick: false,
-                //         showCancelButton: false,
-                //         showConfirmButton: false,
-                //         willOpen: () => {
-                //             Swal.showLoading()
-                //         },
-                //     });
-                //
-                //     Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
-                // }
+                    if(start_date == '' || end_date == '' || dept_id == null || $.trim(product_code) == "") {
+                        Swal.fire({
+                            title: "حدث خطأ",
+                            text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                            icon: "error",
+                            confirmButtonText: "موافق",
+                        });
+                        $("#gen-report").html('<b>إنشاء تقرير</b>');
+                    }
+                    else {
+                        $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                        Swal.fire({
+                            title: 'الرجاء الإنتظار',
+                            allowOutsideClick: false,
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading()
+                            },
+                        });
+
+                        Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code);
+                        // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                    }
+                }
+                else if (search_type == 'advanced_search') {
+
+                    if (group_type == "commerce" || group_type == "groups_all") {
+                        if(start_date == null || end_date == null || dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {
+                            Swal.fire({
+                                title: "حدث خطأ",
+                                text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                                icon: "error",
+                                confirmButtonText: "موافق",
+                            });
+                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                        }
+                        else {
+                            $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                            Swal.fire({
+                                title: 'الرجاء الإنتظار',
+                                allowOutsideClick: false,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                willOpen: () => {
+                                    Swal.showLoading()
+                                },
+                            });
+
+                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code);
+                            // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                        }
+                    }
+
+                    else if (group_type == "farms" || group_type == "sundries") {
+                        if(start_date == '' || end_date == '' || dept_id == null || cat_type == null) {
+                            Swal.fire({
+                                title: "حدث خطأ",
+                                text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                                icon: "error",
+                                confirmButtonText: "موافق",
+                            });
+                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                        }
+                        else {
+                            $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                            Swal.fire({
+                                title: 'الرجاء الإنتظار',
+                                allowOutsideClick: false,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                willOpen: () => {
+                                    Swal.showLoading()
+                                },
+                            });
+
+                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code);
+                            // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                        }
+                    }
+                    else {
+                        Swal.fire({
+                            title: "حدث خطأ",
+                            text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                            icon: "error",
+                            confirmButtonText: "موافق",
+                        });
+                        $("#gen-report").html('<b>إنشاء تقرير</b>');
+                    }
+                }
             });
 
 

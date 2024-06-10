@@ -32,7 +32,7 @@ class Report11 extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type) {
+    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code) {
 
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -43,13 +43,12 @@ class Report11 extends Component
         $this->sap_results = [];
         $this->group_results = [];
 
-        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type);
+        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code);
 //        $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type);
 //        $this->sapQuery($start_date, $end_date, $dept_id);
 //
 //        $scribes_collection = collect($this->scribes_results);
 //        $sap_collection = collect($this->sap_results);
-
 
         // dates
         if (is_null($start_date) == false && is_null($end_date) == false) {
@@ -57,14 +56,18 @@ class Report11 extends Component
             if ($start_date >= '2011-07-01' && $end_date <= '2023-12-31') {
                 $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type);
             }
+            elseif ($start_date > '2023-12-31' && $end_date > '2023-12-31') {
+                $this->sapQuery($start_date, $end_date, $dept_id);
+            }
             elseif ($start_date >= '2011-07-01' && $end_date > '2023-12-31') {
                 $this->scribesQuery($start_date, '2023-12-31', $dept_id, $sp_type);
                 $this->sapQuery('2024-01-01', $end_date, $dept_id);
             }
-            elseif ($start_date > '2023-12-31' && $end_date > '2023-12-31') {
-                $this->sapQuery($start_date, $end_date, $dept_id);
-            }
 
+
+        }
+        else {
+            dd('coco');
         }
         // end dates
 
@@ -90,11 +93,11 @@ class Report11 extends Component
                         'VendorName' => count($this->scribes_results) > 0 ? $row->first()->VendorName : $row->first()['VendorCode'],
                         'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
                         'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-                        'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
+                        'AverageUnitPrice' => $row->sum('TotalQuantitySold') == 0 ? 0 : $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
 //                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
                         'Cost' => $row->sum('Cost'),
                         'GrossProfit' => $row->sum('GrossProfit'),
-                        'GrossProfitPer' => ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
+                        'GrossProfitPer' => $row->sum('Cost') == 0 ? 0 : ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                     ];
                 });
@@ -140,11 +143,11 @@ class Report11 extends Component
                             'Department' => count($this->scribes_results) > 0 ? $row->first()->Department : $row->first()['Department'],
                             'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
                             'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-                            'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
 //                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
                             'Cost' => $row->sum('Cost'),
                             'GrossProfit' => $row->sum('GrossProfit'),
-                            'GrossProfitPer' => ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -270,63 +273,65 @@ class Report11 extends Component
 
         $this->categories = [];
 
-        if (! extension_loaded('odbc'))
-        {
-            die('ODBC extension not enabled / loaded');
-        }
-
-        $driver = env('DB_CONNECTION_FOURTH');
-        $host = env('DB_HOST_FOURTH');
-        $db_name = env('DB_DATABASE_FOURTH');
-        $username = env('DB_USERNAME_FOURTH');
-        $password = env('DB_PASSWORD_FOURTH');
-
-        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
-
-        if (!$conn)
-        {
-            echo "Connection failed.\n";
-            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-        }
-        else
-        {
-            $categoryQuery = '';
-
-            if ($group_type == "commerce") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
-            }
-            elseif ($group_type == "farms") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
-            }
-            elseif ($group_type == "sundries") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
-            }
-            elseif ($group_type == "groups_all") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
-            }
-
-            $result = odbc_exec($conn, $categoryQuery);
-            if (!$result)
+        if ($group_type != 'select_group') {
+            if (! extension_loaded('odbc'))
             {
-                echo "Error while sending SQL statement to the database server.\n";
+                die('ODBC extension not enabled / loaded');
+            }
+
+            $driver = env('DB_CONNECTION_FOURTH');
+            $host = env('DB_HOST_FOURTH');
+            $db_name = env('DB_DATABASE_FOURTH');
+            $username = env('DB_USERNAME_FOURTH');
+            $password = env('DB_PASSWORD_FOURTH');
+
+            $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+            if (!$conn)
+            {
+                echo "Connection failed.\n";
                 echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
             }
             else
             {
+                $categoryQuery = '';
 
-                while ($row = odbc_fetch_array($result)) {
-                    array_push($this->categories, $row);
+                if ($group_type == "commerce") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
                 }
-            }
+                elseif ($group_type == "farms") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
+                }
+                elseif ($group_type == "sundries") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
+                }
+                elseif ($group_type == "groups_all") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+                }
+
+                $result = odbc_exec($conn, $categoryQuery);
+                if (!$result)
+                {
+                    echo "Error while sending SQL statement to the database server.\n";
+                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+                }
+                else
+                {
+
+                    while ($row = odbc_fetch_array($result)) {
+                        array_push($this->categories, $row);
+                    }
+                }
 
 //            dd($this->vendor_list);
-            odbc_close($conn);
+                odbc_close($conn);
+            }
         }
 
         $this->emit('finished-categories', $this->categories);
     }
 
-    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type) {
+    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code) {
 
         $this->scribes_codes = [];
         $this->sap_codes = [];
@@ -353,61 +358,66 @@ class Report11 extends Component
         {
             $categoryQuery = '';
 
-            if ($group_type == "commerce") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+            if ($search_type == "item_code_search") {
+                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'170224\' OR T0."U_UDF1" = \'170224\'';
             }
-            elseif ($group_type == "farms") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
-            }
-            elseif ($group_type == "sundries") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
-            }
-            elseif ($group_type == "groups_all") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
-            }
+            else if($search_type == "advanced_search") {
 
-            if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
-               $categoryQuery .= ' AND T0."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
-            }
+                if ($group_type == "commerce") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+                }
+                elseif ($group_type == "farms") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
+                }
+                elseif ($group_type == "sundries") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
+                }
+                elseif ($group_type == "groups_all") {
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+                }
 
-            if ($sp_type != null && in_array('sp_all', $sp_type) == false && count($sp_type) != 0) {
+                if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
+                    $categoryQuery .= ' AND T0."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
+                }
+
+                if ($sp_type != null && in_array('sp_all', $sp_type) == false && count($sp_type) != 0) {
 //                $categoryQuery .= ' AND (T0."QryGroup1" = \''. (in_array('0', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup2" = \''. (in_array('1', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup3" = \''. (in_array('2', $sp_type) ? 'Y': 'N') .'\')';
 //                dd($sp_type);
-                if (count($sp_type) == 3) {
-                    $categoryQuery .= ' AND (T0."QryGroup1" = \''. (in_array('0', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup2" = \''. (in_array('1', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup3" = \''. (in_array('2', $sp_type) ? 'Y': 'N') .'\')';
-                }
-                else {
-                    $categoryQuery .= ' AND (';
-                    foreach ($sp_type as $key => $s) {
-                        if ($key === array_key_first($sp_type)) {
-                            $categoryQuery .= 'T0."QryGroup'. intval($s)+1 .'" = \'Y\'';
-                        }
-                        else {
-                            $categoryQuery .= ' OR T0."QryGroup'. intval($s)+1 .'" = \'Y\'';
-                        }
+                    if (count($sp_type) == 3) {
+                        $categoryQuery .= ' AND (T0."QryGroup1" = \''. (in_array('0', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup2" = \''. (in_array('1', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup3" = \''. (in_array('2', $sp_type) ? 'Y': 'N') .'\')';
                     }
-                    $categoryQuery .= ')';
-
-                    $difference=array_diff(['0', '1', '2'], $sp_type);
-//                    dd($difference);
-
-                    if (count($difference) > 0) {
-
+                    else {
                         $categoryQuery .= ' AND (';
-                        foreach ($difference as $key => $s) {
-                            if ($key === array_key_first($difference)) {
-                                $categoryQuery .= 'T0."QryGroup'. intval($s)+1 .'" = \'N\'';
+                        foreach ($sp_type as $key => $s) {
+                            if ($key === array_key_first($sp_type)) {
+                                $categoryQuery .= 'T0."QryGroup'. intval($s)+1 .'" = \'Y\'';
                             }
                             else {
-                                $categoryQuery .= ' OR T0."QryGroup'. intval($s)+1 .'" = \'N\'';
+                                $categoryQuery .= ' OR T0."QryGroup'. intval($s)+1 .'" = \'Y\'';
                             }
                         }
                         $categoryQuery .= ')';
 
-                    }
+                        $difference=array_diff(['0', '1', '2'], $sp_type);
+//                    dd($difference);
 
+                        if (count($difference) > 0) {
+
+                            $categoryQuery .= ' AND (';
+                            foreach ($difference as $key => $s) {
+                                if ($key === array_key_first($difference)) {
+                                    $categoryQuery .= 'T0."QryGroup'. intval($s)+1 .'" = \'N\'';
+                                }
+                                else {
+                                    $categoryQuery .= ' OR T0."QryGroup'. intval($s)+1 .'" = \'N\'';
+                                }
+                            }
+                            $categoryQuery .= ')';
+
+                        }
+
+                    }
                 }
-            }
 //            else {
 //                if (count($sp_type) == 3) {
 //                    dd('aaa');
@@ -446,8 +456,9 @@ class Report11 extends Component
 //                }
 //            }
 
-            if ($vendor_type != 'vendor_all' && $vendor_type != null) {
-                $categoryQuery .= ' AND (T0."CardCode" = \''.$vendor_type.'\')';
+                if ($vendor_type != 'vendor_all' && $vendor_type != null) {
+                    $categoryQuery .= ' AND (T0."CardCode" = \''.$vendor_type.'\')';
+                }
             }
 
 //            dd($categoryQuery);
@@ -491,15 +502,15 @@ class Report11 extends Component
 
             if ($this->report_type == "byItem") {
 
-                $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo ,sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/SUM(SalesTotalCost))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
-select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo ,SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
+                $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo ,sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
+select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo ,SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
 DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,-sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
 Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName";
@@ -507,8 +518,8 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
             }
             else if ($this->report_type == "byDepartment") {
 
-                $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/SUM(SalesTotalCost))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
-select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
+                $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
+select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
 DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
@@ -517,7 +528,7 @@ Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Bl
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/sum(ActualQty+FreeQty)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N'  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
@@ -541,8 +552,14 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
         if (count($this->sap_codes) > 0) {
             $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' =>'5', '0104' =>'6', '0105' =>'7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' =>  '16', '0203' => '17'];
             $sap_depts = [];
-            foreach ($departments as $department) {
-                array_push($sap_depts, $depts[$department]);
+
+            if (in_array('dept_all', $departments)) {
+                $sap_depts = $depts;
+            }
+            else {
+                foreach ($departments as $department) {
+                    array_push($sap_depts, $depts[$department]);
+                }
             }
 
             if (! extension_loaded('odbc'))
@@ -575,18 +592,80 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 
                 if ($this->report_type == "byItem") {
 
-                    $sql = 'SELECT * FROM (
+//                    $sql = 'SELECT * FROM (
+//SELECT
+//    T0."ItemCode" AS "ItemCode",
+//    T1."ItemName" AS "ItemName",
+//    SUM(T0."Quantity") AS "TotalQuantitySold",
+//    SUM(T0."LineTotal") AS "TotalSalesAmount",
+//    AVG(T0."Price") AS "AverageUnitPrice",
+//    COUNT(DISTINCT T0."DocEntry") AS "NumberOfInvoices",
+//    SUM(T0."GrssProfit") as "GrossProfit",
+//    SUM(T0."GPTtlBasPr") as "Cost",
+//    (SUM(T0."GrssProfit")/ SUM(T0."GPTtlBasPr"))*100 as "GrossProfitPer",
+//    T2."BPLName" AS "Branch",
+//    CASE
+//		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
+//		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
+//		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
+//		ELSE \'\'
+//	END AS "Speciality",
+//	T1."SalUnitMsr",
+//	T1."U_UDF1" as "OldCode",
+//	T4."CardCode" AS "VendorCode",
+//    T4."CardName" AS "VendorName"
+//FROM
+//    AL_YASEEN_TEST.INV1 T0
+//JOIN
+//    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+//JOIN
+//    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+//JOIN
+//    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+//JOIN
+//	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+//WHERE
+//    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+//	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
+//	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+//GROUP BY
+//	T0."ItemCode", T1."ItemName", T2."BPLName", T1."QryGroup1", T1."QryGroup2", T1."QryGroup3", T1."SalUnitMsr", T1."U_UDF1", T4."CardCode", T4."CardName"
+//ORDER BY
+//    "TotalSalesAmount" DESC
+//    ) as tbl1';
+
+                    $sql = 'SELECT
+	tbl1."ItemCode" AS "ItemCode",
+    tbl1."ItemName" AS "ItemName",
+    SUM(tbl1."Quantity") AS "TotalQuantitySold",
+    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
+    AVG(tbl1."Price") AS "AverageUnitPrice",
+    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
+    SUM(tbl1."GrssProfit") as "GrossProfit",
+    SUM(tbl1."GPTtlBasPr") as "Cost",
+    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"), 0))*100 as "GrossProfitPer",
+    tbl1."Speciality",
+	tbl1."SalUnitMsr",
+	tbl1."OldCode",
+	tbl1."VendorCode",
+    tbl1."VendorName"
+
+ FROM (
 SELECT
     T0."ItemCode" AS "ItemCode",
     T1."ItemName" AS "ItemName",
-    SUM(T0."Quantity") AS "TotalQuantitySold",
-    SUM(T0."LineTotal") AS "TotalSalesAmount",
-    AVG(T0."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT T0."DocEntry") AS "NumberOfInvoices",
-    SUM(T0."GrssProfit") as "GrossProfit",
-    SUM(T0."GPTtlBasPr") as "Cost",
-    (SUM(T0."GrssProfit")/ SUM(T0."GPTtlBasPr"))*100 as "GrossProfitPer",
-    T2."BPLName" AS "Branch",
+    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
+	CASE
+    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
+    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
+	END as "LineTotal",
+--   CASE WHEN T0."BaseRef" != \'\' THEN -T0."LineTotal" ELSE T0."LineTotal" END as "LineTotal",
+    T0."Price",
+	T3."DocNum",
+	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
+	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
+--	T0."GPTtlBasPr",
+	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
     CASE
 		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
 		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
@@ -608,29 +687,147 @@ JOIN
 JOIN
 	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
 WHERE
-    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
 	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-GROUP BY
-	T0."ItemCode", T1."ItemName", T2."BPLName", T1."QryGroup1", T1."QryGroup2", T1."QryGroup3", T1."SalUnitMsr", T1."U_UDF1", T4."CardCode", T4."CardName"
+
+UNION
+
+
+SELECT
+	T1."ItemCode" AS "ItemCode",
+    T3."ItemName" AS "ItemName",
+    CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
+    	ELSE -T1."Quantity"
+    END as "Quantity",
+    CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
+    	ELSE -T1."LineTotal"
+    END as "LineTotal",
+    T1."Price",
+	T0."DocNum",
+	CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
+    	ELSE -T1."GrssProfit"
+    END as "GrssProfit",
+    CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
+    	ELSE -T1."GPTtlBasPr"
+    END as "GPTtlBasPr",
+	CASE
+    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
+    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
+    END as "GrossProfitPer",
+    CASE
+		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	T3."SalUnitMsr",
+	T3."U_UDF1" as "OldCode",
+	T4."CardCode" AS "VendorCode",
+    T4."CardName" AS "VendorName"
+FROM
+    AL_YASEEN_TEST.ORIN T0
+INNER JOIN
+    AL_YASEEN_TEST.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+JOIN
+	AL_YASEEN_TEST.OBPL T2 ON T0."BPLId" = T2."BPLId"
+JOIN
+	AL_YASEEN_TEST.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+JOIN
+	AL_YASEEN_TEST.OCRD T4 ON T3."CardCode" = T4."CardCode"
+WHERE
+    T0."BPLId" IN ('. implode(', ', $sap_depts).')
+    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+    ) as tbl1
+    GROUP BY
+	tbl1."ItemCode", tbl1."ItemName", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
 ORDER BY
-    "TotalSalesAmount" DESC
-    ) as tbl1';
+    "TotalSalesAmount" DESC';
 
                 }
                 else if ($this->report_type == "byDepartment") {
-                    $sql = 'SELECT * FROM (
+//                    $sql = 'SELECT * FROM (
+//SELECT
+//    T0."ItemCode" AS "ItemCode",
+//    T1."ItemName" AS "ItemName",
+//    SUM(T0."Quantity") AS "TotalQuantitySold",
+//    SUM(T0."LineTotal") AS "TotalSalesAmount",
+//    AVG(T0."Price") AS "AverageUnitPrice",
+//    COUNT(DISTINCT T0."DocEntry") AS "NumberOfInvoices",
+//    SUM(T0."GrssProfit") as "GrossProfit",
+//    SUM(T0."GPTtlBasPr") as "Cost",
+//    (SUM(T0."GrssProfit")/ SUM(T0."GPTtlBasPr"))*100 as "GrossProfitPer",
+//    T2."BPLName" AS "Branch",
+//    T2."TaxIdNum" AS "Department",
+//    CASE
+//		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
+//		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
+//		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
+//		ELSE \'\'
+//	END AS "Speciality",
+//	T1."SalUnitMsr",
+//	T1."U_UDF1" as "OldCode",
+//	T4."CardCode" AS "VendorCode",
+//    T4."CardName" AS "VendorName"
+//FROM
+//    AL_YASEEN_TEST.INV1 T0
+//JOIN
+//    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+//JOIN
+//    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+//JOIN
+//    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+//JOIN
+//	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+//WHERE
+//    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+//	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
+//	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+//GROUP BY
+//	T0."ItemCode", T1."ItemName", T2."BPLName", T2."TaxIdNum", T1."QryGroup1", T1."QryGroup2", T1."QryGroup3", T1."SalUnitMsr", T1."U_UDF1", T4."CardCode", T4."CardName"
+//ORDER BY
+//    "TotalSalesAmount" DESC
+//    ) as tbl1';
+
+                    $sql = 'SELECT
+	tbl1."ItemCode" AS "ItemCode",
+    tbl1."ItemName" AS "ItemName",
+    SUM(tbl1."Quantity") AS "TotalQuantitySold",
+    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
+    AVG(tbl1."Price") AS "AverageUnitPrice",
+    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
+    SUM(tbl1."GrssProfit") as "GrossProfit",
+    SUM(tbl1."GPTtlBasPr") as "Cost",
+    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"),0))*100 as "GrossProfitPer",
+    tbl1."Branch",
+    tbl1."Department",
+    tbl1."Speciality",
+	tbl1."SalUnitMsr",
+	tbl1."OldCode",
+	tbl1."VendorCode",
+    tbl1."VendorName"
+
+ FROM (
 SELECT
     T0."ItemCode" AS "ItemCode",
     T1."ItemName" AS "ItemName",
-    SUM(T0."Quantity") AS "TotalQuantitySold",
-    SUM(T0."LineTotal") AS "TotalSalesAmount",
-    AVG(T0."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT T0."DocEntry") AS "NumberOfInvoices",
-    SUM(T0."GrssProfit") as "GrossProfit",
-    SUM(T0."GPTtlBasPr") as "Cost",
-    (SUM(T0."GrssProfit")/ SUM(T0."GPTtlBasPr"))*100 as "GrossProfitPer",
-    T2."BPLName" AS "Branch",
+    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
+	CASE
+    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
+    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
+	END as "LineTotal",
+    T0."Price",
+	T3."DocNum",
+	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
+	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
+--	T0."GPTtlBasPr",
+	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
+	T2."BPLName" AS "Branch",
     T2."TaxIdNum" AS "Department",
     CASE
 		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
@@ -653,17 +850,73 @@ JOIN
 JOIN
 	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
 WHERE
-    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
 	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-GROUP BY
-	T0."ItemCode", T1."ItemName", T2."BPLName", T2."TaxIdNum", T1."QryGroup1", T1."QryGroup2", T1."QryGroup3", T1."SalUnitMsr", T1."U_UDF1", T4."CardCode", T4."CardName"
+
+UNION
+
+
+SELECT
+	T1."ItemCode" AS "ItemCode",
+    T3."ItemName" AS "ItemName",
+     CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
+    	ELSE -T1."Quantity"
+    END as "Quantity",
+    CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
+    	ELSE -T1."LineTotal"
+    END as "LineTotal",
+    T1."Price",
+	T0."DocNum",
+	CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
+    	ELSE -T1."GrssProfit"
+    END as "GrssProfit",
+    CASE
+    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
+    	ELSE -T1."GPTtlBasPr"
+    END as "GPTtlBasPr",
+	CASE
+    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
+    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
+    END as "GrossProfitPer",
+	T2."BPLName" AS "Branch",
+    T2."TaxIdNum" AS "Department",
+    CASE
+		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	T3."SalUnitMsr",
+	T3."U_UDF1" as "OldCode",
+	T4."CardCode" AS "VendorCode",
+    T4."CardName" AS "VendorName"
+FROM
+    AL_YASEEN_TEST.ORIN T0
+INNER JOIN
+    AL_YASEEN_TEST.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+JOIN
+	AL_YASEEN_TEST.OBPL T2 ON T0."BPLId" = T2."BPLId"
+JOIN
+	AL_YASEEN_TEST.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+JOIN
+	AL_YASEEN_TEST.OCRD T4 ON T3."CardCode" = T4."CardCode"
+WHERE
+    T0."BPLId" IN ('. implode(', ', $sap_depts).')
+    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+    ) as tbl1
+    GROUP BY
+	tbl1."ItemCode", tbl1."ItemName", tbl1."Branch", tbl1."Department", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
 ORDER BY
-    "TotalSalesAmount" DESC
-    ) as tbl1';
+    "TotalSalesAmount" DESC';
                 }
 
 
+//                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result)
                 {
