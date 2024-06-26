@@ -12,13 +12,24 @@ class Report25 extends Component
     public $customer_id;
 
     public $scribes_results = [];
+    public $scribes_trans_results = [];
     public $sap_trans_results = [];
     public $sap_aging_results = [];
     public $sap_sales_results = [];
 
+    public $sales_count = 0;
+    public $sales_sum = 0;
+
+    public $reverse_count = 0;
+    public $reverse_sum = 0;
+
+    public $receipt_count = 0;
+    public $receipt_sum = 0;
+
     public $start_date;
     public $end_date;
     public $show_msg = false;
+    public $type = 'sap';
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -85,6 +96,15 @@ class Report25 extends Component
         $this->sap_aging_results = [];
         $this->sap_sales_results = [];
 
+        $this->sales_count = 0;
+        $this->sales_sum = 0;
+
+        $this->reverse_count = 0;
+        $this->reverse_sum = 0;
+
+        $this->receipt_count = 0;
+        $this->receipt_sum = 0;
+
         $this->generateReport();
     }
 
@@ -98,15 +118,19 @@ class Report25 extends Component
 
             if ($this->start_date >= '2011-07-01' && $this->end_date <= '2023-12-31') {
                 $this->scribesQuery($this->start_date, $this->end_date);
+                $this->type = 'scribe';
             }
             elseif ($this->start_date > '2023-12-31' && $this->end_date > '2023-12-31') {
                 $this->sapQuery($this->start_date, $this->end_date);
+                $this->type = 'sap';
             }
             elseif ($this->start_date >= '2011-07-01' && $this->end_date > '2023-12-31') {
                 $this->scribesQuery($this->start_date, '2023-12-31');
                 $this->sapQuery('2024-01-01', $this->end_date);
 
                 $this->mergeQuery();
+
+                $this->type = 'both';
             }
 
 
@@ -150,7 +174,7 @@ class Report25 extends Component
 
     public function scribesQuery($start_date, $end_date) {
 
-        $scribesStmt = "
+        /*$scribesStmt = "
 DECLARE @customer_id INT;
 SET @customer_id = (SELECT NodeNo FROM AccMast where Code = '".$this->customer_id."');
 select * from (
@@ -196,12 +220,93 @@ ProductNo = T.NodeNo And partyno = @customer_id and (SIDate >= '".$start_date."'
 SInvoice,ProductMast Where ProductNo = NodeNo  And PartyNo = @customer_id  And (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25')     And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And ActualVoucherPrefix = 'SIV-' Group By SInvoiceNo,ProductNo, SIDate,Rate , ActualVoucherPrefix ,SpecialityCode,NodeNo    union all    Select PinvoiceNo as VoucherNo, PIDate as VoucherDate ,ProductNo ,Sum(ActualQty) as Qty , Rate , Sum(Value*Exchangerate + ExtraFieldsTotal) as Value ,    Sum(TotalCost) as Cost , SpecialityCode as Sply,case when (SpecialityCode = '' OR SpecialityCode =  '0') then     (Select count(distinct ProductNo) From PInvoice,ProductMast M where   ProductNo = M.NodeNo And partyno = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') and        (M.SpecialityCode = '' OR M.SpecialityCode = '0') And ActualVoucherPrefix = 'SRT-' )    else (Select count(distinct ProductNo) From PInvoice ,ProductMast T where ProductNo = T.NodeNo And partyno = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') and        (T.SpecialityCode <> '' And T.SpecialityCode <> '0') And ActualVoucherPrefix = 'SRT-'  And T.SpecialityCode =ProductMast.SpecialityCode) End   as NoSply  ,'PIV' as Type , ActualVoucherPrefix From Pinvoice,ProductMast   Where ProductNo = NodeNo  And PartyNo = @customer_id  And (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25')   And ActualVoucherPrefix = 'SRT-'   And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  Group By PinvoiceNo,ProductNo, PIDate,Rate , ActualVoucherPrefix ,SpecialityCode,NodeNo    --order by SPLY ,Type , VoucherDate , ProductNo
 ) as tbl2
 ) as tbl2
+on tbl1.customer_code = tbl2.customer_code";*/
+
+        $scribesStmt = "
+DECLARE @customer_id INT;
+SET @customer_id = (SELECT NodeNo FROM AccMast where Code = '".$this->customer_id."');
+select * from (
+SELECT
+	(select Code from AccMast where NodeNo = @customer_id) as customer_code,
+	(select CreditLimit from AccMast where NodeNo = @customer_id) as credit_limit,
+	/*count(case when SUBSTRING(VoucherNo, 1, 3) = '210' then VoucherNo end) as sales_count,
+	sum(case when SUBSTRING(VoucherNo, 1, 3) = '210' then Net_without_VAT end) as sales_sum,
+	count(case when SUBSTRING(VoucherNo, 1, 3) in ('211', '212') then VoucherNo end) as reverse_count,
+	sum(case when SUBSTRING(VoucherNo, 1, 3) in ('211', '212') then Net_without_VAT end) as reverse_sum,
+	count(case when SUBSTRING(VoucherNo, 1, 3) = '030' then VoucherNo end) as receipt_count,
+	sum(case when SUBSTRING(VoucherNo, 1, 3) = '030' then Net end) as receipt_sum,*/
+	sum(case when VoucherDate >=  DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."'), 0) and VoucherDate <=  '".$end_date." 23:59:25' and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month1,
+	sum(case when VoucherDate >=  DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-1, 0) and VoucherDate <=  CONCAT(EOMONTH(DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-1, 0)), ' 23:59:25') and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month2,
+	sum(case when VoucherDate >=  DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-2, 0) and VoucherDate <=  CONCAT(EOMONTH(DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-2, 0)), ' 23:59:25') and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month3,
+	sum(case when VoucherDate >=  DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-3, 0) and VoucherDate <=  CONCAT(EOMONTH(DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-3, 0)), ' 23:59:25') and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month4,
+	sum(case when VoucherDate >=  DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-4, 0) and VoucherDate <=  CONCAT(EOMONTH(DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-4, 0)), ' 23:59:25') and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month5,
+	sum(case when VoucherDate <=  CONCAT(EOMONTH(DATEADD(MONTH, DATEDIFF(MONTH, 0, '". $end_date ."')-5, 0)), ' 23:59:25') and SUBSTRING(VoucherNo, 1, 3) in ('210')  then ISNULL(Total, 0)+ ISNULL(TotalPaid, 0) end) as month6
+
+FROM (
+Select ISNULL((SELECT TOP 1 ARABIC_NAME FROM Studentmast where nodeno=WarrentyInfo.SalesEmployee ),'') AS SALESEMPLOYEE,B.*,AccMast.Name As
+CustomerName,AccMast.Arabic_Name As CustomerArabicName,AccMast.Code As CustomerCode ,AccMast.CreditLimit as Limit ,AccMast.Type as CustomerType , case when
+AccMast.LevelNo = 2 then (Select Arabic_Name From AccMast Where NodeNo = (Select Level1 From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 3
+then (Select Arabic_Name From AccMast Where NodeNo = (Select Level2 From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 4 then (Select
+Arabic_Name From AccMast Where NodeNo = (Select Level3 From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 5 then (Select Arabic_Name From
+AccMast Where NodeNo = (Select Level4 From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 6 then (Select Arabic_Name From AccMast Where NodeNo
+= (Select Level5 From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 7 then (Select Arabic_Name From AccMast Where NodeNo = (Select Level6
+From AccMast Where NodeNo = CustomerNo))  else case when AccMast.LevelNo = 8 then (Select Arabic_Name From AccMast Where NodeNo = (Select Level7 From AccMast Where
+NodeNo = CustomerNo))  else case when AccMast.LevelNo = 9 then (Select Arabic_Name From AccMast Where NodeNo = (Select Level8 From AccMast Where NodeNo = CustomerNo))  else '' end end end end end end end end as GroupName , case when (select Sum(Total) from BillWise where  CustomerNo = B.CustomerNo and VoucherDate <='".$end_date." 23:59:25' ) <> 0  then (select Sum(Total) from BillWise where  CustomerNo = B.CustomerNo and  VoucherDate <='".$end_date." 23:59:25' ) else 0 end as Balance ,  case when (select (sum(AmountDr*ExchangeRate) - sum(AmountCr*ExchangeRate)) as Closing from purchasedata where DonotupdateAccounts=0 and   AccountDr = B.CustomerNo and  VoucherDate <='".$end_date." 23:59:25' and PDC = 'Y'  And voucherno not in (select postdated.voucherno from postdated where postdated.voucherno=purchasedata.voucherno and ConvertedTo<>'' )) is Not NULL then  (select (sum(AmountDr*ExchangeRate) - sum(AmountCr*ExchangeRate)) as Closing from purchasedata where  DonotupdateAccounts=0 and AccountDr = B.CustomerNo and  VoucherDate <='".$end_date." 23:59:25' and PDC = 'Y'  And voucherno not in (select postdated.voucherno from postdated where postdated.voucherno=purchasedata.voucherno and ConvertedTo<>'' )) else 0 end as PDC2,(Select sum(BBB.Total)  From Billwise BBB Where (BBB.Type = 'A') And (BBB.Refrence = B.voucherno) And (BBB.CustomerNo = B.CustomerNo) And (BBB.VoucherDate <= '".$end_date." 23:59:25')   Group By Refrence ) as TotalPaid From BillWise B,AccMast  ,WarrentyInfo  Where  AccMast.NodeNo =WarrentyInfo.ACCOUNTNO AND B.CustomerNo = AccMast.NodeNo    and NodeNo in (select AccountNo from WarrentyInfo where AccountStatus in ('عملاء لدى المحامين - تحصيل','عملاء لديهم صكوك احكام','عملاء نشيطين لدى الفرع','فارغ')) And  (AccMast.Type = 9 OR AccMast.Type = 10) And  (VoucherDate <=  '".$end_date." 23:59:25') And (B.Type = 'N')   And CustomerNo in (@customer_id) And (PDC = 'N')  --Order By AccMast.Code,WarrentyInfo.SalesEmployee,VoucherDate ,Total Desc
+) AS tbl1
+--group by AccountDR
+) as tbl1
+full outer join (
+select
+	(select Code from AccMast where NodeNo = @customer_id) as customer_code,
+	isnull(max(case when Sply = '0' and Type = 'SIV' then NoSply end), 0) -  isnull(max(case when Sply = '0' and Type = 'PIV' then NoSply end),0) as sp0_count,
+	isnull(sum(case when Sply = '0' and (Type = 'SIV') then Value end), 0) - isnull(sum(case when Sply = '0' and (Type = 'PIV') then Value end), 0) as sp0_sales,
+	isnull(sum(case when Sply = '0' and (Type = 'SIV') then Cost end), 0) - isnull(sum(case when Sply = '0' and (Type = 'PIV') then Cost end), 0) as sp0_cost,
+	isnull(max(case when Sply = '1' and Type = 'SIV' then NoSply end), 0) -  isnull(max(case when Sply = '1' and Type = 'PIV' then NoSply end),0) as sp1_count,
+	isnull(sum(case when Sply = '1' and (Type = 'SIV') then Value end), 0) - isnull(sum(case when Sply = '1' and (Type = 'PIV') then Value end), 0) as sp1_sales,
+	isnull(sum(case when Sply = '1' and (Type = 'SIV') then Cost end), 0) - isnull(sum(case when Sply = '1' and (Type = 'PIV') then Cost end), 0) as sp1_cost,
+	isnull(max(case when Sply = '2' and Type = 'SIV' then NoSply end), 0) -  isnull(max(case when Sply = '2' and Type = 'PIV' then NoSply end),0) as sp2_count,
+	isnull(sum(case when Sply = '2' and (Type = 'SIV') then Value end), 0) - isnull(sum(case when Sply = '2' and (Type = 'PIV') then Value end), 0) as sp2_sales,
+	isnull(sum(case when Sply = '2' and (Type = 'SIV') then Cost end), 0) - isnull(sum(case when Sply = '2' and (Type = 'PIV') then Cost end), 0) as sp2_cost
+from (
+ Select SInvoiceNo as VoucherNo, SIDate as VoucherDate ,ProductNo ,Sum(ActualQty) as Qty , Rate , Sum(Value*Exchangerate + ExtraFieldsTotal) as Value ,    Sum(TotalCost) as Cost , SpecialityCode as Sply,  case when (SpecialityCode = '' OR SpecialityCode =  '0') then     (Select count(distinct ProductNo) From
+Sinvoice,ProductMast M where   ProductNo = M.NodeNo And partyno = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') and        (M.SpecialityCode = '' OR M.SpecialityCode = '0') And ActualVoucherPrefix = 'SIV-' )    else (Select count(distinct ProductNo) From Sinvoice ,ProductMast T where
+ProductNo = T.NodeNo And partyno = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') and        (T.SpecialityCode <> '' And T.SpecialityCode <> '0') And ActualVoucherPrefix = 'SIV-'  And T.SpecialityCode =ProductMast.SpecialityCode) End   as NoSply   ,'SIV' as Type , ActualVoucherPrefix From
+SInvoice,ProductMast Where ProductNo = NodeNo  And PartyNo = @customer_id  And (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25')     And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And ActualVoucherPrefix = 'SIV-' Group By SInvoiceNo,ProductNo, SIDate,Rate , ActualVoucherPrefix ,SpecialityCode,NodeNo    union all    Select PinvoiceNo as VoucherNo, PIDate as VoucherDate ,ProductNo ,Sum(ActualQty) as Qty , Rate , Sum(Value*Exchangerate + ExtraFieldsTotal) as Value ,    Sum(TotalCost) as Cost , SpecialityCode as Sply,case when (SpecialityCode = '' OR SpecialityCode =  '0') then     (Select count(distinct ProductNo) From PInvoice,ProductMast M where   ProductNo = M.NodeNo And partyno = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') and        (M.SpecialityCode = '' OR M.SpecialityCode = '0') And ActualVoucherPrefix = 'SRT-' )    else (Select count(distinct ProductNo) From PInvoice ,ProductMast T where ProductNo = T.NodeNo And partyno = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') and        (T.SpecialityCode <> '' And T.SpecialityCode <> '0') And ActualVoucherPrefix = 'SRT-'  And T.SpecialityCode =ProductMast.SpecialityCode) End   as NoSply  ,'PIV' as Type , ActualVoucherPrefix From Pinvoice,ProductMast   Where ProductNo = NodeNo  And PartyNo = @customer_id  And (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25')   And ActualVoucherPrefix = 'SRT-'   And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  Group By PinvoiceNo,ProductNo, PIDate,Rate , ActualVoucherPrefix ,SpecialityCode,NodeNo    --order by SPLY ,Type , VoucherDate , ProductNo
+) as tbl2
+) as tbl2
 on tbl1.customer_code = tbl2.customer_code";
 
+        $scribes_trans_stmt = "DECLARE @customer_id INT;
+SET @customer_id = (SELECT NodeNo FROM AccMast where Code = '".$this->customer_id."');
+
+Select ActualVoucherPrefix ,count(Distinct PinvoiceNo) as [Count],'Cr' As Type ,'PInvoice' as [Transaction] , -Sum(value*Exchangerate+extrafieldstotal) as Amount  From Pinvoice Where (PinvoiceNo like '220-%%' or PinvoiceNo like '310-%%' ) And PartyNo = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group by ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct PinvoiceNo) as [Count],'Cr' As Type ,'SReturn' as [Transaction] , -Sum(value*Exchangerate+extrafieldstotal) as Amount  From Pinvoice Where PinvoiceNo like '212-%%' And PartyNo = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group by ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct PinvoiceNo) as [Count],'Cr' As Type ,'SReverse' as [Transaction] , -Sum(value*Exchangerate+extrafieldstotal) as Amount  From Pinvoice Where PinvoiceNo like '211-%%' And PartyNo = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group by ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct PinvoiceNo) as [Count],'Cr' As Type ,'PRTReverse' as [Transaction] ,
+-Sum(value*Exchangerate+extrafieldstotal) as Amount  From Pinvoice Where (PinvoiceNo like '223-%%' or PinvoiceNo like '313-%%' or PinvoiceNo like '323-%%') And PartyNo = @customer_id and (PIDate >= '".$start_date."' And PIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group by ActualVoucherPrefix  Union All  Select
+ActualVoucherPrefix ,count(Distinct SinvoiceNo) as [Count],'Dr' As Type ,'SInvoice' as [Transaction] , Sum(value*Exchangerate+extrafieldstotal) as Amount   From Sinvoice Where SinvoiceNo like '210-%%' And PartyNo = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0
+Group By ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct SinvoiceNo) as [Count],'Dr' As Type ,'PReturn' as [Transaction] , Sum(value*Exchangerate+extrafieldstotal) as Amount   From Sinvoice Where (SinvoiceNo like '222-%%' or SinvoiceNo like '312-%%' or SinvoiceNo like '322-%%') And
+PartyNo = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group By ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct SinvoiceNo) as [Count],'Dr' As Type ,'PReverse' as [Transaction] , Sum(value*Exchangerate+extrafieldstotal) as Amount   From
+Sinvoice Where (SinvoiceNo like '221-%%' or SinvoiceNo like '311-%%' ) And PartyNo = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group By ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(Distinct SinvoiceNo) as [Count],'Dr' As Type ,'SRTReverse'
+as [Transaction] , Sum(value*Exchangerate+extrafieldstotal) as Amount   From Sinvoice Where SinvoiceNo like '213-%%' And PartyNo = @customer_id and (SIDate >= '".$start_date."' And SIDate <= '".$end_date." 23:59:25') And DoNotUpdateStock = 0  Group By ActualVoucherPrefix  Union All  Select ActualVoucherPrefix ,count(*) as [Count], Type ,  Case When VoucherNo like '030-%%' Then 'Receipts' Else Case When VoucherNo like '031-%%' Then 'Receipt Reverse' Else Case When voucherno like '020-%%' Then 'Payments' Else Case When voucherno like '021-%%' Then 'Payment Reverse' Else Case When VoucherNo  like  '040-%%' Then 'CreditNote' Else Case When VoucherNo  like  '041-%%' Then 'CreditNote Reverse' Else Case When VoucherNo like '050-%%' Then 'DebitNote' Else Case When VoucherNo like '051-%%' Then 'DebitNote Reverse' Else Case When VoucherNo like '010-%%' Then 'JournalVoucher' Else Case When VoucherNo like '011-%%' Then 'JournalVoucher Reverse' End End End End End  End End End End End as [Transaction] , case when Type = 'Dr' then  Sum(Value*Exchangerate) else  case when Type = 'Cr' then  -Sum(Value*Exchangerate) End End as Amount From FAExtra Where AccountNo = @customer_id and (VoucherDate >= '".$start_date."' And VoucherDate <= '".$end_date." 23:59:25')  Group By ActualVoucherPrefix ,voucherno,Type  Union All  Select ActualVoucherPrefix ,count(distinct VoucherNo) as [Count],  case when ActualVoucherPrefix = 'PDP-' then 'Dr' else  case when ActualVoucherPrefix = 'PDR-' then 'Cr' End End as Type ,  case when ActualVoucherPrefix = 'PDP-' then 'PostDatePayments' else  case when ActualVoucherPrefix = 'PDR-' then 'PostDateRecipts' End End as [Transaction] ,  case when ActualVoucherPrefix = 'PDP-' then  Sum(Value*Exchangerate) else  case when ActualVoucherPrefix = 'PDR-' then  -Sum(Value*Exchangerate) End End as Amount From PostDated Where convertedto='' and AccountNo = @customer_id and (VoucherDate >= '".$start_date."' And VoucherDate <= '".$end_date." 23:59:25') Group By ActualVoucherPrefix,Type";
+
+
+//        dd($scribes_trans_stmt);
 //        dd($scribesStmt);
 
         $query = DB::connection('sqlsrv')->select($scribesStmt);
+        $query2 = DB::connection('sqlsrv')->select($scribes_trans_stmt);
+
         $this->scribes_results = $query;
+        $this->scribes_trans_results = collect($query2);
+
+//        dd($this->scribes_trans_results);
+
+        $this->sales_count = $this->scribes_trans_results->where("Transaction", "SInvoice")->count() > 0 ? floatval($this->scribes_trans_results->where("Transaction", "SInvoice")->sum('Count')) : 0;
+        $this->sales_sum = $this->scribes_trans_results->where("Transaction", "SInvoice")->count() > 0 ? floatval($this->scribes_trans_results->where("Transaction", "SInvoice")->sum('Amount')) : 0;
+        $this->reverse_count = $this->scribes_trans_results->where("Transaction", "SReturn")->count() > 0? floatval($this->scribes_trans_results->where("Transaction", "SReturn")->sum('Count')) : 0;
+        $this->reverse_sum = $this->scribes_trans_results->where("Transaction", "SReturn")->count() > 0? floatval($this->scribes_trans_results->where("Transaction", "SReturn")->sum('Amount')) : 0;
+        $this->receipt_count = $this->scribes_trans_results->where("Transaction", "Receipts")->count() > 0 ? floatval($this->scribes_trans_results->where("Transaction", "Receipts")->sum('Count')) : 0;
+        $this->receipt_sum = $this->scribes_trans_results->where("Transaction", "Receipts")->count() > 0 ? floatval($this->scribes_trans_results->where("Transaction", "Receipts")->sum('Amount')) : 0;
+//        dd($this->scribes_trans_results->where("Transaction", "SInvoice")->first()->Amount);
+//        dd($this->scribes_results);
 //        dd($this->scribes_results);
 
     }
@@ -445,9 +550,22 @@ GROUP BY "CardCode","SPL"';
                     array_push($this->sap_sales_results, $row);
                 }
             }
-
 //            dd($this->sap_aging_results);
             odbc_close($conn);
+
+            $this->sap_trans_results = collect($this->sap_trans_results);
+            $this->sap_aging_results = collect($this->sap_aging_results);
+            $this->sap_sales_results = collect($this->sap_sales_results);
+
+            $this->sales_count = ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['No']): 0);
+            $this->sales_sum = ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['NetSales']): 0);
+
+            $this->reverse_count = ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['No']): 0);
+            $this->reverse_sum = ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['NetSales']): 0);
+
+            $this->receipt_count = ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['No']): 0);
+            $this->receipt_sum = ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['NetSales']): 0);
+
         }
     }
 
@@ -457,39 +575,50 @@ GROUP BY "CardCode","SPL"';
         $this->sap_aging_results = collect($this->sap_aging_results);
         $this->sap_sales_results = collect($this->sap_sales_results);
 
-//        dd($this->sap_trans_results);
+        /*
+        $this->scribes_results[0]->sales_count = floatval($this->scribes_results[0]->sales_count) + ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['No']): 0);
+        $this->scribes_results[0]->sales_sum = floatval($this->scribes_results[0]->sales_sum) + ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['NetSales']): 0);
 
-//        dd($this->sap_aging_results->where('CardCode', '0400166')[0]['Balance']);
-//
-        $this->scribes_results[0]->sales_count = floatval($this->scribes_results[0]->sales_count) + (floatval($this->sap_trans_results->where('TransType', 'A/R Invoice') ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')[0]['No']): 0));
-        $this->scribes_results[0]->sales_sum = floatval($this->scribes_results[0]->sales_sum) + (floatval($this->sap_trans_results->where('TransType', 'A/R Invoice') ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')[0]['NetSales']): 0));
+        $this->scribes_results[0]->reverse_count = floatval($this->scribes_results[0]->reverse_count) + ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['No']): 0);
+        $this->scribes_results[0]->reverse_sum = floatval($this->scribes_results[0]->reverse_sum) + ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['NetSales']): 0);
 
-        $this->scribes_results[0]->reverse_count = floatval($this->scribes_results[0]->reverse_count) + ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')[0]['No']): 0);
-/*        $this->scribes_results[0]->reverse_sum = floatval($this->scribes_results[0]->reverse_sum) + (floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)') ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')[0]['NetSales']): 0));
-
-        $this->scribes_results[0]->receipt_count = floatval($this->scribes_results[0]->receipt_count) + (floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note') ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')[0]['No']): 0));
-        $this->scribes_results[0]->receipt_sum = floatval($this->scribes_results[0]->receipt_sum) + (floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note') ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')[0]['NetSales']): 0));
-
-        $this->scribes_results[0]->credit_limit = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['CreditLine']): 0);
-        $this->scribes_results[0]->month1 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['0-A1_LC']): 0);
-        $this->scribes_results[0]->month2 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['A1-A2_LC']): 0);
-        $this->scribes_results[0]->month3 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['A2-A3_LC']): 0);
-        $this->scribes_results[0]->month4 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['A3-A4_LC']): 0);
-        $this->scribes_results[0]->month5 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['A4-A5_LC']): 0);
-        $this->scribes_results[0]->month6 = ($this->sap_aging_results ? floatval($this->sap_aging_results[0]['A5+_LC']): 0);
-
-        $this->scribes_results[0]->sp0_count = floatval($this->scribes_results[0]->sp0_count) + (floatval($this->sap_sales_results->where('SPL', 'Speciality0') ? floatval($this->sap_sales_results->where('SPL', 'Speciality0')[0]['No']): 0));
-        $this->scribes_results[0]->sp0_sales = floatval($this->scribes_results[0]->sp0_sales) + (floatval($this->sap_sales_results->where('SPL', 'Speciality0') ? floatval($this->sap_sales_results->where('SPL', 'Speciality0')[0]['NetSales']): 0));
-        $this->scribes_results[0]->sp0_cost = floatval($this->scribes_results[0]->sp0_cost) + (floatval($this->sap_sales_results->where('SPL', 'Speciality0') ? (floatval($this->sap_sales_results->where('SPL', 'Speciality0')[0]['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality1')[0]['GrssProfit'])): 0));
-
-        $this->scribes_results[0]->sp1_count = floatval($this->scribes_results[0]->sp1_count) + (floatval($this->sap_sales_results->where('SPL', 'Speciality1') ? floatval($this->sap_sales_results->where('SPL', 'Speciality1')[0]['No']): 0));
-        $this->scribes_results[0]->sp1_sales = floatval($this->scribes_results[0]->sp1_sales) + (floatval($this->sap_sales_results->where('SPL', 'Speciality1') ? floatval($this->sap_sales_results->where('SPL', 'Speciality1')[0]['NetSales']): 0));
-        $this->scribes_results[0]->sp1_cost = floatval($this->scribes_results[0]->sp1_cost) + (floatval($this->sap_sales_results->where('SPL', 'Speciality1') ? (floatval($this->sap_sales_results->where('SPL', 'Speciality1')[0]['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality1')[0]['GrssProfit'])): 0));
-
-        $this->scribes_results[0]->sp2_count = floatval($this->scribes_results[0]->sp2_count) + (floatval($this->sap_sales_results->where('SPL', 'Speciality2') ? floatval($this->sap_sales_results->where('SPL', 'Speciality2')[0]['No']): 0));
-        $this->scribes_results[0]->sp2_sales = floatval($this->scribes_results[0]->sp2_sales) + (floatval($this->sap_sales_results->where('SPL', 'Speciality2') ? floatval($this->sap_sales_results->where('SPL', 'Speciality2')[0]['NetSales']): 0));
-        $this->scribes_results[0]->sp2_cost = floatval($this->scribes_results[0]->sp2_cost) + (floatval($this->sap_sales_results->where('SPL', 'Speciality2') ? (floatval($this->sap_sales_results->where('SPL', 'Speciality2')[0]['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality2')[0]['GrssProfit'])): 0));
+        $this->scribes_results[0]->receipt_count = floatval($this->scribes_results[0]->receipt_count) + ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['No']): 0);
+        $this->scribes_results[0]->receipt_sum = floatval($this->scribes_results[0]->receipt_sum) + ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['NetSales']): 0);
         */
+
+        $this->sales_count = floatval($this->scribes_trans_results->where("Transaction", "SInvoice")->count() > 0 ? $this->scribes_trans_results->where("Transaction", "SInvoice")->first()->Count : 0) + ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['No']): 0);
+        $this->sales_sum = floatval($this->scribes_trans_results->where("Transaction", "SInvoice")->count() > 0 ? $this->scribes_trans_results->where("Transaction", "SInvoice")->first()->Amount : 0) + ($this->sap_trans_results->where('TransType', 'A/R Invoice')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice')->first()['NetSales']): 0);
+
+        $this->reverse_count = floatval($this->scribes_trans_results->where("Transaction", "SReturn")->count() > 0? $this->scribes_trans_results->where("Transaction", "SReturn")->first()->Count : 0) + ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['No']): 0);
+        $this->reverse_sum = floatval($this->scribes_trans_results->where("Transaction", "SReturn")->count() > 0? $this->scribes_trans_results->where("Transaction", "SReturn")->first()->Amount : 0) + ($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Invoice (Cancellation)')->first()['NetSales']): 0);
+
+        $this->receipt_count = floatval($this->scribes_trans_results->where("Transaction", "Receipts")->count() > 0?  $this->scribes_trans_results->where("Transaction", "Receipts")->first()->Count : 0) + ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['No']): 0);
+        $this->receipt_sum = floatval($this->scribes_trans_results->where("Transaction", "Receipts")->count() > 0?  $this->scribes_trans_results->where("Transaction", "Receipts")->first()->Amount : 0) + ($this->sap_trans_results->where('TransType', 'A/R Credit Note')->count() > 0 ? floatval($this->sap_trans_results->where('TransType', 'A/R Credit Note')->first()['NetSales']): 0);
+
+//        dd($this->scribes_results[0]);
+//        dd($this->sap_aging_results[0]);
+
+        $this->scribes_results[0]->credit_limit = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['CreditLine']): 0);
+        $this->scribes_results[0]->month1 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['0-A1_LC']): 0);
+        $this->scribes_results[0]->month2 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['A1-A2_LC']): 0);
+        $this->scribes_results[0]->month3 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['A2-A3_LC']): 0);
+        $this->scribes_results[0]->month4 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['A3-A4_LC']): 0);
+        $this->scribes_results[0]->month5 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['A4-A5_LC']): 0);
+        $this->scribes_results[0]->month6 = ($this->sap_aging_results->count() > 0 ? floatval($this->sap_aging_results->first()['A5+_LC']): 0);
+
+        $this->scribes_results[0]->sp0_count = floatval($this->scribes_results[0]->sp0_count) + ($this->sap_sales_results->where('SPL', 'Speciality0')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality0')->first()['No']): 0);
+        $this->scribes_results[0]->sp0_sales = floatval($this->scribes_results[0]->sp0_sales) + ($this->sap_sales_results->where('SPL', 'Speciality0')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality0')->first()['NetSales']): 0);
+        $this->scribes_results[0]->sp0_cost = floatval($this->scribes_results[0]->sp0_cost) + ($this->sap_sales_results->where('SPL', 'Speciality0')->count() > 0 ? (floatval($this->sap_sales_results->where('SPL', 'Speciality0')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['GrssProfit'])): 0);
+
+//        dd($this->sap_sales_results->where('SPL', 'Speciality1')->first()['No']);
+//        dd($this->sap_sales_results->where('SPL', 'Speciality1')[1]['No']);
+        $this->scribes_results[0]->sp1_count = floatval($this->scribes_results[0]->sp1_count) + ($this->sap_sales_results->where('SPL', 'Speciality1')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['No']): 0);
+        $this->scribes_results[0]->sp1_sales = floatval($this->scribes_results[0]->sp1_sales) + ($this->sap_sales_results->where('SPL', 'Speciality1')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['NetSales']): 0);
+        $this->scribes_results[0]->sp1_cost = floatval($this->scribes_results[0]->sp1_cost) + ($this->sap_sales_results->where('SPL', 'Speciality1')->count() > 0 ? (floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['GrssProfit'])): 0);
+
+        $this->scribes_results[0]->sp2_count = floatval($this->scribes_results[0]->sp2_count) + ($this->sap_sales_results->where('SPL', 'Speciality2')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['No']): 0);
+        $this->scribes_results[0]->sp2_sales = floatval($this->scribes_results[0]->sp2_sales) + ($this->sap_sales_results->where('SPL', 'Speciality2')->count() > 0 ? floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['NetSales']): 0);
+        $this->scribes_results[0]->sp2_cost = floatval($this->scribes_results[0]->sp2_cost) + ($this->sap_sales_results->where('SPL', 'Speciality2')->count() > 0 ? (floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['GrssProfit'])): 0);
 
 //        dd($this->scribes_results[0]->month3);
 
