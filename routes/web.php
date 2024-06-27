@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
     /* reports */
     Route::get('/report-21', \App\Http\Livewire\Report21::class)->name('report-21');
+    Route::get('/report-11', \App\Http\Livewire\Report11::class)->name('report-11');
+    Route::get('/report-25', \App\Http\Livewire\Report25::class)->name('report-25');
 
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
