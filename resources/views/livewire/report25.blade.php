@@ -1,3 +1,6 @@
+@section('title')
+    تقرير حركة عميل
+@stop
 <div>
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
@@ -588,23 +591,36 @@
 
             $('#gen-report').on('click', function () {
 
+
                 var customer_id = $('#customer_name').select2("val");
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
 
-                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                Swal.fire({
-                    title: 'الرجاء الإنتظار',
-                    allowOutsideClick: false,
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading()
-                    },
-                });
+                if(start_date == '' || end_date == '' || customer_id == "") {
+                    Swal.fire({
+                        title: "حدث خطأ",
+                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                        icon: "error",
+                        confirmButtonText: "موافق",
+                    });
+                    $("#gen-report").html('<b>إنشاء تقرير</b>');
+                }
+                else {
+                    $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                Livewire.emit('create-report', customer_id, start_date, end_date);
+                    Swal.fire({
+                        title: 'الرجاء الإنتظار',
+                        allowOutsideClick: false,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading()
+                        },
+                    });
+
+                    Livewire.emit('create-report', customer_id, start_date, end_date);
+                }
 
 
                 // if(dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {
