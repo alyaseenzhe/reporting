@@ -187,16 +187,20 @@
         <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
-                    <label class="block font-bold mb-2">نوع التقرير
-                        <span class="text-red-500">*</span>
+                    <label class="block font-bold mb-2">خيارات
+{{--                        <span class="text-red-500">*</span>--}}
                     </label>
-                    <div wire:ignore>
-                        <select id="report_type" name="report_type"
-                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>
-                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>
-                        </select>
+{{--                    <div wire:ignore>--}}
+{{--                        <select id="report_type" name="report_type"--}}
+{{--                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+{{--                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">--}}
+{{--                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>--}}
+{{--                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>--}}
+{{--                        </select>--}}
+{{--                    </div>--}}
+                    <div wire:ignore class="flex items-center mb-4">
+                        <input id="report_type" name="report_type" type="checkbox" value="byDepartment" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">عمليات الاصناف بالتفصيل للفروع</label>
                     </div>
                     @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
@@ -219,6 +223,29 @@
     @if($show_msg)
         <div id="tbl2-container" class="overflow-x-auto mt-9">
             @if(count($group_results) > 0)
+
+                <div class="mb-5 p-2">
+                    <div class="flex flex-col sm:flex-row gap-4 w-full">
+                        <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
+                            <label class="block font-bold mb-5">خيارات اخفاء اعمدة التقرير</label>
+                            <div class="flex flex-row gap-2.5">
+                                <div class="flex items-center mb-4 ml-8">
+                                    <input id="cost" type="checkbox" value="cost" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التكلفة</label>
+                                </div>
+                                <div class="flex items-center mb-4 ml-8">
+                                    <input id="margin" type="checkbox" value="margin" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الهامش</label>
+                                </div>
+                                <div class="flex items-center mb-4 ml-8">
+                                    <input id="margin-percentage" type="checkbox" value="margin-percentage" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">النسبة</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                     <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                     <tr style="border: 2px solid black;">
@@ -246,13 +273,13 @@
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">متوسط البيع</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">
                             <div class="text-sm">التكلفة</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin">
                             <div class="text-sm">الهامش</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin-percentage">
                             <div class="text-sm">نسبة</div>
                         </th>
                     </tr>
@@ -330,13 +357,13 @@
                                 <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                     {{number_format($record['AverageUnitPrice'], 2)}}
                                 </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
                                     {{number_format($record["Cost"], 2)}}
                                 </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
                                     {{number_format($record['GrossProfit'], 2)}}
                                 </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
                                     {{number_format($record['GrossProfitPer'], 2)}}
                                 </td>
                             </tr>
@@ -415,13 +442,13 @@
                                     <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                         {{number_format($record['AverageUnitPrice'], 2)}}
                                     </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
                                         {{number_format($record["Cost"], 2)}}
                                     </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
                                         {{number_format($record['GrossProfit'], 2)}}
                                     </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
                                         {{number_format($record['GrossProfitPer'], 2)}}
                                     </td>
                                 </tr>
@@ -706,7 +733,8 @@
 
             $('#gen-report').on('click', function () {
 
-                var report_type = $('#report_type').val();
+                var report_type = $('#report_type').is(":checked") ? "byDepartment" : "byItem";
+                // var report_type = $('#report_type').val();
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
                 var search_type = $("input[name='search_type']:checked").val();
@@ -718,6 +746,12 @@
                 selected_cat_type = $('#cat_type').select2("val");
                 var sp_type = group_type == 'groups_all' || group_type == 'commerce' ? $('#sp_type').select2("val") : null;
                 var vendor_type = group_type == 'groups_all' || group_type == 'commerce' ? $('#vendor_type').select2("val") : null;
+
+                // clear selections
+                $("#cost").prop('checked', false);
+                $("#margin").prop('checked', false);
+                $("#margin-percentage").prop('checked', false);
+
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -830,9 +864,30 @@
                 }
             });
 
-
+            // $('#cost input[type="checkbox"]').on('change', function (e) {
+            //
+            //     alert('dada');
+            //     if ($(this).is(':checked')) {
+            //         alert('cost ticked');
+            //     }
+            //     else {
+            //         alert('cost not ticked');
+            //     }
+            // });
 
         });
+
+        function hideColumn(type) {
+
+            if (type.checked) {
+                console.log(type.value + ' ticked');
+                $('.' + type.value).addClass('hide');
+            }
+            else {
+                $('.' + type.value).removeClass('hide');
+                // console.log(type.val() + ' not ticked');
+            }
+        }
 
     </script>
 @stop

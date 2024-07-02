@@ -203,7 +203,7 @@ class Report11 extends Component
         }
         else
         {
-            $itemGroupQuery = 'SELECT "ItmsGrpCod" AS "ItemGroupCode","ItmsGrpNam" AS "ItemGroupName" FROM AL_YASEEN_TEST.OITB WHERE "ItmsGrpCod" NOT IN (100,101,102,103,180)';
+            $itemGroupQuery = 'SELECT "ItmsGrpCod" AS "ItemGroupCode","ItmsGrpNam" AS "ItemGroupName" FROM AL_YASEEN_AGRI_PLIVE.OITB WHERE "ItmsGrpCod" NOT IN (100,101,102,103,180)';
 
             $result = odbc_exec($conn, $itemGroupQuery);
             if (!$result)
@@ -248,7 +248,7 @@ class Report11 extends Component
         }
         else
         {
-            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName" FROM AL_YASEEN_TEST.OCRD WHERE "CardType" = \'S\'';
+            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\'';
 
             $result = odbc_exec($conn, $vendorQuery);
             if (!$result)
@@ -297,16 +297,16 @@ class Report11 extends Component
                 $categoryQuery = '';
 
                 if ($group_type == "commerce") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
                 }
                 elseif ($group_type == "farms") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
                 }
                 elseif ($group_type == "sundries") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
                 }
                 elseif ($group_type == "groups_all") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItmsGrpCod", T1."ItmsGrpNam" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
                 }
 
                 $result = odbc_exec($conn, $categoryQuery);
@@ -359,21 +359,21 @@ class Report11 extends Component
             $categoryQuery = '';
 
             if ($search_type == "item_code_search") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'170224\' OR T0."U_UDF1" = \'170224\'';
+                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'170224\' OR T0."U_UDF1" = \'170224\'';
             }
             else if($search_type == "advanced_search") {
 
                 if ($group_type == "commerce") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
                 }
                 elseif ($group_type == "farms") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
                 }
                 elseif ($group_type == "sundries") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
                 }
                 elseif ($group_type == "groups_all") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_TEST."OITM" T0 JOIN AL_YASEEN_TEST."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
                 }
 
                 if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
@@ -615,15 +615,15 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 //	T4."CardCode" AS "VendorCode",
 //    T4."CardName" AS "VendorName"
 //FROM
-//    AL_YASEEN_TEST.INV1 T0
+//    AL_YASEEN_AGRI_PLIVE.INV1 T0
 //JOIN
-//    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+//    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
 //JOIN
-//    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+//    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
 //JOIN
-//    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+//    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
 //JOIN
-//	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+//	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
 //WHERE
 //    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 //	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
@@ -677,15 +677,15 @@ SELECT
 	T4."CardCode" AS "VendorCode",
     T4."CardName" AS "VendorName"
 FROM
-    AL_YASEEN_TEST.INV1 T0
+    AL_YASEEN_AGRI_PLIVE.INV1 T0
 JOIN
-    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
 JOIN
-    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
 JOIN
-    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
 JOIN
-	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
 WHERE
 	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
@@ -730,15 +730,15 @@ SELECT
 	T4."CardCode" AS "VendorCode",
     T4."CardName" AS "VendorName"
 FROM
-    AL_YASEEN_TEST.ORIN T0
+    AL_YASEEN_AGRI_PLIVE.ORIN T0
 INNER JOIN
-    AL_YASEEN_TEST.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
 JOIN
-	AL_YASEEN_TEST.OBPL T2 ON T0."BPLId" = T2."BPLId"
+	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
 JOIN
-	AL_YASEEN_TEST.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 JOIN
-	AL_YASEEN_TEST.OCRD T4 ON T3."CardCode" = T4."CardCode"
+	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
 WHERE
     T0."BPLId" IN ('. implode(', ', $sap_depts).')
     AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
@@ -775,15 +775,15 @@ ORDER BY
 //	T4."CardCode" AS "VendorCode",
 //    T4."CardName" AS "VendorName"
 //FROM
-//    AL_YASEEN_TEST.INV1 T0
+//    AL_YASEEN_AGRI_PLIVE.INV1 T0
 //JOIN
-//    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+//    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
 //JOIN
-//    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+//    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
 //JOIN
-//    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+//    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
 //JOIN
-//	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+//	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
 //WHERE
 //    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 //	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
@@ -840,15 +840,15 @@ SELECT
 	T4."CardCode" AS "VendorCode",
     T4."CardName" AS "VendorName"
 FROM
-    AL_YASEEN_TEST.INV1 T0
+    AL_YASEEN_AGRI_PLIVE.INV1 T0
 JOIN
-    AL_YASEEN_TEST.OITM T1 ON T0."ItemCode" = T1."ItemCode"
+    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
 JOIN
-    AL_YASEEN_TEST.OINV T3 ON T0."DocEntry" = T3."DocEntry"
+    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
 JOIN
-    AL_YASEEN_TEST.OBPL T2 ON T3."BPLId" = T2."BPLId"
+    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
 JOIN
-	AL_YASEEN_TEST.OCRD T4 ON T1."CardCode" = T4."CardCode"
+	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
 WHERE
 	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
@@ -895,15 +895,15 @@ SELECT
 	T4."CardCode" AS "VendorCode",
     T4."CardName" AS "VendorName"
 FROM
-    AL_YASEEN_TEST.ORIN T0
+    AL_YASEEN_AGRI_PLIVE.ORIN T0
 INNER JOIN
-    AL_YASEEN_TEST.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
 JOIN
-	AL_YASEEN_TEST.OBPL T2 ON T0."BPLId" = T2."BPLId"
+	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
 JOIN
-	AL_YASEEN_TEST.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 JOIN
-	AL_YASEEN_TEST.OCRD T4 ON T3."CardCode" = T4."CardCode"
+	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
 WHERE
     T0."BPLId" IN ('. implode(', ', $sap_depts).')
     AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
