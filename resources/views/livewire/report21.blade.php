@@ -1,4 +1,8 @@
 <div>
+    <div
+        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
+        <div class="w-full">كشف حساب عميل (21)</div>
+    </div>
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
