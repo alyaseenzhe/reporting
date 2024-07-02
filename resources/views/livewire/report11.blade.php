@@ -1,3 +1,6 @@
+@section('title')
+    تقرير عمليات الأصناف
+@stop
 <div>
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
