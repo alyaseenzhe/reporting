@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -22,6 +23,21 @@ class Report11 extends Component
     public $sap_codes = [];
 
     protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report'];
+
+
+    public function booted() {
+
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+        if ((Auth::user()->user_group && in_array('report-11', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
 
     public function render()
     {
