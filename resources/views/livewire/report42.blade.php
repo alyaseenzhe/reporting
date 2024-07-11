@@ -263,29 +263,116 @@
                     @php $counter++ @endphp
                 @endforeach
                 @foreach($sap_results as $record)
-{{--                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">--}}
+                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{$record["BPLName"]}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(floatval($record["S1 Sales"])/1000)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ floatval($record["S1 Sales PY"]) != 0 ? ((floatval($record["S1 Sales"]) - floatval($record["S1 Sales PY"])) / floatval($record["S1 Sales PY"])) * 100 : 0 }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(floatval($record["S2 Sales"])/1000)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ floatval($record["S2 Sales PY"]) != 0 ? ((floatval($record["S2 Sales"]) - floatval($record["S2 Sales PY"])) / floatval($record["S2 Sales PY"])) * 100 : 0 }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((floatval($record["S1 Sales"])/1000)+(floatval($record["S2 Sales"])/1000))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ (floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"])) != 0 ? (((floatval($record["S1 Sales"])+floatval($record["S2 Sales"]))-(floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"]))) / (floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"]))) : 0 }}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(floatval($record["S1 Sales Year"])/1000)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ floatval($record["S1 Sales Year PY"]) != 0 ? ((floatval($record["S1 Sales Year"]) - floatval($record["S1 Sales Year PY"])) / floatval($record["S1 Sales Year PY"])) * 100 : 0 }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(floatval($record["S2 Sales Year"])/1000)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ floatval($record["S2 Sales Year PY"]) != 0 ? ((floatval($record["S2 Sales Year"]) - floatval($record["S2 Sales Year PY"])) / floatval($record["S2 Sales Year PY"])) * 100 : 0 }}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((floatval($record["S1 Sales Year"])/1000)+(floatval($record["S2 Sales Year"])/1000))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ (floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"])) != 0 ? (((floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"]))-(floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"]))) / (floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"]))) : 0 }}
+                        </td>
 {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{$record['CardCode']}}--}}
-{{--                        </td>--}}
-{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{$record['TransId']}}--}}
+{{--                            {{number_format((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/1000)}}--}}
 {{--                        </td>--}}
 {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-{{--                            {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}--}}
+{{--                            {{ number_format((((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/(floatval($record->SP2SalesIncrease) - floatval($record->SP2SalesReturnIncrease)))-1)*100) }}--}}
+{{--                        </td>--}}
+
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format(((floatval($record->SP1Sales) - floatval($record->SP1SalesReturn)) + (floatval($record->SP2Sales) - floatval($record->SP2SalesReturn)))/1000)}}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
+{{--                            {{ number_format(((((floatval($record->SP1Sales) - floatval($record->SP1SalesReturn)) + (floatval($record->SP2Sales) - floatval($record->SP2SalesReturn)))/((floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease))+(floatval($record->SP2SalesIncrease) - floatval($record->SP2SalesReturnIncrease))))-1)*100) }}--}}
+{{--                        </td>--}}
+
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn))/1000)}}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
+{{--                            {{ number_format((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn))/(floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease)))-1)*100) }}--}}
 {{--                        </td>--}}
 {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{$record['LineMemo']}}--}}
+{{--                            {{number_format((floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn))/1000)}}--}}
 {{--                        </td>--}}
-{{--                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{number_format($record['Debit'], 2)}}--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
+{{--                            {{ number_format((((floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn))/(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease)))-1)*100) }}--}}
 {{--                        </td>--}}
-{{--                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{number_format($record['Credit'], 2)}}--}}
+
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format(((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)}}--}}
 {{--                        </td>--}}
-{{--                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{number_format($record['CumulativeBalance'], 2)}}--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
+{{--                            {{ number_format(((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/((floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))+(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease))))-1)*100) }}--}}
 {{--                        </td>--}}
-{{--                    </tr>--}}
+
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format((floatval($record->DebitCustomers))/1000, 2)}}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((100*((floatval($record->DebitCustomers)))/1000)/(((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format(100*(floatval($record->DueBalance)/floatval($record->DebitCustomers)))}}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format(100*((floatval($record->DebitCustomers))/1000)/((floatval($record->SPYearSalesNotCash) - floatval($record->SPYearSalesReturnNotCash))/1000), 2) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->SPYearSalesNotCash) - floatval($record->SPYearSalesReturnNotCash))/1000) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format(100*(((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000)/((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)))) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->YearCOGS)/((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000))/1000, 2) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->TotalIncome) - floatval($record->TotalExpenses))/1000, 2) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->YearTotalIncome) - floatval($record->YearTotalExpenses))/1000) }}--}}
+{{--                        </td>--}}
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ number_format((floatval($record->TotalExpenses) - floatval($record->COGS))/1000, 2) }}--}}
+{{--                        </td>--}}
+                    </tr>
                     @php $counter++ @endphp
                 @endforeach
                 </tbody>
@@ -352,15 +439,15 @@
                 else {
                     $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                    Swal.fire({
-                        title: 'الرجاء الإنتظار',
-                        allowOutsideClick: false,
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading()
-                        },
-                    });
+                    // Swal.fire({
+                    //     title: 'الرجاء الإنتظار',
+                    //     allowOutsideClick: false,
+                    //     showCancelButton: false,
+                    //     showConfirmButton: false,
+                    //     willOpen: () => {
+                    //         Swal.showLoading()
+                    //     },
+                    // });
 
                     Livewire.emit('create-report', start_date, end_date, dept_id);
                 }
