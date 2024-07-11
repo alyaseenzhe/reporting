@@ -305,6 +305,40 @@
                         <td style="border-left: 2px solid black;" class="border p-2">
                             {{ (floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"])) != 0 ? (((floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"]))-(floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"]))) / (floatval($record["S1 Sales Year PY"])+floatval($record["S2 Sales Year PY"]))) : 0 }}
                         </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(floatval($record["Outstanding Receivables"])/1000, 2)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? number_format(((floatval($record["Outstanding Receivables"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])))*100) : 0}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((floatval($record["Outstanding Receivables Over 120"]) / floatval($record["Outstanding Receivables"])) * 100)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format(($record["Clean Receivables"] / $record["Outstanding Receivables"]) * 100, 2)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            N/A
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['Stock Value']) }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ (floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? number_format(((floatval($record["Stock Value"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])))*100) : 0 }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ floatval($record["Stock Value"]) != 0 ? number_format((floatval($record["COGS"])/floatval($record["Stock Value"]))*100, 2) : 0 }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['NPAT Period']/1000, 2) }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['NPAT Annual']/1000, 2) }}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['Operating Expenses']/1000, 2) }}
+                        </td>
 {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
 {{--                            {{number_format((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/1000)}}--}}
 {{--                        </td>--}}
