@@ -359,7 +359,7 @@ class Report11 extends Component
             $categoryQuery = '';
 
             if ($search_type == "item_code_search") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'170224\' OR T0."U_UDF1" = \'170224\'';
+                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \''.$product_code.'\' OR T0."U_UDF1" = \''.$product_code.'\'';
             }
             else if($search_type == "advanced_search") {
 
