@@ -227,7 +227,8 @@
         <div id="tbl2-container" class="overflow-x-auto mt-9">
             @if(count($group_results) > 0)
 
-                <div class="mb-5 p-2">
+                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                    <div class="mb-5 p-2">
                     <div class="flex flex-col sm:flex-row gap-4 w-full">
                         <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
                             <label class="block font-bold mb-5">خيارات اخفاء اعمدة التقرير</label>
@@ -248,6 +249,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                     <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
@@ -276,15 +278,17 @@
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">متوسط البيع</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">
-                            <div class="text-sm">التكلفة</div>
-                        </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin">
-                            <div class="text-sm">الهامش</div>
-                        </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin-percentage">
-                            <div class="text-sm">نسبة</div>
-                        </th>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">
+                                <div class="text-sm">التكلفة</div>
+                            </th>
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin">
+                                <div class="text-sm">الهامش</div>
+                            </th>
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap margin-percentage">
+                                <div class="text-sm">نسبة</div>
+                            </th>
+                        @endif
                     </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100">
@@ -360,15 +364,17 @@
                                 <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                     {{number_format($record['AverageUnitPrice'], 2)}}
                                 </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                    {{number_format($record["Cost"], 2)}}
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
-                                    {{number_format($record['GrossProfit'], 2)}}
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
-                                    {{number_format($record['GrossProfitPer'], 2)}}
-                                </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                        {{number_format($record["Cost"], 2)}}
+                                    </td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
+                                        {{number_format($record['GrossProfit'], 2)}}
+                                    </td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
+                                        {{number_format($record['GrossProfitPer'], 2)}}
+                                    </td>
+                                @endif
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
@@ -445,15 +451,17 @@
                                     <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                         {{number_format($record['AverageUnitPrice'], 2)}}
                                     </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
-                                        {{number_format($record['GrossProfitPer'], 2)}}
-                                    </td>
+                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                            {{number_format($record["Cost"], 2)}}
+                                        </td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin">
+                                            {{number_format($record['GrossProfit'], 2)}}
+                                        </td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage">
+                                            {{number_format($record['GrossProfitPer'], 2)}}
+                                        </td>
+                                    @endif
                                 </tr>
                                 @php $counter++ @endphp
                             @endforeach
