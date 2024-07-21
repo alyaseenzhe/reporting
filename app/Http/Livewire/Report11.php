@@ -932,7 +932,7 @@ ORDER BY
                 }
 
 
-//                dd($sql);
+                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result)
                 {

@@ -12,6 +12,9 @@ class Report42 extends Component
     public $dept_id = ["dept_all"];
     public $show_msg = false;
 
+    public $start_date;
+    public $end_date;
+
     public $scribes_results = [];
 
     protected $listeners = ['create-report' => 'create_report'];
@@ -49,6 +52,9 @@ class Report42 extends Component
         $this->scribes_results = [];
         $this->sap_results = [];
 
+        $this->start_date = $start_date;
+        $this->end_date = $end_date;
+
         ////////////////
 
 //        $this->scribesQuery($start_date, $end_date, $dept_id);
@@ -76,7 +82,7 @@ class Report42 extends Component
 
         if (is_null($start_date) == false && is_null($end_date) == false) {
 
-            if ($start_date > '2025-12-31' && $end_date > '2025-12-31') {
+            if ($start_date > '2026-12-31' && $end_date > '2026-12-31') {
                 // only sap
                 dd('only sap');
 //                $this->scribesQuery($start_date, $end_date, $dept_id);
@@ -91,11 +97,50 @@ class Report42 extends Component
             else {
                 // scribes & sap
 //                dd('scribes & sap');
-                $this->sapQuery($start_date, $end_date, $dept_id);
 //                $this->scribesQuery($start_date, '2023-12-31', $dept_id);
 //                $this->sapQuery('2024-01-01', $end_date, $dept_id);
-            }
 
+//                $this->sapQuery($start_date, $end_date, $dept_id); // this one is good
+
+//                if($start_date <= '2023-12-31' && $end_date >= '2024-01-01') {
+//                if(Carbon::parse('2024-01-01')->between($start_date, $end_date)) {
+//                    dd('here');
+
+                    $this->scribesQuery($start_date, '2023-12-31', $dept_id);
+                    $this->sapQuery('2024-01-01', $end_date, $dept_id); // this one is good
+//                    dd($this->sap_results);
+                    $this->scribes_results = collect($this->scribes_results);
+                    $this->sap_results = collect($this->sap_results);
+//                    $x = $this->scribes_results->merge($this->sap_results);
+//                    dd($x);
+
+                    $this->merged = $this->scribes_results->merge($this->sap_results)
+                        ->groupBy('Code')
+//                        ->map(function ($items) {
+//                            return array_merge(...$items->toArray());
+//                        })
+                        ->values()
+                        ->all();
+//                    dd($this->merged);
+//
+//                    dd($this->sap_results->where('Code', '0101'));
+//                    dd($this->scribes_results->where('Code', '0101'));
+
+
+
+//                    $t2 =
+//                    floatval($record["S1 Sales"]);
+
+//                    dd($this->scribes_results[0]->SP1Sales);
+//                    dd($this->sap_results[0]["S1 Sales"]);
+
+//                    dd("range 1: ${start_date} -> 2023-12-31  ||  range 2: 2024-01-01 -> ${end_date}");
+
+//                }
+//                else {
+//                    dd("range 1: ${start_date} ->  ${end_date}");
+//                }
+            }
 
         }
         else {
@@ -135,10 +180,16 @@ class Report42 extends Component
 //        dd(Carbon::parse('2023-12-15')->between($start_date, $end_date));
 
 //        dd(Carbon::parse($end_date)->subYears(2)->format('Y-m-d'));
-        $previous_start_date = Carbon::parse($start_date)->subYear()->format('Y-m-d');
-        $previous_end_date = Carbon::parse($end_date)->subYear()->format('Y-m-d');
-        $previous_2_end_date = Carbon::parse($end_date)->subYears(2)->format('Y-m-d');
-        $due_date = Carbon::parse($end_date)->addMonths(-4)->format("Y-m-d");
+        $previous_start_date = Carbon::parse($this->start_date)->subYear()->format('Y-m-d');
+        $previous_end_date = Carbon::parse($this->end_date)->subYear()->format('Y-m-d');
+        $previous_2_end_date = Carbon::parse($this->end_date)->subYears(2)->format('Y-m-d');
+        $due_date = Carbon::parse($this->end_date)->addMonths(-4)->format("Y-m-d");
+
+//        dd($end_date);
+//        dd($previous_2_end_date);
+//        dd($previous_2_end_date);
+//        dd($previous_end_date);
+//        dd($previous_start_date);
 
 
 //        $scribesStmt = "select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>='".$start_date."' and SIDate<='".$end_date." 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1Sales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>='" . $start_date . "' and PIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-' ) as SP1SalesReturn  ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_start_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-' ) as SP1SalesIncrease ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_start_date . "' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1SalesReturnIncrease ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_end_date . "' and SIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_end_date . "' and PIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1YearSalesReturn ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_2_end_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSalesIncrease ,(select
@@ -265,253 +316,11 @@ select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from AL
             }
             else
             {
-                /*
-                if ($this->report_type == "byItem") {
-
-
-                    $sql = 'SELECT
-	tbl1."ItemCode" AS "ItemCode",
-    tbl1."ItemName" AS "ItemName",
-    SUM(tbl1."Quantity") AS "TotalQuantitySold",
-    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
-    AVG(tbl1."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
-    SUM(tbl1."GrssProfit") as "GrossProfit",
-    SUM(tbl1."GPTtlBasPr") as "Cost",
-    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"), 0))*100 as "GrossProfitPer",
-    tbl1."Speciality",
-	tbl1."SalUnitMsr",
-	tbl1."OldCode",
-	tbl1."VendorCode",
-    tbl1."VendorName"
-
- FROM (
-SELECT
-    T0."ItemCode" AS "ItemCode",
-    T1."ItemName" AS "ItemName",
-    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
-	CASE
-    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
-    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
-	END as "LineTotal",
---   CASE WHEN T0."BaseRef" != \'\' THEN -T0."LineTotal" ELSE T0."LineTotal" END as "LineTotal",
-    T0."Price",
-	T3."DocNum",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
---	T0."GPTtlBasPr",
-	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
-    CASE
-		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T1."SalUnitMsr",
-	T1."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.INV1 T0
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
-WHERE
-	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
-	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-UNION
-
-
-SELECT
-	T1."ItemCode" AS "ItemCode",
-    T3."ItemName" AS "ItemName",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
-    	ELSE -T1."Quantity"
-    END as "Quantity",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
-    	ELSE -T1."LineTotal"
-    END as "LineTotal",
-    T1."Price",
-	T0."DocNum",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
-    	ELSE -T1."GrssProfit"
-    END as "GrssProfit",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
-    	ELSE -T1."GPTtlBasPr"
-    END as "GPTtlBasPr",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
-    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
-    END as "GrossProfitPer",
-    CASE
-		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T3."SalUnitMsr",
-	T3."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.ORIN T0
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
-WHERE
-    T0."BPLId" IN ('. implode(', ', $sap_depts).')
-    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-    ) as tbl1
-    GROUP BY
-	tbl1."ItemCode", tbl1."ItemName", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
-ORDER BY
-    "TotalSalesAmount" DESC';
-
-                }
-                else if ($this->report_type == "byDepartment") {
-
-                    $sql = 'SELECT
-	tbl1."ItemCode" AS "ItemCode",
-    tbl1."ItemName" AS "ItemName",
-    SUM(tbl1."Quantity") AS "TotalQuantitySold",
-    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
-    AVG(tbl1."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
-    SUM(tbl1."GrssProfit") as "GrossProfit",
-    SUM(tbl1."GPTtlBasPr") as "Cost",
-    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"),0))*100 as "GrossProfitPer",
-    tbl1."Branch",
-    tbl1."Department",
-    tbl1."Speciality",
-	tbl1."SalUnitMsr",
-	tbl1."OldCode",
-	tbl1."VendorCode",
-    tbl1."VendorName"
-
- FROM (
-SELECT
-    T0."ItemCode" AS "ItemCode",
-    T1."ItemName" AS "ItemName",
-    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
-	CASE
-    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
-    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
-	END as "LineTotal",
-    T0."Price",
-	T3."DocNum",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
---	T0."GPTtlBasPr",
-	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
-	T2."BPLName" AS "Branch",
-    T2."TaxIdNum" AS "Department",
-    CASE
-		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T1."SalUnitMsr",
-	T1."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.INV1 T0
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
-WHERE
-	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
-	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-UNION
-
-
-SELECT
-	T1."ItemCode" AS "ItemCode",
-    T3."ItemName" AS "ItemName",
-     CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
-    	ELSE -T1."Quantity"
-    END as "Quantity",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
-    	ELSE -T1."LineTotal"
-    END as "LineTotal",
-    T1."Price",
-	T0."DocNum",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
-    	ELSE -T1."GrssProfit"
-    END as "GrssProfit",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
-    	ELSE -T1."GPTtlBasPr"
-    END as "GPTtlBasPr",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
-    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
-    END as "GrossProfitPer",
-	T2."BPLName" AS "Branch",
-    T2."TaxIdNum" AS "Department",
-    CASE
-		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T3."SalUnitMsr",
-	T3."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.ORIN T0
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
-WHERE
-    T0."BPLId" IN ('. implode(', ', $sap_depts).')
-    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-    ) as tbl1
-    GROUP BY
-	tbl1."ItemCode", tbl1."ItemName", tbl1."Branch", tbl1."Department", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
-ORDER BY
-    "TotalSalesAmount" DESC';
-                }
-                */
 
                 $sql = 'SELECT
 
 "BPLId",
+(SELECT OBPL."TaxIdNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE OBPL."BPLId" = F0."BPLId") as "Code",
 "BPLName",
 "Location",
 SUM("S1 Sales") AS "S1 Sales",
@@ -536,20 +345,20 @@ FROM
 (
 
 /*Sales Data*/
-SELECT
 
+SELECT
 \'Sales\' AS "ROWID",
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum" as "Location",
-SUM(CASE WHEN "QryGroup2" = \'Y\' AND T1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S1 Sales",
-SUM(CASE WHEN "QryGroup3" = \'Y\' AND T1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S2 Sales",
-SUM(CASE WHEN "QryGroup2" = \'Y\' AND T1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S1 Sales PY",
-SUM(CASE WHEN "QryGroup3" = \'Y\' AND T1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S2 Sales PY",
-SUM(CASE WHEN "QryGroup2" = \'Y\' AND T1."DocDate" between ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365) AND \'' . $end_date . '\' THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S1 Sales Year",
-SUM(CASE WHEN "QryGroup3" = \'Y\' AND T1."DocDate" between ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365) AND \'' . $end_date . '\' THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S2 Sales Year",
-SUM(CASE WHEN "QryGroup2" = \'Y\' AND T1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S1 Sales Year PY",
-SUM(CASE WHEN "QryGroup3" = \'Y\' AND T1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN ((T0."LineTotal")*(1-(IFNULL(T1."DiscPrcnt",0)/100))) ELSE 0 END) AS "S2 Sales Year PY",
+tbl1."BPLId",
+tbl1."BPLName",
+tbl1."Location",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales PY",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales PY",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365) AND \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales Year",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365) AND \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales Year",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales Year PY",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales Year PY",
 0 AS "Outstanding Receivables",
 0 AS "Outstanding Receivables Over 120",
 0 AS "Stock Value",
@@ -559,17 +368,61 @@ SUM(CASE WHEN "QryGroup3" = \'Y\' AND T1."DocDate" between ADD_YEARS(ADD_DAYS(AD
 0 AS "NPAT Period",
 0 AS "NPAT Annual"
 
+FROM (
+
+SELECT
+
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+T0."LineTotal",
+T1."DocDate",
+"QryGroup1",
+"QryGroup2",
+"QryGroup3",
+T0."BaseRef",
+T1."DiscPrcnt"
+
 FROM AL_YASEEN_AGRI_PLIVE.INV1 T0
 
 JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."DocEntry" = T1."DocEntry"
 JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T0."ItemCode" = T2."ItemCode"
 JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T1."BPLId" = T3."BPLId"
 
+UNION ALL
+
+SELECT
+T2."BPLId",
+T2."BPLName",
+T2."GlblLocNum" as "Location",
+CASE WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal" ELSE -T1."LineTotal" END as "LineTotal",
+T1."DocDate",
+T3."QryGroup1",
+T3."QryGroup2",
+T3."QryGroup3",
+\'\' as "BaseRef",
+0 as "DiscPrcnt"
+
+FROM
+    AL_YASEEN_AGRI_PLIVE.ORIN T0
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
+
+) as tbl1
+
 GROUP BY
 
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum"
+tbl1."BPLId",
+tbl1."BPLName",
+tbl1."Location"
+
+/* End of Sales Data*/
 
 UNION ALL
 

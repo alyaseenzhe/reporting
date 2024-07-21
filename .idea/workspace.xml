@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report11.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report11.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -220,6 +222,7 @@
       <workItem from="1716987796562" duration="4643000" />
       <workItem from="1719121428394" duration="56211000" />
       <workItem from="1719985175766" duration="5263000" />
+      <workItem from="1721482401952" duration="13794000" />
     </task>
     <servers />
   </component>
