@@ -64,7 +64,7 @@ class Report25 extends Component
         }
         else
         {
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardType" = \'C\'';
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\'';
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)
