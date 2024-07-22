@@ -84,6 +84,7 @@
                     <th colspan="3" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">مخزون</div>
                     </th>
+                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                     <th rowspan="3" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">صافي الربح لفترة</div>
                     </th>
@@ -93,6 +94,7 @@
                     <th rowspan="3" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">مصاريف تشغيلية</div>
                     </th>
+                    @endif
                 </tr>
                 <tr style="border: 2px solid black;">
                     <th colspan="2" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -250,6 +252,7 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ floatval($record["Stock Value"]) != 0 ? number_format((floatval($record["COGS"])/floatval($record["Stock Value"]))*100, 2) : 0 }}
                             </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ number_format($record['NPAT Period']/1000, 2) }}
                             </td>
@@ -259,6 +262,7 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ number_format($record['Operating Expenses']/1000, 2) }}
                             </td>
+                            @endif
                             {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                             {{--                            {{number_format((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/1000)}}--}}
                             {{--                        </td>--}}
@@ -399,6 +403,7 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ number_format((floatval($record->YearCOGS)/((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000))/1000, 2) }}
                             </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ number_format((floatval($record->TotalIncome) - floatval($record->TotalExpenses))/1000, 2) }}
                             </td>
@@ -408,6 +413,7 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ number_format((floatval($record->TotalExpenses) - floatval($record->COGS))/1000, 2) }}
                             </td>
+                            @endif
                         </tr>
                         @php $counter++ @endphp
                     @endforeach
@@ -484,6 +490,7 @@
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format((((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000) != 0 ? ((floatval($record[0]->YearCOGS)/((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000))/1000) : 0)+(floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}
                                 </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(((floatval($record[0]->TotalIncome) - floatval($record[0]->TotalExpenses))/1000)+($record[1]['NPAT Period']/1000), 2) }}
                                 </td>
@@ -493,6 +500,7 @@
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(((floatval($record[0]->TotalExpenses) - floatval($record[0]->COGS))/1000)+($record[1]['Operating Expenses']/1000), 2) }}
                                 </td>
+                                @endif
                             </tr>
                         @elseif(($start_date >= '2024-01-01' && $start_date <= '2024-12-31') && $end_date <= '2025-12-31')
 {{--                        @elseif($start_date >= '2024-01-01' && $end_date <= '2024-12-31')--}}
@@ -567,6 +575,7 @@
                                     {{ number_format((floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}
 {{--                                    {{ number_format((((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000) != 0 ? ((floatval($record[0]->YearCOGS)/((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000))/1000) : 0)+(floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}--}}
                                 </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(($record[1]['NPAT Period']/1000), 2) }}
                                 </td>
@@ -576,6 +585,7 @@
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}
                                 </td>
+                                @endif
                             </tr>
                         @elseif(($start_date >= '2025-01-01' && $start_date <= '2025-12-31') && $end_date <= '2026-12-31')
                             <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
@@ -649,6 +659,7 @@
                                     {{ number_format((floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}
                                     {{--                                    {{ number_format((((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000) != 0 ? ((floatval($record[0]->YearCOGS)/((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000))/1000) : 0)+(floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}--}}
                                 </td>
+                                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(($record[1]['NPAT Period']/1000), 2) }}
                                 </td>
@@ -658,6 +669,7 @@
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}
                                 </td>
+                                @endif
                             </tr>
                         @endif
                         @php $counter++ @endphp
