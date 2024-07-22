@@ -182,7 +182,6 @@
                     $counter = 0;
                 @endphp
                 @if ($start_date > '2026-12-31' && $end_date > '2026-12-31')
-                    @dd('sap only 2026')
                     @foreach($sap_results as $record)
                         <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -331,7 +330,6 @@
                         @php $counter++ @endphp
                     @endforeach
                 @elseif ($start_date <= '2023-12-31' && $end_date <= '2023-12-31')
-                    @dd('scribes only 2023')
                     @foreach($scribes_results as $record)
                         <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
