@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/SapReports.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/sap-logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/sap-reports.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report21.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report21.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report25.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report25.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
