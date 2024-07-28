@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -18,6 +19,21 @@ class Report21 extends Component
     public $show_msg = false;
 
     protected $listeners = ['create-report' => 'create_report'];
+
+
+    public function booted() {
+
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+        if ((Auth::user()->user_group && in_array('report-21', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
 
     public function mount() {
 
@@ -54,9 +70,9 @@ class Report21 extends Component
         }
         else
         {
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardType" = \'C\'';
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\'';
 
-//            $sql = 'SELECT T0."CardName" FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
+//            $sql = 'SELECT T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
 
 //            $result = odbc_exec($conn, $sql);
             $result = odbc_exec($conn, $customerQuery);
@@ -238,19 +254,19 @@ Select
         {
             // Do a basic select from DUMMY with is basically a synonym for SYS.DUMMY
             //$sql = 'SELECT * FROM DUMMY';
-            // $sql = 'SELECT "CardName" FROM AL_YASEEN_TEST."OCRD"';
-            //  $sql = "SELECT TABLE_NAME FROM TABLES WHERE SCHEMA_NAME = 'AL_YASEEN_TEST'";
-            //  $sql = "SELECT CardName FROM TABLES WHERE SCHEMA_NAME = 'AL_YASEEN_TEST'";
-            // $sql = "SELECT \"CardName\", \"CardCode\" FROM AL_YASEEN_TEST.OCRD WHERE \"CardCode\" = '0100465'";
-            // $sql = "SELECT ".'"CardName", '.'"CardCode" '."FROM AL_YASEEN_TEST.OCRD WHERE ".'"CardCode"'." = '0100465'";
-//            $sql = 'SELECT * FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
+            // $sql = 'SELECT "CardName" FROM AL_YASEEN_AGRI_PLIVE."OCRD"';
+            //  $sql = "SELECT TABLE_NAME FROM TABLES WHERE SCHEMA_NAME = 'AL_YASEEN_AGRI_PLIVE'";
+            //  $sql = "SELECT CardName FROM TABLES WHERE SCHEMA_NAME = 'AL_YASEEN_AGRI_PLIVE'";
+            // $sql = "SELECT \"CardName\", \"CardCode\" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE \"CardCode\" = '0100465'";
+            // $sql = "SELECT ".'"CardName", '.'"CardCode" '."FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE ".'"CardCode"'." = '0100465'";
+//            $sql = 'SELECT * FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardCode"= \'0100465\'';
             $sql = 'SELECT * FROM (
 SELECT T3."CardCode", T0."TransId", T0."RefDate", T1."LineMemo", T1."Debit", T1."Credit",
        SUM(T1."Debit" - T1."Credit") OVER (PARTITION BY T1."Account" ORDER BY T0."RefDate", T0."TransId") AS "CumulativeBalance"
-FROM AL_YASEEN_TEST.OJDT T0
-INNER JOIN AL_YASEEN_TEST.JDT1 T1 ON T0."TransId" = T1."TransId"
-INNER JOIN AL_YASEEN_TEST.OACT T2 ON T1."Account" = T2."AcctCode"
-INNER JOIN AL_YASEEN_TEST.OCRD T3 ON T1."ShortName" = T3."CardCode"
+FROM AL_YASEEN_AGRI_PLIVE.OJDT T0
+INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
 WHERE T0."RefDate" >= \'20230101\'
 AND T3."CardCode" = \''.$this->customer_id.'\'
 ORDER BY T0."TaxDate", T0."TransId") as "tbl1"

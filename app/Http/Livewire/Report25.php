@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -33,6 +34,19 @@ class Report25 extends Component
 
     protected $listeners = ['create-report' => 'create_report'];
 
+    public function booted() {
+
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+        if ((Auth::user()->user_group && in_array('report-25', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
     public function render()
     {
         $this->getCustomers();
@@ -64,7 +78,7 @@ class Report25 extends Component
         }
         else
         {
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_TEST.OCRD T0 WHERE T0."CardType" = \'C\'';
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\'';
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)
