@@ -22,6 +22,8 @@ class Report11 extends Component
     public $scribes_codes = [];
     public $sap_codes = [];
 
+    public $products_codes = [];
+
     protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report'];
 
 
@@ -39,9 +41,12 @@ class Report11 extends Component
         }
     }
 
+    public function mount() {
+        $this->product_lists();
+    }
+
     public function render()
     {
-
         $this->itemGroups();
         $this->vendors();
         return view('livewire.report11')
@@ -149,14 +154,20 @@ class Report11 extends Component
 ////                'GrossProfitPer' => $row->sum('GrossProfitPer'),
 //                        ];
 //                        dd($x);
+//                        dd($row->first()->OldCode);
+//                        dd(count($this->scribes_results));
+//                        dd($row->first()->OldCode);
+//                        dd(count($this->scribes_results) > 0 ? $row->first()->OldCode : $row->first()['OldCode']);
                         return [
 //                'OldCode' => $row->first()['OldCode'],
-                            'OldCode' => count($this->scribes_results) > 0 ? $row->first()->OldCode : $row->first()['OldCode'],
-                            'ItemName' => count($this->scribes_results) > 0 ? $row->first()->ItemName : $row->first()['ItemName'],
-                            'SalUnitMsr' => count($this->scribes_results) > 0 ? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
-                            'Speciality' => count($this->scribes_results) > 0 ? $row->first()->Speciality : $row->first()['Speciality'],
-                            'VendorName' => count($this->scribes_results) > 0 ? $row->first()->VendorName : $row->first()['VendorCode'],
-                            'Department' => count($this->scribes_results) > 0 ? $row->first()->Department : $row->first()['Department'],
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorCode'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
                             'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
                             'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
                             'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
@@ -932,7 +943,7 @@ ORDER BY
                 }
 
 
-                dd($sql);
+//                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result)
                 {
@@ -952,5 +963,50 @@ ORDER BY
             }
         }
 
+    }
+
+    public function product_lists() {
+
+        $this->products_codes = [];
+
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+        $host = env('DB_HOST_FOURTH');
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn)
+        {
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+        }
+        else
+        {
+            $productQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode", T0."ItemName" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+
+            $result = odbc_exec($conn, $productQuery);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->products_codes, $row);
+                }
+            }
+
+//            dd($this->itemGrp);
+            odbc_close($conn);
+        }
     }
 }
