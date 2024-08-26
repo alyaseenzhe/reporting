@@ -50,8 +50,8 @@
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
                             @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor->NodeNo }}"
-                                        @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
+                                <option value="{{ $vendor["CardCode"] }}"
+                                        @if($vendor_type == $vendor["CardCode"]) selected @endif>{{ $vendor["CardName"] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -79,7 +79,7 @@
         </div>
     </div>
     @if($show_results)
-        @if($results)
+        @if($sap_results)
             <div class="mb-5 p-2">
                 <div class="flex flex-col sm:flex-row gap-4 w-full">
                     <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
@@ -108,22 +108,22 @@
                 <?php
                 $vendor_id = "*";
                 ?>
-            @forelse($results as $record)
+            @forelse($sap_results as $record)
                 <div wire:key="time()">
-                    @if($record->VendorNo != $vendor_id)
-                            <?php $vendor_id = $record->VendorNo; ?>
+                    @if($record['CardCode'] != $vendor_id)
+                            <?php $vendor_id = $record['CardCode']; ?>
                         <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             <td style="border: 2px solid black;background-color: #dcdcdc"
                                 class="border p-2 whitespace-nowrap col-id-no"
-                                scope="row">{{ $record->Vendor_Code }}</td>
+                                scope="row">{{ $record['CardCode'] }}</td>
                             <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc"
                                 class="border p-2 whitespace-nowrap col-id-no"
-                                scope="row">{{ $record->Vendor_ArName }}</td>
+                                scope="row">{{ $record['CardName'] }}</td>
                         </tr>
                     @endif
                         <?php
-                        $vendor_id = $record->VendorNo;
-                        $full_days = intval($record->LeadTime) + intval($dist_days);
+                        $vendor_id = $record['CardCode'];
+                        $full_days = intval($record['LeadTime']) + intval($dist_days);
                         $no_days = ceil($full_days / 30);
                         $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
 
@@ -155,13 +155,13 @@
                             }
                         }
 
-                            $val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty));
-                            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
-                            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
+                            $val_mozanah = intval($record["U_SafetyStock"]) - (intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"]));
+                            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and month = '" . $month . "' and year = '" . $year . "'");
+                            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and " . $stmt);
 
-                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
+                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
 
-                            $faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val_target->target);
+                            $faed_maqzon = (intval($record["OnHand"]) + (intval($record["OnOrder"])+intval($record["OpenQoutation"]))) - intval($val_target->target);
                             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
 
                         ?>
@@ -170,19 +170,19 @@
                             class="col-id-no fixed-header border p-2 whitespace-nowrap">
                             <div class="flex flex-row">
                                 <div class="w-full text-sm text-center">رقم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->Code }}</div>
+                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemCode"] }} ({{ $record["OldItemCode"] }})</div>
                                 <div class="w-full text-sm text-center">اسم الصنف</div>
                                 <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record->Arabic_Name }}</div>
+                                     class="w-full text-sm text-center">{{ $record["ItemName"] }}</div>
                                 <div class="w-full text-sm text-center">الوحدة</div>
                                 <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
+                                     class="w-full text-sm text-center">{{ $record["InvntryUom"] }}</div>
                                 <div class="w-full text-sm text-center">المورد</div>
                                 <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record->Vendor_ArName }}</div>
+                                     class="w-full text-sm text-center">{{ $record["CardName"] }}</div>
                                 <div class="w-full text-sm text-center">فترة الطلب</div>
                                 <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record->LeadTime }}</div>
+                                     class="w-full text-sm text-center">{{ $record["LeadTime"] }}</div>
                                 <div class="w-full text-sm text-center">فترة التوزيع</div>
                                 <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
                             </div>
@@ -198,11 +198,15 @@
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">
                                 طلبات الشراء
-                                <br>
-                                @if($record->final_qty)
-                                    <span class="text-xs">({{ $record->purchase_arrival_date? $record->purchase_arrival_date: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>
-                                @endif
+{{--                                <br>--}}
+{{--                                @if($record["OpenQty"])--}}
+{{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}
+{{--                                    <span class="text-xs">({{ $record["DocDueDate"]? \Carbon\Carbon::parse($record["DocDueDate"])->format('Y-m-d') : "N/A" }}){{intval($record["count_purchase_order"]) > 1 ? "*" : ""}} </span>--}}
+{{--                                @endif--}}
                             </div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">امر الشراء</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             <div class="text-sm">المتاح</div>
@@ -262,27 +266,30 @@
                             <div class="text-sm">{{ ceil($full_days/30) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record->Stock }}</div>
+                            <div class="text-sm">{{ number_format($record["OnHand"]) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record->final_qty }}</div>
+                            <div class="text-sm">{{ number_format(intval($record["OpenQoutation"])) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ intval($record->Stock) + intval($record->final_qty) }}</div>
+                            <div class="text-sm">{{ number_format(intval($record["OnOrder"])) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $record->MinOrder }}</div>
+                            <div class="text-sm">{{ number_format(intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"])) }}</div>
+                        </th>
+                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                            <div class="text-sm">{{ number_format($record["U_SafetyStock"]) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             @php //$val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty)); @endphp
-                            <div class="text-sm">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</div>
+                            <div class="text-sm">{{ number_format($val_mozanah < 0 ? 0 : $val_mozanah) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <?php
                                 //$val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
                                 ?>
-                            <div class="text-sm">{{ $val_mostahdef->target }}</div>
+                            <div class="text-sm">{{ number_format($val_mostahdef->target) }}</div>
                         </th>
                             <?php
                             //$val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
@@ -290,21 +297,21 @@
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
                             ?>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ $val_target->target }}</div>
+                            <div class="text-sm">{{ number_format($val_target->target) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <?php
                                 //$faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val->target);
                                 ?>
-                            <div class="text-sm">{{ $faed_maqzon < 0 ? 0 : $faed_maqzon  }}</div>
+                            <div class="text-sm">{{ $faed_maqzon < 0 ? 0 : number_format($faed_maqzon)  }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
 {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
-                            <div class="text-sm">{{ $recommendation }}</div>
+                            <div class="text-sm">{{ number_format($recommendation) }}</div>
                         </th>
                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                             {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
-                            <div class="text-sm">{{ $next_val_target->target }}</div>
+                            <div class="text-sm">{{ number_format($next_val_target->target) }}</div>
                         </th>
                     </tr>
                 </div>

@@ -33,11 +33,11 @@
                 طلبات الشراء
             </div>
         </th>
-        <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">
-            <div class="text-sm">
-                تاريخ الوصول
-            </div>
-        </th>
+{{--        <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">--}}
+{{--            <div class="text-sm">--}}
+{{--                تاريخ الوصول--}}
+{{--            </div>--}}
+{{--        </th>--}}
         <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">
             <div class="text-sm">المتاح</div>
         </th>
@@ -106,7 +106,7 @@
     </tr>
     @forelse($results as $record)
             <?php
-            $vendor_id = $record['VendorNo'];
+            $vendor_id = $record['CardCode'];
             $full_days = intval($record['LeadTime']) + intval($dist_days);
             $no_days = ceil($full_days / 30);
             $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
@@ -139,32 +139,32 @@
                 }
             }
 
-            $val_mozanah = intval($record['MinOrder']) - (intval($record['Stock']) + intval($record['final_qty']));
-            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record['Code'] . "' and month = '" . $month . "' and year = '" . $year . "'");
-            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record['Code'] . "' and " . $stmt);
+            $val_mozanah = intval($record["U_SafetyStock"]) - (intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"]));
+            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and month = '" . $month . "' and year = '" . $year . "'");
+            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and " . $stmt);
 
-            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record['Code'] . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
+            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
 
-            $faed_maqzon = (intval($record['Stock']) + intval($record['final_qty'])) - intval($val_target->target);
+            $faed_maqzon = (intval($record["OnHand"]) + (intval($record["OnOrder"])+intval($record["OpenQoutation"]))) - intval($val_target->target);
             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
             ?>
         <div wire:key="time()">
 
             @if($record_type == 'positive_item' && $recommendation > 0)
                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_Code'] }}</td>
-                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_ArName'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Code'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Arabic_Name'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</td>
+                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardCode'] }}</td>
+                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardName'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['ItemCode'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['ItemName'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record["InvntryUom"] }}</td>
                     <td  class="w-full text-sm text-center">{{ $record['LeadTime'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                     <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Stock'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['final_qty'] }}</td>
-                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>
-                    <td  class="w-full text-sm text-center">{{ intval($record['Stock']) + intval($record['final_qty']) }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['MinOrder'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+{{--                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</td>
                     <td  class="w-full text-sm text-center">{{ $val_mostahdef->target }}</td>
                     <td  class="w-full text-sm text-center">{{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }}</td>
@@ -199,19 +199,19 @@
                 </tr>
             @elseif($record_type == 'negative_item' && $recommendation <= 0)
                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_Code'] }}</td>
-                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_ArName'] }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['Code'] }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['Arabic_Name'] }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardCode'] }}</td>
+                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardName'] }}</td>
+                        <td  class="w-full text-sm text-center">{{ $record['ItemCode'] }}</td>
+                        <td  class="w-full text-sm text-center">{{ $record['ItemName'] }}</td>
+                        <td  class="w-full text-sm text-center">{{ $record['InvntryUom'] }}</td>
                         <td  class="w-full text-sm text-center">{{ $record['LeadTime'] }}</td>
                         <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                         <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['Stock'] }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['final_qty'] }}</td>
-                        <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>
-                        <td  class="w-full text-sm text-center">{{ intval($record['Stock']) + intval($record['final_qty']) }}</td>
-                        <td  class="w-full text-sm text-center">{{ $record['MinOrder'] }}</td>
+                        <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
+                        <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+{{--                        <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
+                        <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                        <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
                         <td  class="w-full text-sm text-center">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</td>
                         <td  class="w-full text-sm text-center">{{ $val_mostahdef->target }}</td>
                         <td  class="w-full text-sm text-center">{{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }}</td>
@@ -247,19 +247,19 @@
                     </tr>
             @elseif($record_type == 'all_item')
                 <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_Code'] }}</td>
-                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['Vendor_ArName'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Code'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Arabic_Name'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</td>
+                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardCode'] }}</td>
+                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no">{{ $record['CardName'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['ItemCode'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['ItemName'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['InvntryUom'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $record['LeadTime'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                     <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['Stock'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['final_qty'] }}</td>
-                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>
-                    <td  class="w-full text-sm text-center">{{ intval($record['Stock']) + intval($record['final_qty']) }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['MinOrder'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+{{--                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                    <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $val_mozanah < 0 ? 0 : $val_mozanah }}</td>
                     <td  class="w-full text-sm text-center">{{ $val_mostahdef->target }}</td>
                     <td  class="w-full text-sm text-center">{{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }}</td>
