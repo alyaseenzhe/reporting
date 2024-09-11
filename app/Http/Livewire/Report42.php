@@ -127,19 +127,21 @@ class Report42 extends Component
                 $this->scribes_results = [];
                 $this->sap_results = [];
 
-                $this->scribesQuery2024($start_date, $end_date, $dept_id);
-                $this->sapQuery2024($start_date, $end_date, $dept_id);
+//                $this->scribesQuery2024($start_date, $end_date, $dept_id);
+                $this->scribesQuery2024($start_date, $end_date, $this->dept_id);
+                $this->sapQuery2024($start_date, $end_date, $this->dept_id);
+//                $this->sapQuery2024($start_date, $end_date, $dept_id);
 
                 $this->scribes_results = collect($this->scribes_results);
                 $this->sap_results = collect($this->sap_results);
+//                dd($this->sap_results);
 //                    $x = $this->scribes_results->merge($this->sap_results);
 //                    dd($x);
 
-                $this->merged = $this->scribes_results->merge($this->sap_results)
+                $this->merged = $this->scribes_results->merge($this->sap_results)->sortBy('Code')
                     ->groupBy('Code')
                     ->values()
                     ->all();
-//                dd($this->merged);
             }
             elseif ($this->year == 2025) {
 //                dd('2025');
@@ -382,9 +384,25 @@ select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from AL
     public function scribesQuery2024($start_date, $end_date, $departments) {
 
 //        dd($departments);
-        if (in_array('dept_all', $departments)) {
-            $departments = ["3", "10","7","13","4","6","5","12","11","9","8","505"];
+//        if (in_array('dept_all', $departments)) {
+////            $departments = ["3", "10","7","13","4","6","5","12","11","9","8","505"];
+//            $departments = ["3", "10","7","13","4","6","5","12","11","9","8","505"];
+//        }
+
+        $merged_dept = $departments;
+        // merge two depts
+        if (in_array('3', $departments)) {
+            array_push($merged_dept, "509");
         }
+        if (in_array('10', $departments)) {
+            array_push($merged_dept, "510");
+        }
+        if (in_array('12', $departments)) {
+            array_push($merged_dept, "515");
+        }
+
+        $departments = $merged_dept;
+
 
 //        dd( implode(', ', $departments));
 
@@ -950,20 +968,28 @@ ORDER BY "BPLId"';
 
     public function sapQuery2024($start_date, $end_date, $departments) {
 
+//        dd($departments);
 //        if (count($this->sap_codes) > 0) {
         $depts = ['3' => '3', '10' => '4', '7' =>'5', '13' =>'6', '4' =>'7', '6' => '8', '5' => '9', '12' => '10', '11' => '11', '9' => '12', '8' => '13', '505' => '14'];
         $sap_depts = [];
+        foreach ($departments as $department) {
+//            dd($department);
+            array_push($sap_depts, $depts[$department]);
+        }
+//        $sap_depts = $departments;
 
-        if (in_array('dept_all', $departments)) {
-//            dd($this->dept_id);
-//            $sap_depts = $depts;
-            $sap_depts = $this->dept_id;
-        }
-        else {
-            foreach ($departments as $department) {
-                array_push($sap_depts, $depts[$department]);
-            }
-        }
+//        dd($sap_depts);
+
+//        if (in_array('dept_all', $departments)) {
+////            dd($this->dept_id);
+////            $sap_depts = $depts;
+//            $sap_depts = $this->dept_id;
+//        }
+//        else {
+//            foreach ($departments as $department) {
+//                array_push($sap_depts, $depts[$department]);
+//            }
+//        }
 
 //        dd(implode(', ', $sap_depts));
 //        dd($sap_depts);
