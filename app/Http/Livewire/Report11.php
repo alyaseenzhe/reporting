@@ -23,6 +23,8 @@ class Report11 extends Component
     public $sap_codes = [];
 
     public $products_codes = [];
+    public $warehouse = ['3' => "0101", '7' => "0103", '10' => "0102", '13' => "0104", '4' => "0105", '6' => "0106", '5' => "0107", '12' => "0108", '11' => "0109", '9' => "0110", '8' => "0111", '505' => "0112"];
+    public $warehouse_id = ["0101" => '3', "0103" => '7', "0102" => '10', "0104" => '13', "0105" => '4', "0106" => '6', "0107" => '5', "0108" => '12', "0109" => '11', "0110" => '9', "0111" => '8', "0112" => '505'];
 
     protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report'];
 
