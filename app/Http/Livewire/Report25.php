@@ -78,7 +78,29 @@ class Report25 extends Component
         }
         else
         {
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\'';
+            $branches = json_decode(Auth::user()->branches);
+            $cust_code = ["3" => "01%", "7" => "03%", "10" => "02%", "13" => "04%", "4" => "05%", "6" => "06%", "5" => "07%", "12" => "08%", "11" => "09%", "9" => "10%", "8" => "11%", "505" => "12%"];
+            $stmt = '';
+
+            foreach ($branches as $key => $branch) {
+
+                if (count($branches) > 1) {
+                    if ($key === array_key_first($branches)) {
+                        $stmt .= ' AND (T0."CardCode" LIKE \''.$cust_code[$branch].'\' OR ';
+                    }
+                    elseif ($key === array_key_last($branches)) {
+                        $stmt .= 'T0."CardCode" LIKE \''.$cust_code[$branch].'\')';
+                    }
+                    else {
+                        $stmt .= 'T0."CardCode" LIKE \''.$cust_code[$branch].'\' OR ';
+                    }
+                }
+                else {
+                    $stmt .= ' AND (T0."CardCode" LIKE \''.$cust_code[$branch].'\')';
+                }
+            }
+
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' ' . $stmt;
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)
