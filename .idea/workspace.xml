@@ -8,8 +8,8 @@
       <change afterPath="$PROJECT_DIR$/app/Http/Livewire/InventoryStatus.php" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/resources/views/livewire/inventory-status.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/sap-reports.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/sap-reports.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +165,7 @@
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/inventory-status-report&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/report-42&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Ibrah/Documents/projects/reporting/app/Exports&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
