@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report25.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report25.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report21.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report21.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +161,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "update/report-25-customer-permission",
+    "git-widget-placeholder": "feature/report-21-customers-permissions",
     "last_opened_file_path": "C:/Users/Ibrah/Documents/projects/reporting/app/Exports",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
