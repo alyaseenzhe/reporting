@@ -383,7 +383,7 @@
                             الحد الإئتماني
                         </td>
                         <td style="border-left: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['CreditLine'])}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['CreditLine']) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -391,7 +391,7 @@
                             شهر 1
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['0-A1_LC'], 2)}}
+                            {{$sap_aging_results->first() ? number_format($sap_aging_results->first()['0-A1_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -399,7 +399,7 @@
                             شهر 2
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['A1-A2_LC'], 2)}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['A1-A2_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -407,7 +407,7 @@
                             شهر 3
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['A2-A3_LC'], 2)}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['A2-A3_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -415,7 +415,7 @@
                             شهر 4
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['A3-A4_LC'], 2)}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['A3-A4_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -423,7 +423,7 @@
                             شهر 5
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['A4-A5_LC'], 2)}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['A4-A5_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -431,7 +431,7 @@
                             اقدم
                         </td>
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{number_format($sap_aging_results->first()['A5+_LC'], 2)}}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['A5+_LC'], 2) : 0}}
                         </td>
                     </tr>
                     <tr style="font-weight: bold">
@@ -440,7 +440,7 @@
                         </td>
 
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
-                            {{ number_format($sap_aging_results->first()['0-A1_LC'] + $sap_aging_results->first()['A1-A2_LC'] + $sap_aging_results->first()['A2-A3_LC'] + $sap_aging_results->first()['A3-A4_LC'] + $sap_aging_results->first()['A4-A5_LC'] + $sap_aging_results->first()['A5+_LC'], 2) }}
+                            {{ $sap_aging_results->first() ? number_format($sap_aging_results->first()['0-A1_LC'] + $sap_aging_results->first()['A1-A2_LC'] + $sap_aging_results->first()['A2-A3_LC'] + $sap_aging_results->first()['A3-A4_LC'] + $sap_aging_results->first()['A4-A5_LC'] + $sap_aging_results->first()['A5+_LC'], 2) : 0 }}
                         </td>
                     </tr>
                     </tbody>
@@ -462,6 +462,7 @@
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">مبيعات</div>
                         </th>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">تكلفة بضاعة</div>
                         </th>
@@ -471,6 +472,7 @@
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">هامش %</div>
                         </th>
+                        @endif
                     </tr>
                     </thead>
                     <tbody style="direction: ltr" class="text-sm divide-y divide-gray-100">
@@ -485,6 +487,7 @@
                             @php $sales0 = $this->sap_sales_results->where('SPL', 'Speciality0')->count() > 0? $this->sap_sales_results->where('SPL', 'Speciality0')->first()['NetSales'] : 0; @endphp
                             {{number_format($sales0, 2)}}
                         </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <td style="border-left: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             @php $cost0 = $this->sap_sales_results->where('SPL', 'Speciality0')->count() > 0? (floatval($this->sap_sales_results->where('SPL', 'Speciality0')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality0')->first()['GrssProfit'])) : 0;  @endphp
                             {{number_format($cost0, 2)}}
@@ -495,6 +498,7 @@
                         <td style="border-left: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format(floatval($cost0) == 0 ? 0 : ((floatval($sales0) - floatval($cost0))/floatval($cost0))*100 , 2)}}
                         </td>
+                        @endif
                     </tr>
                     <tr style="font-weight: bold">
                         <td style="border: 2px solid black; background-color: #faebd7;" class="border p-2 whitespace-nowrap">
@@ -507,6 +511,7 @@
                             @php $sales1 = $this->sap_sales_results->where('SPL', 'Speciality1')->count() > 0? $this->sap_sales_results->where('SPL', 'Speciality1')->first()['NetSales'] : 0; @endphp
                             {{number_format($sales1, 2)}}
                         </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             @php $cost1 = $this->sap_sales_results->where('SPL', 'Speciality1')->count() > 0? (floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality1')->first()['GrssProfit'])) : 0;  @endphp
                             {{number_format($cost1, 2)}}
@@ -517,6 +522,7 @@
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format(floatval($cost1) == 0 ? 0 : ((floatval($sales1) - floatval($cost1))/floatval($cost1))*100 , 2)}}
                         </td>
+                        @endif
                     </tr>
                     <tr style="font-weight: bold">
                         <td style="border: 2px solid black; background-color: #faebd7;" class="border p-2 whitespace-nowrap">
@@ -529,6 +535,7 @@
                             @php $sales2 = $this->sap_sales_results->where('SPL', 'Speciality2')->count() > 0 ? $this->sap_sales_results->where('SPL', 'Speciality2')->first()['NetSales'] : 0; @endphp
                             {{number_format($sales2, 2)}}
                         </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             @php $cost2 = $this->sap_sales_results->where('SPL', 'Speciality2')->count() > 0 ? (floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['NetSales']) - floatval($this->sap_sales_results->where('SPL', 'Speciality2')->first()['GrssProfit'])) : 0;  @endphp
                             {{number_format($cost2, 2)}}
@@ -539,6 +546,7 @@
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format(floatval($cost2) == 0 ? 0 : ((floatval($sales2) - floatval($cost2))/floatval($cost2))*100 , 2)}}
                         </td>
+                        @endif
                     </tr>
                     <tr style="font-weight: bold">
                         <td style="border: 2px solid black; background: rgb(250,235,215); background: linear-gradient(90deg, rgba(250,235,215,1) 75%, rgba(93,125,26,1) 100%);" class="border p-2 whitespace-nowrap">
@@ -550,6 +558,7 @@
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format(floatval($sales0)+floatval($sales1)+floatval($sales2), 2)}}
                         </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format(floatval($cost0)+floatval($cost1)+floatval($cost2), 2)}}
                         </td>
@@ -559,6 +568,7 @@
                         <td style="border: 2px solid black; text-align: right" class="border p-2 whitespace-nowrap">
                             {{number_format((floatval($cost0)+floatval($cost1)+floatval($cost2)) == 0 ? 0 : (((floatval($sales0)+floatval($sales1)+floatval($sales2)) - (floatval($cost0)+floatval($cost1)+floatval($cost2)))/(floatval($cost0)+floatval($cost1)+floatval($cost2)))*100 , 2)}}
                         </td>
+                        @endif
                     </tr>
                     </tbody>
                 </table>

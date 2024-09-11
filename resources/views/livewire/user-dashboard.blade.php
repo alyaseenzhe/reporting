@@ -775,6 +775,21 @@
             </a>
         @endif
     </div>
+    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+        <a class="w-full" href="{{ route('sap-reports') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <img src="{{ asset('images/sap-logo.png') }}" width="20%" style="margin: auto;">
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">تقارير ساب</div>
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
 
 @section('css-scripts')
