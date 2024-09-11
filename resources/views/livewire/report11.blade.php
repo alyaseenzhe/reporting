@@ -415,7 +415,7 @@
                                 {{number_format($record['TotalSalesAmount'], 2)}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{number_format($record['AverageUnitPrice'], 2)}}
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
                             </td>
                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                 <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
@@ -497,7 +497,11 @@
                                     {{number_format($record['TotalSalesAmount'], 2)}}
                                 </td>
                                 <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
                                     {{number_format($record['AverageUnitPrice'], 2)}}
+                                    @endif
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                     <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
