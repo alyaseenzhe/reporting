@@ -162,7 +162,7 @@
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/daily-report&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Ibrah/Documents/projects/reporting/app/Exports&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -181,7 +181,7 @@
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\resources\views\layouts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Ibrah\Documents\projects\reporting\public\images" />
+      <recent name="C:\Users\Ibrah\Documents\projects\reporting\database\migrations\old" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\js" />
       <recent name="C:\Users\Ibrah\Documents\projects\alyass-reporting\public\images" />
     </key>
@@ -216,6 +216,8 @@
       <workItem from="1707037631522" duration="4192000" />
       <workItem from="1708493099260" duration="3235000" />
       <workItem from="1709020085228" duration="43098000" />
+
+      <workItem from="1713072553814" duration="1178000" />
       <workItem from="1716720356471" duration="711000" />
       <workItem from="1716789636869" duration="17328000" />
       <workItem from="1716987796562" duration="4643000" />
