@@ -1,4 +1,5 @@
 <div>
+
     <div class="mb-5">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -29,7 +30,7 @@
     <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
 </g>
 </svg>
-                        <span class="text-gray-400 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">إنشاء تقرير</span>
+                        <span class="text-gray-400 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">تحديث التقرير</span>
                     </div>
                 </li>
             </ol>
@@ -75,7 +76,7 @@
 
     <div
         class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">إنشاء تقرير جديد</div>
+        <div class="w-full">تحديث تقرير</div>
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
@@ -84,7 +85,7 @@
                     <label class="block font-bold mb-2 text-xs">الموقع
                         <span class="text-red-500">*</span>
                     </label>
-                    <select id="location1" name="location1"
+                    <select id="location1" name="location1" wire:model="location1"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="المركز الرئيسي - الاحساء">المركز الرئيسي - الاحساء</option>
@@ -115,31 +116,31 @@
                     <label class="block font-bold mb-2 text-xs">تاريخ التقرير
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="report_date" type="date" name="report_date"
+                    <input id="report_date" type="date" name="report_date" wire:model="report_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('report_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-{{--                <div class="mt-8 text-center w-full">--}}
-{{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
-{{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-{{--                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
-{{--                            <span></span>--}}
-{{--                            <span>إنشاء تقرير</span>--}}
-{{--                        </span>--}}
-{{--                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
-{{--                        <span></span>--}}
-{{--                        <span>الرجاء الانتظار</span>--}}
-{{--                        </span>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
+                {{--                <div class="mt-8 text-center w-full">--}}
+                {{--                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
+                {{--                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+                {{--                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
+                {{--                            <span></span>--}}
+                {{--                            <span>إنشاء تقرير</span>--}}
+                {{--                        </span>--}}
+                {{--                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
+                {{--                        <span></span>--}}
+                {{--                        <span>الرجاء الانتظار</span>--}}
+                {{--                        </span>--}}
+                {{--                    </button>--}}
+                {{--                </div>--}}
             </div>
             <div class="w-full flex sm:flex-row flex-col gap-4">
                 <div class="w-full">
                     <label class="block font-bold mb-2 text-xs">نوع التقرير
                         <span class="text-red-500">*</span>
                     </label>
-                    <select id="report_type" name="report_type"
+                    <select id="report_type" name="report_type" wire:model="report_type"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="work">تقرير عمل</option>
@@ -154,7 +155,7 @@
                     <label class="block font-bold mb-2 text-xs">الموقع كتابةً
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="location2" type="text" name="location2"
+                    <input id="location2" type="text" name="location2" wire:model="location2"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('location2') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -174,21 +175,12 @@
                 {{--                </div>--}}
             </div>
             <div id="customer-div" class="w-full flex sm:flex-row flex-col gap-4 hide">
-                <div class="w-full">
+                <div wire:ignore class="w-full">
                     <label class="block font-bold mb-2 text-xs">اسم العميل
                         <span class="text-red-500">*</span>
                     </label>
-{{--                    <div wire:ignore>--}}
-{{--                        <select id="customer_name" name="customer_name"--}}
-{{--                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
-{{--                                style="@error('item_id') border: solid 1px #fda4af; @enderror">--}}
-{{--                            @foreach($customers as $customer)--}}
-{{--                                <option value="{{$customer->Code}}-{{ $customer->Arabic_Name }}">{{$customer->Code}}-{{ $customer->Arabic_Name }}</option>--}}
-{{--                            @endforeach--}}
-{{--                        </select>--}}
-{{--                    </div>--}}
-                    <div>
-                        <select id="customer_name" name="customer_name"
+                    <div wire:ignore>
+                        <select id="customer_name" name="customer_name" wire:model="customer_name"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('item_id') border: solid 1px #fda4af; @enderror">
                             <option value="-1">الرجاء اختيار العميل</option>
@@ -204,20 +196,21 @@
                     <label class="block font-bold mb-2 text-xs">المرافقون
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="companion" type="text" name="companion"
+                    <input id="companion" type="text" name="companion" wire:model="companion"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('companion') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
+
             <div class="w-full flex sm:flex-row flex-col gap-4">
                 <div class="w-full">
                     <label class="block font-bold mb-2 text-xs">العمل/المنجزات
                         <span class="text-red-500">*</span>
                     </label>
-                    <textarea rows="5" id="report_note" type="text" name="report_note"
-                           class="text-xs text-gray-900 form-select w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror"></textarea>
+                    <textarea rows="5" id="report_note" type="text" name="report_note" wire:model="report_note"
+                              class="text-xs text-gray-900 form-select w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                              style="@error('item_id') border: solid 1px #fda4af; @enderror"></textarea>
                     @error('report_note') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
@@ -239,19 +232,6 @@
                         </span>
                     </button>
                 </div>
-                <div class="mt-4 text-center w-full">
-                    <button id="gen-report2"
-                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
-                            <span></span>
-                            <span>حفظ وادخال تقرير آخر</span>
-                        </span>
-                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
-                        <span></span>
-                        <span>الرجاء الانتظار</span>
-                        </span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -264,10 +244,28 @@
 
     <script>
         $(document).ready(function() {
+
+            rpt_type = $("#report_type").val();
+
+            if(rpt_type == 'visit') {
+                $('#customer-div').removeClass('hide');
+
+                $('#customer_name').select2({
+                    dir: "rtl",
+                    dropdownCssClass: "select-font-size"
+                });
+            }
+            else {
+                $('#customer-div').addClass('hide');
+            }
+
+
+
             $('#customer_name').select2({
                 dir: "rtl",
                 dropdownCssClass: "select-font-size"
             });
+
 
             $('#report_type').on('change', function (e) {
                 rpt_type = $(this).val();
@@ -306,7 +304,7 @@
                 if($.trim(report_date) == '' || $.trim(location2) == '' || $.trim(report_note) == ""|| (customer_name == '-1' && report_type == "visit")) {
                     Swal.fire({
                         title: "حدث خطأ",
-                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إضافة التقرير",
+                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من تحديث التقرير",
                         icon: "error",
                         confirmButtonText: "موافق",
                     });
@@ -326,50 +324,7 @@
                         },
                     });
 
-                    Livewire.emit('create-report', report_type, report_date, customer_name, location1, location2, companion, report_note, 'saveOnly');
-                }
-            });
-
-            $('#gen-report2').on('click', function () {
-
-                var report_type = $('#report_type').val();
-                var report_date = $('#report_date').val();
-                var customer_name = $('#customer_name').val();
-                var location1 = $('#location1').val();
-                var location2 = $('#location2').val();
-                var companion = $('#companion').val();
-                var report_note = $('#report_note').val();
-
-
-
-                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
-
-
-
-                if($.trim(report_date) == '' || $.trim(location2) == '' || $.trim(report_note) == ""|| (customer_name == '-1' && report_type == "visit")) {
-                    Swal.fire({
-                        title: "حدث خطأ",
-                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إضافة التقرير",
-                        icon: "error",
-                        confirmButtonText: "موافق",
-                    });
-                    $("#gen-report").html('<b>إضافة تقرير</b>');
-                }
-
-                else {
-                    $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
-
-                    Swal.fire({
-                        title: 'الرجاء الإنتظار',
-                        allowOutsideClick: false,
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        willOpen: () => {
-                            Swal.showLoading()
-                        },
-                    });
-
-                    Livewire.emit('create-report', report_type, report_date, customer_name, location1, location2, companion, report_note, 'saveAndNew');
+                    Livewire.emit('update-report', report_type, report_date, customer_name, location1, location2, companion, report_note);
                 }
             });
         })

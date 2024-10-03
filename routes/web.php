@@ -39,7 +39,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-distribution-calc', \App\Http\Livewire\DistributionCalc::class)->name('list.distribution-calc');
 
     Route::get('/new-daily-report', \App\Http\Livewire\NewDailyReport::class)->name('create.daily-report');
-    Route::get('/show-daily-report', \App\Http\Livewire\ShowDailyReport::class)->name('show.daily-report');
+    Route::get('/edit-daily-report/{id}', \App\Http\Livewire\EditDailyReport::class)->name('edit.daily-report');
+    Route::get('/list-daily-reports', \App\Http\Livewire\ListDailyReports::class)->name('list.daily-reports');
+    Route::get('/show-daily-report/{id}', \App\Http\Livewire\ShowDailyReport::class)->name('show.daily-report');
 
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');

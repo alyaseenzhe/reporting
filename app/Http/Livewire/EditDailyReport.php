@@ -2,24 +2,26 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\AccMast;
 use App\Models\DailyReport;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class NewDailyReport extends Component
+class EditDailyReport extends Component
 {
+    public $record;
+
     public $report_note;
-    public $location1 = "المركز الرئيسي - الاحساء";
+    public $location1;
     public $location2;
     public $customer_list = [];
     public $report_date;
-    public $report_type = 'work';
+    public $report_type;
     public $customer_name;
     public $companion;
 
-    protected $listeners = ['create-report' => 'createReport'];
+    protected $listeners = ['update-report' => 'updateReport'];
 
     protected $rules = [
         'location1' => 'required',
@@ -40,58 +42,57 @@ class NewDailyReport extends Component
         'customer_name.not_in' => 'مطلوب',
     ];
 
-    public function mount() {
-        $this->getCustomers();
+    public function mount($id) {
+        try {
+            $this->record = DailyReport::findOrFail($id);
+
+            $this->report_note = $this->record->report_note;
+            $this->location1 = $this->record->location1;
+            $this->location2 = $this->record->location2;
+            $this->report_date = $this->record->report_date;
+            $this->report_type = $this->record->report_type;
+            $this->customer_name = $this->record->customer_name;
+            $this->companion = $this->record->companion;
+
+            $this->getCustomers();
+
+        } catch (ModelNotFoundException $exception) {
+            session()->flash('message', 'هذا المستخدم غير موجود');
+            return redirect()->route('list.users');
+        }
+
     }
 
     public function render()
     {
-//        $customers = AccMast::where('Type', '10')
-//            ->select('Code', 'Arabic_Name')
-//            ->get();
-//        $this->getCustomers();
-
-        return view('livewire.new-daily-report')
+        return view('livewire.edit-daily-report')
             ->layout('layouts.dashboard');
     }
 
-    public function createReport($report_type, $report_date, $customer_name, $location1, $location2, $companion, $report_note, $btn) {
+    public function updateReport($report_type, $report_date, $customer_name, $location1, $location2, $companion, $report_note) {
 
-//        dd($report_type.'||'. $report_date.'||'. $customer_name.'||'. $location1.'||'. $location2.'||'. $companion.'||'. $report_note);
-//        $this->validate();
 
         $rpt_date = Carbon::parse($report_date);
-//        dd($rpt_date->startOfWeek(Carbon::FRIDAY)->format('Y-m-d'));
-//        dd($x->startOfWeek(Carbon::FRIDAY)->format('Y-m-d'));
-//        dd($x->endOfWeek(Carbon::THURSDAY)->format('Y-m-d'));
-//        $rpt_date->startOfWeek(Carbon::FRIDAY)->format('Y-m-d')
 
-        $record = DailyReport::create([
-            'location1' => $location1,
-            'report_date' => $report_date,
-            'report_type' => $report_type,
-            'location2' => $location2,
-            'customer_name' =>  $report_type == 'visit' ? $customer_name : null,
-            'companion' => $report_type == 'visit' ? $companion : null,
-            'report_note' => $report_note,
-            'start_of_week' => $rpt_date->startOfWeek(Carbon::FRIDAY)->format('Y-m-d'),
-            'end_of_week' => $rpt_date->endOfWeek(Carbon::THURSDAY)->format('Y-m-d'),
-            'added_by' => Auth::id(),
-        ]);
+        $record = DailyReport::find($this->record->id);
 
-        if($record) {
+        $record->location1 = $location1;
+        $record->report_date = $report_date;
+        $record->report_type = $report_type;
+        $record->location2 = $location2;
+        $record->customer_name =  $report_type == 'visit' ? $customer_name : null;
+        $record->companion = $report_type == 'visit' ? $companion : null;
+        $record->report_note = $report_note;
+        $record->start_of_week = $rpt_date->startOfWeek(Carbon::FRIDAY)->format('Y-m-d');
+        $record->end_of_week = $rpt_date->endOfWeek(Carbon::THURSDAY)->format('Y-m-d');
+        //'added_by' => Auth::id(),
 
-            if ($btn == 'saveOnly') {
-                session()->flash('success', 'تم إنشاء التقرير بنجاح');
-                return redirect()->route('list.daily-reports');
-            }
-            elseif ($btn == 'saveAndNew') {
-                session()->flash('success', 'تم إنشاء التقرير بنجاح');
-                return redirect()->route('create.daily-report');
-            }
+        if($record->save()) {
+            session()->flash('success', 'تم تحديث التقرير بنجاح');
+            return redirect()->route('list.daily-reports');
         }
         else {
-            session()->flash('error-message', 'حدث خطأ ما عند إنشاء التقرير');
+            session()->flash('error-message', 'حدث خطأ ما عند تحديث التقرير');
             return redirect()->route('list.daily-reports');
         }
     }
