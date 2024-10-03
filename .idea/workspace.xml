@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/EditDailyReport.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Livewire/ListDailyReports.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2024_10_02_090751_add_start_of_week_and_end_of_week_columns.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/edit-daily-report.blade.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/views/livewire/list-daily-reports.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/ShowDailyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/ShowDailyReport.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/new-daily-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/new-daily-report.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/show-daily-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/show-daily-report.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
