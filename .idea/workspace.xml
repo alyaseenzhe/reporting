@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7dd74ba0-9849-4da9-83f7-262f791bb8ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/user-dashboard.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/edit-user-groups.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +216,14 @@
       <workItem from="1707037631522" duration="4192000" />
       <workItem from="1708493099260" duration="3235000" />
       <workItem from="1709020085228" duration="43098000" />
+
       <workItem from="1713072553814" duration="1178000" />
+      <workItem from="1716720356471" duration="711000" />
+      <workItem from="1716789636869" duration="17328000" />
+      <workItem from="1716987796562" duration="4643000" />
+      <workItem from="1719121428394" duration="56211000" />
+      <workItem from="1719985175766" duration="5263000" />
+      <workItem from="1721482401952" duration="13794000" />
     </task>
     <servers />
   </component>

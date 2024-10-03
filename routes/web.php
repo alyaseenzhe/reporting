@@ -38,10 +38,23 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-purchase-recommendation', \App\Http\Livewire\PurchaseRecommendation::class)->name('list.purchase-recommendation');
     Route::get('/list-distribution-calc', \App\Http\Livewire\DistributionCalc::class)->name('list.distribution-calc');
 
+
     Route::get('/new-daily-report', \App\Http\Livewire\NewDailyReport::class)->name('create.daily-report');
     Route::get('/edit-daily-report/{id}', \App\Http\Livewire\EditDailyReport::class)->name('edit.daily-report');
     Route::get('/list-daily-reports', \App\Http\Livewire\ListDailyReports::class)->name('list.daily-reports');
     Route::get('/show-daily-report/{id}', \App\Http\Livewire\ShowDailyReport::class)->name('show.daily-report');
+
+    Route::get('/test-item-list', \App\Http\Livewire\SapItemMasterData::class)->name('test-item-list');
+
+    /* reports */
+    Route::get('/report-21', \App\Http\Livewire\Report21::class)->name('report-21');
+    Route::get('/report-11', \App\Http\Livewire\Report11::class)->name('report-11');
+    Route::get('/report-25', \App\Http\Livewire\Report25::class)->name('report-25');
+    Route::get('/report-42', \App\Http\Livewire\Report42::class)->name('report-42');
+    Route::get('/inventory-status-report', \App\Http\Livewire\InventoryStatus::class)->name('inventory-status-report');
+
+    Route::get('/sap-reports', \App\Http\Livewire\SapReports::class)->name('sap-reports');
+
 
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
