@@ -173,7 +173,7 @@
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ibrah\Documents\projects\reporting\resources\views\mails" />
@@ -225,6 +225,7 @@
       <workItem from="1719121428394" duration="56211000" />
       <workItem from="1719985175766" duration="5263000" />
       <workItem from="1721482401952" duration="13794000" />
+      <workItem from="1726636553818" duration="4504000" />
     </task>
     <servers />
   </component>
