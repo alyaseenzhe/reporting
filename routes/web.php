@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-daily-reports', \App\Http\Livewire\ListDailyReports::class)->name('list.daily-reports');
     Route::get('/show-daily-report/{id}', \App\Http\Livewire\ShowDailyReport::class)->name('show.daily-report');
 
+    Route::get('/list-friends-daily-reports', \App\Http\Livewire\ListFriendsDailyReports::class)->name('list.friends-daily-reports');
+
     Route::get('/list-employees-daily-reports', \App\Http\Livewire\ListEmployeesDailyReports::class)->name('list.employees-daily-reports');
     Route::get('/show-employee-report/{id}/{week_date}', \App\Http\Livewire\ShowEmployeeReport::class)->name('show.employee-report');
 
