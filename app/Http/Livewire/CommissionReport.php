@@ -14,9 +14,85 @@ class CommissionReport extends Component
     public $area_id = -1;
     public $result;
     public $result_tbl2 = [];
+    public $sap_results = [];
+    public $sap_results2 = [];
     public $selected_date;
     public $first_date;
     public $last_date;
+    public $total_grossProfit = 0;
+    public $area_commission = ['3' => 11.46, '4' => 10.5, '5' => 11.46, '6' => 11.46, '7' => 10.5, '8' => 10.5, '9' => 11.46, '10' => 10.5, '11' => 10.5, '12' => 11.46, '13' => 10.5, '14' => 10.5];
+    public $area_loss_profit = ['3' => 252507, '4' => 268936, '5' => 334426, '6' => 74377, '7' => 287371, '8' =>  192702, '9' => 166642, '10' => 171551, '11' => 148537, '12' => 933995, '13' => 238114, '14' => 121138];
+    public $emp_position = [
+'10046' =>	'sales_manager',
+/*'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',
+'10046' =>	'sales_manager',*/
+'10035' =>	'area_manager',
+'10041' =>	'area_manager',
+'10175' =>	'area_manager',
+'10051' =>	'area_manager',
+'10057' =>	'area_manager',
+'10214' =>	'area_manager',
+'10066' =>	'area_manager',
+'10074' =>	'area_manager',
+'10078' =>	'area_manager',
+'10058' =>	'mat_dev_manager2',
+'10088' =>	'area_manager',
+'10036' =>	'store_manager',
+'10262' =>	'store_manager',
+'10268' =>	'store_manager',
+'10227' =>	'store_manager',
+'10219' =>	'store_manager',
+'10148' =>	'store_manager',
+'10203' =>	'store_manager',
+'10285' =>	'store_manager',
+'10253' =>	'store_manager',
+'10264' =>	'store_manager',
+'10248' =>	'store_manager',
+'10042' =>	'store_manager',
+'10159' =>	'mat_dev_manager1',
+'10261' =>	'mat_dev_manager1',
+'10295' =>	'mat_dev_manager2',
+'10182' =>	'mat_dev_manager1',
+'10059' =>	'mat_dev_manager1',
+'10279' =>	'mat_dev_manager1',
+'10068' =>	'mat_dev_manager1',
+'10190' =>	'mat_dev_manager1',
+'10079' =>	'mat_dev_manager1',
+'10263' =>	'mat_dev_manager1',
+'10286' =>	'mat_dev_manager1',
+'10266' =>	'mat_dev_manager1',
+'10232' =>	'mat_dev_manager2',
+'10272' =>	'mat_dev_manager2',
+'10261' =>	'mat_dev_manager2',
+'10083' =>	'mat_dev_manager2',
+'10239' =>	'mat_dev_manager1',
+'10276' =>	'store_manager',
+'10297' =>	'store_manager',
+    ];
+    public $position_commission = [
+        "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
+        "area_manager" => ["sales_manager" => 5,	"area_manager" => 90, "store_manager"=>	5, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
+        "store_manager" => ["sales_manager" => 5,	"area_manager" => 25, "store_manager"=>	70, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
+        "mat_dev_manager1" => ["sales_manager" => 5,	"area_manager" => 25, "store_manager"=>	5, "mat_dev_manager1" =>	65, "mat_dev_manager2" => 0	],
+        "mat_dev_manager2" => ["sales_manager" => 5,	"area_manager" => 25, "store_manager"=>	5, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 65]
+    ];
+
+    public $customer = [];
+    public $customer_code = [];
+    public $customer_balance = [];
+    public $slp_code = [];
+    public $slp_aging = [];
+    public $slp_balance = [];
+    public $branch_balance = 0;
 
     protected $rules = [
         'area_id' => 'required|not_in:-1',
@@ -58,891 +134,1148 @@ class CommissionReport extends Component
         $this->first_date = date('Y-m-01', strtotime($this->selected_date));
         $this->last_date = date('Y-m-t', strtotime($this->selected_date));
 
+
+        $this->sapQuery($this->first_date, $this->last_date);
+
+
+
+        /*
         $start_of_day = Carbon::parse($this->first_date)->subMonths(3);
         $end_of_day = Carbon::parse($this->last_date);
         $days = intval($end_of_day->diffInDays($start_of_day) + 1);
+        */
 
-        $result = DB::connection('sqlsrv')->select("SELECT tbl_profit.area as 'area_id', Arabic_Name as 'area_name', tbl_net_profit.net_profit, profit, inventory_total, total_postponed, (tbl_net_profit.net_profit-inventory_total-total_postponed) as 'total', concat('%', tbl_area_commission.area_commission) as 'area_commission', ((tbl_net_profit.net_profit-inventory_total-total_postponed)*(tbl_area_commission.area_commission/100)) as 'calculated_commission' FROM (SELECT tbl_out.area, SUM(tbl_out.profit_sp0+tbl_out.profit_sp1+tbl_out.profit_sp2) as profit FROM (
-    select Employeecode,Employeename,branchName, area, SPL0, sum(Spl0Value - Spl0cost) as profit_sp0, SPL1, sum(Spl1Value - Spl1cost) as profit_sp1, SPL2, sum(Spl2Value - Spl2cost) as profit_sp2
-        from (
-            select distinct Employeecode,Employeename,branchName, area
-        ,0 as SPL0,isnull((select sum(s0.value) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0Value
-         ,isnull((select sum(s0.totalcost) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0cost
+    }
 
-         ,1 as SPL1,isnull((select sum(s0.value) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Value
-         ,isnull((select sum(s0.totalcost) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Cost
-          ,2 as SPL2,isnull((select sum(s0.value) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Value
-         ,isnull((select sum(s0.totalcost) from salesEmployeebyspcialityandbranch s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Cost
-        from (
-            select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-        ,SpecialityCode,areamast.Arabic_Name as branchname, areamast.nodeno as area,
-        sum(value*exchangerate+extrafieldstotal) as Value
-        ,sum(totalcost) as totalcost from sinvoice ,productmast,areamasT,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-and area=areamast.nodeno
-and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
-         and studentmast.nodeno>1
-and sIDate>=:start_date1 and sIDate<=:end_date_time1
-         group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-         union all
-         select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,areamast.Arabic_Name as branchname, areamast.nodeno as area,-sum(value*exchangerate+extrafieldstotal) as Value,-sum(totalcost) as totalcost
-         from pinvoice ,productmast,areamast
-         ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-and area=areamast.nodeno
-and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
-         and pidate>=:start_date2 and pidate<=:end_date_time2
-and studentmast.nodeno>1
-         group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-        ) as salesEmployeebyspcialityandbranch
-        ) as tbl1
-        group by tbl1.Employeecode,tbl1.Employeename,tbl1.branchName, area, tbl1.SPL0, tbl1.SPL1, tbl1.SPL2
-        ) AS tbl_out
-        where area = :area1
-        group by tbl_out.area) as tbl_profit, (SELECT tbl_out.area_out as area, tbl_out.Arabic_Name, (Cost_in+Cost_out)*(0.01) as inventory_total FROM (Select DefAccounts.Area as area_out ,AreaMast.Arabic_Name, 'Out' as [Type]  ,SUM(-TotalCost) as Cost_out  From DeptMast , Sinvoice,productmast, DefAccounts, AreaMast
-        where Deptmast.NodeNo = DefAccounts.DeptNodeNo and AreaMast.NodeNo = DefAccounts.Area and productmast.nodeno=productno and DeptMast.NodeNo = Department  And DoNotUpdateStock = 0    And (SIDate >= '07/01/2011' And SIDate <= :end_date_time6  )  And
-        ProductNo in (select NodeNo from ProductMast) And Department in (select NodeNo from DeptMast)
-        group by DefAccounts.Area , AreaMast.Arabic_Name) as tbl_out, (Select DefAccounts.Area as area_in , AreaMast.Arabic_Name, 'In' as [Type], sum(TotalCost) as Cost_in  From DeptMast , Pinvoice  ,productmast, DefAccounts, AreaMast
-        where Deptmast.NodeNo = DefAccounts.DeptNodeNo and AreaMast.NodeNo = DefAccounts.Area and productmast.Nodeno=productno and Deptmast.NodeNo = Department  And DoNotUpdateStock = 0   And (PIDate >= '07/01/2011' And PIDate <= :end_date_time7  )  And ProductNo in (select NodeNo from ProductMast) And Department in (select NodeNo from DeptMast)
-        group by DefAccounts.Area , AreaMast.Arabic_Name
-        ) as tbl_in,(SELECT DeptNodeNo,Area FROM DefAccounts) as tbl_dept_area
-        where tbl_in.area_in = tbl_out.area_out
-and tbl_out.area_out = tbl_dept_area.DeptNodeNo
-and area_out = :area2) as tbl_inventory, (select tbl_balance_total.Area, SUM(tbl_balance_total.Balance)*0.01 as total_postponed from (select * from (
- Select distinct WarrentyInfo.SalesEmployee, B.CustomerNo, B.Area,AccMast.Name As CustomerName,AccMast.Arabic_Name As CustomerArabicName,AccMast.Code As CustomerCode ,AccMast.Type as CustomerType, case when (select Sum(Total) from BillWise where  CustomerNo = B.CustomerNo and VoucherDate <=:end_date_time3 ) <> 0  then (select Sum(Total) from BillWise where  CustomerNo
-= B.CustomerNo and  VoucherDate <=:end_date_time8 ) else 0 end as Balance From BillWise B,accmast, WarrentyInfo  Where B.CustomerNo = AccMast.NodeNo and B.CustomerNo = WarrentyInfo.AccountNo and NodeNo in (select AccountNo from WarrentyInfo where AccountStatus in ('عملاء نشيطين لدى الفرع'  )) And  (AccMast.Type = 9 OR AccMast.Type = 10)
-And  (VoucherDate <=  :end_date_time9) And (B.Type = 'N')
-and CustomerNo in (SELECT distinct WarrentyInfo.AccountNo FROM WarrentyInfo, accmast where AccountStatus in ('عملاء نشيطين لدى الفرع'  ) and WarrentyInfo.AccountNo = accmast.NodeNo and Type = 10 and accmast.Accmast_Department = :area3)
-And (PDC = 'N')
-and Area = :area7) as tbl_tameer
-where Balance >= 1
-or Balance <= -1) as tbl_balance_total
-        group by tbl_balance_total.Area) as tbl_postponed, (select area, area_commission from tbl_area_commission where area = :area4) AS tbl_area_commission, (select tbl_income.area, sum(income+expenses) as 'net_profit' from (Select AreaMast.NodeNo as area, sum(AmountCr*ExchangeRate-AmountDr*ExchangeRate) as income From PurchaseData,AccMast,AreaMast Where (AreaMast.NodeNo = :area5   ) And AreaMast.NodeNo = Area And  DoNotUpdateAccounts=0 And  VoucherDate >= :start_date3 And VoucherDate <= :end_date_time4 And AccMast.NodeNo = AccountDr And ( AccMast.Type = 4 OR AccMast.Type = 2) group by AreaMast.NodeNo) as tbl_income, (Select AreaMast.NodeNo as area, sum(AmountCr*ExchangeRate-AmountDr*ExchangeRate) as expenses From PurchaseData,AccMast,AreaMast Where (AreaMast.NodeNo = :area6   ) And AreaMast.NodeNo = Area And  DoNotUpdateAccounts=0 And  VoucherDate >= :start_date4 And VoucherDate <= :end_date_time5 And AccMast.NodeNo = AccountDr And ( AccMast.Type = 5 OR AccMast.Type = 3) group by AreaMast.NodeNo) as tbl_expenses
-        where tbl_income.area = tbl_expenses.area
-        group by tbl_income.area) as tbl_net_profit
-        WHERE tbl_profit.area = tbl_inventory.area
-AND tbl_inventory.area = tbl_postponed.Area
-AND tbl_postponed.Area = tbl_area_commission.area
-AND tbl_area_commission.area = tbl_net_profit.area", ['area1' => $this->area_id, 'area2' => $this->area_id, 'area3' => $this->area_id, 'area4' => $this->area_id, 'area5' => $this->area_id, 'area6' => $this->area_id, 'area7' => $this->area_id, 'start_date1' => $this->first_date, 'start_date2' => $this->first_date, 'start_date3' => $this->first_date, 'start_date4' => $this->first_date, 'end_date_time1' => $this->last_date . " 23:59:23", 'end_date_time2' => $this->last_date . " 23:59:23", 'end_date_time3' => $this->last_date . " 23:59:23", 'end_date_time4' => $this->last_date . " 23:59:23", 'end_date_time5' => $this->last_date . " 23:59:23", 'end_date_time6' => $this->last_date . " 23:59:23", 'end_date_time7' => $this->last_date . " 23:59:23", 'end_date_time8' => $this->last_date . " 23:59:23", 'end_date_time9' => $this->last_date . " 23:59:23", /*'end_date_time10' => $this->last_date . " 23:59:23", 'end_date_time11' => $this->last_date . " 23:59:23", 'end_date_time12' => $this->last_date . " 23:59:23"*/]);
+    public function sapQuery($start_date, $end_date) {
 
-        $this->result = count((array)$result) > 0 ? (array)$result[0] : null;
+        $this->sap_results = [];
+        $this->sap_results2 = [];
+        $this->slp_aging = [];
+        $this->slp_code = [];
 
-        $tbl2_result = DB::connection('sqlsrv')->select("select distinct *, /* start of employee_postponed*/ (select SUM(DueAmount) as employee_postponed from (
-     select * from (
- Select distinct StudentMast.Code as EmpCode, WarrentyInfo.SalesEmployee, B.CustomerNo, B.Area,AccMast.Name As CustomerName,AccMast.Arabic_Name As CustomerArabicName,AccMast.Code As CustomerCode ,AccMast.Type as CustomerType, case when (select Sum(Total) from BillWise where  CustomerNo = B.CustomerNo and VoucherDate <=:end_date_time1 ) <> 0  then (select Sum(Total) from BillWise where  CustomerNo
-= B.CustomerNo and  VoucherDate <=:end_date_time2 ) else 0 end as DueAmount From BillWise B,accmast, WarrentyInfo, StudentMast Where StudentMast.NodeNo=WarrentyInfo.SalesEmployee and B.CustomerNo = AccMast.NodeNo and B.CustomerNo = WarrentyInfo.AccountNo and accmast.NodeNo in (select AccountNo from WarrentyInfo where AccountStatus in ('عملاء نشيطين لدى الفرع'  )) And  (AccMast.Type = 9 OR AccMast.Type = 10)
-And  (VoucherDate <=  :end_date_time3) And (B.Type = 'N')
-and CustomerNo in (SELECT distinct WarrentyInfo.AccountNo FROM WarrentyInfo, accmast where AccountStatus in ('عملاء نشيطين لدى الفرع'  ) and WarrentyInfo.AccountNo = accmast.NodeNo and accmast.Type = 10 and accmast.Accmast_Department = :area9)
-And (PDC = 'N')
-and Area = :area11) as tbl_tameer
-where DueAmount >= 1
-or DueAmount <= -1
-) as tbl1
-where (EmpCode != '' and EmpCode = tb1.Employeecode)
-group by EmpCode) as employee_postponed /* end of employee_postponed*/, /*start of employee_postponed_due */ (select SUM(DueAmount) as postponed_due from (select * from (
-select isnull((select top 1 StudentMast.Code from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpCode
-,accmast.code,accmast.Name,accmast.Arabic_Name,voucherno,voucherdate,Total,isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time7),0.00) as paid,
-total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time8),0.00) as DueAmount
-,:end_date_time9 as cutdate,Area
-from billwise ,accmast,areamast, WarrentyInfo
-where customerno=accmast.nodeno and areamast.nodeno=area
-and WarrentyInfo.AccountNo = accmast.NodeNo
-and WarrentyInfo.AccountStatus in ('عملاء نشيطين لدى الفرع'  )
-and billwise.[type]='N'
-and (total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time10),0.00) >=1
-or total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time11),0.00) <=-1)
-and accmast.[Type]=10
-and voucherdate <=:end_date_time72
-and (accmast.Code like '0%' or accmast.Code like '1%' or accmast.Code like '1-%')
-) as tbl
-where DATEDIFF(day, VoucherDate, :end_date_time73) > :days1
-) as tbl_old_vouchers
-where EmpCode = tb1.Employeecode) as employee_postponed_due /*end of employee_postponed_due */, /* start of oldest_voucher tbl*/(select top 1 VoucherDate as oldest_voucher from (
-select isnull((select top 1 StudentMast.Code from WarrentyInfo, StudentMast where StudentMast.NodeNo=WarrentyInfo.SalesEmployee  and AccountNo=accmast.NodeNo order by StudentMast.Code desc),'') as EmpCode
-,accmast.code,accmast.Name,accmast.Arabic_Name,voucherno,voucherdate,Total,isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time15),0.00) as paid,
-total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time16),0.00) as DueAmount
-,:end_date_time17 as cutdate,Area
-from billwise ,accmast,areamast, WarrentyInfo
-where customerno=accmast.nodeno and areamast.nodeno=area
-and WarrentyInfo.AccountNo = accmast.NodeNo
-and WarrentyInfo.AccountStatus in ('عملاء نشيطين لدى الفرع'  )
-and billwise.[type]='N'
-and (total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time18),0.00) >=1
-or total+
-isnull((select sum(b2.total)from billwise b2 where b2.Refrence=billwise.voucherno
-and b2.CustomerNo=billwise.CustomerNo and b2.VoucherDate<=:end_date_time19),0.00) <=-1)
-and accmast.[Type]=10
-and voucherdate <=:end_date_time74
-and (accmast.Code like '0%' or accmast.Code like '1%' or accmast.Code like '1-%')
-) as tbl
-where DATEDIFF(day, VoucherDate, :end_date_time75) > :days2
-and EmpCode = tb1.Employeecode
-order by EmpCode, VoucherDate asc) as oldest_voucher /* end of oldest_voucher tbl*/ from /* start of tb1*/ (SELECT Employeecode, EmployeeName, branchname, tbl_left_emp_commission.area, area_commission, area_profit, tot, employee_profit, percentage_area_employee, tbl_left_emp_commission.employee_commission, role, sales_manager, area_manager, store_manager, mat_dev_manager1, mat_dev_manager2, (tbl_left_emp_commission.employee_commission*(tbl_employees_position.sales_manager/100)) as calc_sales_manager, (tbl_left_emp_commission.employee_commission*(tbl_employees_position.area_manager/100)) as calc_area_manager, (tbl_left_emp_commission.employee_commission*(tbl_employees_position.store_manager/100)) as calc_store_manager, (tbl_left_emp_commission.employee_commission*(tbl_employees_position.mat_dev_manager1/100)) as calc_mat_dev1, (tbl_left_emp_commission.employee_commission*(tbl_employees_position.mat_dev_manager2/100)) as calc_mat_dev2 FROM (select Employeecode, EmployeeName, branchname, area, area_commission, area_profit, employee_profit, ((employee_profit/area_profit)*100) as percentage_area_employee, ((((employee_profit/area_profit)*100)*area_commission)/100) as employee_commission, tbl_cols0.tot from (SELECT * FROM (SELECT tbl_employee_profit.Employeecode, tbl_employee_profit.EmployeeName, tbl_employee_profit.branchname, tbl_employee_profit.area, tbl_employee_profit.tot, SUM(tbl_employee_profit.profit_sp0+tbl_employee_profit.profit_sp1+tbl_employee_profit.profit_sp2) AS employee_profit FROM (select Employeecode,Employeename,branchName, area, SPL0, sum(Spl0Value - Spl0cost) as profit_sp0, SPL1, sum(Spl1Value - Spl1cost) as profit_sp1, SPL2, sum(Spl2Value - Spl2cost) as profit_sp2, SUM(Spl0Value+Spl1Value+Spl2Value) as tot
-from (
-    SELECT * FROM (select distinct Employeecode,Employeename,branchName, area
-,0 as SPL0,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date27 and sIDate<=:end_date_time36
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date10 and pidate<=:end_date_time55
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date9 and sIDate<=:end_date_time56
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date28 and pidate<=:end_date_time57
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0cost
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
 
- ,1 as SPL1,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date11 and sIDate<=:end_date_time38
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date29 and pidate<=:end_date_time58
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date12 and sIDate<=:end_date_time39
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date30 and pidate<=:end_date_time59
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Cost
-  ,2 as SPL2,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date13 and sIDate<=:end_date_time40
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date31 and pidate<=:end_date_time60
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date14 and sIDate<=:end_date_time41
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date32 and pidate<=:end_date_time61
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Cost
-from (
-    select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, --productmast.Code,productmast.name,productmast.Arabic_Name,Deptmast.code as deptCode,deptmast.Name as deptName,
-areamast.Arabic_Name as branchname, areamast.nodeno as area,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
-   /* PinvoiceNo, SNo, SequenceNo, ProductNo, ActualQty, ExecutedQty, SIDate, Rate, Value, RefrenceNo, Executed, Department, Branch, Area, Salesman, DueDate, Pinvoice.CurrencySymbol, ExchangeRate, Pinvoice.SalesAccount,
-                         InternalSNo, InternalRefrenceNo, VoucherCode, FreeQty, PartyNo, ExtraFieldsTotal, PartyBalance, Units, ConversionQty, VField0, VField1, VField2, VField3, VField4, VField5, VField6, VField7, VField8, VField9,
-                         VField10, VField11, VField12, VField13, VField14, VField15, VField16, VField17, VField18, VField19, BillNo, DoNotUpdateStock, FieldPtr, ActualVoucherPrefix, CostCenter, Project, Car, Customer, Supplier, Student,
-                         AvgRate, TotalCost*/
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-and area=areamast.nodeno
-and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
-and sIDate>=:start_date1 and sIDate<=:end_date_time23
---and productmast.code='220005'
+        $driver = env('DB_CONNECTION_FOURTH');
 
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
- union all
- select --productmast.Code,productmast.name,productmast.Arabic_Name,Deptmast.code as deptCode,deptmast.Name as deptName,
-   studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname, areamast.nodeno as area,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
-   /*pInvoiceNo, SNo, SequenceNo, ProductNo, -ActualQty as actualqty, ExecutedQty, pIDate, Rate, -Value as value, RefrenceNo, Executed, Department, Branch, Area, Salesman, DueDate, pinvoice.CurrencySymbol, ExchangeRate, pinvoice.PurchaseAccount,
-                         InternalSNo, InternalRefrenceNo, VoucherCode, FreeQty, PartyNo, -ExtraFieldsTotal as ExtraFieldsTotal, -PartyBalance as PartyBalance, Units, ConversionQty, VField0, VField1, VField2, VField3, VField4, VField5, VField6, VField7, VField8, VField9,
-                         VField10, VField11, VField12, VField13, VField14, VField15, VField16, VField17, VField18, VField19, BillNo, DoNotUpdateStock, FieldPtr, ActualVoucherPrefix, CostCenter, Project, Car, Customer, Supplier, Student,
-                         AvgRate, TotalCost*/
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-and area=areamast.nodeno
-and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date2 and pidate<=:end_date_time24
-and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-) as salesEmployeebyspcialityandbranch) as t1, (select area as area_t2, emp_id from tbl_emp_position) as t2
-where t1.Employeecode = t2.emp_id
-and t1.area = t2.area_t2
-) as tbl1
-where area = :area1
-group by tbl1.Employeecode,tbl1.Employeename,tbl1.branchName, area, tbl1.SPL0, tbl1.SPL1, tbl1.SPL2) AS tbl_employee_profit
-GROUP BY tbl_employee_profit.Employeecode, tbl_employee_profit.EmployeeName, tbl_employee_profit.branchname, tbl_employee_profit.area, tbl_employee_profit.tot) as tbl_employee_profit, /* start of area commission */(SELECT ((tbl_net_profit.net_profit-inventory_total-total_postponed)*(tbl_area_commission.area_commission/100)) as 'area_commission' FROM (SELECT tbl_out.area, SUM(tbl_out.profit_sp0+tbl_out.profit_sp1+tbl_out.profit_sp2) as profit FROM (
-    select Employeecode,Employeename,branchName, area, SPL0, sum(Spl0Value - Spl0cost) as profit_sp0, SPL1, sum(Spl1Value - Spl1cost) as profit_sp1, SPL2, sum(Spl2Value - Spl2cost) as profit_sp2
-from (
-    select distinct Employeecode,Employeename,branchName, area
-,0 as SPL0,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date15 and sIDate<=:end_date_time42
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date33 and pidate<=:end_date_time62
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0Value
-,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date16 and sIDate<=:end_date_time43
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date34 and pidate<=:end_date_time63
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0cost
+// Host
+// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
+        $host = env('DB_HOST_FOURTH');
 
-,1 as SPL1,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date17 and sIDate<=:end_date_time44
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date35 and pidate<=:end_date_time64
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Value
-,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date18 and sIDate<=:end_date_time45
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date36 and pidate<=:end_date_time65
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Cost
-,2 as SPL2,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date19 and sIDate<=:end_date_time46
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date37 and pidate<=:end_date_time66
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Value
-,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date20 and sIDate<=:end_date_time47
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date38 and pidate<=:end_date_time67
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Cost
-from (
-    select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode,areamast.Arabic_Name as branchname, areamast.nodeno as area,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost from sinvoice ,productmast,areamasT,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-and area=areamast.nodeno
-and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
-and studentmast.nodeno>1
-and sIDate>=:start_date3 and sIDate<=:end_date_time25
-group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-union all
-select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,areamast.Arabic_Name as branchname, areamast.nodeno as area,-sum(value*exchangerate+extrafieldstotal) as Value,-sum(totalcost) as totalcost
-from pinvoice ,productmast,areamast
-,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-and area=areamast.nodeno
-and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
-and pidate>=:start_date4 and pidate<=:end_date_time26
-and studentmast.nodeno>1
-group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-) as salesEmployeebyspcialityandbranch
-) as tbl1
-group by tbl1.Employeecode,tbl1.Employeename,tbl1.branchName, area, tbl1.SPL0, tbl1.SPL1, tbl1.SPL2
-) AS tbl_out
-where area = :area2
-group by tbl_out.area) as tbl_profit, (SELECT tbl_out.area_out as area, tbl_out.Arabic_Name, (Cost_in+Cost_out)*(0.01) as inventory_total FROM (Select DefAccounts.Area as area_out ,AreaMast.Arabic_Name, 'Out' as [Type]  ,SUM(-TotalCost) as Cost_out  From DeptMast , Sinvoice,productmast, DefAccounts, AreaMast
-where Deptmast.NodeNo = DefAccounts.DeptNodeNo and AreaMast.NodeNo = DefAccounts.Area and productmast.nodeno=productno and DeptMast.NodeNo = Department  And DoNotUpdateStock = 0    And (SIDate >= '07/01/2011' And SIDate <= :end_date_time27  )  And
-ProductNo in (select NodeNo from ProductMast) And Department in (select NodeNo from DeptMast)
-group by DefAccounts.Area , AreaMast.Arabic_Name) as tbl_out, (Select DefAccounts.Area as area_in , AreaMast.Arabic_Name, 'In' as [Type], sum(TotalCost) as Cost_in  From DeptMast , Pinvoice  ,productmast, DefAccounts, AreaMast
-where Deptmast.NodeNo = DefAccounts.DeptNodeNo and AreaMast.NodeNo = DefAccounts.Area and productmast.Nodeno=productno and Deptmast.NodeNo = Department  And DoNotUpdateStock = 0   And (PIDate >= '07/01/2011' And PIDate <= :end_date_time28  )  And ProductNo in (select NodeNo from ProductMast) And Department in (select NodeNo from DeptMast)
-group by DefAccounts.Area , AreaMast.Arabic_Name
-) as tbl_in,(SELECT DeptNodeNo,Area FROM DefAccounts) as tbl_dept_area
-where tbl_in.area_in = tbl_out.area_out
-and tbl_out.area_out = tbl_dept_area.DeptNodeNo
-and area_out = :area3) as tbl_inventory, (select tbl_balance_total.Area, SUM(tbl_balance_total.Balance)*0.01 as total_postponed from (SELECT * FROM (Select distinct B.Area, B.CustomerNo,AccMast.Arabic_Name As CustomerArabicName,AccMast.Code As CustomerCode,
-(select Sum(Total) from BillWise where  CustomerNo = B.CustomerNo and VoucherDate <=:end_date_time29 ) as Balance
-From BillWise B,AccMast  Where B.CustomerNo = AccMast.NodeNo and NodeNo in (select AccountNo from WarrentyInfo where AccountStatus in ('عملاء نشيطين لدى الفرع'  ))
-And  (AccMast.Type = 9 OR AccMast.Type = 10)
-And (VoucherDate <=  :end_date_time31)
-And (B.Type = 'N')
-And Area = :area4
-and accmast.Type = 10
-and accmast.Accmast_Department = :area5
-and (Code like '0%' or Code like '1%')
-) as tbl_b
---WHERE tbl_b.Balance > 0.01
-WHERE tbl_b.Balance >= 1
-or tbl_b.Balance <= -1) as tbl_balance_total
-group by tbl_balance_total.Area) as tbl_postponed, (select area, area_commission from tbl_area_commission where area = :area6) AS tbl_area_commission, (select tbl_income.area, sum(income+expenses) as 'net_profit' from (Select AreaMast.NodeNo as area, sum(AmountCr*ExchangeRate-AmountDr*ExchangeRate) as income From PurchaseData,AccMast,AreaMast Where (AreaMast.NodeNo = :area7   ) And AreaMast.NodeNo = Area And  DoNotUpdateAccounts=0 And  VoucherDate >= :start_date5 And VoucherDate <= :end_date_time32 And AccMast.NodeNo = AccountDr And ( AccMast.Type = 4 OR AccMast.Type = 2) group by AreaMast.NodeNo) as tbl_income, (Select AreaMast.NodeNo as area, sum(AmountCr*ExchangeRate-AmountDr*ExchangeRate) as expenses From PurchaseData,AccMast,AreaMast Where (AreaMast.NodeNo = :area8   ) And AreaMast.NodeNo = Area And  DoNotUpdateAccounts=0 And  VoucherDate >= :start_date6 And VoucherDate <= :end_date_time33 And AccMast.NodeNo = AccountDr And ( AccMast.Type = 5 OR AccMast.Type = 3) group by AreaMast.NodeNo) as tbl_expenses
-where tbl_income.area = tbl_expenses.area
-group by tbl_income.area) as tbl_net_profit
-WHERE tbl_profit.area = tbl_inventory.area
-AND tbl_inventory.area = tbl_postponed.Area
-AND tbl_postponed.Area = tbl_area_commission.area
-AND tbl_area_commission.area = tbl_net_profit.area) /*end of area commission */ as tbl_area_commission) as tbl_cols0, (SELECT SUM(tbl_area_profit.employee_profit) as area_profit FROM (SELECT tbl_employee_profit.Employeecode, tbl_employee_profit.EmployeeName, tbl_employee_profit.branchname, tbl_employee_profit.area, SUM(tbl_employee_profit.profit_sp0+tbl_employee_profit.profit_sp1+tbl_employee_profit.profit_sp2) AS employee_profit FROM (select Employeecode,Employeename,branchName, area, SPL0, sum(Spl0Value - Spl0cost) as profit_sp0, SPL1, sum(Spl1Value - Spl1cost) as profit_sp1, SPL2, sum(Spl2Value - Spl2cost) as profit_sp2
-from (
-    SELECT * FROM (select distinct Employeecode,Employeename,branchName, area
-,0 as SPL0,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date21 and sIDate<=:end_date_time48
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date39 and pidate<=:end_date_time68
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date22 and sIDate<=:end_date_time49
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date40 and pidate<=:end_date_time69
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch.Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='0'),0) as Spl0cost
+// Default name of your hana instance
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
 
- ,1 as SPL1,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date23 and sIDate<=:end_date_time50
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date41 and pidate<=:end_date_time70
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date24 and sIDate<=:end_date_time51
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date42 and pidate<=:end_date_time71
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='1'),0) as Spl1Cost
-  ,2 as SPL2,isnull((select sum(s0.value) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date25 and sIDate<=:end_date_time52
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date43 and pidate<=:end_date_time37
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Value
- ,isnull((select sum(s0.totalcost) from (select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, areamast.Arabic_Name as branchname,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-  and area=areamast.nodeno
- and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
- and sIDate>=:start_date26 and sIDate<=:end_date_time53
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name
- union all
- select studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-  and area=areamast.nodeno
- and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date44 and pidate<=:end_date_time54
-  and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as s0 where s0.Employeecode=salesEmployeebyspcialityandbranch. Employeecode
-and s0.branchname=salesEmployeebyspcialityandbranch.branchname
-and s0.SpecialityCode='2'),0) as Spl2Cost
-from (
-    select studentmast.code as Employeecode,studentmast.arabic_name as EmployeeName
-,SpecialityCode, --productmast.Code,productmast.name,productmast.Arabic_Name,Deptmast.code as deptCode,deptmast.Name as deptName,
-areamast.Arabic_Name as branchname, areamast.nodeno as area,
-sum(value*exchangerate+extrafieldstotal) as Value
-,sum(totalcost) as totalcost
-   /* PinvoiceNo, SNo, SequenceNo, ProductNo, ActualQty, ExecutedQty, SIDate, Rate, Value, RefrenceNo, Executed, Department, Branch, Area, Salesman, DueDate, Pinvoice.CurrencySymbol, ExchangeRate, Pinvoice.SalesAccount,
-                         InternalSNo, InternalRefrenceNo, VoucherCode, FreeQty, PartyNo, ExtraFieldsTotal, PartyBalance, Units, ConversionQty, VField0, VField1, VField2, VField3, VField4, VField5, VField6, VField7, VField8, VField9,
-                         VField10, VField11, VField12, VField13, VField14, VField15, VField16, VField17, VField18, VField19, BillNo, DoNotUpdateStock, FieldPtr, ActualVoucherPrefix, CostCenter, Project, Car, Customer, Supplier, Student,
-                         AvgRate, TotalCost*/
- from sinvoice ,productmast,areamasT
- ,studentmast where studentmast.NODENO=student AND productno=productmast.nodeno
-and area=areamast.nodeno
-and (sinvoiceno like '210-%' or sinvoiceno like '213-%')
- and studentmast.nodeno>1
-and sIDate>=:start_date7 and sIDate<=:end_date_time34
---and productmast.code='220005'
+// Try to connect
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
 
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
- union all
- select --productmast.Code,productmast.name,productmast.Arabic_Name,Deptmast.code as deptCode,deptmast.Name as deptName,
-   studentmast.code as Employeecode, studentmast.Arabic_Name as Employeename ,SpecialityCode,
-      areamast.Arabic_Name as branchname, areamast.nodeno as area,
--sum(value*exchangerate+extrafieldstotal) as Value
-  ,-sum(totalcost) as totalcost
-   /*pInvoiceNo, SNo, SequenceNo, ProductNo, -ActualQty as actualqty, ExecutedQty, pIDate, Rate, -Value as value, RefrenceNo, Executed, Department, Branch, Area, Salesman, DueDate, pinvoice.CurrencySymbol, ExchangeRate, pinvoice.PurchaseAccount,
-                         InternalSNo, InternalRefrenceNo, VoucherCode, FreeQty, PartyNo, -ExtraFieldsTotal as ExtraFieldsTotal, -PartyBalance as PartyBalance, Units, ConversionQty, VField0, VField1, VField2, VField3, VField4, VField5, VField6, VField7, VField8, VField9,
-                         VField10, VField11, VField12, VField13, VField14, VField15, VField16, VField17, VField18, VField19, BillNo, DoNotUpdateStock, FieldPtr, ActualVoucherPrefix, CostCenter, Project, Car, Customer, Supplier, Student,
-                         AvgRate, TotalCost*/
- from pinvoice ,productmast,areamast
- ,studentmast where studentmast.nodeno=student and productno=productmast.nodeno
-and area=areamast.nodeno
-and (pinvoiceno like '211-%' or pinvoiceno like '212-%')
- and pidate>=:start_date8 and pidate<=:end_date_time35
-and studentmast.nodeno>1
- group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name, areamast.nodeno
-) as salesEmployeebyspcialityandbranch) as t1, (select area as area_t2, emp_id from tbl_emp_position) as t2
-where t1.Employeecode = t2.emp_id
-and t1.area = t2.area_t2
-) as tbl1
-where area = :area10
-group by tbl1.Employeecode,tbl1.Employeename,tbl1.branchName, area, tbl1.SPL0, tbl1.SPL1, tbl1.SPL2) AS tbl_employee_profit
-GROUP BY tbl_employee_profit.Employeecode, tbl_employee_profit.EmployeeName, tbl_employee_profit.branchname, tbl_employee_profit.area) as tbl_area_profit) as tbl_area_profit) as tbl_left_emp_commission, (select tbl_emp_position.area, tbl_emp_position.emp_id, tbl_emp_position.role, tbl_position_commission.sales_manager, tbl_position_commission.area_manager, tbl_position_commission.store_manager, tbl_position_commission.mat_dev_manager1, tbl_position_commission.mat_dev_manager2  from tbl_emp_position, tbl_area_commission, tbl_position_commission
-where tbl_emp_position.area = tbl_area_commission.area
-and tbl_emp_position.role = tbl_position_commission.role) as tbl_employees_position
-where tbl_left_emp_commission.area = tbl_employees_position.area
-and tbl_left_emp_commission.Employeecode = tbl_employees_position.emp_id) as tb1/* end of tb1*/ /*start of tb2*/",
-            [/*'area1' => $this->area_id,*/
-                'days1' => $days,
-                'days2' => $days,
-                'area1' => $this->area_id,
-                'area2' => $this->area_id,
-                'area3' => $this->area_id,
-                'area4' => $this->area_id,
-                'area5' => $this->area_id,
-                'area6' => $this->area_id,
-                'area7' => $this->area_id,
-                'area8' => $this->area_id,
-                'area9' => $this->area_id,
-                'area10' => $this->area_id,
-                'area11' => $this->area_id,
-//                'area12' => $this->area_id,
-//                'area13' => $this->area_id,
-//                'area14' => $this->area_id,
-//                'area15' => $this->area_id,
-                'start_date1' => $this->first_date,
-                'start_date2' => $this->first_date,
-                'start_date3' => $this->first_date,
-                'start_date4' => $this->first_date,
-                'start_date5' => $this->first_date,
-                'start_date6' => $this->first_date,
-                'start_date7' => $this->first_date,
-                'start_date8' => $this->first_date,
-                'start_date9' => $this->first_date,
-                'start_date10' => $this->first_date,
-                'start_date11' => $this->first_date,
-                'start_date12' => $this->first_date,
-                'start_date13' => $this->first_date,
-                'start_date14' => $this->first_date,
-                'start_date15' => $this->first_date,
-                'start_date16' => $this->first_date,
-                'start_date17' => $this->first_date,
-                'start_date18' => $this->first_date,
-                'start_date19' => $this->first_date,
-                'start_date20' => $this->first_date,
-                'start_date21' => $this->first_date,
-                'start_date22' => $this->first_date,
-                'start_date23' => $this->first_date,
-                'start_date24' => $this->first_date,
-                'start_date25' => $this->first_date,
-                'start_date26' => $this->first_date,
-                'start_date27' => $this->first_date,
-                'start_date28' => $this->first_date,
-                'start_date29' => $this->first_date,
-                'start_date30' => $this->first_date,
-                'start_date31' => $this->first_date,
-                'start_date32' => $this->first_date,
-                'start_date33' => $this->first_date,
-                'start_date34' => $this->first_date,
-                'start_date35' => $this->first_date,
-                'start_date36' => $this->first_date,
-                'start_date37' => $this->first_date,
-                'start_date38' => $this->first_date,
-                'start_date39' => $this->first_date,
-                'start_date40' => $this->first_date,
-                'start_date41' => $this->first_date,
-                'start_date42' => $this->first_date,
-                'start_date43' => $this->first_date,
-                'start_date44' => $this->first_date,
-                'end_date_time1' => $this->last_date . " 23:59:23",
-                'end_date_time2' => $this->last_date . " 23:59:23",
-                'end_date_time3' => $this->last_date . " 23:59:23",
-//                'end_date_time4' => $this->last_date . " 23:59:23",
-//                'end_date_time5' => $this->last_date . " 23:59:23",
-//                'end_date_time6' => $this->last_date . " 23:59:23",
-                'end_date_time7' => $this->last_date . " 23:59:23",
-                'end_date_time8' => $this->last_date . " 23:59:23",
-                'end_date_time9' => $this->last_date . " 23:59:23",
-                'end_date_time10' => $this->last_date . " 23:59:23",
-                'end_date_time11' => $this->last_date . " 23:59:23",
-//                'end_date_time12' => $this->last_date . " 23:59:23",
-//                'end_date_time13' => $this->last_date . " 23:59:23",
-//                'end_date_time14' => $this->last_date . " 23:59:23",
-                'end_date_time15' => $this->last_date . " 23:59:23",
-                'end_date_time16' => $this->last_date . " 23:59:23",
-                'end_date_time17' => $this->last_date . " 23:59:23",
-                'end_date_time18' => $this->last_date . " 23:59:23",
-                'end_date_time19' => $this->last_date . " 23:59:23",
-//                'end_date_time20' => $this->last_date . " 23:59:23",
-//                'end_date_time21' => $this->last_date . " 23:59:23",
-//                'end_date_time22' => $this->last_date . " 23:59:23",
-                'end_date_time23' => $this->last_date . " 23:59:23",
-                'end_date_time24' => $this->last_date . " 23:59:23",
-                'end_date_time25' => $this->last_date . " 23:59:23",
-                'end_date_time26' => $this->last_date . " 23:59:23",
-                'end_date_time27' => $this->last_date . " 23:59:23",
-                'end_date_time28' => $this->last_date . " 23:59:23",
-                'end_date_time29' => $this->last_date . " 23:59:23",
-//            'end_date_time30' => $this->last_date . " 23:59:23",
-                'end_date_time31' => $this->last_date . " 23:59:23",
-                'end_date_time32' => $this->last_date . " 23:59:23",
-                'end_date_time33' => $this->last_date . " 23:59:23",
-                'end_date_time34' => $this->last_date . " 23:59:23",
-                'end_date_time35' => $this->last_date . " 23:59:23",
-                'end_date_time36' => $this->last_date . " 23:59:23",
-                'end_date_time37' => $this->last_date . " 23:59:23",
-                'end_date_time38' => $this->last_date . " 23:59:23",
-                'end_date_time39' => $this->last_date . " 23:59:23",
-                'end_date_time40' => $this->last_date . " 23:59:23",
-                'end_date_time41' => $this->last_date . " 23:59:23",
-                'end_date_time42' => $this->last_date . " 23:59:23",
-                'end_date_time43' => $this->last_date . " 23:59:23",
-                'end_date_time44' => $this->last_date . " 23:59:23",
-                'end_date_time45' => $this->last_date . " 23:59:23",
-                'end_date_time46' => $this->last_date . " 23:59:23",
-                'end_date_time47' => $this->last_date . " 23:59:23",
-                'end_date_time48' => $this->last_date . " 23:59:23",
-                'end_date_time49' => $this->last_date . " 23:59:23",
-                'end_date_time50' => $this->last_date . " 23:59:23",
-                'end_date_time51' => $this->last_date . " 23:59:23",
-                'end_date_time52' => $this->last_date . " 23:59:23",
-                'end_date_time53' => $this->last_date . " 23:59:23",
-                'end_date_time54' => $this->last_date . " 23:59:23",
-                'end_date_time55' => $this->last_date . " 23:59:23",
-                'end_date_time56' => $this->last_date . " 23:59:23",
-                'end_date_time57' => $this->last_date . " 23:59:23",
-                'end_date_time58' => $this->last_date . " 23:59:23",
-                'end_date_time59' => $this->last_date . " 23:59:23",
-                'end_date_time60' => $this->last_date . " 23:59:23",
-                'end_date_time61' => $this->last_date . " 23:59:23",
-                'end_date_time62' => $this->last_date . " 23:59:23",
-                'end_date_time63' => $this->last_date . " 23:59:23",
-                'end_date_time64' => $this->last_date . " 23:59:23",
-                'end_date_time65' => $this->last_date . " 23:59:23",
-                'end_date_time66' => $this->last_date . " 23:59:23",
-                'end_date_time67' => $this->last_date . " 23:59:23",
-                'end_date_time68' => $this->last_date . " 23:59:23",
-                'end_date_time69' => $this->last_date . " 23:59:23",
-                'end_date_time70' => $this->last_date . " 23:59:23",
-                'end_date_time71' => $this->last_date . " 23:59:23",
-                'end_date_time72' => $this->last_date . " 23:59:23",
-                'end_date_time73' => $this->last_date . " 23:59:23",
-                'end_date_time74' => $this->last_date . " 23:59:23",
-                'end_date_time75' => $this->last_date . " 23:59:23",]);
+        if (!$conn)
+        {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+
+        }
+        else
+        {
+
+            /*
+            $sql = 'SELECT * FROM (
+SELECT T3."CardCode", T0."TransId", T0."RefDate", T1."LineMemo", T1."Debit", T1."Credit",
+       SUM(T1."Debit" - T1."Credit") OVER (PARTITION BY T1."Account" ORDER BY T0."RefDate", T0."TransId") AS "CumulativeBalance"
+FROM AL_YASEEN_AGRI_PLIVE.OJDT T0
+INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
+WHERE T0."RefDate" >= \'20230101\'
+AND T3."CardCode" = \''.$this->customer_id.'\'
+ORDER BY T0."TaxDate", T0."TransId") as "tbl1"
+WHERE ("RefDate" >= \''.$start_date.'\' AND "RefDate" <= \''.$end_date.'\')';
+
+            */
+
+            $sql = '
+Select * from (
+SELECT "BPLId",
+ "BPLName",
+SUM("total") as "Outstanding_Receivable", SUM("total_120") as "Outstanding_Receivable_120" FROM (
+SELECT
+
+\'Receivables\',
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+0,0,0,0,0,0,0,0,
+SUM(T0."Debit"-T0."Credit") as "total",
+SUM(
+CASE WHEN DAYS_BETWEEN(T0."DueDate",\''.$end_date.'\') >= 120 THEN (
+(CASE WHEN T0."DebCred" = \'D\' THEN (T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)
+WHEN T0."DebCred" = \'C\' THEN -((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)) END)) ELSE 0 END) as "total_120"
+,0,0,0,0,0,0
+
+FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
+JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."ShortName" = T2."CardCode" AND T2."CardType" = \'C\'
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+LEFT JOIN (SELECT SUM("ReconSum") AS "ReconSum",SUM("ReconSumSC") AS "ReconSumSC",SUM("ReconSumFC") AS "ReconSumFC","TransRowId","TransId" FROM AL_YASEEN_AGRI_PLIVE.ITR1 T0 JOIN AL_YASEEN_AGRI_PLIVE.OITR T1 ON T0."ReconNum" = T1."ReconNum" AND T1."ReconDate" <= \''.$end_date.'\'
+GROUP BY "TransRowId","TransId") T4 ON T0."TransId" = T4."TransId" AND T0."Line_ID" = T4."TransRowId"
+
+WHERE T1."RefDate" <= \''.$end_date.'\'
+AND T3."BPLId" = '.$this->area_id.'
+
+GROUP BY
+
+T3."BPLId",
+T0."DebCred",
+T3."BPLName",
+T3."GlblLocNum"
+)
+GROUP BY "BPLId",
+ "BPLName") outstanding_tbl
+
+ LEFT JOIN (
+ SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", SUM("GrossProfitLC") AS "GrossProfitLC" FROM (
+SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", "DocumentDate", "GrossProfitLC"
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "WarehouseBranchCode" = '.$this->area_id.'
+AND "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\')
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
+ ) gross_tbl ON gross_tbl."BranchCode" = outstanding_tbl."BPLId"
+ LEFT JOIN (
+
+SELECT T1."BPLId", T0."Warehouse", Sum(T0."TransValue") "TransVal",
+Sum(T0."CogsVal") "COGS" from AL_YASEEN_AGRI_PLIVE.oinm T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OBPL T1 ON T0."Warehouse" = T1."DflWhs"
+WHERE T0."DocDate" <= \''.$end_date.'\'
+AND T1."BPLId" = '.$this->area_id.'
+Group By T1."BPLId", T0."Warehouse"
+ ) stock_tbl ON stock_tbl."BPLId" = outstanding_tbl."BPLId"';
+
+//            $sql2 = '
+//SELECT *, (SELECT "Memo" FROM AL_YASEEN_AGRI_PLIVE.OSLP WHERE "SlpCode" = "SalesEmployeeOrBuyerNumber") as "OldCode" FROM (
+//SELECT
+//	"BPLId",
+//    "SlpCode",
+//	MAX(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Invoice Date" END) AS "Oldest_Invoice",
+//    SUM(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Outstanding Amount" END) AS "Outstanding_Amount_120",
+//	SUM("Outstanding Amount") AS "Total_Outstanding_Amount"
+//
+//FROM (
+//SELECT
+//	T1."BPLId",
+//    T0."CardCode" AS "Customer Code",
+//    T0."CardName" AS "Customer Name",
+//    T0."SlpCode",
+//    T1."DocDate" AS "Invoice Date",
+//    T1."DocDueDate" AS "Due Date",
+//    T1."DocTotal" - T1."PaidToDate" AS "Outstanding Amount",
+//    CASE
+//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') <= 30 THEN \'0-30 Days\'
+//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 31 AND 60 THEN \'31-60 Days\'
+//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 61 AND 90 THEN \'61-90 Days\'
+//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 91 AND 120 THEN \'91-120 Days\'
+//        ELSE \'121+ Days\'
+//    END AS "Aging Period"
+//FROM
+//    AL_YASEEN_AGRI_PLIVE.OCRD T0
+//    INNER JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."CardCode" = T1."CardCode"
+//WHERE
+//    T1."DocStatus" = \'O\'
+//    AND T0."CardType" = \'C\'
+//    AND T0."frozenFor" = \'N\'
+//)
+//--WHERE "Aging Period" = \'121+ Days\'
+//GROUP BY
+//	"BPLId",
+//    "SlpCode"
+//    --"Aging Period"
+//) tbl1
+//FULL OUTER JOIN (
+//Select "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
+//FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+//WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+//GROUP BY
+//"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+//) tabl2 ON tbl1."SlpCode" = tabl2."SalesEmployeeOrBuyerNumber"
+//
+//--outstanding amount per employee
+//LEFT JOIN (
+//
+//SELECT "SlpCode1" AS "SlpCode", "full_outstanding", "Outstanding_4_Months", "full_outstanding" - "Outstanding_4_Months" AS "outstanding_overdue" FROM (
+//SELECT * FROM (
+//
+//	select "SlpCode" as "SlpCode1",IFNULL(sum("Balance"), 0) AS "full_outstanding" from (
+//
+//	SELECT
+//		T0."SlpCode",
+//	    T0."CardCode" AS "Customer Code",
+//	    T0."CardName" AS "Customer Name",
+//	    SUM(T1."Debit" - T1."Credit") AS "Balance"
+//	FROM
+//	    AL_YASEEN_AGRI_PLIVE.OCRD T0
+//	INNER JOIN
+//	    AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."CardCode" = T1."ShortName"
+//	WHERE
+//	    T1."RefDate" <= \''.$end_date.'\'
+//	GROUP BY
+//	    T0."SlpCode",T0."CardCode", T0."CardName"
+//	ORDER BY
+//	    T0."CardCode"
+//
+//	)
+//	GROUP BY "SlpCode"
+//) tbl1
+//
+//LEFT JOIN (
+//
+//    SELECT "SlpCode" AS "SlpCode2", IFNULL(SUM("total"), 0) AS "Outstanding_4_Months" FROM (
+//	SELECT "BusinessPartnerCode", "BusinessPartnerName", SUM(CASE WHEN "PostingDate" >= ADD_DAYS(\''.$end_date.'\', -120) AND "PostingDate" <= \''.$end_date.'\' THEN "AgingBalanceDueLC" END) AS "total" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+//	WHERE "PostingDate" <= \''.$end_date.'\'
+//	GROUP BY "BusinessPartnerCode", "BusinessPartnerName") tbl1
+//
+//	LEFT JOIN (SELECT "CardCode", "CardName", "SlpCode" FROM AL_YASEEN_AGRI_PLIVE."OCRD") tbl2
+//	ON tbl1."BusinessPartnerCode" = tbl2."CardCode"
+//	GROUP BY "SlpCode"
+//) tbl2
+//    ON tbl1."SlpCode1" = tbl2."SlpCode2"
+//    ) as "due_tbl"
+//
+//
+//) tbl3
+//ON tbl1."SlpCode" = tbl3."SlpCode"
+//-- end of outstanding per employee
+//
+//-- start of oldest inv
+//LEFT JOIN (
+//SELECT "SalesEmployeeOrBuyerNumber" AS "SlpCode", MIN("PostingDate") AS "oldest_inv"
+//    FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+//WHERE "PostingDate" <= \''.$end_date.'\'
+//AND "DocumentTypeCode" = 13 -- A/R Invoice
+//GROUP BY "SalesEmployeeOrBuyerNumber"
+//) tbl4
+//ON tbl1."SlpCode" = tbl4."SlpCode"
+//-- end of oldest inv
+//
+//WHERE "BranchCode" = '.$this->area_id.'
+//';
+
+            $sql2 = '
+SELECT *, (SELECT "Memo" FROM AL_YASEEN_AGRI_PLIVE.OSLP WHERE "SlpCode" = "SalesEmployeeOrBuyerNumber") as "OldCode" FROM (
+SELECT
+	"BPLId",
+    "SlpCode",
+	MAX(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Invoice Date" END) AS "Oldest_Invoice",
+    SUM(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Outstanding Amount" END) AS "Outstanding_Amount_120",
+	SUM("Outstanding Amount") AS "Total_Outstanding_Amount"
+
+FROM (
+SELECT
+	T1."BPLId",
+    T0."CardCode" AS "Customer Code",
+    T0."CardName" AS "Customer Name",
+    T0."SlpCode",
+    T1."DocDate" AS "Invoice Date",
+    T1."DocDueDate" AS "Due Date",
+    T1."DocTotal" - T1."PaidToDate" AS "Outstanding Amount",
+    CASE
+        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') <= 30 THEN \'0-30 Days\'
+        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 31 AND 60 THEN \'31-60 Days\'
+        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 61 AND 90 THEN \'61-90 Days\'
+        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 91 AND 120 THEN \'91-120 Days\'
+        ELSE \'121+ Days\'
+    END AS "Aging Period"
+FROM
+    AL_YASEEN_AGRI_PLIVE.OCRD T0
+    INNER JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."CardCode" = T1."CardCode"
+WHERE
+    T1."DocStatus" = \'O\'
+    AND T0."CardType" = \'C\'
+    AND T0."frozenFor" = \'N\'
+)
+--WHERE "Aging Period" = \'121+ Days\'
+GROUP BY
+	"BPLId",
+    "SlpCode"
+    --"Aging Period"
+) tbl1
+FULL OUTER JOIN (
+Select "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+GROUP BY
+"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) tabl2 ON tbl1."SlpCode" = tabl2."SalesEmployeeOrBuyerNumber"
+
+--outstanding amount per employee
+LEFT JOIN (
+
+SELECT "SlpCode1" AS "SlpCode", "full_outstanding", "Outstanding_4_Months", "full_outstanding" - "Outstanding_4_Months" AS "outstanding_overdue" FROM (
+SELECT * FROM (
+
+	select "SlpCode" as "SlpCode1",IFNULL(sum("Balance"), 0) AS "full_outstanding" from (
+
+	SELECT
+		T0."SlpCode",
+	    T0."CardCode" AS "Customer Code",
+	    T0."CardName" AS "Customer Name",
+	    SUM(T1."Debit" - T1."Credit") AS "Balance"
+	FROM
+	    AL_YASEEN_AGRI_PLIVE.OCRD T0
+	INNER JOIN
+	    AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."CardCode" = T1."ShortName"
+	WHERE
+	    T1."RefDate" <= \''.$end_date.'\'
+	GROUP BY
+	    T0."SlpCode",T0."CardCode", T0."CardName"
+	ORDER BY
+	    T0."CardCode"
+
+	)
+	GROUP BY "SlpCode"
+) tbl1
+
+LEFT JOIN (
+
+    SELECT "SlpCode" AS "SlpCode2", IFNULL(SUM("total"), 0) AS "Outstanding_4_Months" FROM (
+	SELECT "BusinessPartnerCode", "BusinessPartnerName", SUM(CASE WHEN "PostingDate" >= ADD_DAYS(\''.$end_date.'\', -120) AND "PostingDate" <= \''.$end_date.'\' THEN "AgingBalanceDueLC" END) AS "total" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+	WHERE "PostingDate" <= \''.$end_date.'\'
+	GROUP BY "BusinessPartnerCode", "BusinessPartnerName") tbl1
+
+	LEFT JOIN (SELECT "CardCode", "CardName", "SlpCode" FROM AL_YASEEN_AGRI_PLIVE."OCRD") tbl2
+	ON tbl1."BusinessPartnerCode" = tbl2."CardCode"
+	GROUP BY "SlpCode"
+) tbl2
+    ON tbl1."SlpCode1" = tbl2."SlpCode2"
+    ) as "due_tbl"
 
 
-        $this->result_tbl2 = json_decode(json_encode($tbl2_result), true);
+) tbl3
+ON tbl1."SlpCode" = tbl3."SlpCode"
+-- end of outstanding per employee
+
+--- Balance Due -------
+LEFT JOIN (
+SELECT "SlpCode", SUM("CumulativeBalance") AS "Full_Outstanding22" FROM (
+SELECT T0."CardCode", T1."Name",T0."SlpCode", T1."CumulativeBalance" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
+LEFT JOIN (
+SELECT "Name", "CumulativeBalance" FROM (
+
+WITH CumulativeBalances AS (
+    SELECT
+        T0."RefDate",
+        T0."TransId",
+        T0."BaseRef",
+        T1."FormatCode",
+        T0."LineMemo",
+        T0."ShortName" AS "Name",
+        T0."Debit",
+        T0."Credit",
+        T0."Ref1",
+        T0."Ref2",
+        T0."Ref3Line",
+        T0."DueDate",
+        T0."TaxDate",
+        SUM(T0."Debit" - T0."Credit") OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
+        ROW_NUMBER() OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" DESC) AS rn
+    FROM
+        AL_YASEEN_AGRI_PLIVE."JDT1" T0
+    INNER JOIN
+        AL_YASEEN_AGRI_PLIVE."OACT" T1 ON T0."Account" = T1."AcctCode"
+    INNER JOIN
+        AL_YASEEN_AGRI_PLIVE."OJDT" T2 ON T0."TransId" = T2."TransId"
+    WHERE
+        T2."RefDate" <= \''.$end_date.'\'
+)
+SELECT
+    "RefDate",
+    "TransId",
+    "BaseRef",
+    "FormatCode",
+    "LineMemo",
+    "Name",
+    "Debit",
+    "Credit",
+    "Ref1",
+    "Ref2",
+    "Ref3Line",
+    "DueDate",
+    "TaxDate",
+    "CumulativeBalance"
+FROM
+    CumulativeBalances
+WHERE
+    rn = 1
+ORDER BY
+    "Name"
+
+    )
+) T1
+ON T0."CardCode" = T1."Name"
+WHERE T0."CardType" = \'C\'
+)
+GROUP BY "SlpCode"
+
+) tbl4
+ON tbl1."SlpCode" = tbl4."SlpCode"
+
+-- End of Balance Due -----
+
+WHERE "BranchCode" = '.$this->area_id.'
+';
+
+//            dd($sql2);
+
+
+
+
+            $result = odbc_exec($conn, $sql);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+                // echo odbc_num_rows($result);
+                // var_dump(odbc_fetch_row($result));
+//                $aa = odbc_result_all($result, "border=1");
+//                $x = odbc_fetch_object($result);
+//                $this->sap_results
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->sap_results, $row);
+                }
+
+//                dd($this->sap_results);
+
+                // var_dump($result);
+                // while ($row = odbc_fetch_object($result))
+                // {
+                //     // Should output one row containing the string 'X'
+                //     var_dump($row['CardNameXX']);
+                // }
+            }
+
+
+            $result2 = odbc_exec($conn, $sql2);
+            if (!$result2)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+                // echo odbc_num_rows($result);
+                // var_dump(odbc_fetch_row($result));
+//                $aa = odbc_result_all($result, "border=1");
+//                $x = odbc_fetch_object($result);
+//                $this->sap_results
+                while ($row = odbc_fetch_array($result2)) {
+                    array_push($this->sap_results2, $row);
+                    array_push($this->slp_code, $row["SlpCode"]);
+                }
+
+//                dd($this->sap_results2);
+                $gross_collect = collect($this->sap_results2);
+                $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');
+
+//                $this->getCustomers('293', $end_date);
+                foreach ($this->slp_code as $slp) {
+                    $ag = $this->getCustomers($slp, $end_date);
+                    array_push($this->slp_aging, [$slp => ['balance' => $ag[0], 'balance due' => $ag[1], 'oldest_date' => $ag[2], 'cust_code' => $ag[3]]]);
+                }
+
+                $this->branch_balance = 0;
+
+//                dd($this->slp_aging);
+
+                $flattenedArray = [];
+                foreach ($this->slp_aging as $item) {
+                    foreach ($item as $key => $value) {
+                        $flattenedArray[$key] = $value;
+//                        $this->branch_balance += $value["balance"];
+                    }
+                }
+
+
+
+
+                $this->slp_aging = $flattenedArray;
+//                dd($this->slp_aging);
+                $this->branch_balance = collect($this->slp_aging)->sum('balance');
+
+//                dd(collect($this->slp_aging)->sum('balance'));
+
+
+//                dd($flattenedArray);
+////                $this->user_ids = $empty;
+//                dd(array_values($this->slp_aging));
+//                dd($this->slp_aging[292]);
+//                dd($this->slp_aging);
+
+
+                // var_dump($result);
+                // while ($row = odbc_fetch_object($result))
+                // {
+                //     // Should output one row containing the string 'X'
+                //     var_dump($row['CardNameXX']);
+                // }
+            }
+
+            odbc_close($conn);
+        }
+    }
+
+    public function getCustomers($slpCode, $end_date) {
+
+//        $slpCode = '293';
+
+        $this->customer = [];
+        $this->customer_code = [];
+        $this->customer_balance = [];
+        $aging_balance = 0;
+        $customer_balance = 0;
+        $full_customer_balance = 0;
+        $oldest_inv = Carbon::now()->format('Y-m-d');
+        $c_code = '';
+
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+
+// Host
+// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
+        $host = env('DB_HOST_FOURTH');
+
+// Default name of your hana instance
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+// Try to connect
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn)
+        {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+
+        }
+        else
+        {
+
+//            $sql = 'SELECT T0."CardCode", T1."CumulativeBalance" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
+//--WHERE T0."CardType" = \'C\'
+//LEFT JOIN (
+//SELECT "Name", "CumulativeBalance" FROM (
+//
+//WITH CumulativeBalances AS (
+//    SELECT
+//        T0."RefDate",
+//        T0."TransId",
+//        T0."BaseRef",
+//        T1."FormatCode",
+//        T0."LineMemo",
+//        T0."ShortName" AS "Name",
+//        T0."Debit",
+//        T0."Credit",
+//        T0."Ref1",
+//        T0."Ref2",
+//        T0."Ref3Line",
+//        T0."DueDate",
+//        T0."TaxDate",
+//        SUM(T0."Debit" - T0."Credit") OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
+//        ROW_NUMBER() OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" DESC) AS rn
+//    FROM
+//        AL_YASEEN_AGRI_PLIVE."JDT1" T0
+//    INNER JOIN
+//        AL_YASEEN_AGRI_PLIVE."OACT" T1 ON T0."Account" = T1."AcctCode"
+//    INNER JOIN
+//        AL_YASEEN_AGRI_PLIVE."OJDT" T2 ON T0."TransId" = T2."TransId"
+//    WHERE
+//        T2."RefDate" <= \''.$end_date.'\'
+//)
+//SELECT
+//    "RefDate",
+//    "TransId",
+//    "BaseRef",
+//    "FormatCode",
+//    "LineMemo",
+//    "Name",
+//    "Debit",
+//    "Credit",
+//    "Ref1",
+//    "Ref2",
+//    "Ref3Line",
+//    "DueDate",
+//    "TaxDate",
+//    "CumulativeBalance"
+//FROM
+//    CumulativeBalances
+//WHERE
+//    rn = 1
+//ORDER BY
+//    "Name"
+//
+//    )
+//) T1
+//ON T0."CardCode" = T1."Name"
+//WHERE T0."CardType" = \'C\'
+//AND T1."CumulativeBalance" IS NOT NULL
+//AND T1."CumulativeBalance" != 0
+//AND T1."CumulativeBalance" > 0
+//AND T0."SlpCode" != -1
+//AND T0."SlpCode" = \''.$slpCode.'\'
+//--AND T0."CardCode" = \'0100412\'
+//';
+
+            $sql_customer = '
+            SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
+WHERE T0."CardType" = \'C\'
+AND T0."SlpCode" = \''.$slpCode.'\'
+AND T0."CardCode" NOT IN (\'0100000\', \'0200000\', \'0300000\', \'0400000\', \'0500000\', \'0600000\', \'0700000\', \'0800000\', \'0900000\', \'1000000\', \'1100000\', \'1200000\')
+            ';
+
+
+
+//            dd($sql);
+
+
+
+
+//            $result = odbc_exec($conn, $sql);
+            $result = odbc_exec($conn, $sql_customer);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->customer, $row);
+                    array_push($this->customer_code, $row["CardCode"]);
+                }
+
+//                dd($this->customer_code);
+//                $balance_due = collect($this->customer);
+//                $x = collect($balance_due->where('CardCode', '0100590')->first()["CumulativeBalance"]);
+//                $cum_balance = floatval($x[0]);
+//                dd(floatval($cum_balance));
+
+            }
+
+//            $balance_due = collect($this->customer);
+
+
+            // for customer balance due
+            foreach ($this->customer_code as $cust_code) {
+//                $cust_code = '0100582';
+
+
+//                $customer_balance += $cum_balance;
+
+                $sql_balance = '
+                SELECT "Name" AS "CardCode","CumulativeBalance" FROM (
+SELECT
+    T0."RefDate",
+    T0."TransId",
+    T0."BaseRef",
+    T1."FormatCode",
+    T0."LineMemo",
+    T0."ShortName" AS "Name",
+    T0."Debit",
+    T0."Credit",
+    T0."Ref1",
+    T0."Ref2",
+    T0."Ref3Line",
+    T0."DueDate",
+    T0."TaxDate",
+    SUM(T0."Debit" - T0."Credit") OVER (ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
+    CASE
+                WHEN T0."TransType" = 24 THEN (
+                    SELECT MAX(T22."DocNum")
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T00."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked A/R Invoice",
+            CASE
+                WHEN T0."TransType" = 13 THEN (
+                    SELECT MAX(T22."DocNum")
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T22."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked Incoming Payment"
+
+FROM
+    AL_YASEEN_AGRI_PLIVE."JDT1" T0
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE."OACT" T1 ON T0."Account" = T1."AcctCode"
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE."OJDT" T2 ON T0."TransId" = T2."TransId"
+WHERE
+    T2."RefDate" <= \''.$end_date.'\'
+    AND T0."ShortName" = \''.$cust_code.'\'
+ORDER BY
+    T0."RefDate"
+    )
+    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
+    ORDER BY "RefDate" DESC
+    LIMIT 1';
+//                dd($sql_balance);
+
+                $result_balance = odbc_exec($conn, $sql_balance);
+                if (!$result_balance)
+                {
+                    echo "Error while sending SQL statement to the database server.\n";
+                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+                }
+                else
+                {
+                    while ($row = odbc_fetch_array($result_balance)) {
+//                        dd($row);
+//                        array_push($this->customer, $row);
+//                        array_push($this->customer_code, $row["CardCode"]);
+                        if (floatval($row["CumulativeBalance"]) >= 1) {
+//                            array_push($this->customer_balance, [$row["CardCode"] => $row["CumulativeBalance"]]);
+                            $this->customer_balance[$row["CardCode"]] = $row["CumulativeBalance"];
+                            $full_customer_balance += $row["CumulativeBalance"];
+                        }
+                    }
+
+                }
+
+
+            }
+//            dd(array_keys($this->customer_balance));
+//            dd($this->customer_balance["0101015"]);
+//            dd($this->customer_balance);
+
+            // for aging 120
+//            foreach ($this->customer_code as $cust_code) {
+            foreach (array_keys($this->customer_balance) as $cust_code) {
+//                $cust_code = '0100582';
+
+//                $x = collect($balance_due->where('CardCode', $cust_code)->first()["CumulativeBalance"]);
+                $x = $this->customer_balance[$cust_code];
+                $cum_balance = floatval($x);
+
+                $customer_balance += $cum_balance;
+
+
+                $sql_aging = 'SELECT IFNULL(SUM("Debit (LC)"), 0) AS "Aging" FROM (
+WITH CumulativeSum AS (
+    SELECT * FROM (
+        SELECT
+            T0."RefDate" AS "Posting Date",
+            T0."DueDate" AS "Due Date",
+            T0."TaxDate" AS "Document Date",
+            CASE
+                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
+                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
+                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
+                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
+                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
+                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
+                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
+            END AS "Document Type",
+            T3."CardCode" AS "Business Partner Code",
+            T3."CardName" AS "Business Partner Name",
+            T0."BaseRef" AS "Document Number",
+            T0."TransId" AS "Transaction Number",
+            T1."Account" AS "Account Code",
+            T2."AcctName" AS "Account Name",
+            T1."Debit" AS "Debit (LC)",
+            T1."Credit" AS "Credit (LC)",
+            (T1."Debit" - T1."Credit") AS "Balance",
+            T0."Memo" AS "Remarks",
+            SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            CASE
+                WHEN T0."TransType" = 24 THEN (
+                    SELECT T22."DocNum"
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T00."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked A/R Invoice",
+            CASE
+                WHEN T0."TransType" = 13 THEN (
+                    SELECT T22."DocNum"
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T22."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked Incoming Payment"
+        FROM
+            AL_YASEEN_AGRI_PLIVE.OJDT T0
+            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
+        WHERE
+            T0."RefDate" <= \''.$end_date.'\'
+            AND T3."CardCode" = \''.$cust_code.'\'
+        ORDER BY T0."TransId" DESC
+    )
+    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
+),
+AdjustedSum AS (
+    SELECT *,
+           CASE
+               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
+               ELSE "Debit (LC)"
+           END AS "Adjusted Debit"
+    FROM CumulativeSum
+),
+FinalResult AS (
+    SELECT *,
+           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
+    FROM AdjustedSum
+),
+RankedResults AS (
+    SELECT *,
+           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
+    FROM FinalResult
+)
+SELECT
+    "Posting Date",
+    "Due Date",
+    "Document Date",
+    "Document Type",
+    "Business Partner Code",
+    "Business Partner Name",
+    "Document Number",
+    "Transaction Number",
+    "Account Code",
+    "Account Name",
+    "Adjusted Debit" AS "Debit (LC)",
+    "Credit (LC)",
+    "Balance",
+    "Remarks",
+    "Adjusted Debit",
+    "Cumulative Debit",
+    "Cumulative Adjusted Debit"
+FROM RankedResults
+WHERE rn <= (
+    SELECT MAX(rn)
+    FROM RankedResults
+    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
+)
+ORDER BY "Posting Date" DESC, "Transaction Number" DESC
+
+)
+WHERE DAYS_BETWEEN("Posting Date", \''.$end_date.'\') > 120;
+';
+
+                $result_aging = odbc_exec($conn, $sql_aging);
+                if (!$result_aging)
+                {
+                    echo "Error while sending SQL statement to the database server.\n";
+                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+                }
+                else
+                {
+                    while ($row = odbc_fetch_array($result_aging)) {
+//                        dd($row);
+//                        array_push($this->customer, $row);
+//                        array_push($this->customer_code, $row["CardCode"]);
+                        $aging_balance += $row["Aging"];
+                    }
+
+                }
+
+                // oldest invoice
+
+                $sql_oldest_invoice = 'SELECT "Posting Date" AS "Oldest_Date" FROM (
+WITH CumulativeSum AS (
+    SELECT * FROM (
+        SELECT
+            T0."RefDate" AS "Posting Date",
+            T0."DueDate" AS "Due Date",
+            T0."TaxDate" AS "Document Date",
+            CASE
+                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
+                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
+                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
+                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
+                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
+                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
+                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
+            END AS "Document Type",
+            T3."CardCode" AS "Business Partner Code",
+            T3."CardName" AS "Business Partner Name",
+            T0."BaseRef" AS "Document Number",
+            T0."TransId" AS "Transaction Number",
+            T1."Account" AS "Account Code",
+            T2."AcctName" AS "Account Name",
+            T1."Debit" AS "Debit (LC)",
+            T1."Credit" AS "Credit (LC)",
+            (T1."Debit" - T1."Credit") AS "Balance",
+            T0."Memo" AS "Remarks",
+            SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            CASE
+                WHEN T0."TransType" = 24 THEN (
+                    SELECT T22."DocNum"
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T00."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked A/R Invoice",
+            CASE
+                WHEN T0."TransType" = 13 THEN (
+                    SELECT T22."DocNum"
+                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+                    WHERE T22."DocNum" = T0."BaseRef"
+                    AND T00."DocDate" = T22."DocDate"
+                    AND T11."SumApplied" = T22."DocTotal"
+                )
+                ELSE NULL
+            END AS "Linked Incoming Payment"
+        FROM
+            AL_YASEEN_AGRI_PLIVE.OJDT T0
+            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
+        WHERE
+            T0."RefDate" <= \''.$end_date.'\'
+            AND T3."CardCode" = \''.$cust_code.'\'
+        ORDER BY T0."TransId" DESC
+    )
+    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
+),
+AdjustedSum AS (
+    SELECT *,
+           CASE
+               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
+               ELSE "Debit (LC)"
+           END AS "Adjusted Debit"
+    FROM CumulativeSum
+),
+FinalResult AS (
+    SELECT *,
+           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
+    FROM AdjustedSum
+),
+RankedResults AS (
+    SELECT *,
+           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
+    FROM FinalResult
+)
+SELECT
+    "Posting Date",
+    "Due Date",
+    "Document Date",
+    "Document Type",
+    "Business Partner Code",
+    "Business Partner Name",
+    "Document Number",
+    "Transaction Number",
+    "Account Code",
+    "Account Name",
+    "Adjusted Debit" AS "Debit (LC)",
+    "Credit (LC)",
+    "Balance",
+    "Remarks",
+    "Adjusted Debit",
+    "Cumulative Debit",
+    "Cumulative Adjusted Debit"
+FROM RankedResults
+WHERE rn <= (
+    SELECT MAX(rn)
+    FROM RankedResults
+    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
+)
+ORDER BY "Posting Date" DESC, "Transaction Number" DESC
+)
+WHERE "Document Type" != \'Incoming Payment\'
+ORDER BY "Posting Date" ASC
+LIMIT 1';
+
+
+//                $sql_oldest_invoice2 = 'SELECT * FROM (
+//WITH CumulativeSum AS (
+//    SELECT * FROM (
+//        SELECT
+//            T0."RefDate" AS "Posting Date",
+//            T0."DueDate" AS "Due Date",
+//            T0."TaxDate" AS "Document Date",
+//            CASE
+//                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
+//                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
+//                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
+//                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
+//                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
+//                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
+//                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
+//            END AS "Document Type",
+//            T3."CardCode" AS "Business Partner Code",
+//            T3."CardName" AS "Business Partner Name",
+//            T0."BaseRef" AS "Document Number",
+//            T0."TransId" AS "Transaction Number",
+//            T1."Account" AS "Account Code",
+//            T2."AcctName" AS "Account Name",
+//            T1."Debit" AS "Debit (LC)",
+//            T1."Credit" AS "Credit (LC)",
+//            (T1."Debit" - T1."Credit") AS "Balance",
+//            T0."Memo" AS "Remarks",
+//            SUM(T1."Debit") OVER (ORDER BY T0."TransId" DESC) AS "Cumulative Debit",
+//            CASE
+//                WHEN T0."TransType" = 24 THEN (
+//                    SELECT T22."DocNum"
+//                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+//                    WHERE T00."DocNum" = T0."BaseRef"
+//                    AND T00."DocDate" = T22."DocDate"
+//                    AND T11."SumApplied" = T22."DocTotal"
+//                )
+//                ELSE NULL
+//            END AS "Linked A/R Invoice",
+//            CASE
+//                WHEN T0."TransType" = 13 THEN (
+//                    SELECT T22."DocNum"
+//                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
+//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
+//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
+//                    WHERE T22."DocNum" = T0."BaseRef"
+//                    AND T00."DocDate" = T22."DocDate"
+//                    AND T11."SumApplied" = T22."DocTotal"
+//                )
+//                ELSE NULL
+//            END AS "Linked Incoming Payment"
+//        FROM
+//            AL_YASEEN_AGRI_PLIVE.OJDT T0
+//            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
+//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
+//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
+//        WHERE
+//            T0."RefDate" <= \''.$end_date.'\'
+//            AND T3."CardCode" = \''.$cust_code.'\'
+//        ORDER BY T0."TransId" DESC
+//    )
+//    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
+//),
+//AdjustedSum AS (
+//    SELECT *,
+//           CASE
+//               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
+//               ELSE "Debit (LC)"
+//           END AS "Adjusted Debit"
+//    FROM CumulativeSum
+//),
+//FinalResult AS (
+//    SELECT *,
+//           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
+//    FROM AdjustedSum
+//),
+//RankedResults AS (
+//    SELECT *,
+//           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
+//    FROM FinalResult
+//)
+//SELECT
+//    "Posting Date",
+//    "Due Date",
+//    "Document Date",
+//    "Document Type",
+//    "Business Partner Code",
+//    "Business Partner Name",
+//    "Document Number",
+//    "Transaction Number",
+//    "Account Code",
+//    "Account Name",
+//    "Adjusted Debit" AS "Debit (LC)",
+//    "Credit (LC)",
+//    "Balance",
+//    "Remarks",
+//    "Adjusted Debit",
+//    "Cumulative Debit",
+//    "Cumulative Adjusted Debit"
+//FROM RankedResults
+//WHERE rn <= (
+//    SELECT MAX(rn)
+//    FROM RankedResults
+//    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
+//)
+//ORDER BY "Posting Date" DESC, "Transaction Number" DESC
+//)
+//WHERE "Document Type" != \'Incoming Payment\'
+//ORDER BY "Posting Date" ASC';
+
+                $result_oldest = odbc_exec($conn, $sql_oldest_invoice);
+                if (!$result_oldest)
+                {
+                    echo "Error while sending SQL statement to the database server.\n";
+                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+                }
+                else
+                {
+//                    $ss = [];
+                    while ($row = odbc_fetch_array($result_oldest)) {
+//                        dd($row);
+//                        array_push($this->customer, $row);
+//                        array_push($this->customer_code, $row["CardCode"]);
+
+//                        array_push($ss, $row);
+//                        dd(Carbon::parse($row["Oldest_Date"]) . '--' .$oldest_inv . '||' . Carbon::parse($row["Oldest_Date"])->lt($oldest_inv));
+//                        $a = Carbon::parse($row["Oldest_Date"])->format('Y-m-d');
+
+                        $fmt = Carbon::parse($row["Oldest_Date"])->format('Y-m-d');
+//                        dd($oldest_inv);
+
+                        $x = Carbon::createFromFormat('Y-m-d', $fmt);
+//                        $y = Carbon::createFromFormat('Y-m-d', $oldest_inv);
+
+//                        if(Carbon::parse($row["Oldest_Date"])->lt($oldest_inv)) {
+                        if($x->lt($oldest_inv)) {
+                            $oldest_inv = $x->format('Y-m-d');
+                            $c_code = $cust_code;
+//                            $oldest_inv = $row["Oldest_Date"];
+                        }
+                    }
+
+//                    dd($ss);
+
+                }
+
+                // end of oldest invoice
+            }
+
+
+            odbc_close($conn);
+        }
+
+        return [$customer_balance, $aging_balance, $oldest_inv, $c_code];
     }
 }
