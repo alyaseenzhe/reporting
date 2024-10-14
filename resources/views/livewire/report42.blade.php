@@ -605,17 +605,31 @@
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        @php $profit_period += ($record[1]['NPAT Period']/1000); @endphp
-                                        {{ number_format(($record[1]['NPAT Period']/1000), 2) }}
+                                        @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                            @php $profit_period += ($profit_loss['2024-08'][$record[1]["BPLId"]][0]); @endphp
+                                            {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][0])) }}
+                                        @else
+                                            @php $profit_period += ($record[1]['NPAT Period']/1000); @endphp
+                                            {{ number_format(($record[1]['NPAT Period']/1000), 2) }}
+                                        @endif
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-    {{--                                    {{ number_format(((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses))/1000)+($record[1]['NPAT Annual']/1000)) }}--}}
-                                        @php $profit_year += (((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000;  @endphp
-                                        {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}
+                                        @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                            @php $profit_year += ($profit_loss['2024-08'][$record[1]["BPLId"]][1]);  @endphp
+                                            {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][1])) }}
+                                        @else
+                                            @php $profit_year += (((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000;  @endphp
+                                            {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}
+                                        @endif
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        @php $ope_expenses += ($record[1]['Operating Expenses']/1000); @endphp
-                                        {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}
+                                        @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                            @php $ope_expenses += ($profit_loss['2024-08'][$record[1]["BPLId"]][2]); @endphp
+                                            {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][2])) }}
+                                        @else
+                                            @php $ope_expenses += ($record[1]['Operating Expenses']/1000); @endphp
+                                            {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}
+                                        @endif
                                     </td>
                                 @endif
                             </tr>
@@ -917,7 +931,7 @@
                     </td>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            {{ number_format($profit_period, 2) }}
+                            {{ number_format($profit_period) }}
 {{--                            {{ number_format(($record[1]['NPAT Period']/1000), 2) }}--}}
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -925,7 +939,7 @@
 {{--                            {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}--}}
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            {{ number_format($ope_expenses, 2) }}
+                            {{ number_format($ope_expenses) }}
 {{--                            {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}--}}
                         </td>
                     @endif
