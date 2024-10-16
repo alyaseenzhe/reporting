@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="27535ac0-d51c-4976-b334-be7909d733a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Report42.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/report42.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/new-daily-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/new-daily-report.blade.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +162,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "updates/update-report-42-for-jeddah-branch",
+    "git-widget-placeholder": "updates/update-creating-daily-report",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
