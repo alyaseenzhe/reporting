@@ -113,8 +113,14 @@
                 <tr>
                     <td class="border p-2 whitespace-nowrap">
                         <div>
-                            <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format($area_loss_profit[$sap_results[0]["BPLId"]], 2) : ""}}</div>
+                            @if(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-08')
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format($area_loss_profit['2024-08'][$sap_results[0]["BPLId"]], 2) : ""}}</div>
 {{--                            <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format($sap_results[0]["GrossProfitLC"], 2) : ""}}</div>--}}
+                            @elseif(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-09')
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format($area_loss_profit['2024-09'][$sap_results[0]["BPLId"]], 2) : ""}}</div>
+                            @else
+                                0
+                            @endif
                         </div>
                     </td>
                     <td class="border p-2 whitespace-nowrap">
@@ -131,7 +137,11 @@
                     <td class="border p-2 whitespace-nowrap">
                         <div>
                             @php //$total_tbl1 = floatval($sap_results[0]["GrossProfitLC"])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($sap_results[0]["Outstanding_Receivable"])*0.01); @endphp
-                            <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format(floatval($area_loss_profit[$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01), 2) : ""}}</div>
+                            @if(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-08')
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format(floatval($area_loss_profit['2024-08'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01), 2) : ""}}</div>
+                            @elseif(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-09')
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format(floatval($area_loss_profit['2024-09'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01), 2) : ""}}</div>
+                            @endif
                         </div>
                     </td>
                     <td class="border p-2 whitespace-nowrap">
@@ -142,9 +152,13 @@
                     <td class="border p-2 whitespace-nowrap">
                         <div>
 {{--                            @php $branch_comission = $sap_results ? number_format((floatval($sap_results[0]["GrossProfitLC"])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($sap_results[0]["Outstanding_Receivable"])*0.01))*($area_commission[$area_id]/100), 2) : "" @endphp--}}
-                            @php $branch_comission = $sap_results ? (floatval($area_loss_profit[$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100) : "" @endphp
-
-                            <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format((floatval($area_loss_profit[$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100), 2) : ""}}</div>
+                            @if(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-08')
+                                @php $branch_comission = $sap_results ? (floatval($area_loss_profit['2024-08'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100) : "" @endphp
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format((floatval($area_loss_profit['2024-08'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100), 2) : ""}}</div>
+                            @elseif(\Carbon\Carbon::parse($selected_date)->format('Y-m') == '2024-09')
+                                @php $branch_comission = $sap_results ? (floatval($area_loss_profit['2024-09'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100) : "" @endphp
+                                <div class="text-center text-gray-800 text-sm">{{$sap_results ? number_format((floatval($area_loss_profit['2024-09'][$sap_results[0]["BPLId"]])-(floatval($sap_results[0]["TransVal"])*0.01)-(floatval($branch_balance)*0.01))*($area_commission[$area_id]/100), 2) : ""}}</div>
+                            @endif
                         </div>
                     </td>
                 </tr>
@@ -472,7 +486,7 @@
                     </tr>
                         <?php $employee_profit += ($result2 ? floatval($result2["GrossProfitLC"]) : 0) ?>
                         <?php $employee_sales += ($result2 ? floatval($result2["NetSalesAmountLC"]) : 0) ?>
-                        <?php $percentage_area_employee += ($result2 ? floatval($commission_percentage[$emp_position[$result2['OldCode']]]) : 0) ?>
+                        <?php //$percentage_area_employee += ($result2 ? floatval($commission_percentage[$emp_position[$result2['OldCode']]]) : 0) ?>
                         <?php $employee_postponed += ($result2 ? floatval($slp_aging[$result2['SlpCode']]['balance']) : 0) ?>
                         <?php $employee_postponed_due += ($result2 ? floatval($slp_aging[$result2['SlpCode']]['balance due']) : 0) ?>
                         <?php $employee_postponed_due_percentage =  $employee_postponed == 0? 0 : (floatval($slp_aging[$result2['SlpCode']]['balance due'])/floatval($slp_aging[$result2['SlpCode']]['balance'])*100) ?>
