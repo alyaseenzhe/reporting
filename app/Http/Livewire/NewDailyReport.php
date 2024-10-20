@@ -87,7 +87,8 @@ class NewDailyReport extends Component
             }
             elseif ($btn == 'saveAndNew') {
                 session()->flash('success', 'تم إنشاء التقرير بنجاح');
-                return redirect()->route('create.daily-report');
+                $this->emit('finished');
+//                return redirect()->route('create.daily-report');
             }
         }
         else {

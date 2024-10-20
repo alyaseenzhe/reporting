@@ -223,7 +223,56 @@
                     <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد تقارير حتى الآن</div>
                 </div>
             @endif
-            {{ $daily_reports->links() }}
+
         </div>
     </div>
+    {{ $daily_reports->links() }}
 </div>
+
+@section('scripts')
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script>
+
+        $('#my-reports').on('click', function () {
+
+            $('#my-reports').addClass('bg-gray-900');
+            $('#my-reports').addClass('text-white');
+            $('#my-reports').removeClass('bg-white');
+            $('#my-reports').removeClass('text-gray-800');
+
+            $('#friends-reports').removeClass('bg-gray-900');
+            $('#friends-reports').removeClass('text-white');
+            $('#friends-reports').addClass('bg-white');
+            $('#friends-reports').addClass('text-gray-800');
+
+            $('#my-reports-div').removeClass('hide');
+            $('#friends-reports-div').addClass('hide');
+        });
+
+        $('#friends-reports').on('click', function () {
+
+            $('#friends-reports').addClass('bg-gray-900');
+            $('#friends-reports').addClass('text-white');
+            $('#friends-reports').removeClass('bg-white');
+            $('#friends-reports').removeClass('text-gray-800');
+
+            $('#my-reports').removeClass('bg-gray-900');
+            $('#my-reports').removeClass('text-white');
+            $('#my-reports').addClass('bg-white');
+            $('#my-reports').addClass('text-gray-800');
+
+            $('#friends-reports-div').removeClass('hide');
+            $('#my-reports-div').addClass('hide');
+        });
+
+
+
+    </script>
+@stop
+@section('css-scripts')
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+@stop

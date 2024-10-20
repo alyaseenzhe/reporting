@@ -22,6 +22,7 @@ class Report42 extends Component
     public $scribes_results = [];
     public $query;
     public $branches;
+    public $profit_loss = ['2024-08' => ['3' =>['253','2997','143'], '4' => ['269','3851','137'], '5' => ['334','3130','186'], '6' => ['74','3137','117'], '7' => ['287','3738','185'], '8' => ['193', '1250', '104'], '9' => ['167','3038','145'], '10' => ['172','2227','131'], '11' => ['149','2378','185'], '12' => ['934','3845','132'], '13' => ['238','2299','146'], '14'=> ['121','1285','87']]];
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -54,6 +55,7 @@ class Report42 extends Component
 
     public function create_report($start_date, /*$end_date,*/ $dept_id) {
 
+//        dd(Carbon::parse($start_date)->format('Y-m'));
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
 
@@ -728,6 +730,8 @@ JOIN
 AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 JOIN
 AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
+-- to be removed later
+WHERE T0."CardCode" != \'0200106\'
 
 ) as tbl1
 
@@ -1118,6 +1122,7 @@ JOIN
 AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 JOIN
 AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
+WHERE T0."CardCode" != \'0200106\'
 
 ) as tbl1
 
