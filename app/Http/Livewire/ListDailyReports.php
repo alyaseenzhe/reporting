@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\DailyReport;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,7 +15,10 @@ class ListDailyReports extends Component
     public function render()
     {
         $daily_reports = DailyReport::where('added_by', Auth::id())
-            ->orderBy('report_date', 'DESC')->paginate(20);
+            ->orderBy('report_date', 'DESC')->paginate(5);
+
+//        dd(implode(", ", $this->emp_code));
+//        dd($friends_reports);
 
         return view('livewire.list-daily-reports', compact('daily_reports'))
             ->layout('layouts.dashboard');

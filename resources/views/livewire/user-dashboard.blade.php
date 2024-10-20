@@ -237,6 +237,53 @@
                 </div>
             </a>
         @endif
+
+            @if ((Auth::user()->user_group && in_array('list.friends-daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+                <a class="w-full" href="{{ route('list.friends-daily-reports') }}">
+                    <div
+                        class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                        <div class="px-5 pt-5">
+                            <div class="flex items-center justify-center mb-8">
+                                <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                    <svg class="w-20 h-20" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                         width="800px" height="800px" viewBox="0 0 32 32" xml:space="preserve">
+<style type="text/css">
+    .pictogram_een{fill:#F4D6B0;}
+    .pictogram_twee{fill:#F8AD89;}
+    .pictogram_vier{fill:#E54D2E;}
+    .pictogram_vijf{fill:#01A59C;}
+    .pictogram_zes{fill:#0C6667;}
+    .st0{fill:#F27261;}
+    .st1{fill:none;}
+    .st2{fill:#F8AD89;}
+    .st3{clip-path:url(#SVGID_2_);fill:#01A59C;}
+    .st4{clip-path:url(#SVGID_2_);fill:none;}
+    .st5{clip-path:url(#SVGID_2_);fill:#0C6667;}
+    .st6{fill:#0C6667;}
+</style>
+                                        <g>
+                                            <circle class="pictogram_vier" cx="16" cy="16" r="16"/>
+                                            <path class="pictogram_een" d="M1.174,22C3.549,27.861,9.287,32,16,32s12.451-4.139,14.826-10H1.174z"/>
+                                            <path class="pictogram_vijf" d="M16,22H1.174c1.146,2.828,3.077,5.246,5.523,7H16V22z"/>
+                                            <polygon class="pictogram_twee" points="29.57,18.023 29.557,18.01 29.534,18.033 	"/>
+                                            <polygon class="pictogram_twee" points="17.036,14.665 22.333,19.962 29.533,18.033 18.965,7.465 	"/>
+                                            <g>
+                                                <path class="pictogram_zes" d="M22.333,19.962l-5.298-5.298l-1.939,7.237L22.333,19.962z M18.179,21.076
+			C18.079,21.102,18.019,21.118,18.179,21.076L18.179,21.076z M18.291,21.046c-0.013,0.003-0.026,0.007-0.039,0.01
+			C18.265,21.052,18.276,21.049,18.291,21.046z M31.979,15.587l-2.423,2.423l-0.023,0.023l0,0l0,0L18.965,7.465l-0.028-0.028
+			l5.197-5.197C28.725,4.959,31.834,9.899,31.979,15.587z"/>
+                                                <path class="st6" d="M18.402,21.016c0.007-0.002,0.011-0.003,0.011-0.003c-0.001,0-0.002,0.001-0.003,0.001
+			C18.409,21.014,18.405,21.015,18.402,21.016z"/>
+                                            </g>
+                                        </g>
+</svg>
+                                </div>
+                            </div>
+                            <div class="text-3xl font-semibold text-gray-800 text-center">تقارير زملائي</div>
+                        </div>
+                    </div>
+                </a>
+            @endif
     </div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
         @if ((Auth::user()->user_group && in_array('list.employees-daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
