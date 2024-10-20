@@ -4,6 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+    <list default="true" id="250b7676-deb9-4dc5-90c6-bf4576cb22f8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/CommissionReport.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/commission-report.blade.php" afterDir="false" />
     <list default="true" id="27535ac0-d51c-4976-b334-be7909d733a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/NewDailyReport.php" afterDir="false" />
@@ -15,6 +19,15 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;git-widget-placeholder&quot;: &quot;update/commission-report-sap&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+  }
+}</component>
+  <component name="TaskManager">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
     <execution />
   </component>
@@ -187,8 +200,5 @@
       <workItem from="1728805902406" duration="14654000" />
     </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
 </project>

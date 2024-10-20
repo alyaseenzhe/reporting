@@ -21,7 +21,10 @@ class CommissionReport extends Component
     public $last_date;
     public $total_grossProfit = 0;
     public $area_commission = ['3' => 11.46, '4' => 10.5, '5' => 11.46, '6' => 11.46, '7' => 10.5, '8' => 10.5, '9' => 11.46, '10' => 10.5, '11' => 10.5, '12' => 11.46, '13' => 10.5, '14' => 10.5];
-    public $area_loss_profit = ['3' => 252507, '4' => 268936, '5' => 334426, '6' => 74377, '7' => 287371, '8' =>  192702, '9' => 166642, '10' => 171551, '11' => 148537, '12' => 933995, '13' => 238114, '14' => 121138];
+    public $area_loss_profit = [
+        '2024-08' => ['3' => 252507, '4' => 268936, '5' => 334426, '6' => 74377, '7' => 287371, '8' =>  192702, '9' => 166642, '10' => 171551, '11' => 148537, '12' => 933995, '13' => 238114, '14' => 121138],
+        '2024-09' => ['3' => 298927 , '4' =>    205518, '5' => 318544, '6' => 219056, '7' => 320238, '8' => 256024, '9' => 353061, '10' => 278410, '11' => 251469, '12' => 789377, '13' => 286491, '14' => 113507],
+    ];
     public $emp_position = [
 '10046' =>	'sales_manager',
 /*'10046' =>	'sales_manager',
@@ -580,6 +583,7 @@ WHERE "BranchCode" = '.$this->area_id.'
                 }
 
 //                dd($this->sap_results2);
+
                 $gross_collect = collect($this->sap_results2);
                 $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');
 
@@ -910,7 +914,7 @@ WITH CumulativeSum AS (
             SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
             CASE
                 WHEN T0."TransType" = 24 THEN (
-                    SELECT T22."DocNum"
+                    SELECT MAX(T22."DocNum")
                     FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
@@ -922,7 +926,7 @@ WITH CumulativeSum AS (
             END AS "Linked A/R Invoice",
             CASE
                 WHEN T0."TransType" = 13 THEN (
-                    SELECT T22."DocNum"
+                    SELECT MAX(T22."DocNum")
                     FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
@@ -1040,7 +1044,7 @@ WITH CumulativeSum AS (
             SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
             CASE
                 WHEN T0."TransType" = 24 THEN (
-                    SELECT T22."DocNum"
+                    SELECT MAX(T22."DocNum")
                     FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
@@ -1052,7 +1056,7 @@ WITH CumulativeSum AS (
             END AS "Linked A/R Invoice",
             CASE
                 WHEN T0."TransType" = 13 THEN (
-                    SELECT T22."DocNum"
+                    SELECT MAX(T22."DocNum")
                     FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
                     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
