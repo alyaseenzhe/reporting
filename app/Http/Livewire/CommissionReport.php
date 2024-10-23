@@ -789,7 +789,7 @@ AND T0."CardCode" NOT IN (\'0100000\', \'0200000\', \'0300000\', \'0400000\', \'
 //                $customer_balance += $cum_balance;
 
                 $sql_balance = '
-                SELECT "Name" AS "CardCode","CumulativeBalance" FROM (
+                SELECT * FROM (
 SELECT
     T0."RefDate",
     T0."TransId",
@@ -843,7 +843,7 @@ ORDER BY
     T0."RefDate"
     )
     WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-    ORDER BY "RefDate" DESC
+    ORDER BY "RefDate" DESC, "TransId" DESC
     LIMIT 1';
 //                dd($sql_balance);
 
@@ -856,18 +856,16 @@ ORDER BY
                 else
                 {
                     while ($row = odbc_fetch_array($result_balance)) {
-//                        dd($row);
 //                        array_push($this->customer, $row);
 //                        array_push($this->customer_code, $row["CardCode"]);
                         if (floatval($row["CumulativeBalance"]) >= 1) {
 //                            array_push($this->customer_balance, [$row["CardCode"] => $row["CumulativeBalance"]]);
-                            $this->customer_balance[$row["CardCode"]] = $row["CumulativeBalance"];
+//                            $this->customer_balance[$row["CardCode"]] = $row["CumulativeBalance"];
+                            $this->customer_balance[$row["Name"]] = $row["CumulativeBalance"];
                             $full_customer_balance += $row["CumulativeBalance"];
                         }
                     }
-
                 }
-
 
             }
 //            dd(array_keys($this->customer_balance));
@@ -908,11 +906,13 @@ WITH CumulativeSum AS (
             T0."TransId" AS "Transaction Number",
             T1."Account" AS "Account Code",
             T2."AcctName" AS "Account Name",
-            T1."Debit" AS "Debit (LC)",
+            --T1."Debit" AS "Debit (LC)",
+            CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END AS "Debit (LC)",
             T1."Credit" AS "Credit (LC)",
             (T1."Debit" - T1."Credit") AS "Balance",
             T0."Memo" AS "Remarks",
-            SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            --SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            SUM(CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END) OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
             CASE
                 WHEN T0."TransType" = 24 THEN (
                     SELECT MAX(T22."DocNum")
@@ -945,7 +945,7 @@ WITH CumulativeSum AS (
         WHERE
             T0."RefDate" <= \''.$end_date.'\'
             AND T3."CardCode" = \''.$cust_code.'\'
-        ORDER BY T0."TransId" DESC
+        ORDER BY T0."RefDate" DESC,T0."TransId" DESC
     )
     WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
 ),
@@ -994,7 +994,8 @@ WHERE rn <= (
 ORDER BY "Posting Date" DESC, "Transaction Number" DESC
 
 )
-WHERE DAYS_BETWEEN("Posting Date", \''.$end_date.'\') > 120;
+WHERE DAYS_BETWEEN("Posting Date", \''.$end_date.'\') > 120
+AND "Debit (LC)" != 0;
 ';
 
                 $result_aging = odbc_exec($conn, $sql_aging);
@@ -1038,11 +1039,13 @@ WITH CumulativeSum AS (
             T0."TransId" AS "Transaction Number",
             T1."Account" AS "Account Code",
             T2."AcctName" AS "Account Name",
-            T1."Debit" AS "Debit (LC)",
+            --T1."Debit" AS "Debit (LC)",
+            CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END AS "Debit (LC)",
             T1."Credit" AS "Credit (LC)",
             (T1."Debit" - T1."Credit") AS "Balance",
             T0."Memo" AS "Remarks",
-            SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            --SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
+            SUM(CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END) OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
             CASE
                 WHEN T0."TransType" = 24 THEN (
                     SELECT MAX(T22."DocNum")
@@ -1075,7 +1078,7 @@ WITH CumulativeSum AS (
         WHERE
             T0."RefDate" <= \''.$end_date.'\'
             AND T3."CardCode" = \''.$cust_code.'\'
-        ORDER BY T0."TransId" DESC
+        ORDER BY T0."RefDate" DESC,T0."TransId" DESC
     )
     WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
 ),
@@ -1124,6 +1127,7 @@ WHERE rn <= (
 ORDER BY "Posting Date" DESC, "Transaction Number" DESC
 )
 WHERE "Document Type" != \'Incoming Payment\'
+AND "Debit (LC)" != 0
 ORDER BY "Posting Date" ASC
 LIMIT 1';
 
