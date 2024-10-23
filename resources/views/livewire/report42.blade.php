@@ -600,8 +600,8 @@
                                 </td>
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     @php $stock_tadweer += floatval($record[1]["COGS"]);  @endphp
-                                    {{ number_format((floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}
-                                    {{--                                    {{ number_format((((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000) != 0 ? ((floatval($record[0]->YearCOGS)/((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000))/1000) : 0)+(floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}--}}
+                                    {{ (floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0) }}
+{{--                                    {{ number_format((floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0), 2) }}--}}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
