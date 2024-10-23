@@ -153,7 +153,7 @@ ORDER BY
     T0."RefDate"
     )
     WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-    ORDER BY "RefDate" DESC
+    ORDER BY "RefDate" DESC, "TransId" DESC
     LIMIT 1';
 
 //                dd($sql_balance);
