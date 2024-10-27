@@ -4,9 +4,12 @@ namespace App\Http\Livewire;
 
 use Carbon\Carbon;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ListAgingSap extends Component
 {
+    use WithPagination;
+
     public $area_id = -1;
     public $selected_date;
     public $last_date;
@@ -99,7 +102,7 @@ AND T0."CardCode" LIKE \''.$this->area_id.'%\'';
 //                $customer_balance += $cum_balance;
 
                 $sql_balance = '
-                SELECT * FROM (
+                SELECT "Name", "CumulativeBalance"  FROM (
 SELECT
     T0."RefDate",
     T0."TransId",
@@ -186,6 +189,7 @@ ORDER BY
 
 //            dd($this->customer_balance['1000015']);
 
+//            dd('test');
 
             // for aging 120
 
