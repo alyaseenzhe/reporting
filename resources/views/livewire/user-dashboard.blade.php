@@ -447,7 +447,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">الفواتير المُستحقة</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center"> الفواتير المُعلقة<small style="color: red"> (جديد)</small></div>
                     </div>
                 </div>
             </a>
