@@ -117,7 +117,7 @@ SELECT
     T0."Ref3Line",
     T0."DueDate",
     T0."TaxDate",
-    SUM(T0."Debit" - T0."Credit") OVER (ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
+    SUM(T0."Debit" - T0."Credit") OVER (ORDER BY T0."RefDate", T0."TransId" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
     CASE
                 WHEN T0."TransType" = 24 THEN (
                     SELECT MAX(T22."DocNum")
