@@ -58,10 +58,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/report-42', \App\Http\Livewire\Report42::class)->name('report-42');
     Route::get('/inventory-status-report', \App\Http\Livewire\InventoryStatus::class)->name('inventory-status-report');
     Route::get('/list-non-paid-vouchers', \App\Http\Livewire\ListAgingSap::class)->name('list.non-paid-vouchers');
+    Route::get('/list-aging-by-customer-employee', \App\Http\Livewire\ListAgingByCustomerAndEmployee::class)->name('list.aging-by-customer-employee');
 
     Route::get('/sap-reports', \App\Http\Livewire\SapReports::class)->name('sap-reports');
-
-
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
 
