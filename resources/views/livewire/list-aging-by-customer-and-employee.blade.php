@@ -193,7 +193,7 @@
                     $active_branch_total_above_120 = 0;
                     ?>
                 @foreach($aging_records as $record)
-                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
+{{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
                         {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
                         @if($loop->first)
                                 <?php $customer_id = $record["Business Partner Code"]; ?>
@@ -402,7 +402,7 @@
 
                             @php $customer_total = 0; $customer_total_120 = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
                         @endif
-                    @endif
+{{--                    @endif--}}
                 @endforeach
                 </tbody>
                 <tfoot>
@@ -421,11 +421,11 @@
                         {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
                         <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
                         {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td style="border: 2px solid white;">{{ number_format(($branch_total_30/$branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($branch_total_60/$branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($branch_total_90/$branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($branch_total_120/$branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($branch_total_above_120/$branch_customer_total)*100, 2) }}%</td>
+                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_30/$branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_60/$branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_90/$branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_120/$branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_above_120/$branch_customer_total)*100, 2) : 0 }}%</td>
                     </tr>
 
                     <tr style="background-color: #ffbc91; font-weight: bold; color: #2d721c; border: solid 2px;" class="active-full-emps hide">
@@ -443,11 +443,11 @@
                         {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
                         <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
                         {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td style="border: 2px solid white;">{{ number_format(($active_branch_total_30/$active_branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($active_branch_total_60/$active_branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($active_branch_total_90/$active_branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($active_branch_total_120/$active_branch_customer_total)*100, 2) }}%</td>
-                        <td style="border: 2px solid white;">{{ number_format(($active_branch_total_above_120/$active_branch_customer_total)*100, 2) }}%</td>
+                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_30/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_60/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_90/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_above_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
                     </tr>
                 </tfoot>
             </table>
