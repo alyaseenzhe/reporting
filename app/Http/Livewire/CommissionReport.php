@@ -20,6 +20,7 @@ class CommissionReport extends Component
     public $first_date;
     public $last_date;
     public $total_grossProfit = 0;
+    public $cost_center = ['3' => '0101', '4' => '0102', '5' => '0103', '6' => '0104', '7' => '0105', '8' => '0106', '9' => '0107', '12' => '0110', '11' => '0109', '10' => '0108', '13' => '0111', '14' => '0112'];
     public $area_commission = ['3' => 11.46, '4' => 10.5, '5' => 11.46, '6' => 11.46, '7' => 10.5, '8' => 10.5, '9' => 11.46, '10' => 10.5, '11' => 10.5, '12' => 11.46, '13' => 10.5, '14' => 10.5];
     public $area_loss_profit = [
         '2024-08' => ['3' => 252507, '4' => 268936, '5' => 334426, '6' => 74377, '7' => 287371, '8' =>  192702, '9' => 166642, '10' => 171551, '11' => 148537, '12' => 933995, '13' => 238114, '14' => 121138],
@@ -97,6 +98,7 @@ class CommissionReport extends Component
     public $slp_aging = [];
     public $slp_balance = [];
     public $branch_balance = 0;
+    public $profitAndLoss = 0;
 
     protected $rules = [
         'area_id' => 'required|not_in:-1',
@@ -202,6 +204,42 @@ WHERE ("RefDate" >= \''.$start_date.'\' AND "RefDate" <= \''.$end_date.'\')';
 
             */
 
+            $loss_profit_sql = 'SELECT SUM("Credit Amount")-SUM("Debit Amount") AS "ProfitAndLoss" FROM (
+--SELECT * FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+--JDT1."LocTotal" AS "Local Total Amount",
+JDT1."ProfitCode" AS "Cost Center"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+AND JDT1."ProfitCode" = \''.$this->cost_center[$this->area_id].'\'
+ORDER
+BY JDT1."RefDate"
+)
+
+WHERE
+"Account Code" LIKE \'4%\'
+OR "Account Code" LIKE \'5%\'
+OR "Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'7%\'
+OR "Account Code" LIKE \'8%\'
+';
+
+
+
+
             $sql = '
 Select * from (
 SELECT "BPLId",
@@ -260,113 +298,6 @@ AND T1."BPLId" = '.$this->area_id.'
 Group By T1."BPLId", T0."Warehouse"
  ) stock_tbl ON stock_tbl."BPLId" = outstanding_tbl."BPLId"';
 
-//            $sql2 = '
-//SELECT *, (SELECT "Memo" FROM AL_YASEEN_AGRI_PLIVE.OSLP WHERE "SlpCode" = "SalesEmployeeOrBuyerNumber") as "OldCode" FROM (
-//SELECT
-//	"BPLId",
-//    "SlpCode",
-//	MAX(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Invoice Date" END) AS "Oldest_Invoice",
-//    SUM(CASE WHEN "Aging Period" = \'121+ Days\' THEN "Outstanding Amount" END) AS "Outstanding_Amount_120",
-//	SUM("Outstanding Amount") AS "Total_Outstanding_Amount"
-//
-//FROM (
-//SELECT
-//	T1."BPLId",
-//    T0."CardCode" AS "Customer Code",
-//    T0."CardName" AS "Customer Name",
-//    T0."SlpCode",
-//    T1."DocDate" AS "Invoice Date",
-//    T1."DocDueDate" AS "Due Date",
-//    T1."DocTotal" - T1."PaidToDate" AS "Outstanding Amount",
-//    CASE
-//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') <= 30 THEN \'0-30 Days\'
-//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 31 AND 60 THEN \'31-60 Days\'
-//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 61 AND 90 THEN \'61-90 Days\'
-//        WHEN DAYS_BETWEEN(T1."DocDate", \''.$end_date.'\') BETWEEN 91 AND 120 THEN \'91-120 Days\'
-//        ELSE \'121+ Days\'
-//    END AS "Aging Period"
-//FROM
-//    AL_YASEEN_AGRI_PLIVE.OCRD T0
-//    INNER JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."CardCode" = T1."CardCode"
-//WHERE
-//    T1."DocStatus" = \'O\'
-//    AND T0."CardType" = \'C\'
-//    AND T0."frozenFor" = \'N\'
-//)
-//--WHERE "Aging Period" = \'121+ Days\'
-//GROUP BY
-//	"BPLId",
-//    "SlpCode"
-//    --"Aging Period"
-//) tbl1
-//FULL OUTER JOIN (
-//Select "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
-//FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-//WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-//GROUP BY
-//"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//) tabl2 ON tbl1."SlpCode" = tabl2."SalesEmployeeOrBuyerNumber"
-//
-//--outstanding amount per employee
-//LEFT JOIN (
-//
-//SELECT "SlpCode1" AS "SlpCode", "full_outstanding", "Outstanding_4_Months", "full_outstanding" - "Outstanding_4_Months" AS "outstanding_overdue" FROM (
-//SELECT * FROM (
-//
-//	select "SlpCode" as "SlpCode1",IFNULL(sum("Balance"), 0) AS "full_outstanding" from (
-//
-//	SELECT
-//		T0."SlpCode",
-//	    T0."CardCode" AS "Customer Code",
-//	    T0."CardName" AS "Customer Name",
-//	    SUM(T1."Debit" - T1."Credit") AS "Balance"
-//	FROM
-//	    AL_YASEEN_AGRI_PLIVE.OCRD T0
-//	INNER JOIN
-//	    AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."CardCode" = T1."ShortName"
-//	WHERE
-//	    T1."RefDate" <= \''.$end_date.'\'
-//	GROUP BY
-//	    T0."SlpCode",T0."CardCode", T0."CardName"
-//	ORDER BY
-//	    T0."CardCode"
-//
-//	)
-//	GROUP BY "SlpCode"
-//) tbl1
-//
-//LEFT JOIN (
-//
-//    SELECT "SlpCode" AS "SlpCode2", IFNULL(SUM("total"), 0) AS "Outstanding_4_Months" FROM (
-//	SELECT "BusinessPartnerCode", "BusinessPartnerName", SUM(CASE WHEN "PostingDate" >= ADD_DAYS(\''.$end_date.'\', -120) AND "PostingDate" <= \''.$end_date.'\' THEN "AgingBalanceDueLC" END) AS "total" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
-//	WHERE "PostingDate" <= \''.$end_date.'\'
-//	GROUP BY "BusinessPartnerCode", "BusinessPartnerName") tbl1
-//
-//	LEFT JOIN (SELECT "CardCode", "CardName", "SlpCode" FROM AL_YASEEN_AGRI_PLIVE."OCRD") tbl2
-//	ON tbl1."BusinessPartnerCode" = tbl2."CardCode"
-//	GROUP BY "SlpCode"
-//) tbl2
-//    ON tbl1."SlpCode1" = tbl2."SlpCode2"
-//    ) as "due_tbl"
-//
-//
-//) tbl3
-//ON tbl1."SlpCode" = tbl3."SlpCode"
-//-- end of outstanding per employee
-//
-//-- start of oldest inv
-//LEFT JOIN (
-//SELECT "SalesEmployeeOrBuyerNumber" AS "SlpCode", MIN("PostingDate") AS "oldest_inv"
-//    FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
-//WHERE "PostingDate" <= \''.$end_date.'\'
-//AND "DocumentTypeCode" = 13 -- A/R Invoice
-//GROUP BY "SalesEmployeeOrBuyerNumber"
-//) tbl4
-//ON tbl1."SlpCode" = tbl4."SlpCode"
-//-- end of oldest inv
-//
-//WHERE "BranchCode" = '.$this->area_id.'
-//';
 
             $sql2 = '
 SELECT *, (SELECT "Memo" FROM AL_YASEEN_AGRI_PLIVE.OSLP WHERE "SlpCode" = "SalesEmployeeOrBuyerNumber") as "OldCode" FROM (
@@ -530,10 +461,30 @@ ON tbl1."SlpCode" = tbl4."SlpCode"
 -- End of Balance Due -----
 
 WHERE "BranchCode" = '.$this->area_id.'
+AND "BPLId" IS NOT NULL
 ';
 
-//            dd($sql2);
+            $result_profit = odbc_exec($conn, $loss_profit_sql);
+            if (!$result_profit)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+                // echo odbc_num_rows($result);
+                // var_dump(odbc_fetch_row($result));
+//                $aa = odbc_result_all($result, "border=1");
+//                $x = odbc_fetch_object($result);
+//                $this->sap_results
+                while ($row = odbc_fetch_array($result_profit)) {
+//                    array_push($this->sap_results, $row);
+//                    array_push($this->sap_results, $row);
+                    $this->profitAndLoss = $row["ProfitAndLoss"];
+                }
 
+//                dd($this->profitAndLoss);
+            }
 
 
 
@@ -587,6 +538,8 @@ WHERE "BranchCode" = '.$this->area_id.'
 
                 $gross_collect = collect($this->sap_results2);
                 $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');
+
+
 
 //                $this->getCustomers('293', $end_date);
                 foreach ($this->slp_code as $slp) {
@@ -751,6 +704,7 @@ AND T0."CardCode" NOT IN (\'0100000\', \'0200000\', \'0300000\', \'0400000\', \'
 
 
 
+//            dd($sql_customer);
 //            dd($sql);
 
 
