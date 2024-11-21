@@ -23,6 +23,7 @@ class Report42 extends Component
     public $query;
     public $branches;
     public $profit_loss = ['2024-08' => ['3' =>['253','2997','143'], '4' => ['269','3851','137'], '5' => ['334','3130','186'], '6' => ['74','3137','117'], '7' => ['287','3738','185'], '8' => ['193', '1250', '104'], '9' => ['167','3038','145'], '10' => ['172','2227','131'], '11' => ['149','2378','185'], '12' => ['934','3845','132'], '13' => ['238','2299','146'], '14'=> ['121','1285','87']]];
+    public $cost_center = ['3' => '0101', '4' => '0102', '5' => '0103', '6' => '0104', '7' => '0105', '8' => '0106', '9' => '0107', '12' => '0110', '11' => '0109', '10' => '0108', '13' => '0111', '14' => '0112'];
 
     protected $listeners = ['create-report' => 'create_report'];
 
@@ -1032,6 +1033,7 @@ ORDER BY "BPLId"';
 (SELECT OBPL."TaxIdNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE OBPL."BPLId" = F0."BPLId") as "Code",
 "BPLName",
 "Location",
+"BranchName", "BranchCode", "NetSalesAmountLC" AS "DistSales", "NumOfCustomers" AS "DistNumOfCustomers",
 SUM("S1 Sales") AS "S1 Sales",
 SUM("S2 Sales") AS "S2 Sales",
 SUM("S1 Sales PY") AS "S1 Sales PY",
@@ -1252,82 +1254,168 @@ T3."GlblLocNum"
 
 UNION ALL
 
-SELECT
-
-\'Operating Expenses\',
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum" as "Location",
+SELECT \'Operating Expenses\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
 0,0,0,0,0,0,0,0,0,0,
-0,0,0,SUM(T0."Debit"-T0."Credit"),0,0
+0,0,0,abs(SUM("Credit Amount")-SUM("Debit Amount")), 0,0
 
-FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+FROM (
 
-JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T0."Account" = T2."AcctCode"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T4 ON T2."FatherNum" = T4."AcctCode"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T5 ON T4."FatherNum" = T5."AcctCode"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T6 ON T5."FatherNum" = T6."AcctCode" AND T2."GroupMask" IN (5,6) AND T6."AcctCode" <> \'51\'
-JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
 
-WHERE T1."RefDate" between \'' . $start_date . '\' AND \'' . $end_date . '\'
-GROUP BY
+WHERE
+"Cost Center" LIKE \'01%\'
+AND (
+"Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'8%\')
 
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum"
+GROUP BY "Cost Center"
 
 UNION ALL
 
-SELECT
-
-\'NPAT Period\',
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum" as "Location",
+SELECT \'NPAT Period\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
 0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,SUM(T0."Credit"-T0."Debit"),0
+0,0,0,0,
+SUM("Credit Amount")-SUM("Debit Amount") AS "ProfitAndLoss",0
 
-FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+FROM (
 
-JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T0."Account" = T2."AcctCode" AND T2."GroupMask" > 3
-JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
 
-WHERE T1."RefDate" between \'' . $start_date . '\' AND \'' . $end_date . '\'
-GROUP BY
+WHERE
+"Cost Center" LIKE \'01%\'
+AND ("Account Code" LIKE \'4%\'
+OR "Account Code" LIKE \'5%\'
+OR "Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'7%\'
+OR "Account Code" LIKE \'8%\')
 
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum"
+GROUP BY "Cost Center"
 
 UNION ALL
 
-SELECT
-
-\'NPAT Annual\',
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum" as "Location",
+SELECT \'NPAT Annual\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
 0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,
---SUM(T0."Credit"-T0."Debit"),
-SUM(CASE WHEN T1."RefDate" between \'2024-01-01\' AND \'' . $end_date . '\' THEN (T0."Credit"-T0."Debit") ELSE 0 END)
+SUM("Credit Amount")-SUM("Debit Amount")
 
-FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+FROM (
 
-JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
-JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T0."Account" = T2."AcctCode" AND T2."GroupMask" > 3
-JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \'2024-01-01\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
 
-WHERE T1."RefDate" <= \'' . $end_date . '\'
-GROUP BY
+WHERE
+"Cost Center" LIKE \'01%\'
+AND ("Account Code" LIKE \'4%\'
+OR "Account Code" LIKE \'5%\'
+OR "Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'7%\'
+OR "Account Code" LIKE \'8%\')
 
-T3."BPLId",
-T3."BPLName",
-T3."GlblLocNum"
+GROUP BY "Cost Center"
+
+
 
 ) F0
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", COUNT(DISTINCT "BusinessPartnerCode") AS "NumOfCustomers" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2
+ON T1."BusinessPartnerCode" = T2."CardCode"
+WHERE T2."QryGroup1" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") F1
+ON F0."BPLId" = F1."BranchCode"
+
 
 WHERE F0."BPLId" IN (SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.USR6 T0 JOIN AL_YASEEN_AGRI_PLIVE.OUSR T1 ON T0."UserCode" = T1."USER_CODE" WHERE "UserCode" = \'ctc90010.2\')
 AND F0."BPLId" IN ('. implode(', ', $sap_depts).')
@@ -1336,11 +1424,11 @@ GROUP BY
 
 "BPLId",
 "BPLName",
-"Location"
+"Location",
+"BranchName", "BranchCode", "NetSalesAmountLC", "NumOfCustomers"
+
 ORDER BY "BPLId"';
 
-
-//                dd($sql);
             $result = odbc_exec($conn, $sql);
             if (!$result)
             {
