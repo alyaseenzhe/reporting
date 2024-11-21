@@ -1407,7 +1407,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN OCRD T2
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2
 ON T1."BusinessPartnerCode" = T2."CardCode"
 WHERE T2."QryGroup1" = \'Y\'
 )
