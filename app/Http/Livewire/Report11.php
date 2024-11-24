@@ -620,7 +620,6 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
             {
 
                 if ($this->report_type == "byItem") {
-
 //                    $sql = 'SELECT * FROM (
 //SELECT
 //    T0."ItemCode" AS "ItemCode",
@@ -675,7 +674,8 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
     (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"), 0))*100 as "GrossProfitPer",
     tbl1."Speciality",
 	tbl1."SalUnitMsr",
-	tbl1."OldCode",
+	--tbl1."OldCode",
+	CASE WHEN tbl1."OldCode" IS NULL THEN tbl1."ItemCode" ELSE tbl1."OldCode" END AS "OldCode",
 	tbl1."VendorCode",
     tbl1."VendorName"
 
@@ -837,7 +837,8 @@ ORDER BY
     tbl1."Department",
     tbl1."Speciality",
 	tbl1."SalUnitMsr",
-	tbl1."OldCode",
+	--tbl1."OldCode",
+	CASE WHEN tbl1."OldCode" IS NULL THEN tbl1."ItemCode" ELSE tbl1."OldCode" END AS "OldCode",
 	tbl1."VendorCode",
     tbl1."VendorName"
 
