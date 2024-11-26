@@ -1027,15 +1027,18 @@ ORDER BY "BPLId"';
         else
         {
 
-            $sql = 'SELECT
+            $sql = '
+SELECT * FROM (
+
+SELECT
 
 "BPLId",
 (SELECT OBPL."TaxIdNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE OBPL."BPLId" = F0."BPLId") as "Code",
 "BPLName",
 "Location",
 "BranchName", "BranchCode", "NetSalesAmountLC" AS "DistSales", "NumOfCustomers" AS "DistNumOfCustomers",
-SUM("S1 Sales") AS "S1 Sales",
-SUM("S2 Sales") AS "S2 Sales",
+--SUM("S1 Sales") AS "S1 Sales-old",
+--SUM("S2 Sales") AS "S2 Sales-old",
 SUM("S1 Sales PY") AS "S1 Sales PY",
 SUM("S2 Sales PY") AS "S2 Sales PY",
 SUM("S1 Sales Year") AS "S1 Sales Year",
@@ -1062,8 +1065,9 @@ SELECT
 tbl1."BPLId",
 tbl1."BPLName",
 tbl1."Location",
-SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales",
-SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales",
+0,0,
+--SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales",
+--SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales",
 SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales PY",
 SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales PY",
 SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \'2024-01-01\' AND \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales Year",
@@ -1427,7 +1431,78 @@ GROUP BY
 "Location",
 "BranchName", "BranchCode", "NetSalesAmountLC", "NumOfCustomers"
 
-ORDER BY "BPLId"';
+ORDER BY "BPLId"
+) tbl1
+----------------------
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl2
+ON tbl1."BPLId" = tbl2."BranchCode"
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl3
+ON tbl1."BPLId" = tbl3."BranchCode"';
+
+//            dd($sql);
 
             $result = odbc_exec($conn, $sql);
             if (!$result)
