@@ -1500,7 +1500,79 @@ WHERE T2."QryGroup3" = \'Y\'
 WHERE "BranchCode" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode") tbl3
-ON tbl1."BPLId" = tbl3."BranchCode"';
+ON tbl1."BPLId" = tbl3."BranchCode"
+
+------- Year Sales 1
+LEFT JOIN (
+SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S1 Sales Year" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl4
+ON tbl1."BPLId" = tbl4."BranchCode"
+
+
+------- Year Sales 2
+LEFT JOIN (
+SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S2 Sales Year" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl5
+ON tbl1."BPLId" = tbl5."BranchCode"
+';
 
 //            dd($sql);
 
