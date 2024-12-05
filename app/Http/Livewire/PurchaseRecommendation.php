@@ -227,7 +227,7 @@ class PurchaseRecommendation extends Component
     T0."LeadTime",
     T0."U_SafetyStock",
     T0."OnOrder",
-    "tbl_Quotation"."OpenQoutation",
+    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
     T0."OnHand"
  FROM AL_YASEEN_AGRI_PLIVE.OITM T0
  INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
@@ -266,6 +266,18 @@ WHERE
     T2."DocStatus" = \'O\' -- Filters for open purchase quotation
  ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
  WHERE T1."CardCode" = \''.$vendor_type.'\'
+ AND T0."validFor" = \'Y\'
+ GROUP BY
+ T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    T0."OnHand"
  ORDER BY T1."CardCode"';
 
             }
@@ -413,7 +425,7 @@ WHERE
     T0."LeadTime",
     T0."U_SafetyStock",
     T0."OnOrder",
-    "tbl_Quotation"."OpenQoutation",
+    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
     T0."OnHand"
  FROM AL_YASEEN_AGRI_PLIVE.OITM T0
  INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
@@ -452,6 +464,18 @@ WHERE
     T2."DocStatus" = \'O\' -- Filters for open purchase quotation
  ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
  WHERE T0."ItemCode" = \''.$product_code.'\'
+ AND T0."validFor" = \'Y\'
+ GROUP BY
+ T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    T0."OnHand"
  ORDER BY T1."CardCode"';
 
             }
@@ -777,7 +801,7 @@ WHERE
     T0."LeadTime",
     T0."U_SafetyStock",
     T0."OnOrder",
-    "tbl_Quotation"."OpenQoutation",
+    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
     T0."OnHand"
  FROM AL_YASEEN_AGRI_PLIVE.OITM T0
  INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
@@ -815,6 +839,18 @@ WHERE
 
     T2."DocStatus" = \'O\' -- Filters for open purchase quotation
  ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
+ WHERE T0."validFor" = \'Y\'
+ GROUP BY
+ T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    T0."OnHand"
  ORDER BY T1."CardCode"';
 
             }
