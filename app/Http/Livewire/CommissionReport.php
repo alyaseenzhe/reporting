@@ -78,7 +78,7 @@ class CommissionReport extends Component
 '10272' =>	'mat_dev_manager2',
 '10261' =>	'mat_dev_manager2',
 '10083' =>	'mat_dev_manager2',
-'10300' =>	'mat_dev_manager2',
+'10313' =>	'mat_dev_manager2',
 '10239' =>	'mat_dev_manager1',
 '10276' =>	'store_manager',
 '10297' =>	'store_manager',
