@@ -745,8 +745,8 @@ SELECT
     	ELSE -T1."GPTtlBasPr"
     END as "GPTtlBasPr",
 	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
-    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
+    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
+    	ELSE -(T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
     END as "GrossProfitPer",
     CASE
 		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
@@ -909,8 +909,8 @@ SELECT
     	ELSE -T1."GPTtlBasPr"
     END as "GPTtlBasPr",
 	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/T1."GPTtlBasPr")*100
-    	ELSE -(T1."GrssProfit"/T1."GPTtlBasPr")*100
+    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
+    	ELSE -(T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
     END as "GrossProfitPer",
 	T2."BPLName" AS "Branch",
     T2."TaxIdNum" AS "Department",
