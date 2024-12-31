@@ -54,7 +54,9 @@ class Report42 extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function create_report($start_date, /*$end_date,*/ $dept_id) {
+    public function create_report($start_date, $end_date, $dept_id) {
+
+//        dd($start_date. "||". $end_date);
 
 //        dd(Carbon::parse($start_date)->format('Y-m'));
         set_time_limit(2000);
@@ -70,8 +72,8 @@ class Report42 extends Component
             $this->dept_id = $this->branches;
         }
 
-        $start_date = Carbon::parse($start_date)->startOfMonth()->format('Y-m-d');
-        $end_date = Carbon::parse($start_date)->endOfMonth()->format('Y-m-d');
+//        $start_date = Carbon::parse($start_date)->startOfMonth()->format('Y-m-d');
+//        $end_date = Carbon::parse($start_date)->endOfMonth()->format('Y-m-d');
 
         $this->start_date = $start_date;
         $this->end_date = $end_date;
@@ -1437,7 +1439,7 @@ ORDER BY "BPLId"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales" FROM (
 
-SELECT * FROM (
+SELECT T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -1462,6 +1464,22 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+AND T1."DocEntry" not in (175, 367)
 )
 WHERE "BranchCode" IS NOT NULL
 
@@ -1471,7 +1489,7 @@ ON tbl1."BPLId" = tbl2."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales" FROM (
 
-SELECT * FROM (
+SELECT T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -1496,6 +1514,23 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+AND T1."DocEntry" != 175
+
 )
 WHERE "BranchCode" IS NOT NULL
 
@@ -1506,7 +1541,7 @@ ON tbl1."BPLId" = tbl3."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S1 Sales Year" FROM (
 
-SELECT * FROM (
+SELECT T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -1531,6 +1566,24 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
+AND T1."DocEntry" != 175
+
+
 )
 WHERE "BranchCode" IS NOT NULL
 
@@ -1542,7 +1595,7 @@ ON tbl1."BPLId" = tbl4."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S2 Sales Year" FROM (
 
-SELECT * FROM (
+SELECT T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -1567,6 +1620,23 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
+AND T1."DocEntry" != 175
+
 )
 WHERE "BranchCode" IS NOT NULL
 
