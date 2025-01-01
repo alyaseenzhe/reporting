@@ -46,13 +46,24 @@
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-2">الشهر
+                    <label class="block font-bold mb-2">تاريخ البداية
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="start_date" type="month" onkeydown="return false" name="start_date"
+{{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
+                    <input id="start_date" type="date" min="2024-01-01" onkeydown="return false" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="w-full">
+                    <label class="block font-bold mb-2">تاريخ النهاية
+                        <span class="text-red-500">*</span>
+                    </label>
+                    {{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
+                    <input id="end_date" type="date" onkeydown="return false" name="end_date"
+                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                    @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
 {{--                <div wire:ignore class="w-full">--}}
 {{--                    <label class="block font-bold mb-2">تاريخ النهاية--}}
@@ -1014,11 +1025,11 @@
 
                 var dept_id = $('#dept_id').select2("val");
                 var start_date = $('#start_date').val();
-                // var end_date = $('#end_date').val();
+                var end_date = $('#end_date').val();
                 // alert(start_date);
 
 
-                if(start_date == '' || /*end_date == '' ||*/ (dept_id == "" || dept_id == null)) {
+                if(start_date == '' || end_date == '' || (dept_id == "" || dept_id == null)) {
                     Swal.fire({
                         title: "حدث خطأ",
                         text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
@@ -1040,7 +1051,7 @@
                         },
                     });
 
-                    Livewire.emit('create-report', start_date, /*end_date,*/ dept_id);
+                    Livewire.emit('create-report', start_date, end_date, dept_id);
                 }
             });
 
