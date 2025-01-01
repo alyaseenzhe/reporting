@@ -486,7 +486,7 @@ accmast.nodeno=accountdr  and     Area = tbl1.Nodeno and        donotupdateaccou
 (
 
 
-select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>='".$start_date."' and SIDate<='".$end_date." 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1Sales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>='" . $start_date . "' and PIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-' ) as SP1SalesReturn  ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_start_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-' ) as SP1SalesIncrease ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_start_date . "' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1SalesReturnIncrease ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_end_date . "' and SIDate<='2023-12-31 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_end_date . "' and PIDate<='2023-12-31 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1YearSalesReturn ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_2_end_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSalesIncrease ,(select
+select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>='".$start_date."' and SIDate<='".$end_date." 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1Sales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>='" . $start_date . "' and PIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-' ) as SP1SalesReturn  ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_start_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-' ) as SP1SalesIncrease ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_start_date . "' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1SalesReturnIncrease ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_end_date . " 23:59:25' and SIDate<='2023-12-31 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSales ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_end_date . " 23:59:25' and PIDate<='2023-12-31 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SRT-') as SP1YearSalesReturn ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_2_end_date . "' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And ActualVoucherprefix='SIV-') as SP1YearSalesIncrease ,(select
     sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_2_end_date . "' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo
             and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='1' And
             ActualVoucherprefix='SRT-') as SP1YearSalesReturnIncrease ,(select sum(value*exchangerate+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where
@@ -1454,6 +1454,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1479,7 +1480,8 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" not in (175, 367)
+--AND T1."DocEntry" not in (175,367)
+AND T1."DocEntry" not in (175,367,359,360,368)
 )
 WHERE "BranchCode" IS NOT NULL
 
@@ -1504,6 +1506,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1529,7 +1532,8 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" != 175
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (175,367,359,360,368)
 
 )
 WHERE "BranchCode" IS NOT NULL
@@ -1556,6 +1560,8 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+AND "DocumentNumber" not in (358,359)
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1581,7 +1587,8 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" != 175
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (157,220,175,367,359,360,368)
 
 
 )
@@ -1610,6 +1617,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1635,7 +1643,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (175,367,359,360,368)
 
 )
 WHERE "BranchCode" IS NOT NULL
