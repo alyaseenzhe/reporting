@@ -1481,7 +1481,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" not in (175,367)
-AND T1."DocEntry" not in (175,367,359,360,368)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
 )
 WHERE "BranchCode" IS NOT NULL
 
@@ -1533,7 +1533,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (175,367,359,360,368)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
 
 )
 WHERE "BranchCode" IS NOT NULL
@@ -1588,7 +1588,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (157,220,175,367,359,360,368)
+AND T1."DocEntry" not in (157,220,175,367,359,360,368,364,362,378,379)
 
 
 )
@@ -1643,7 +1643,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \'2024-01-01\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" not in (175,367,359,360,368)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
 
 )
 WHERE "BranchCode" IS NOT NULL
