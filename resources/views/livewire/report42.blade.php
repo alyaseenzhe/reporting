@@ -154,7 +154,7 @@
                         <div class="text-xs">% مستحق</div>
                     </th>
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
-                        @if ($year == 2024)
+                        @if ($year >= 2024)
                             <div class="text-xs">قيمة المستحق</div>
                         @else
                             <div class="text-xs">نسبة الآجل المستحق</div>
@@ -664,149 +664,175 @@
                     @foreach($merged as $record)
                         <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{$record["BPLName"]}}
+                                {{$record[1]["BPLName"]}}
+{{--                                {{$record[0]->arabic_name}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(floatval($record["S1 Sales"])/1000)}}
+                                @php $month_sp1 += (floatval($record[1]["S1 Sales"])/1000); @endphp
+                                {{number_format((floatval($record[1]["S1 Sales"])/1000))}}
                             </td>
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{number_format((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)}}--}}
+                            {{--                                </td>--}}
                             <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ floatval($record["S1 Sales PY"]) != 0 ? ((floatval($record["S1 Sales"]) - floatval($record["S1 Sales PY"])) / floatval($record["S1 Sales PY"])) * 100 : 0 }}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(floatval($record["S2 Sales"])/1000)}}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ floatval($record["S2 Sales PY"]) != 0 ? ((floatval($record["S2 Sales"]) - floatval($record["S2 Sales PY"])) / floatval($record["S2 Sales PY"])) * 100 : 0 }}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format((floatval($record["S1 Sales"])/1000)+(floatval($record["S2 Sales"])/1000))}}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ (floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"])) != 0 ? (((floatval($record["S1 Sales"])+floatval($record["S2 Sales"]))-(floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"]))) / (floatval($record["S1 Sales PY"])+floatval($record["S2 Sales PY"]))) : 0 }}
+                                @php $month_old_sp1 += floatval($record[1]["S1 Sales PY"]); @endphp
+                                {{--                                    {{ (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) != 0 ? number_format(((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))/(floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))*100) : 0 }}--}}
+{{--                                {{ number_format((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))) / (floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))) * 100 : 0) }}--}}
+                                                                {{ number_format(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0) }}
+                                {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                                {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                                {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                                {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
                             </td>
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(floatval($record["S1 Sales Year"])/1000)}}
+                                @php $month_sp2 += (floatval($record[1]["S2 Sales"])/1000); @endphp
+                                {{number_format((floatval($record[1]["S2 Sales"])/1000))}}
                             </td>
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{number_format((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/1000)}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S2 Sales PY"]) != 0 ? ((floatval($record[1]["S2 Sales"]) - floatval($record[1]["S2 Sales PY"])) / floatval($record[1]["S2 Sales PY"])) * 100 : 0)) }}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                            {{--                                    {{ (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)) != 0 ? number_format(((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/(floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))*100) : 0 }}--}}
+                            {{--                                </td>--}}
                             <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ (floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease)) != 0 ? ((floatval($record["S1 Sales Year"]) - (floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))) / (floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))) * 100 : 0 }}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(floatval($record["S2 Sales Year"])/1000)}}
-                            </td>
-                            <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ (floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease)) != 0 ? ((floatval($record["S2 Sales Year"]) - (floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease))) / (floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease))) * 100 : 0 }}
+                                @php $month_old_sp2 += (floatval($record[1]["S2 Sales PY"])); @endphp
+                                {{--                                    {{ (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) != 0 ? number_format(((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))/(floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))*100) : 0 }}--}}
+{{--                                {{ number_format((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0) }}--}}
+                                {{ number_format(floatval($record[1]["S2 Sales PY"]) != 0 ? ((floatval($record[1]["S2 Sales"]) - floatval($record[1]["S2 Sales PY"])) / floatval($record[1]["S2 Sales PY"])) * 100 : 0) }}
+                                {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                                {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                                {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                                {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
                             </td>
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format((floatval($record["S1 Sales Year"])/1000)+(floatval($record["S2 Sales Year"])/1000))}}
+                                @php $month_total += (floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000);  @endphp
+                                {{number_format(((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000)))}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2">
-                                {{ ((floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))+(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease))) != 0 ? (((floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"]))-((floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))+(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease)))) / ((floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))+(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease)))) : 0 }}
+                                @php $month_old_total += ((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))); @endphp
+{{--                                {{ number_format(((((floatval($record[1]["S1 Sales"]))+(floatval($record[1]["S2 Sales"])))-((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))/((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))*100) }}--}}
+                                {{ number_format((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])) != 0 ? (((floatval($record[1]["S1 Sales"])+floatval($record[1]["S2 Sales"]))-(floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) / (floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])))*100 : 0) }}
+                                {{--                                    {{ number_format((((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) + (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])) != 0 ? (((floatval($record[1]["S1 Sales"])+floatval($record[1]["S2 Sales"]))-(floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) / (floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) : 0)) }}--}}
                             </td>
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(floatval($record["Outstanding Receivables"])/1000, 2)}}
+                                {{--                            {{((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000)}}--}}
+                                @php $year_sp1 += (floatval($record[1]["S1 Sales Year"])/1000); @endphp
+{{--                                {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                                {{number_format(floatval($record[1]["S1 Sales Year"])/1000)}}
+                            </td>
+                            {{--                            <td>{{((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))}}</td>--}}
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                @php $year_old_sp1 += (floatval($record[1]["S1 Sales Year PY"])); @endphp
+{{--                                {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)))+(floatval($record[1]["S1 Sales Year"])))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))))*100) }}--}}
+                                {{ number_format(floatval($record[1]["S1 Sales Year PY"]) != 0 ? ((floatval($record[1]["S1 Sales Year"]) - floatval($record[1]["S1 Sales Year PY"])) / floatval($record[1]["S1 Sales Year PY"])) * 100 : 0) }}
+
+                                {{--                                    {{ (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0 }}--}}
+
+                                {{--                                    {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                                {{--                                    {{ number_format(((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/(floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S1 Sales Year PY"]) != 0 ? ((floatval($record[1]["S1 Sales Year"]) - floatval($record[1]["S1 Sales Year PY"])) / floatval($record[1]["S1 Sales Year PY"])) * 100 : 0)) }}--}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? number_format(((floatval($record["Outstanding Receivables"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])))*100) : 0}}
+                                @php $year_sp2 += (floatval($record[1]["S2 Sales Year"])/1000); @endphp
+
+{{--                                {{number_format(((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))/1000)+(floatval($record[1]["S2 Sales Year"])/1000))}}--}}
+                                {{number_format(floatval($record[1]["S2 Sales Year"])/1000)}}
+                            </td>
+                            {{--                            <td>{{ ((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) }}</td>--}}
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                @php $year_old_sp2 += (floatval($record[1]["S2 Sales Year PY"])); @endphp
+
+{{--                                {{ number_format(((((((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))+(floatval($record[1]["S2 Sales Year"])))-((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))))*100) }}--}}
+                                {{ number_format(floatval($record[1]["S2 Sales Year PY"]) != 0 ? ((floatval($record[1]["S2 Sales Year"]) - floatval($record[1]["S2 Sales Year PY"])) / floatval($record[1]["S2 Sales Year PY"])) * 100 : 0) }}
+                            </td>
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @php $year_total += ((floatval($record[1]["S1 Sales Year"])/1000)+(floatval($record[1]["S2 Sales Year"])/1000)); @endphp
+{{--                                {{number_format((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))/1000)+((floatval($record[1]["S1 Sales Year"])/1000)+(floatval($record[1]["S2 Sales Year"])/1000)))}}--}}
+                                {{number_format((floatval($record[1]["S1 Sales Year"])/1000)+(floatval($record[1]["S2 Sales Year"])/1000))}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format((floatval($record["Outstanding Receivables Over 120"]) / floatval($record["Outstanding Receivables"])) * 100)}}
+                                @php $year_old_total += ((floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])));  @endphp
+{{--                                {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))*100) }}--}}
+                                {{ number_format((floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])) != 0 ? (((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"]))-(floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) / (floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])))*100 : 0) }}
+                            </td>
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @php $post_total += (floatval($record[1]["Outstanding Receivables"])/1000); @endphp
+                                {{number_format((floatval($record[1]["Outstanding Receivables"])/1000), 2)}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{number_format(($record["Clean Receivables"] / $record["Outstanding Receivables"]) * 100, 2)}}
+                                @php $post_percent_post += (floatval($record[1]["S1 Sales Year"])+(floatval($record[1]["S2 Sales Year"]))); @endphp
+{{--                                {{ number_format(((floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))) != 0 ? number_format(((floatval($record[1]["Outstanding Receivables"]))/(floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))))*100)) : 0)) }}--}}
+                                {{ number_format(((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])) != 0 ? number_format(((floatval($record[1]["Outstanding Receivables"]))/(floatval($record[1]["S1 Sales Year"])+(floatval($record[1]["S2 Sales Year"])))*100)) : 0)) }}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                N/A
+                                @php $post_percent_due +=  floatval($record[1]["Outstanding Receivables Over 120"]);  @endphp
+                                {{number_format(((floatval($record[1]["Outstanding Receivables"]) != 0? (floatval($record[1]["Outstanding Receivables Over 120"]) / floatval($record[1]["Outstanding Receivables"])) : 0) * 100))}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{ number_format($record['Stock Value']) }}
+                                @php $post_value_due += ((floatval($record[1]["Outstanding Receivables Over 120"]) )/1000);  @endphp
+                                {{number_format(((floatval($record[1]["Outstanding Receivables Over 120"]) )/1000))}}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{ (floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? number_format(((floatval($record["Stock Value"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])))*100) : 0 }}
+                                @php $stock_value += ($record[1]['Stock Value'])/1000; @endphp
+                                {{ number_format(($record[1]['Stock Value'])/1000) }}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{ floatval($record["Stock Value"]) != 0 ? number_format((floatval($record["COGS"])/floatval($record["Stock Value"]))*100, 2) : 0 }}
+                                {{--                                {{ number_format((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0? (100*(((floatval($record[0]->InpuCost) - floatval($record[0]->OutPutCost))/1000)/((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))/1000)))) : 0)+((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/(floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])))*100) : 0)) }}--}}
+                                @php $stock_year_sales += (floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])); @endphp
+{{--                                {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
+                                {{ (floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/(floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"])))*100) : 0 }}
+                            </td>
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    @php $stock_tadweer += floatval($record[1]["COGS"]);  @endphp--}}
+                            {{--                                    {{ (floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0) }}--}}
+                            {{--                                </td>--}}
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @php $DistNumOfCustomers += floatval($record[1]["DistNumOfCustomers"]);  @endphp
+                                {{ $record[1]["DistNumOfCustomers"] }}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @php $DistSales += floatval($record[1]["DistSales"]/1000);  @endphp
+                                {{ number_format(floatval($record[1]["DistSales"])/1000) }}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                {{ number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) }}
                             </td>
                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                                    {{ number_format($record['NPAT Period']/1000, 2) }}
+                                    @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                        @php $profit_period += ($profit_loss['2024-08'][$record[1]["BPLId"]][0]); @endphp
+                                        {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][0])) }}
+                                    @else
+                                        @php $profit_period += ($record[1]['NPAT Period']/1000); @endphp
+                                        {{ number_format(($record[1]['NPAT Period']/1000)) }}
+                                    @endif
                                 </td>
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                                    {{ number_format($record['NPAT Annual']/1000, 2) }}
+                                    @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                        @php $profit_year += ($profit_loss['2024-08'][$record[1]["BPLId"]][1]);  @endphp
+                                        {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][1])) }}
+                                    @else
+                                        @php $profit_year += (((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000;  @endphp
+                                        {{ number_format((($record[1]['NPAT Annual']))/1000) }}
+                                    @endif
                                 </td>
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                                    {{ number_format($record['Operating Expenses']/1000, 2) }}
+                                    @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
+                                        @php $ope_expenses += ($profit_loss['2024-08'][$record[1]["BPLId"]][2]); @endphp
+                                        {{ number_format(($profit_loss['2024-08'][$record[1]["BPLId"]][2])) }}
+                                    @else
+                                        @php $ope_expenses += ($record[1]['Operating Expenses']/1000); @endphp
+                                        {{ number_format(($record[1]['Operating Expenses']/1000)) }}
+                                    @endif
                                 </td>
                             @endif
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/1000)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-                            {{--                            {{ number_format((((floatval($record->SP2Sales) - floatval($record->SP2SalesReturn))/(floatval($record->SP2SalesIncrease) - floatval($record->SP2SalesReturnIncrease)))-1)*100) }}--}}
-                            {{--                        </td>--}}
-
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format(((floatval($record->SP1Sales) - floatval($record->SP1SalesReturn)) + (floatval($record->SP2Sales) - floatval($record->SP2SalesReturn)))/1000)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-                            {{--                            {{ number_format(((((floatval($record->SP1Sales) - floatval($record->SP1SalesReturn)) + (floatval($record->SP2Sales) - floatval($record->SP2SalesReturn)))/((floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease))+(floatval($record->SP2SalesIncrease) - floatval($record->SP2SalesReturnIncrease))))-1)*100) }}--}}
-                            {{--                        </td>--}}
-
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn))/1000)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-                            {{--                            {{ number_format((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn))/(floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease)))-1)*100) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format((floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn))/1000)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-                            {{--                            {{ number_format((((floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn))/(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease)))-1)*100) }}--}}
-                            {{--                        </td>--}}
-
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format(((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2">--}}
-                            {{--                            {{ number_format(((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/((floatval($record->SP1YearSalesIncrease) - floatval($record->SP1YearSalesReturnIncrease))+(floatval($record->SP2YearSalesIncrease) - floatval($record->SP2YearSalesReturnIncrease))))-1)*100) }}--}}
-                            {{--                        </td>--}}
-
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format((floatval($record->DebitCustomers))/1000, 2)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((100*((floatval($record->DebitCustomers)))/1000)/(((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format(100*(floatval($record->DueBalance)/floatval($record->DebitCustomers)))}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format(100*((floatval($record->DebitCustomers))/1000)/((floatval($record->SPYearSalesNotCash) - floatval($record->SPYearSalesReturnNotCash))/1000), 2) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->SPYearSalesNotCash) - floatval($record->SPYearSalesReturnNotCash))/1000) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format(100*(((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000)/((((floatval($record->SP1YearSales) - floatval($record->SP1YearSalesReturn)) + (floatval($record->SP2YearSales) - floatval($record->SP2YearSalesReturn)))/1000)))) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->YearCOGS)/((floatval($record->InpuCost) - floatval($record->OutPutCost))/1000))/1000, 2) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->TotalIncome) - floatval($record->TotalExpenses))/1000, 2) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->YearTotalIncome) - floatval($record->YearTotalExpenses))/1000) }}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{ number_format((floatval($record->TotalExpenses) - floatval($record->COGS))/1000, 2) }}--}}
-                            {{--                        </td>--}}
                         </tr>
                         @php $counter++ @endphp
                     @endforeach
@@ -815,168 +841,332 @@
 
                 @if ($year == 2024)
                     <tfoot>
+                        <tr style="border-top: 2px solid black; background-color: #ffeacd; font-weight: bold;" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            المجموع
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        {{number_format(floatval($month_sp1))}}--}}
+                            {{ number_format($month_sp1) }}
+                        </td>
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                    {{number_format((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)}}--}}
+                        {{--                                </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+
+                            {{--                        {{ $month_old_sp1 }}--}}
+                            {{--                                    {{ (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) != 0 ? number_format(((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))/(floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))*100) : 0 }}--}}
+                            {{ number_format( $month_old_sp1 != 0 ? ((floatval($month_sp1) - (floatval($month_old_sp1/1000))) / (floatval($month_old_sp1/1000))) * 100 : 0) }}
+                            {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                            {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($month_sp2) }}
+                            {{--                        @php $month_sp2 += (floatval($record[1]["S2 Sales"])/1000); @endphp--}}
+                            {{--                        {{number_format((floatval($record[1]["S2 Sales"])/1000))}}--}}
+                        </td>
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                    {{number_format((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/1000)}}--}}
+                        {{--                                </td>--}}
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                    {{ number_format(((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S2 Sales PY"]) != 0 ? ((floatval($record[1]["S2 Sales"]) - floatval($record[1]["S2 Sales PY"])) / floatval($record[1]["S2 Sales PY"])) * 100 : 0)) }}--}}
+                        {{--                                </td>--}}
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                    {{ (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)) != 0 ? number_format(((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/(floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))*100) : 0 }}--}}
+                        {{--                                </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $month_old_sp2 != 0 ? ((floatval($month_sp2) - (floatval($month_old_sp2/1000))) / (floatval($month_old_sp2/1000))) * 100 : 0) }}
+                            {{--                        @php $month_old_sp2 += (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)); @endphp--}}
+                            {{--                        --}}
+                            {{--                        {{ number_format((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0) }}--}}
+
+                            {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                            {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        @php $month_total += (floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000);  @endphp--}}
+                            {{number_format($month_total)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{--                        @php $month_old_total += ((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))); @endphp--}}
+                            {{ number_format(((((floatval($month_sp1))+(floatval($month_sp2)))-($month_old_total/1000))/($month_old_total/1000))*100) }}
+
+                            {{--                                    {{ number_format((((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) + (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])) != 0 ? (((floatval($record[1]["S1 Sales"])+floatval($record[1]["S2 Sales"]))-(floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) / (floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) : 0)) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+
+                            {{ number_format($year_sp1) }}
+                            {{--                        {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                        </td>
+                        {{--                            <td>{{((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))}}</td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $year_old_sp1 != 0 ? ((floatval($year_sp1) - (floatval($year_old_sp1/1000))) / (floatval($year_old_sp1/1000))) * 100 : 0) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)))+(floatval($record[1]["S1 Sales Year"])))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))))*100) }}--}}
+
+                            {{--                                    {{ (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0 }}--}}
+
+                            {{--                                    {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/(floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S1 Sales Year PY"]) != 0 ? ((floatval($record[1]["S1 Sales Year"]) - floatval($record[1]["S1 Sales Year PY"])) / floatval($record[1]["S1 Sales Year PY"])) * 100 : 0)) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($year_sp2) }}
+                            {{--                        {{number_format(((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))/1000)+(floatval($record[1]["S2 Sales Year"])/1000))}}--}}
+                        </td>
+                        {{--                            <td>{{ ((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) }}</td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $year_old_sp2 != 0 ? ((floatval($year_sp2) - (floatval($year_old_sp2/1000))) / (floatval($year_old_sp2/1000))) * 100 : 0) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))+(floatval($record[1]["S2 Sales Year"])))-((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))))*100) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format($year_total)}}
+                            {{--                        {{number_format((((floatval($year_sp1)) + (floatval($year_old_sp2)))/1000)+(($year_sp1)+($year_sp2)))}}--}}
+                        </td>
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                {{ (floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)) }}--}}
+                        {{--                                kkk{{ ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))-1)*100}}--}}
+
+
+                        {{--                                --}}{{--                                    {{ number_format((((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])) != 0 ? (((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"]))-(floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) / (floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) : 0)) }}--}}
+                        {{--                            </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(((($year_total)-($year_old_total/1000))/($year_old_total/1000))*100) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))*100) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((floatval($post_total)), 2)}}
+                            {{--                        {{number_format((floatval($record[1]["Outstanding Receivables"])/1000), 2)}}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(($post_percent_post/1000 != 0 ? number_format(((floatval($post_total))/($post_percent_post/1000)*100)) : 0)) }}
+                            {{--                        {{ number_format(((floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))) != 0 ? number_format(((floatval($record[1]["Outstanding Receivables"]))/(floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))))*100)) : 0)) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((($post_total != 0? (floatval($post_percent_due/1000) / floatval($post_total)) : 0) * 100))}}
+                            {{--                        {{number_format(((floatval($record[1]["Outstanding Receivables"]) != 0? (floatval($record[1]["Outstanding Receivables Over 120"]) / floatval($record[1]["Outstanding Receivables"])) : 0) * 100))}}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format($post_value_due)}}
+                            {{--                        {{number_format(((floatval($record[1]["Outstanding Receivables Over 120"]) )/1000))}}--}}
+                        </td>
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{ number_format((($record[1]["Outstanding Receivables"] != 0? ($record[1]["Clean Receivables"] / $record[1]["Outstanding Receivables"]) : 0) * 100), 2) }}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{ number_format((0)) }}--}}
+                        {{--                            </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($stock_value) }}
+                            {{--                        {{ number_format(($record[1]['Stock Value'])/1000) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        @php $stock_year_sales += ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))); @endphp--}}
+                            {{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
+                            {{--                        {{ $stock_year_sales }}--}}
+                            {{ ($stock_year_sales) != 0 ? number_format((((floatval($stock_value))/($stock_year_sales/1000)))*100) : 0 }}
+                            {{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
+                        </td>
+                        {{--                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                        {{ floatval($stock_value) != 0 ? number_format(((floatval($stock_tadweer)/floatval($stock_value))/1000)*100, 2) : 0 }}--}}
+                        {{--                    </td>--}}
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($DistNumOfCustomers))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($DistSales))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ floatval($month_total) != 0 ? number_format(((floatval($DistSales)/floatval($month_total))/1000)*100) : 0 }}
+                        </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($profit_period) }}
+                                {{--                            {{ number_format(($record[1]['NPAT Period']/1000), 2) }}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($profit_year) }}
+                                {{--                            {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($ope_expenses) }}
+                                {{--                            {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}--}}
+                            </td>
+                        @endif
+                    </tr>
+                    </tfoot>
+                @elseif ($year == 2025)
+                    <tfoot>
                     <tr style="border-top: 2px solid black; background-color: #ffeacd; font-weight: bold;" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        المجموع
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-{{--                        {{number_format(floatval($month_sp1))}}--}}
-                        {{ number_format($month_sp1) }}
-                    </td>
-                    {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                    {{--                                    {{number_format((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)}}--}}
-                    {{--                                </td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2">
-
-{{--                        {{ $month_old_sp1 }}--}}
-                        {{--                                    {{ (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) != 0 ? number_format(((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))/(floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))*100) : 0 }}--}}
-                        {{ number_format( $month_old_sp1 != 0 ? ((floatval($month_sp1) - (floatval($month_old_sp1/1000))) / (floatval($month_old_sp1/1000))) * 100 : 0) }}
-                        {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
-                        {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
-                        {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
-                        {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
-                    </td>
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format($month_sp2) }}
-{{--                        @php $month_sp2 += (floatval($record[1]["S2 Sales"])/1000); @endphp--}}
-{{--                        {{number_format((floatval($record[1]["S2 Sales"])/1000))}}--}}
-                    </td>
-                    {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                    {{--                                    {{number_format((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/1000)}}--}}
-                    {{--                                </td>--}}
-                    {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
-                    {{--                                    {{ number_format(((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S2 Sales PY"]) != 0 ? ((floatval($record[1]["S2 Sales"]) - floatval($record[1]["S2 Sales PY"])) / floatval($record[1]["S2 Sales PY"])) * 100 : 0)) }}--}}
-                    {{--                                </td>--}}
-                    {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
-                    {{--                                    {{ (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)) != 0 ? number_format(((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/(floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))*100) : 0 }}--}}
-                    {{--                                </td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2">
-                        {{ number_format( $month_old_sp2 != 0 ? ((floatval($month_sp2) - (floatval($month_old_sp2/1000))) / (floatval($month_old_sp2/1000))) * 100 : 0) }}
-{{--                        @php $month_old_sp2 += (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)); @endphp--}}
-{{--                        --}}
-{{--                        {{ number_format((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0) }}--}}
-
-                        {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
-                        {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
-                        {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
-                        {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
-                    </td>
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-{{--                        @php $month_total += (floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000);  @endphp--}}
-                        {{number_format($month_total)}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2">
-{{--                        @php $month_old_total += ((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))); @endphp--}}
-                        {{ number_format(((((floatval($month_sp1))+(floatval($month_sp2)))-($month_old_total/1000))/($month_old_total/1000))*100) }}
-
-                        {{--                                    {{ number_format((((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) + (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])) != 0 ? (((floatval($record[1]["S1 Sales"])+floatval($record[1]["S2 Sales"]))-(floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) / (floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) : 0)) }}--}}
-                    </td>
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-
-                        {{ number_format($year_sp1) }}
-{{--                        {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
-                    </td>
-                    {{--                            <td>{{((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))}}</td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2">
-                        {{ number_format( $year_old_sp1 != 0 ? ((floatval($year_sp1) - (floatval($year_old_sp1/1000))) / (floatval($year_old_sp1/1000))) * 100 : 0) }}
-{{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)))+(floatval($record[1]["S1 Sales Year"])))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))))*100) }}--}}
-
-                        {{--                                    {{ (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0 }}--}}
-
-                        {{--                                    {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
-                        {{--                                    {{ number_format(((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/(floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S1 Sales Year PY"]) != 0 ? ((floatval($record[1]["S1 Sales Year"]) - floatval($record[1]["S1 Sales Year PY"])) / floatval($record[1]["S1 Sales Year PY"])) * 100 : 0)) }}--}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format($year_sp2) }}
-{{--                        {{number_format(((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))/1000)+(floatval($record[1]["S2 Sales Year"])/1000))}}--}}
-                    </td>
-                    {{--                            <td>{{ ((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) }}</td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2">
-                        {{ number_format( $year_old_sp2 != 0 ? ((floatval($year_sp2) - (floatval($year_old_sp2/1000))) / (floatval($year_old_sp2/1000))) * 100 : 0) }}
-{{--                        {{ number_format(((((((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))+(floatval($record[1]["S2 Sales Year"])))-((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))))*100) }}--}}
-                    </td>
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{number_format($year_total)}}
-{{--                        {{number_format((((floatval($year_sp1)) + (floatval($year_old_sp2)))/1000)+(($year_sp1)+($year_sp2)))}}--}}
-                    </td>
-                    {{--                            <td style="border-left: 2px solid black;" class="border p-2">--}}
-                    {{--                                {{ (floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)) }}--}}
-                    {{--                                kkk{{ ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))-1)*100}}--}}
-
-
-                    {{--                                --}}{{--                                    {{ number_format((((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])) != 0 ? (((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"]))-(floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) / (floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) : 0)) }}--}}
-                    {{--                            </td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format(((($year_total)-($year_old_total/1000))/($year_old_total/1000))*100) }}
-{{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))*100) }}--}}
-                    </td>
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{number_format((floatval($post_total)), 2)}}
-{{--                        {{number_format((floatval($record[1]["Outstanding Receivables"])/1000), 2)}}--}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format(($post_percent_post/1000 != 0 ? number_format(((floatval($post_total))/($post_percent_post/1000)*100)) : 0)) }}
-{{--                        {{ number_format(((floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))) != 0 ? number_format(((floatval($record[1]["Outstanding Receivables"]))/(floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))))*100)) : 0)) }}--}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{number_format((($post_total != 0? (floatval($post_percent_due/1000) / floatval($post_total)) : 0) * 100))}}
-{{--                        {{number_format(((floatval($record[1]["Outstanding Receivables"]) != 0? (floatval($record[1]["Outstanding Receivables Over 120"]) / floatval($record[1]["Outstanding Receivables"])) : 0) * 100))}}--}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{number_format($post_value_due)}}
-{{--                        {{number_format(((floatval($record[1]["Outstanding Receivables Over 120"]) )/1000))}}--}}
-                    </td>
-                    {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                    {{--                                {{ number_format((($record[1]["Outstanding Receivables"] != 0? ($record[1]["Clean Receivables"] / $record[1]["Outstanding Receivables"]) : 0) * 100), 2) }}--}}
-                    {{--                            </td>--}}
-                    {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                    {{--                                {{ number_format((0)) }}--}}
-                    {{--                            </td>--}}
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format($stock_value) }}
-{{--                        {{ number_format(($record[1]['Stock Value'])/1000) }}--}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-{{--                        @php $stock_year_sales += ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))); @endphp--}}
-{{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
-{{--                        {{ $stock_year_sales }}--}}
-                        {{ ($stock_year_sales) != 0 ? number_format((((floatval($stock_value))/($stock_year_sales/1000)))*100) : 0 }}
-{{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
-                    </td>
-{{--                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                        {{ floatval($stock_value) != 0 ? number_format(((floatval($stock_tadweer)/floatval($stock_value))/1000)*100, 2) : 0 }}--}}
-{{--                    </td>--}}
-
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format(floatval($DistNumOfCustomers))}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ number_format(floatval($DistSales))}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{ floatval($month_total) != 0 ? number_format(((floatval($DistSales)/floatval($month_total))/1000)*100) : 0 }}
-                    </td>
-                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                            {{ number_format($profit_period) }}
-{{--                            {{ number_format(($record[1]['NPAT Period']/1000), 2) }}--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            المجموع
                         </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                            {{ number_format($profit_year) }}
-{{--                            {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        {{number_format(floatval($month_sp1))}}--}}
+                            {{ number_format($month_sp1) }}
                         </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
-                            {{ number_format($ope_expenses) }}
-{{--                            {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}--}}
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                    {{number_format((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)}}--}}
+                        {{--                                </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+
+                            {{--                        {{ $month_old_sp1 }}--}}
+                            {{--                                    {{ (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) != 0 ? number_format(((floatval($record[1]["S1 Sales"]) - (floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))/(floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)))*100) : 0 }}--}}
+                            {{ number_format( $month_old_sp1 != 0 ? ((floatval($month_sp1) - (floatval($month_old_sp1/1000))) / (floatval($month_old_sp1/1000))) * 100 : 0) }}
+                            {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                            {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
                         </td>
-                    @endif
-                </tr>
-                </tfoot>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($month_sp2) }}
+                            {{--                        @php $month_sp2 += (floatval($record[1]["S2 Sales"])/1000); @endphp--}}
+                            {{--                        {{number_format((floatval($record[1]["S2 Sales"])/1000))}}--}}
+                        </td>
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                    {{number_format((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/1000)}}--}}
+                        {{--                                </td>--}}
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                    {{ number_format(((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn))/(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S2 Sales PY"]) != 0 ? ((floatval($record[1]["S2 Sales"]) - floatval($record[1]["S2 Sales PY"])) / floatval($record[1]["S2 Sales PY"])) * 100 : 0)) }}--}}
+                        {{--                                </td>--}}
+                        {{--                                <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                    {{ (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)) != 0 ? number_format(((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/(floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))*100) : 0 }}--}}
+                        {{--                                </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $month_old_sp2 != 0 ? ((floatval($month_sp2) - (floatval($month_old_sp2/1000))) / (floatval($month_old_sp2/1000))) * 100 : 0) }}
+                            {{--                        @php $month_old_sp2 += (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)); @endphp--}}
+                            {{--                        --}}
+                            {{--                        {{ number_format((floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0) }}--}}
+
+                            {{--                                    {{ number_format((((floatval($record[1]["S1 Sales"]))/(floatval($record->SP1SalesIncrease) - floatval($record->SP1SalesReturnIncrease)))-1)*100) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) != 0 ? (floatval($record[1]["S1 Sales"])/1000) - ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000) / ((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/1000)*100 : 0) }}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100) : 0) +(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                            {{--                            {{ number_format(((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn))/(floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease)))-1)*100)+(floatval($record[1]["S1 Sales PY"]) != 0 ? ((floatval($record[1]["S1 Sales"]) - floatval($record[1]["S1 Sales PY"])) / floatval($record[1]["S1 Sales PY"])) * 100 : 0)) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        @php $month_total += (floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000);  @endphp--}}
+                            {{number_format($month_total)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{--                        @php $month_old_total += ((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))); @endphp--}}
+                            {{ number_format(((((floatval($month_sp1))+(floatval($month_sp2)))-($month_old_total/1000))/($month_old_total/1000))*100) }}
+
+                            {{--                                    {{ number_format((((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1Sales) - floatval($record[0]->SP1SalesReturn)) + (floatval($record[0]->SP2Sales) - floatval($record[0]->SP2SalesReturn)))/((floatval($record[0]->SP1SalesIncrease) - floatval($record[0]->SP1SalesReturnIncrease))+(floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"])) != 0 ? (((floatval($record[1]["S1 Sales"])+floatval($record[1]["S2 Sales"]))-(floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) / (floatval($record[1]["S1 Sales PY"])+floatval($record[1]["S2 Sales PY"]))) : 0)) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+
+                            {{ number_format($year_sp1) }}
+                            {{--                        {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                        </td>
+                        {{--                            <td>{{((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))}}</td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $year_old_sp1 != 0 ? ((floatval($year_sp1) - (floatval($year_old_sp1/1000))) / (floatval($year_old_sp1/1000))) * 100 : 0) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)))+(floatval($record[1]["S1 Sales Year"])))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))))*100) }}--}}
+
+                            {{--                                    {{ (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease)) != 0 ? ((floatval($record[1]["S2 Sales"]) - (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) / (floatval($record[0]->SP2SalesIncrease) - floatval($record[0]->SP2SalesReturnIncrease))) * 100 : 0 }}--}}
+
+                            {{--                                    {{number_format(((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/1000)+(floatval($record[1]["S1 Sales Year"])/1000))}}--}}
+                            {{--                                    {{ number_format(((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)) != 0 ? ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))/(floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease)))-1)*100) : 0)+(floatval($record[1]["S1 Sales Year PY"]) != 0 ? ((floatval($record[1]["S1 Sales Year"]) - floatval($record[1]["S1 Sales Year PY"])) / floatval($record[1]["S1 Sales Year PY"])) * 100 : 0)) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($year_sp2) }}
+                            {{--                        {{number_format(((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))/1000)+(floatval($record[1]["S2 Sales Year"])/1000))}}--}}
+                        </td>
+                        {{--                            <td>{{ ((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) }}</td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ number_format( $year_old_sp2 != 0 ? ((floatval($year_sp2) - (floatval($year_old_sp2/1000))) / (floatval($year_old_sp2/1000))) * 100 : 0) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))+(floatval($record[1]["S2 Sales Year"])))-((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))))*100) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format($year_total)}}
+                            {{--                        {{number_format((((floatval($year_sp1)) + (floatval($year_old_sp2)))/1000)+(($year_sp1)+($year_sp2)))}}--}}
+                        </td>
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2">--}}
+                        {{--                                {{ (floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)) }}--}}
+                        {{--                                kkk{{ ((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/(((floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease)))-1)*100}}--}}
+
+
+                        {{--                                --}}{{--                                    {{ number_format((((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))) != 0 ? (((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))-1)*100) : 0)+((floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"])) != 0 ? (((floatval($record[1]["S1 Sales Year"])+floatval($record[1]["S2 Sales Year"]))-(floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) / (floatval($record[1]["S1 Sales Year PY"])+floatval($record[1]["S2 Sales Year PY"]))) : 0)) }}--}}
+                        {{--                            </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(((($year_total)-($year_old_total/1000))/($year_old_total/1000))*100) }}
+                            {{--                        {{ number_format(((((((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn)) + (floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))+((floatval($record[1]["S1 Sales Year"]))+(floatval($record[1]["S2 Sales Year"]))))-((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))/((floatval($record[0]->SP1YearSalesIncrease) - floatval($record[0]->SP1YearSalesReturnIncrease))+(floatval($record[0]->SP2YearSalesIncrease) - floatval($record[0]->SP2YearSalesReturnIncrease))))*100) }}--}}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((floatval($post_total)), 2)}}
+                            {{--                        {{number_format((floatval($record[1]["Outstanding Receivables"])/1000), 2)}}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ ($post_percent_post/1000 != 0 ? number_format((floatval($post_total)/($post_percent_post/1000)*100)) : 0) }}
+                            {{--                        {{ number_format(((floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))) != 0 ? number_format(((floatval($record[1]["Outstanding Receivables"]))/(floatval(($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval(($record[1]["S2 Sales Year"]))+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn)))))*100)) : 0)) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format((($post_total != 0? (floatval($post_percent_due/1000) / floatval($post_total)) : 0) * 100))}}
+                            {{--                        {{number_format(((floatval($record[1]["Outstanding Receivables"]) != 0? (floatval($record[1]["Outstanding Receivables Over 120"]) / floatval($record[1]["Outstanding Receivables"])) : 0) * 100))}}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{number_format($post_value_due)}}
+                            {{--                        {{number_format(((floatval($record[1]["Outstanding Receivables Over 120"]) )/1000))}}--}}
+                        </td>
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{ number_format((($record[1]["Outstanding Receivables"] != 0? ($record[1]["Clean Receivables"] / $record[1]["Outstanding Receivables"]) : 0) * 100), 2) }}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{ number_format((0)) }}--}}
+                        {{--                            </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($stock_value) }}
+                            {{--                        {{ number_format(($record[1]['Stock Value'])/1000) }}--}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{--                        @php $stock_year_sales += ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))); @endphp--}}
+                            {{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
+                            {{--                        {{ $stock_year_sales }}--}}
+                            {{ ($stock_year_sales) != 0 ? number_format((((floatval($stock_value))/($stock_year_sales/1000)))*100) : 0 }}
+                            {{--                        {{ ((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))) != 0 ? number_format(((floatval($record[1]["Stock Value"]))/((floatval($record[1]["S1 Sales Year"])+((floatval($record[0]->SP1YearSales) - floatval($record[0]->SP1YearSalesReturn))))+(floatval($record[1]["S2 Sales Year"])+((floatval($record[0]->SP2YearSales) - floatval($record[0]->SP2YearSalesReturn))))))*100) : 0 }}--}}
+                        </td>
+                        {{--                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                        {{ floatval($stock_value) != 0 ? number_format(((floatval($stock_tadweer)/floatval($stock_value))/1000)*100, 2) : 0 }}--}}
+                        {{--                    </td>--}}
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($DistNumOfCustomers))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($DistSales))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ floatval($month_total) != 0 ? number_format(((floatval($DistSales)/floatval($month_total))/1000)*100) : 0 }}
+                        </td>
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($profit_period) }}
+                                {{--                            {{ number_format(($record[1]['NPAT Period']/1000), 2) }}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($profit_year) }}
+                                {{--                            {{ number_format((((floatval($record[0]->YearTotalIncome) - floatval($record[0]->YearTotalExpenses)))+($record[1]['NPAT Annual']))/1000) }}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
+                                {{ number_format($ope_expenses) }}
+                                {{--                            {{ number_format(($record[1]['Operating Expenses']/1000), 2) }}--}}
+                            </td>
+                        @endif
+                    </tr>
+                    </tfoot>
                 @endif
             </table>
         </div>

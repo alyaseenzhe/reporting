@@ -149,7 +149,7 @@ class Report42 extends Component
                     ->all();
             }
             elseif ($this->year == 2025) {
-//                dd('2025');
+//                dd('2024');
 //            elseif ($start_date <= '2023-12-31' && $end_date <= '2023-12-31') {
                 // only scribes
 //                dd('only scribes');
@@ -158,20 +158,48 @@ class Report42 extends Component
                 $this->scribes_results = [];
                 $this->sap_results = [];
 
-                $this->scribesQuery($start_date, $end_date, $dept_id);
-                $this->sapQuery($start_date, $end_date, $dept_id);
+//                $this->scribesQuery2024($start_date, $end_date, $dept_id);
+                $this->scribesQuery2024($start_date, $end_date, $this->dept_id);
+                $this->sapQuery2025($start_date, $end_date, $this->dept_id);
+//                $this->sapQuery2024($start_date, $end_date, $dept_id);
 
                 $this->scribes_results = collect($this->scribes_results);
                 $this->sap_results = collect($this->sap_results);
+//                dd($this->sap_results);
 //                    $x = $this->scribes_results->merge($this->sap_results);
 //                    dd($x);
 
-                $this->merged = $this->scribes_results->merge($this->sap_results)
+                $this->merged = $this->scribes_results->where('Code', '!=', '0155')->merge($this->sap_results)->sortBy('Code')
                     ->groupBy('Code')
                     ->values()
                     ->all();
-//                    dd($this->merged);
+
+//                dd($this->merged);
             }
+//            elseif ($this->year == 2025) {
+////                dd('2025');
+////            elseif ($start_date <= '2023-12-31' && $end_date <= '2023-12-31') {
+//                // only scribes
+////                dd('only scribes');
+//
+//
+//                $this->scribes_results = [];
+//                $this->sap_results = [];
+//
+//                $this->scribesQuery($start_date, $end_date, $dept_id);
+//                $this->sapQuery($start_date, $end_date, $dept_id);
+//
+//                $this->scribes_results = collect($this->scribes_results);
+//                $this->sap_results = collect($this->sap_results);
+////                    $x = $this->scribes_results->merge($this->sap_results);
+////                    dd($x);
+//
+//                $this->merged = $this->scribes_results->merge($this->sap_results)
+//                    ->groupBy('Code')
+//                    ->values()
+//                    ->all();
+////                    dd($this->merged);
+//            }
 //            else {
 //                // scribes & sap
 ////                dd('scribes & sap');
@@ -1670,6 +1698,929 @@ ON tbl1."BPLId" = tbl5."BranchCode"
 
             }
             odbc_close($conn);
+        }
+//        }
+
+    }
+
+    public function sapQuery2025($start_date, $end_date, $departments) {
+
+//        dd($departments);
+//        if (count($this->sap_codes) > 0) {
+        $depts = ['3' => '3', '10' => '4', '7' =>'5', '13' =>'6', '4' =>'7', '6' => '8', '5' => '9', '12' => '10', '11' => '11', '9' => '12', '8' => '13', '505' => '14'];
+        $sap_depts = [];
+        foreach ($departments as $department) {
+//            dd($department);
+            array_push($sap_depts, $depts[$department]);
+        }
+
+        $previous_start_date = Carbon::parse($end_date)->subYear()->format('Y-m-d');
+//        $sap_depts = $departments;
+
+//        dd($sap_depts);
+
+//        if (in_array('dept_all', $departments)) {
+////            dd($this->dept_id);
+////            $sap_depts = $depts;
+//            $sap_depts = $this->dept_id;
+//        }
+//        else {
+//            foreach ($departments as $department) {
+//                array_push($sap_depts, $depts[$department]);
+//            }
+//        }
+
+//        dd(implode(', ', $sap_depts));
+//        dd($sap_depts);
+
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+
+// Host
+// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
+        $host = env('DB_HOST_FOURTH');
+
+// Default name of your hana instance
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+// Try to connect
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn)
+        {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+        }
+        else
+        {
+
+            $sql = '
+SELECT * FROM (
+
+SELECT
+
+"BPLId",
+(SELECT OBPL."TaxIdNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE OBPL."BPLId" = F0."BPLId") as "Code",
+"BPLName",
+"Location",
+"BranchName", "BranchCode", "NetSalesAmountLC" AS "DistSales", "NumOfCustomers" AS "DistNumOfCustomers",
+--SUM("S1 Sales") AS "S1 Sales-old",
+--SUM("S2 Sales") AS "S2 Sales-old",
+SUM("S1 Sales PY") AS "S1 Sales PYX",
+SUM("S2 Sales PY") AS "S2 Sales PYX",
+SUM("S1 Sales Year") AS "S1 Sales YearX",
+SUM("S2 Sales Year") AS "S2 Sales YearX",
+SUM("S1 Sales Year PY") AS "S1 Sales Year PYX",
+SUM("S2 Sales Year PY") AS "S2 Sales Year PYX",
+SUM("Outstanding Receivables") AS "Outstanding Receivables",
+SUM("Outstanding Receivables Over 120") AS "Outstanding Receivables Over 120",
+SUM("Stock Value") AS "Stock Value",
+SUM("Clean Receivables") AS "Clean Receivables",
+SUM("COGS") AS "COGS",
+SUM("Operating Expenses") AS "Operating Expenses",
+SUM("NPAT Period") AS "NPAT Period",
+SUM("NPAT Annual") AS "NPAT Annual"
+
+FROM
+
+(
+
+/*Sales Data*/
+
+SELECT
+\'Sales\' AS "ROWID",
+tbl1."BPLId",
+tbl1."BPLName",
+tbl1."Location",
+0,0,
+--SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales",
+--SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between \'' . $start_date . '\' and \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales PY",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(\'' . $start_date . '\',-1) and ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales PY",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between \''.$previous_start_date.'\' AND \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales Year",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between \''.$previous_start_date.'\' AND \'' . $end_date . '\' THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales Year",
+SUM(CASE WHEN "QryGroup2" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S1 Sales Year PY",
+SUM(CASE WHEN "QryGroup3" = \'Y\' AND tbl1."DocDate" between ADD_YEARS(ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365),-1) AND ADD_YEARS(\'' . $end_date . '\',-1) THEN (CASE WHEN tbl1."BaseRef" != \'\' THEN (-tbl1."LineTotal"- (-tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) ELSE (tbl1."LineTotal"- (tbl1."LineTotal"*(tbl1."DiscPrcnt"/100))) END) END) AS "S2 Sales Year PY",
+0 AS "Outstanding Receivables",
+0 AS "Outstanding Receivables Over 120",
+0 AS "Stock Value",
+0 AS "Clean Receivables",
+0 AS "COGS",
+0 AS "Operating Expenses",
+0 AS "NPAT Period",
+0 AS "NPAT Annual"
+
+FROM (
+
+SELECT
+
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+T0."LineTotal",
+T1."DocDate",
+"QryGroup1",
+"QryGroup2",
+"QryGroup3",
+T0."BaseRef",
+T1."DiscPrcnt"
+
+FROM AL_YASEEN_AGRI_PLIVE.INV1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."DocEntry" = T1."DocEntry"
+JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T0."ItemCode" = T2."ItemCode"
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T1."BPLId" = T3."BPLId"
+
+UNION ALL
+
+SELECT
+T2."BPLId",
+T2."BPLName",
+T2."GlblLocNum" as "Location",
+CASE WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal" ELSE -T1."LineTotal" END as "LineTotal",
+T1."DocDate",
+T3."QryGroup1",
+T3."QryGroup2",
+T3."QryGroup3",
+\'\' as "BaseRef",
+0 as "DiscPrcnt"
+
+FROM
+    AL_YASEEN_AGRI_PLIVE.ORIN T0
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+JOIN
+AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
+WHERE T0."CardCode" != \'0200106\'
+
+) as tbl1
+
+GROUP BY
+
+tbl1."BPLId",
+tbl1."BPLName",
+tbl1."Location"
+
+/* End of Sales Data*/
+
+UNION ALL
+
+/*JDT Data*/
+
+SELECT
+
+\'Receivables\',
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+0,0,0,0,0,0,0,0,
+SUM(T0."Debit"-T0."Credit"),
+SUM(
+CASE WHEN DAYS_BETWEEN(T0."DueDate",\'' . $end_date . '\') >= 120 THEN (
+(CASE WHEN T0."DebCred" = \'D\' THEN (T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)
+WHEN T0."DebCred" = \'C\' THEN -((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)) END)) ELSE 0 END)
+,0,0,0,0,0,0
+
+FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
+JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."ShortName" = T2."CardCode" AND T2."CardType" = \'C\'
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+LEFT JOIN (SELECT SUM("ReconSum") AS "ReconSum",SUM("ReconSumSC") AS "ReconSumSC",SUM("ReconSumFC") AS "ReconSumFC","TransRowId","TransId" FROM AL_YASEEN_AGRI_PLIVE.ITR1 T0 JOIN AL_YASEEN_AGRI_PLIVE.OITR T1 ON T0."ReconNum" = T1."ReconNum" AND T1."ReconDate" <= \'' . $end_date . '\'
+GROUP BY "TransRowId","TransId") T4 ON T0."TransId" = T4."TransId" AND T0."Line_ID" = T4."TransRowId"
+
+WHERE T1."RefDate" <= \'' . $end_date . '\'
+
+GROUP BY
+
+T3."BPLId",
+T0."DebCred",
+T3."BPLName",
+T3."GlblLocNum"
+
+UNION ALL
+
+/*Stock Data*/
+
+SELECT
+
+\'Stock\',
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+0,0,0,0,0,0,0,0,0,0,
+SUM(T0."Debit"-T0."Credit"),0,0,0,0,0
+
+FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
+JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T0."Account" = T2."AcctCode"
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+
+WHERE T1."RefDate" <= \'' . $end_date . '\' AND T2."AcctCode" = \'1203010001\'
+
+GROUP BY
+
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum"
+
+UNION ALL
+
+/*JDT Data*/
+
+SELECT
+
+\'Clean Receivables\',
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+0,0,0,0,0,0,0,0,0,0,0,
+SUM(T0."Debit"-T0."Credit"),0,0,0,0
+
+FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
+JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."ShortName" = T2."CardCode" AND T2."CardType" = \'C\' AND T2."QryGroup1" = \'N\'
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+
+WHERE T1."RefDate" <= \'' . $end_date . '\'
+
+GROUP BY
+
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum"
+
+UNION ALL
+
+SELECT
+
+\'COGS\',
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum" as "Location",
+0,0,0,0,0,0,0,0,0,0,
+0,0,SUM(CASE WHEN T1."RefDate" between ADD_DAYS(ADD_DAYS(\'' . $start_date . '\',1),-365) AND \'' . $end_date . '\' THEN (T0."Debit"-T0."Credit") ELSE 0 END),0,0,0
+
+FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
+
+JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
+JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T0."Account" = T2."AcctCode"
+JOIN AL_YASEEN_AGRI_PLIVE.OACT T4 ON T2."FatherNum" = T4."AcctCode"
+JOIN AL_YASEEN_AGRI_PLIVE.OACT T5 ON T4."FatherNum" = T5."AcctCode"
+JOIN AL_YASEEN_AGRI_PLIVE.OACT T6 ON T5."FatherNum" = T6."AcctCode" AND T6."AcctCode" = \'51\'
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
+
+WHERE T1."RefDate" <= \'' . $end_date . '\'
+GROUP BY
+
+T3."BPLId",
+T3."BPLName",
+T3."GlblLocNum"
+
+UNION ALL
+
+SELECT \'Operating Expenses\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,abs(SUM("Credit Amount")-SUM("Debit Amount")), 0,0
+
+FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
+
+WHERE
+"Cost Center" LIKE \'01%\'
+AND (
+"Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'8%\')
+
+GROUP BY "Cost Center"
+
+UNION ALL
+
+SELECT \'NPAT Period\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,
+SUM("Credit Amount")-SUM("Debit Amount") AS "ProfitAndLoss",0
+
+FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
+
+WHERE
+"Cost Center" LIKE \'01%\'
+AND ("Account Code" LIKE \'4%\'
+OR "Account Code" LIKE \'5%\'
+OR "Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'7%\'
+OR "Account Code" LIKE \'8%\')
+
+GROUP BY "Cost Center"
+
+UNION ALL
+
+SELECT \'NPAT Annual\',
+(SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPLId",
+(SELECT "BPLName" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "BPName",
+(SELECT "GlblLocNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE "TaxIdNum" = "Cost Center") AS "Location",
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,
+SUM("Credit Amount")-SUM("Debit Amount")
+
+FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+JDT1."BPLId"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$previous_start_date.'\' AND \''.$end_date.'\'
+ORDER
+BY JDT1."RefDate"
+)
+
+WHERE
+"Cost Center" LIKE \'01%\'
+AND ("Account Code" LIKE \'4%\'
+OR "Account Code" LIKE \'5%\'
+OR "Account Code" LIKE \'6%\'
+OR "Account Code" LIKE \'7%\'
+OR "Account Code" LIKE \'8%\')
+
+GROUP BY "Cost Center"
+
+
+
+) F0
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", COUNT(DISTINCT "BusinessPartnerCode") AS "NumOfCustomers" FROM (
+
+SELECT * FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2
+ON T1."BusinessPartnerCode" = T2."CardCode"
+WHERE T2."QryGroup1" = \'Y\'
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") F1
+ON F0."BPLId" = F1."BranchCode"
+
+
+WHERE F0."BPLId" IN (SELECT "BPLId" FROM AL_YASEEN_AGRI_PLIVE.USR6 T0 JOIN AL_YASEEN_AGRI_PLIVE.OUSR T1 ON T0."UserCode" = T1."USER_CODE" WHERE "UserCode" = \'ctc90010.2\')
+AND F0."BPLId" IN ('. implode(', ', $sap_depts).')
+
+GROUP BY
+
+"BPLId",
+"BPLName",
+"Location",
+"BranchName", "BranchCode", "NetSalesAmountLC", "NumOfCustomers"
+
+ORDER BY "BPLId"
+) tbl1
+----------------------
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+--AND T1."DocEntry" not in (175,367)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl2
+ON tbl1."BPLId" = tbl2."BranchCode"
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl3
+ON tbl1."BPLId" = tbl3."BranchCode"
+
+------- Year Sales 1
+LEFT JOIN (
+SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S1 Sales Year" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+AND "DocumentNumber" not in (358,359)
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= \''.$previous_start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (157,220,175,367,359,360,368,364,362,378,379)
+
+
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl4
+ON tbl1."BPLId" = tbl4."BranchCode"
+
+
+------- Year Sales 2
+LEFT JOIN (
+SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S2 Sales Year" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= \''.$previous_start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl5
+ON tbl1."BPLId" = tbl5."BranchCode"
+
+-------- Sales S1 PY
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales PY" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND "DocumentDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND T0."DocDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
+--AND T1."DocEntry" not in (175,367)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl6
+ON tbl1."BPLId" = tbl6."BranchCode"
+
+------------ S2 Sales PY
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales PY" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND "DocumentDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND T0."DocDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl7
+ON tbl1."BPLId" = tbl7."BranchCode"
+
+---- Sales S1 Year PY
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales Year PY" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND "DocumentDate" <= ADD_YEARS(\''.$end_date.'\',-1)
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup2" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup2" = \'Y\'
+AND T0."DocDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND T0."DocDate" <= ADD_YEARS(\''.$end_date.'\',-1)
+--AND T1."DocEntry" not in (175,367)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl8
+ON tbl1."BPLId" = tbl8."BranchCode"
+
+------------ Sales S2 Year PY
+
+LEFT JOIN (
+SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales Year PY" FROM (
+
+SELECT T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND "DocumentDate" <= ADD_YEARS(\''.$end_date.'\',-1)
+AND "DocumentTypeCode" != \'17\'
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."QryGroup3" = \'Y\'
+
+UNION ALL
+
+
+SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
+\'0\', T0."DocDate", T0."DocNum",\'0\',\'0\',\'0\',\'0\',\'0\', T1."ItemCode", T1."Dscription",
+T0."SlpCode", \'0\', \'0\',\'0\',
+(T1."INMPrice"*T1."Quantity"), (T1."INMPrice"*T1."Quantity"),
+\'0\',\'0\',\'0\',\'0\'
+from AL_YASEEN_AGRI_PLIVE.ODPI T0
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.DPI1 T1 ON T0."DocEntry" = T1."DocEntry"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
+WHERE T3."QryGroup3" = \'Y\'
+AND T0."DocDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND T0."DocDate" <= ADD_YEARS(\''.$end_date.'\',-1)
+--AND T1."DocEntry" != 175
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+
+)
+WHERE "BranchCode" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode") tbl9
+ON tbl1."BPLId" = tbl9."BranchCode"
+';
+
+//            dd($sql);
+
+            $result = odbc_exec($conn, $sql);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+//                dd(odbc_fetch_array($result));
+
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->sap_results, $row);
+                }
+
+            }
+            odbc_close($conn);
+
+//            dd($this->sap_results);
         }
 //        }
 
