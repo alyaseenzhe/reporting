@@ -80,8 +80,11 @@ class CommissionReport extends Component
 '10083' =>	'mat_dev_manager2',
 '10313' =>	'mat_dev_manager2',
 '10239' =>	'mat_dev_manager1',
+'10309' =>	'mat_dev_manager2',
+'10299' =>	'mat_dev_manager2',
 '10276' =>	'store_manager',
 '10297' =>	'store_manager',
+
     ];
     public $position_commission = [
         "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
