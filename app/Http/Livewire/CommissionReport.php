@@ -342,11 +342,45 @@ GROUP BY
     --"Aging Period"
 ) tbl1
 FULL OUTER JOIN (
+/*
 Select "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
 GROUP BY
 "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+*/
+
+SELECT "BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
+FROM (
+SELECT (SELECT
+    T."DocNum"
+FROM
+    (
+        SELECT
+            T0."DocNum",
+            ROW_NUMBER() OVER (ORDER BY T0."DocNum") AS "rownum"
+        FROM
+            AL_YASEEN_AGRI_PLIVE.ORIN T0
+        JOIN
+            AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
+        WHERE
+            T0."DocNum" = "DocumentNumber"
+            AND T1."BaseType" = \'203\'
+    ) T
+WHERE
+    T."rownum" = 1
+
+
+) as "DownPaymentFlag",*
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+--AND "SalesEmployeeOrBuyerNumber" = 322
+AND "DocumentTypeCode" != 17
+)
+WHERE "DownPaymentFlag" IS NULL
+GROUP BY
+"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+
 ) tabl2 ON tbl1."SlpCode" = tabl2."SalesEmployeeOrBuyerNumber"
 
 --outstanding amount per employee
@@ -466,6 +500,8 @@ ON tbl1."SlpCode" = tbl4."SlpCode"
 WHERE "BranchCode" = '.$this->area_id.'
 AND "BPLId" IS NOT NULL
 ';
+
+//            dd($sql2);
 
             $result_profit = odbc_exec($conn, $loss_profit_sql);
             if (!$result_profit)
