@@ -15,6 +15,8 @@ class Report11 extends Component
     public $show_msg = false;
     public $report_type = 'byItem';
 
+    public $group_type = "xx";
+
     public $scribes_results = [];
     public $sap_results = [];
     public $group_results = [];
@@ -26,7 +28,7 @@ class Report11 extends Component
     public $warehouse = ['3' => "0101", '7' => "0103", '10' => "0102", '13' => "0104", '4' => "0105", '6' => "0106", '5' => "0107", '12' => "0108", '11' => "0109", '9' => "0110", '8' => "0111", '505' => "0112"];
     public $warehouse_id = ["0101" => '3', "0103" => '7', "0102" => '10', "0104" => '13', "0105" => '4', "0106" => '6', "0107" => '5', "0108" => '12', "0109" => '11', "0110" => '9', "0111" => '8', "0112" => '505'];
 
-    protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report'];
+    protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report', 'change-group-type' => 'changeGroupType'];
 
 
     public function booted() {
@@ -55,7 +57,7 @@ class Report11 extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code) {
+    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code, $marketing_type) {
 
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -66,7 +68,7 @@ class Report11 extends Component
         $this->sap_results = [];
         $this->group_results = [];
 
-        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code);
+        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
 //        $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type);
 //        $this->sapQuery($start_date, $end_date, $dept_id);
 //
@@ -360,7 +362,7 @@ class Report11 extends Component
         $this->emit('finished-categories', $this->categories);
     }
 
-    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code) {
+    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type) {
 
         $this->scribes_codes = [];
         $this->sap_codes = [];
@@ -439,6 +441,45 @@ class Report11 extends Component
                                 }
                                 else {
                                     $categoryQuery .= ' OR T0."QryGroup'. intval($s)+1 .'" = \'N\'';
+                                }
+                            }
+                            $categoryQuery .= ')';
+
+                        }
+
+                    }
+                }
+
+                if ($marketing_type != null && in_array('marketing_all', $marketing_type) == false && count($marketing_type) != 0) {
+
+                    if (count($marketing_type) == 9) {
+
+                        $categoryQuery .= ' AND (T0."QryGroup30" = \''. (in_array('30', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup31" = \''. (in_array('31', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup32" = \''. (in_array('32', $marketing_type) ? 'Y': 'N') .'\'  OR T0."QryGroup40" = \''. (in_array('40', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup41" = \''. (in_array('41', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup50" = \''. (in_array('50', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup51" = \''. (in_array('51', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup52" = \''. (in_array('52', $marketing_type) ? 'Y': 'N') .'\' OR T0."QryGroup53" = \''. (in_array('53', $marketing_type) ? 'Y': 'N') .'\')';
+                    }
+                    else {
+                        $categoryQuery .= ' AND (';
+                        foreach ($marketing_type as $key => $s) {
+                            if ($key === array_key_first($marketing_type)) {
+                                $categoryQuery .= 'T0."QryGroup'. intval($s) .'" = \'Y\'';
+                            }
+                            else {
+                                $categoryQuery .= ' OR T0."QryGroup'. intval($s) .'" = \'Y\'';
+                            }
+                        }
+                        $categoryQuery .= ')';
+
+                        $difference=array_diff(['30', '31', '32', '40', '41', '50', '51', '52', '53'], $marketing_type);
+//                    dd($difference);
+
+                        if (count($difference) > 0) {
+
+                            $categoryQuery .= ' AND (';
+                            foreach ($difference as $key => $s) {
+                                if ($key === array_key_first($difference)) {
+                                    $categoryQuery .= 'T0."QryGroup'. intval($s) .'" = \'N\'';
+                                }
+                                else {
+                                    $categoryQuery .= ' OR T0."QryGroup'. intval($s) .'" = \'N\'';
                                 }
                             }
                             $categoryQuery .= ')';
@@ -620,6 +661,7 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
             {
 
                 if ($this->report_type == "byItem") {
+
 //                    $sql = 'SELECT * FROM (
 //SELECT
 //    T0."ItemCode" AS "ItemCode",
@@ -663,120 +705,76 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 //    ) as tbl1';
 
                     $sql = 'SELECT
-	tbl1."ItemCode" AS "ItemCode",
-    tbl1."ItemName" AS "ItemName",
-    SUM(tbl1."Quantity") AS "TotalQuantitySold",
-    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
-    AVG(tbl1."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
-    SUM(tbl1."GrssProfit") as "GrossProfit",
-    SUM(tbl1."GPTtlBasPr") as "Cost",
-    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"), 0))*100 as "GrossProfitPer",
-    tbl1."Speciality",
-	tbl1."SalUnitMsr",
-	--tbl1."OldCode",
-	CASE WHEN tbl1."OldCode" IS NULL THEN tbl1."ItemCode" ELSE tbl1."OldCode" END AS "OldCode",
-	tbl1."VendorCode",
-    tbl1."VendorName"
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName"
+FROM (
 
- FROM (
-SELECT
-    T0."ItemCode" AS "ItemCode",
-    T1."ItemName" AS "ItemName",
-    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
-	CASE
-    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
-    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
-	END as "LineTotal",
---   CASE WHEN T0."BaseRef" != \'\' THEN -T0."LineTotal" ELSE T0."LineTotal" END as "LineTotal",
-    T0."Price",
-	T3."DocNum",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
---	T0."GPTtlBasPr",
-	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
-    CASE
-		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	T1."SalUnitMsr",
-	T1."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.INV1 T0
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
-WHERE
-	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
-	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName"
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
-UNION
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
-SELECT
-	T1."ItemCode" AS "ItemCode",
-    T3."ItemName" AS "ItemName",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
-    	ELSE -T1."Quantity"
-    END as "Quantity",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
-    	ELSE -T1."LineTotal"
-    END as "LineTotal",
-    T1."Price",
-	T0."DocNum",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
-    	ELSE -T1."GrssProfit"
-    END as "GrssProfit",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
-    	ELSE -T1."GPTtlBasPr"
-    END as "GPTtlBasPr",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
-    	ELSE -(T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
-    END as "GrossProfitPer",
-    CASE
-		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T3."SalUnitMsr",
-	T3."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.ORIN T0
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
-WHERE
-    T0."BPLId" IN ('. implode(', ', $sap_depts).')
-    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-    ) as tbl1
-    GROUP BY
-	tbl1."ItemCode", tbl1."ItemName", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
-ORDER BY
-    "TotalSalesAmount" DESC';
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+
+WHERE "ItemDescription" IS NOT NULL
+
+GROUP BY "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName"
+
+ORDER BY "ItemCode"';
 
                 }
                 else if ($this->report_type == "byDepartment") {
@@ -824,125 +822,76 @@ ORDER BY
 //    ) as tbl1';
 
                     $sql = 'SELECT
-	tbl1."ItemCode" AS "ItemCode",
-    tbl1."ItemName" AS "ItemName",
-    SUM(tbl1."Quantity") AS "TotalQuantitySold",
-    SUM(tbl1."LineTotal") AS "TotalSalesAmount",
-    AVG(tbl1."Price") AS "AverageUnitPrice",
-    COUNT(DISTINCT tbl1."DocNum") AS "NumberOfInvoices",
-    SUM(tbl1."GrssProfit") as "GrossProfit",
-    SUM(tbl1."GPTtlBasPr") as "Cost",
-    (SUM(tbl1."GrssProfit")/ NULLIF(SUM(tbl1."GPTtlBasPr"),0))*100 as "GrossProfitPer",
-    tbl1."Branch",
-    tbl1."Department",
-    tbl1."Speciality",
-	tbl1."SalUnitMsr",
-	--tbl1."OldCode",
-	CASE WHEN tbl1."OldCode" IS NULL THEN tbl1."ItemCode" ELSE tbl1."OldCode" END AS "OldCode",
-	tbl1."VendorCode",
-    tbl1."VendorName"
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName"
+FROM (
 
- FROM (
-SELECT
-    T0."ItemCode" AS "ItemCode",
-    T1."ItemName" AS "ItemName",
-    CASE WHEN T0."BaseRef" != \'\' THEN -T0."Quantity" ELSE T0."Quantity" END as "Quantity",
-	CASE
-    	WHEN T0."BaseRef" != \'\' THEN (-T0."LineTotal"- (-T0."LineTotal"*(T3."DiscPrcnt"/100)))
-    	ELSE (T0."LineTotal"- (T0."LineTotal"*(T3."DiscPrcnt"/100)))
-	END as "LineTotal",
-    T0."Price",
-	T3."DocNum",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END as "GrssProfit",
-	CASE WHEN T0."BaseRef" != \'\' THEN -T0."GPTtlBasPr" ELSE T0."GPTtlBasPr" END as "GPTtlBasPr",
---	T0."GPTtlBasPr",
-	((CASE WHEN T0."BaseRef" != \'\' THEN -T0."GrssProfit" ELSE T0."GrssProfit" END)/T0."GPTtlBasPr")*100 as "GrossProfitPer",
-	T2."BPLName" AS "Branch",
-    T2."TaxIdNum" AS "Department",
-    CASE
-		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	T1."SalUnitMsr",
-	T1."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.INV1 T0
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
-JOIN
-    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
-WHERE
-	T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
-	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName"
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
-UNION
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
-SELECT
-	T1."ItemCode" AS "ItemCode",
-    T3."ItemName" AS "ItemName",
-     CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."Quantity"
-    	ELSE -T1."Quantity"
-    END as "Quantity",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."LineTotal"
-    	ELSE -T1."LineTotal"
-    END as "LineTotal",
-    T1."Price",
-	T0."DocNum",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GrssProfit"
-    	ELSE -T1."GrssProfit"
-    END as "GrssProfit",
-    CASE
-    	WHEN T0."CANCELED" = \'C\' THEN T1."GPTtlBasPr"
-    	ELSE -T1."GPTtlBasPr"
-    END as "GPTtlBasPr",
-	CASE
-    	WHEN T0."CANCELED" = \'C\' THEN (T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
-    	ELSE -(T1."GrssProfit"/NULLIF(T1."GPTtlBasPr",0))*100
-    END as "GrossProfitPer",
-	T2."BPLName" AS "Branch",
-    T2."TaxIdNum" AS "Department",
-    CASE
-		WHEN T3."QryGroup1" = \'Y\' THEN \'0\'
-		WHEN T3."QryGroup2" = \'Y\' THEN \'1\'
-		WHEN T3."QryGroup3" = \'Y\' THEN \'2\'
-		ELSE \'\'
-	END AS "Speciality",
-	T3."SalUnitMsr",
-	T3."U_UDF1" as "OldCode",
-	T4."CardCode" AS "VendorCode",
-    T4."CardName" AS "VendorName"
-FROM
-    AL_YASEEN_AGRI_PLIVE.ORIN T0
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE.RIN1 T1 ON T0."DocEntry" = T1."DocEntry"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T0."BPLId" = T2."BPLId"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
-JOIN
-	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T3."CardCode" = T4."CardCode"
-WHERE
-    T0."BPLId" IN ('. implode(', ', $sap_depts).')
-    AND T1."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-    AND T1."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-    ) as tbl1
-    GROUP BY
-	tbl1."ItemCode", tbl1."ItemName", tbl1."Branch", tbl1."Department", tbl1."Speciality", tbl1."SalUnitMsr", tbl1."OldCode", tbl1."VendorCode", tbl1."VendorName"
-ORDER BY
-    "TotalSalesAmount" DESC';
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName"
+
+ORDER BY "ItemCode"';
                 }
 
 
@@ -1011,5 +960,11 @@ ORDER BY
 //            dd($this->itemGrp);
             odbc_close($conn);
         }
+    }
+
+    public function changeGroupType($data) {
+//        dd($data);
+        $this->group_type = $data;
+        $this->emit('finished-categories2');
     }
 }
