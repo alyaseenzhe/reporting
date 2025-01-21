@@ -382,23 +382,38 @@
         </div>
         <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide">
             <div class="w-full flex flex-col sm:flex-row gap-4">
-                <div class="w-full">
-                    <label class="block font-bold mb-2">خيارات
+{{--                <div class="w-full">--}}
+{{--                    <label class="block font-bold mb-2">خيارات التجميع--}}
+{{--                        --}}{{--                        <span class="text-red-500">*</span>--}}
+{{--                    </label>--}}
+{{--                    --}}{{--                    <div wire:ignore>--}}
+{{--                    --}}{{--                        <select id="report_type" name="report_type"--}}
+{{--                    --}}{{--                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+{{--                    --}}{{--                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">--}}
+{{--                    --}}{{--                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>--}}
+{{--                    --}}{{--                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>--}}
+{{--                    --}}{{--                        </select>--}}
+{{--                    --}}{{--                    </div>--}}
+{{--                    <div wire:ignore class="flex items-center mb-4">--}}
+{{--                        <input id="report_type" name="report_type" type="checkbox" value="byDepartment" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">عمليات الاصناف بالتفصيل للفروع</label>--}}
+{{--                    </div>--}}
+{{--                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
+{{--                </div>--}}
+                <div wire:ignore class="w-full">
+                    <label class="block font-bold mb-2">خيارات التجميع (Grouping)
                         {{--                        <span class="text-red-500">*</span>--}}
                     </label>
-                    {{--                    <div wire:ignore>--}}
-                    {{--                        <select id="report_type" name="report_type"--}}
-                    {{--                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
-                    {{--                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">--}}
-                    {{--                            <option value="byItem" selected>11- ملخص عمليات اصناف</option>--}}
-                    {{--                            <option value="byDepartment">12- مبيعات الفروع للصنف</option>--}}
-                    {{--                        </select>--}}
-                    {{--                    </div>--}}
-                    <div wire:ignore class="flex items-center mb-4">
-                        <input id="report_type" name="report_type" type="checkbox" value="byDepartment" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">عمليات الاصناف بالتفصيل للفروع</label>
-                    </div>
-                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <select id="report_type" name="report_type"
+                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            style="@error('sp_type') border: solid 1px #fda4af; @enderror">
+                        <option value="byItem" selected>بدون تجميع</option>
+                        <option value="byDepartment">بالصنف</option>
+                        <option value="byItemGroup">بنوع المواد</option>
+                        <option value="bySpeciality">بنوع المميز</option>
+                        <option value="byMarketingType">بالتصنيف الفني</option>
+                        <option value="byVendor">بالمورد</option>
+                    </select>
                 </div>
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -1342,8 +1357,9 @@
 
             $('#gen-report').on('click', function () {
 
-                var report_type = $('#report_type').is(":checked") ? "byDepartment" : "byItem";
-                // var report_type = $('#report_type').val();
+                // var report_type = $('#report_type').is(":checked") ? "byDepartment" : "byItem";
+                var report_type = $('#report_type').val();
+                alert(report_type);
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
                 var search_type = $("input[name='search_type']:checked").val();

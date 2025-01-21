@@ -837,7 +837,9 @@ ORDER BY "ItemCode"';
 	"SalUnitMsr",
 "OldCode",
 "VendorCode",
-"VendorName"
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
 FROM (
 
 SELECT *, CASE
@@ -848,7 +850,22 @@ SELECT *, CASE
 	END AS "Speciality",
 	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
 	"CardCode" AS "VendorCode",
-"DefaultPreferredVendor" AS "VendorName"
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
+WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
+WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
+WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
+WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
+WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
+WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
+WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
+WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
+ELSE \'عام\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
 FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -889,9 +906,392 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 	"SalUnitMsr",
 "OldCode",
 "VendorCode",
-"VendorName"
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
 
 ORDER BY "ItemCode"';
+                }
+                else if ($this->report_type == "byItemGroup") {
+
+                    $sql = 'SELECT
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
+FROM (
+
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
+WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
+WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
+WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
+WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
+WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
+WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
+WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
+WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
+ELSE \'عام\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
+
+ORDER BY "ItemGroup","ItemCode"';
+                }
+                else if ($this->report_type == "bySpeciality") {
+
+                    $sql = 'SELECT
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
+FROM (
+
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
+WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
+WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
+WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
+WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
+WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
+WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
+WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
+WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
+ELSE \'عام\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
+
+ORDER BY "Speciality","ItemCode"';
+                }
+                else if ($this->report_type == "byMarketingType") {
+
+                    $sql = 'SELECT
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
+FROM (
+
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
+WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
+WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
+WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
+WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
+WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
+WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
+WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
+WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
+ELSE \'عام\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
+
+ORDER BY "mrkt_type","ItemCode"';
+                }
+                else if ($this->report_type == "byVendor") {
+                    $sql = 'SELECT
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
+FROM (
+
+SELECT *, CASE
+		WHEN "QryGroup1" = \'Y\' THEN \'0\'
+		WHEN "QryGroup2" = \'Y\' THEN \'1\'
+		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
+	"CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
+WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
+WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
+WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
+WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
+WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
+WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
+WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
+WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
+ELSE \'عام\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+
+AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+)
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
+
+ORDER BY "VendorCode","ItemCode"';
                 }
 
 
