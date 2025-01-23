@@ -23,6 +23,7 @@ class Report11 extends Component
 
     public $scribes_codes = [];
     public $sap_codes = [];
+    public $totalSalesByItem;
 
     public $products_codes = [];
     public $warehouse = ['3' => "0101", '7' => "0103", '10' => "0102", '13' => "0104", '4' => "0105", '6' => "0106", '5' => "0107", '12' => "0108", '11' => "0109", '9' => "0110", '8' => "0111", '505' => "0112"];
@@ -127,7 +128,7 @@ class Report11 extends Component
                     ];
                 });
             }
-            else if ($this->report_type == "byDepartment") {
+            else if ($this->report_type == "byDepartmentX") {
                 $groups = $merged_results->groupBy(['OldCode', function ($item) {
 //                    dd(gettype($item));
                     return gettype($item) == "object"? $item->Department : $item['Department'];
@@ -179,6 +180,8 @@ class Report11 extends Component
                             'Cost' => $row->sum('Cost'),
                             'GrossProfit' => $row->sum('GrossProfit'),
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -202,10 +205,234 @@ class Report11 extends Component
 //                    ];
                 })->sortBy(['OldCode', 'Department']);
             }
-//        dd($groupResults);
+            else if ($this->report_type == "byDepartment") {
+                $groups = $merged_results->groupBy(['OldCode', function ($item) {
+//                    dd(gettype($item));
+                    return gettype($item) == "object"? $item->Department : $item['Department'];
+//                    return $item['OldCode'];
+                }], true);
+//
+
+                $this->group_results = $groups->map(function ($outer_row) {
+
+                    return $outer_row->map(function ($row) {
+
+                        return [
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
+//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+                        ];
+                    });
+
+                })->sortBy(['OldCode', 'Department']);
+
+                // Step 1: Flatten all sub-collections into a single collection
+                $flattened = collect($this->group_results)->flatMap->values();
+                // Step 2: Group by OldCode
+                $groupedByItemName = $flattened->groupBy('OldCode');
+                // Step 3: Calculate total sales amount for each group
+                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                })->toArray();
+            }
+            else if ($this->report_type == "byItemGroup") {
+                $groups = $merged_results->groupBy(['OldCode', function ($item) {
+//                    dd(gettype($item));
+                    return gettype($item) == "object"? $item->Department : $item['Department'];
+//                    return $item['OldCode'];
+                }], true);
+//
+
+                $this->group_results = $groups->map(function ($outer_row) {
+
+                    return $outer_row->map(function ($row) {
+
+                        return [
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
+//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+                        ];
+                    });
+
+                })->sortBy(['OldCode', 'Department']);
+
+                // Step 1: Flatten all sub-collections into a single collection
+                $flattened = collect($this->group_results)->flatMap->values();
+                // Step 2: Group by OldCode
+                $groupedByItemName = $flattened->groupBy('OldCode');
+                // Step 3: Calculate total sales amount for each group
+                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                })->toArray();
+            }
+            else if ($this->report_type == "bySpeciality") {
+                $groups = $merged_results->groupBy(['OldCode', function ($item) {
+//                    dd(gettype($item));
+                    return gettype($item) == "object"? $item->Department : $item['Department'];
+//                    return $item['OldCode'];
+                }], true);
+//
+
+                $this->group_results = $groups->map(function ($outer_row) {
+
+                    return $outer_row->map(function ($row) {
+
+                        return [
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
+//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+                        ];
+                    });
+
+                })->sortBy(['OldCode', 'Department']);
+
+                // Step 1: Flatten all sub-collections into a single collection
+                $flattened = collect($this->group_results)->flatMap->values();
+                // Step 2: Group by OldCode
+                $groupedByItemName = $flattened->groupBy('OldCode');
+                // Step 3: Calculate total sales amount for each group
+                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                })->toArray();
+            }
+            else if ($this->report_type == "byMarketingType") {
+                $groups = $merged_results->groupBy(['OldCode', function ($item) {
+//                    dd(gettype($item));
+                    return gettype($item) == "object"? $item->Department : $item['Department'];
+//                    return $item['OldCode'];
+                }], true);
+//
+
+                $this->group_results = $groups->map(function ($outer_row) {
+
+                    return $outer_row->map(function ($row) {
+
+                        return [
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
+//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+                        ];
+                    });
+
+                })->sortBy(['OldCode', 'Department']);
+
+                // Step 1: Flatten all sub-collections into a single collection
+                $flattened = collect($this->group_results)->flatMap->values();
+                // Step 2: Group by OldCode
+                $groupedByItemName = $flattened->groupBy('OldCode');
+                // Step 3: Calculate total sales amount for each group
+                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                })->toArray();
+            }
+            else if ($this->report_type == "byVendor") {
+                $groups = $merged_results->groupBy(['OldCode', function ($item) {
+//                    dd(gettype($item));
+                    return gettype($item) == "object"? $item->Department : $item['Department'];
+//                    return $item['OldCode'];
+                }], true);
+//
+
+                $this->group_results = $groups->map(function ($outer_row) {
+
+                    return $outer_row->map(function ($row) {
+
+                        return [
+
+                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+                            'mrkt_type' => $row->first()['mrkt_type'],
+                            'ItemGroup' => $row->first()['ItemGroup'],
+//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+                        ];
+                    });
+
+                })->sortBy(['OldCode', 'Department']);
+
+                // Step 1: Flatten all sub-collections into a single collection
+                $flattened = collect($this->group_results)->flatMap->values();
+                // Step 2: Group by OldCode
+                $groupedByItemName = $flattened->groupBy('OldCode');
+                // Step 3: Calculate total sales amount for each group
+                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                })->toArray();
+            }
+
         }
 
-//        dd($this->group_results);
         $this->show_msg = true;
         $this->emit('finished');
     }
@@ -853,16 +1080,16 @@ SELECT *, CASE
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
-WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
-WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
-WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
-WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
-WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
-WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
-WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
-WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
-ELSE \'عام\'
+WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
 --
@@ -948,16 +1175,16 @@ SELECT *, CASE
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
-WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
-WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
-WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
-WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
-WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
-WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
-WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
-WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
-ELSE \'عام\'
+WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
 --
@@ -1008,6 +1235,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 ---
 
 ORDER BY "ItemGroup","ItemCode"';
+//                    dd($sql);
                 }
                 else if ($this->report_type == "bySpeciality") {
 
@@ -1043,16 +1271,16 @@ SELECT *, CASE
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
-WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
-WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
-WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
-WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
-WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
-WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
-WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
-WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
-ELSE \'عام\'
+WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
 --
@@ -1103,6 +1331,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 ---
 
 ORDER BY "Speciality","ItemCode"';
+//                    dd($sql);
                 }
                 else if ($this->report_type == "byMarketingType") {
 
@@ -1138,16 +1367,16 @@ SELECT *, CASE
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
-WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
-WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
-WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
-WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
-WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
-WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
-WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
-WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
-ELSE \'عام\'
+WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
 --
@@ -1198,8 +1427,10 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 ---
 
 ORDER BY "mrkt_type","ItemCode"';
+//                    dd($sql);
                 }
                 else if ($this->report_type == "byVendor") {
+
                     $sql = 'SELECT
 	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
 	"ItemCode",
@@ -1232,16 +1463,16 @@ SELECT *, CASE
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'ادارة فنية - الاسمدة م1\'
-WHEN "QryGroup31" = \'Y\' THEN \'ادارة فنية - المبيدات م1\'
-WHEN "QryGroup32" = \'Y\' THEN \'ادارة فنية - البذور م1\'
-WHEN "QryGroup40" = \'Y\' THEN \'اقسام تسويقية - الحدائق والصحة العامة\'
-WHEN "QryGroup41" = \'Y\' THEN \'اقسام تسويقية - المكافحة المتكاملة\'
-WHEN "QryGroup50" = \'Y\' THEN \'الاليات والري - الاليات\'
-WHEN "QryGroup51" = \'Y\' THEN \'الاليات والري - الري\'
-WHEN "QryGroup52" = \'Y\' THEN \'الاليات والري - الري المطري\'
-WHEN "QryGroup53" = \'Y\' THEN \'الاليات والري - الخدمات\'
-ELSE \'عام\'
+WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
 --
@@ -1292,6 +1523,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 ---
 
 ORDER BY "VendorCode","ItemCode"';
+//                    dd($sql);
                 }
 
 
@@ -1312,6 +1544,7 @@ ORDER BY "VendorCode","ItemCode"';
 
                 }
                 odbc_close($conn);
+//                dd($this->sap_results);
             }
         }
 
