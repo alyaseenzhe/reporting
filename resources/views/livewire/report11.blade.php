@@ -432,7 +432,7 @@
     </div>
 
     @if($show_msg)
-        <div id="tbl2-container" class="overflow-x-auto mt-9">
+        <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-9">
             @if(count($group_results) > 0)
 
                 <div class="mb-5 p-2">
@@ -467,28 +467,28 @@
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
                     @if($report_type == 'byItem')
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">كود الصنف</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">الوصف</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">وحدة</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">مميز</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">مورد</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">كمية</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">صافي المبيعات</div>
                         </th>
-                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">متوسط السعر</div>
                         </th>
                     @else
@@ -3034,10 +3034,66 @@
             opacity: 0; transform: translateY(-20px); /* Adjust vertical movement if needed */
         }
 
-
-
         #report-logo {
             display: none;
+        }
+
+        /*thead th {*/
+        /*    top: 0;*/
+        /*    position: sticky;*/
+        /*    background-color: #666666;*/
+        /*    z-index: 20;*/
+        /*}*/
+        /*thead th {*/
+        /*    position: sticky;*/
+        /*    top: 0;*/
+        /*    background-color: #f1f1f1;*/
+        /*    z-index: 1;*/
+        /*}*/
+
+        /*.table-container-x {*/
+        /*    max-height: 300px;*/
+        /*    overflow-y: auto;*/
+        /*    border: 1px solid #ccc;*/
+        /*    width: 100%;*/
+        /*}*/
+
+
+        /*#tbl2 thead, tbl2 tfoot, #tbl2 tbody {*/
+        /*    display: block;*/
+        /*    !*width: 100%;*!*/
+        /*}*/
+        /*.table-container {*/
+        /*    max-height: 400px; !* Adjust the height as needed *!*/
+        /*    overflow-y: auto;*/
+        /*    border: 1px solid #ccc;*/
+        /*}*/
+
+        /*#tbl2 tbody {*/
+        /*    max-height: 300px;*/
+        /*    overflow-y: auto;*/
+        /*    border: 1px solid #ccc;*/
+        /*    width: 100%;*/
+        /*}*/
+
+        /*#tbl2 thead {*/
+        /*    position: sticky;*/
+        /*    top: 0;*/
+        /*    z-index: 2;*/
+        /*}*/
+
+        .tbl-fixed {
+            overflow-x: scroll;
+            overflow-y: scroll;
+            height: fit-content;
+            max-height: 70vh;
+        }
+
+        table th {
+            position: sticky;
+            top: 0px;
+            background: #f8fafc;
+            border: 2px solid black;
         }
     </style>
 @stop
