@@ -2171,7 +2171,7 @@ ORDER BY "BPLId"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2198,7 +2198,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2213,9 +2213,10 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" not in (175,367)
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl2
 ON tbl1."BPLId" = tbl2."BranchCode"
@@ -2223,7 +2224,7 @@ ON tbl1."BPLId" = tbl2."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2250,7 +2251,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2265,10 +2266,11 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \''.$start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl3
 ON tbl1."BPLId" = tbl3."BranchCode"
@@ -2277,7 +2279,7 @@ ON tbl1."BPLId" = tbl3."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S1 Sales Year" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2305,7 +2307,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2320,11 +2322,12 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \''.$previous_start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (157,220,175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (157,220,175,367,359,360,368,364,362,378,379)*/
 
 
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl4
 ON tbl1."BPLId" = tbl4."BranchCode"
@@ -2334,7 +2337,7 @@ ON tbl1."BPLId" = tbl4."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode" , SUM("NetSalesAmountLC") AS "S2 Sales Year" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2361,7 +2364,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2375,10 +2378,11 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."CardCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \''.$previous_start_date.'\' AND T0."DocDate" <= \''.$end_date.'\'
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl5
 ON tbl1."BPLId" = tbl5."BranchCode"
@@ -2388,7 +2392,7 @@ ON tbl1."BPLId" = tbl5."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales PY" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2415,7 +2419,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2430,9 +2434,10 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND T0."DocDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
 --AND T1."DocEntry" not in (175,367)
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl6
 ON tbl1."BPLId" = tbl6."BranchCode"
@@ -2442,7 +2447,7 @@ ON tbl1."BPLId" = tbl6."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales PY" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2469,7 +2474,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2484,10 +2489,11 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND T0."DocDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl7
 ON tbl1."BPLId" = tbl7."BranchCode"
@@ -2496,7 +2502,7 @@ ON tbl1."BPLId" = tbl7."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S1 Sales Year PY" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2523,7 +2529,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup2" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2538,9 +2544,10 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup2" = \'Y\'
 AND T0."DocDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND T0."DocDate" <= ADD_YEARS(\''.$end_date.'\',-1)
 --AND T1."DocEntry" not in (175,367)
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl8
 ON tbl1."BPLId" = tbl8."BranchCode"
@@ -2550,7 +2557,7 @@ ON tbl1."BPLId" = tbl8."BranchCode"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "S2 Sales Year PY" FROM (
 
-SELECT T1.* FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", T1.* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2577,7 +2584,7 @@ RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
 WHERE T2."QryGroup3" = \'Y\'
 
-UNION ALL
+/*UNION ALL
 
 
 SELECT T0."BPLName", T0."BPLId", \'0\',\'0\',\'0\',\'0\', T0."CardName", T0."CardCode",
@@ -2592,10 +2599,11 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T3 ON T1."ItemCode" = T3."ItemCode"
 WHERE T3."QryGroup3" = \'Y\'
 AND T0."DocDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND T0."DocDate" <= ADD_YEARS(\''.$end_date.'\',-1)
 --AND T1."DocEntry" != 175
-AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)
+AND T1."DocEntry" not in (175,367,359,360,368,364,362,378,379)*/
 
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl9
 ON tbl1."BPLId" = tbl9."BranchCode"
