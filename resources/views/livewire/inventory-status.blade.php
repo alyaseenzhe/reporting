@@ -106,35 +106,35 @@
             </div>
         </div>
         <div id="filteration-row2" style="padding-left: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
-                <div id="vendor_container" class="w-full">
-                    <label class="block font-bold mb-2">الموردين
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <div wire:ignore>
-                        <select id="vendor_type" name="vendor_type"
-                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
-                            <option value="vendor_all" selected>الكل</option>
-                            @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor['VendorCode'] }}">{{ $vendor['VendorName'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+            <div id="vendor_container" class="w-full">
+                <label class="block font-bold mb-2">الموردين
+                    <span class="text-red-500">*</span>
+                </label>
+                <div wire:ignore>
+                    <select id="vendor_type" name="vendor_type"
+                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
+                        <option value="vendor_all" selected>الكل</option>
+                        @foreach($vendor_list as $vendor)
+                            <option value="{{ $vendor['VendorCode'] }}">{{ $vendor['VendorName'] }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                {{--                <div class="mt-8 text-center w-full">--}}
-                {{--                    <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-                {{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
-                {{--                        <span></span>--}}
-                {{--                        <span>إنشاء تقرير</span>--}}
-                {{--                    </span>--}}
-                {{--                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
-                {{--                    <span></span>--}}
-                {{--                    <span>الرجاء الانتظار</span>--}}
-                {{--                    </span>--}}
-                {{--                    </button>--}}
-                {{--                </div>--}}
+                @error('vendor_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
             </div>
+            {{--                <div class="mt-8 text-center w-full">--}}
+            {{--                    <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+            {{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
+            {{--                        <span></span>--}}
+            {{--                        <span>إنشاء تقرير</span>--}}
+            {{--                    </span>--}}
+            {{--                        <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
+            {{--                    <span></span>--}}
+            {{--                    <span>الرجاء الانتظار</span>--}}
+            {{--                    </span>--}}
+            {{--                    </button>--}}
+            {{--                </div>--}}
+        </div>
         <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div wire:ignore id="product_code_div" class="w-full">
@@ -145,7 +145,7 @@
                             class="form-input w-full @error('product_code') border-red-300 @enderror"
                             style="@error('products_code') border: solid 1px #fda4af; @enderror">
                         @foreach($products_codes as $item)
-                            <option value="{{ $item['ItemCode'] }}">{{ $item['ScribeCode'] . ' | ' . $item['ItemCode'] . ' | ' . $item['ItemName']}}</option>
+                            <option value="{{ $item['ItemCode'] }}">{{ $item['ScribeCode'] . ' | ' . $item['ItemCode'] . ' | ' . $item['ItemName'] . ' | ' . $item['SalUnitMsr']}}</option>
                         @endforeach
                     </select>
                     {{--                    <input type="text" id="product_code"--}}
@@ -182,13 +182,10 @@
                         <div class="text-sm">الكود</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            <div class="text-sm">المستودع</div>
+                        <div class="text-sm">المستودع</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-sm">كمية</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">تاريخ آخر فاتورة</div>
                     </th>
                 </tr>
                 </thead>
@@ -205,7 +202,7 @@
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{$record["CardCode"]}}
                             </td>
-                            <td colspan="3" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            <td colspan="2" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="flex flex-row justify-between">
                                     <div>المورد: {{$record["CardName"]}}</div>
                                 </div>
@@ -218,11 +215,14 @@
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{$record["ItemCode"]}}
                             </td>
-                            <td colspan="3" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            <td colspan="2" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="flex flex-row justify-between">
                                     <div>الصنف: {{$record["ItemName"]}}</div>
                                     <div>الوحدة: {{$record["SalUnitMsr"]}}</div>
                                     <div>التميز: {{$record['Speciality']}}</div>
+                                    <div>اجمالي الكمية:
+                                        {{ number_format($record['OnHand']) }}
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -237,9 +237,6 @@
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ number_format($record['QuantityOnHand'])}}
-                            </td>
-                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{ $record["LastInvoiceDate"] ? \Carbon\Carbon::parse($record["LastInvoiceDate"])->format('Y-m-d') : '' }}
                             </td>
                         </tr>
                         @php $counter++ @endphp
@@ -407,31 +404,31 @@
                 console.log(product_code);
                 // if (search_type == 'item_code_search') {
 
-                    if(dept_id == null) {
-                        Swal.fire({
-                            title: "حدث خطأ",
-                            text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
-                            icon: "error",
-                            confirmButtonText: "موافق",
-                        });
-                        $("#gen-report").html('<b>إنشاء تقرير</b>');
-                    }
-                    else {
-                        $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                if(dept_id == null) {
+                    Swal.fire({
+                        title: "حدث خطأ",
+                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                        icon: "error",
+                        confirmButtonText: "موافق",
+                    });
+                    $("#gen-report").html('<b>إنشاء تقرير</b>');
+                }
+                else {
+                    $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
-                        Swal.fire({
-                            title: 'الرجاء الإنتظار',
-                            allowOutsideClick: false,
-                            showCancelButton: false,
-                            showConfirmButton: false,
-                            willOpen: () => {
-                                Swal.showLoading()
-                            },
-                        });
+                    Swal.fire({
+                        title: 'الرجاء الإنتظار',
+                        allowOutsideClick: false,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading()
+                        },
+                    });
 
-                        Livewire.emit('create-report', search_type, product_code, vendor_type, dept_id);
-                        // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
-                    }
+                    Livewire.emit('create-report', search_type, product_code, vendor_type, dept_id);
+                    // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+                }
                 // }
             });
 
