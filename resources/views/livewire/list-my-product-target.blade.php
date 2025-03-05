@@ -73,16 +73,95 @@
                     <label class="block font-bold mb-2">نوع المواد
                         <span class="text-red-500">*</span>
                     </label>
+{{--                    <div wire:ignore>--}}
+{{--                        <select id="cat_type" name="cat_type" multiple="multiple"--}}
+{{--                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+{{--                            style="@error('cat_type') border: solid 1px #fda4af; @enderror">--}}
+{{--                        <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>--}}
+{{--                        <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>--}}
+{{--                        <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>--}}
+{{--                        <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>--}}
+{{--                        <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>--}}
+{{--                    </select>--}}
+{{--                    </div>--}}
+
                     <div wire:ignore>
                         <select id="cat_type" name="cat_type" multiple="multiple"
-                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            style="@error('cat_type') border: solid 1px #fda4af; @enderror">
-                        <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>
-                        <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>
-                        <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>
-                        <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>
-                        <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>
-                    </select>
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('cat_type') border: solid 1px #fda4af; @enderror">
+                            <option value="cat_all" selected>الكل</option>
+                            <option value="104">اسمدة أحادية</option>
+                            <option value="105">اسمدة مركبة ورقية</option>
+                            <option value="106">اسمدة مركبة ذوابة</option>
+                            <option value="107">اسمدة مركبة حبيبية</option>
+                            <option value="108">اسمدة مركبة سائلة ومعلقة</option>
+                            <option value="109">عناصر نادرة</option>
+                            <option value="110">احماض دبالية</option>
+                            <option value="111">احماض امينية</option>
+                            <option value="112">اعشاب بحرية</option>
+                            <option value="114">مصحح ملوحة وحموضة</option>
+                            <option value="115">اسمدة متخصصة</option>
+                            <option value="116">ترب أساسية</option>
+                            <option value="117">بوتنج سويل</option>
+                            <option value="118">عطن</option>
+                            <option value="120">مبيدات حشرية</option>
+                            <option value="121">مبيدات فطرية</option>
+                            <option value="123">مبيدات اعشاب</option>
+                            <option value="124">حشرات نافعة</option>
+                            <option value="125">مستخلصات نباتية</option>
+                            <option value="126">فرمونات وجواذب</option>
+                            <option value="127">مصائد ولواصق</option>
+                            <option value="128">مواد لاصقة وناشرة</option>
+                            <option value="129">مبيدات قوارض</option>
+                            <option value="130">مبيدات صحة عامة</option>
+                            <option value="139">مرشات يدوية ملحقاتها</option>
+                            <option value="140">مقصات ومحشات</option>
+                            <option value="141">بلاستك تغطية وتعقيم</option>
+                            <option value="142">صواني ومراكن</option>
+                            <option value="143">خيوط واسلاك</option>
+                            <option value="144">شباك وشاش</option>
+                            <option value="145">معدات قياس</option>
+                            <option value="147">مواد تعبئة</option>
+                            <option value="148">الات يدوية</option>
+                            <option value="150">مرشات الية وملحقاتها</option>
+                            <option value="151">اليات وملحقاتها</option>
+                            <option value="152">هوجيندرون</option>
+                            <option value="154">ميجا جرين للصناعات المتطورة</option>
+                            <option value="155">ازود</option>
+                            <option value="157">داكوم</option>
+                            <option value="158">كاروسبراي</option>
+                            <option value="159">اوربيناتي</option>
+                            <option value="161">اخري (مكائن و قطع غيار)</option>
+                            <option value="162">نحل وادواته</option>
+                            <option value="164">مبيعات / مشتريات مباشرة</option>
+                            <option value="137">بذور نجيل</option>
+                            <option value="132">بذور محاصيل حقلية</option>
+                            <option value="131">بذور خضار</option>
+                            <option value="133">بذور اعلاف</option>
+                            <option value="134">بذور أشجار مثمرة</option>
+                            <option value="135">بذور ورقيات</option>
+                            <option value="165">منتج خضار</option>
+                            <option value="166">منتج فواكة</option>
+                            <option value="169">أدوات تعبئة</option>
+                            <option value="171">أدوات ومواد بيوت محمية</option>
+                            <option value="172">بذور حبوب</option>
+                            <option value="173">ريفولس</option>
+                            <option value="174">جرينوكي</option>
+                            <option value="175">ركين</option>
+                            <option value="177">مواد تبخير وتعقيم</option>
+                            <option value="178">كائنات دقيقة</option>
+                            <option value="179">ابصال</option>
+
+{{--                            <option value="cat_all" @if(in_array("cat_all", $cat_type)) selected @endif>الكل</option>--}}
+{{--                            <option value="bathoor" @if(in_array("bathoor", $cat_type)) selected @endif>بذور</option>--}}
+{{--                            <option value="asmedah" @if(in_array("asmedah", $cat_type)) selected @endif>اسمدة</option>--}}
+{{--                            <option value="mobedat" @if(in_array("mobedat", $cat_type)) selected @endif>مبيدات</option>--}}
+{{--                            <option value="other" @if(in_array("other", $cat_type)) selected @endif>اخرى</option>--}}
+{{--                            <option value="cat_all" selected>الكل</option>--}}
+{{--                            @foreach($itemGrp as $item)--}}
+{{--                                <option value="{{ $item['ItemGroupCode'] }}">{{ $item['ItemGroupName'] }}</option>--}}
+{{--                            @endforeach--}}
+                        </select>
                     </div>
                     @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
@@ -112,7 +191,7 @@
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
                             <option value="vendor_all" @if($vendor_type == "vendor_all") selected @endif>الكل</option>
                             @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor->NodeNo }}" @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
+                                <option value="{{ $vendor["CardCode"] }}" @if($vendor_type == $vendor["CardCode"]) selected @endif>{{ $vendor["CardName"] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -216,43 +295,45 @@
                             ?>
                         @foreach($results as $record)
                             <div>
-                                @if($record->VendorNo != $vendor_id)
-                                        <?php $vendor_id = $record->VendorNo; ?>
+                                @if($record["CardCode"] != $vendor_id)
+                                        <?php $vendor_id = $record["CardCode"]; ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorCode }}</td>
-                                        <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorName }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record["CardCode"] }}</td>
+                                        <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record["DefaultPreferredVendor"] }}</td>
                                     </tr>
                                 @endif
-                                <?php $vendor_id = $record->VendorNo; ?>
+                                <?php $vendor_id = $record["CardCode"]; ?>
                                 <tr>
                                     <th colspan="30" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div class="w-full text-sm text-center">رقم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductCode }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemCode"] }}</div>
                                             <div class="w-full text-sm text-center">اسم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductName }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemDescription"] }}</div>
                                             <div class="w-full text-sm text-center">الوحدة</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["SalUnitMsr"] }}</div>
                                             <div class="w-full text-sm text-center">التميز</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->SpecialityCode }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["SpecialityCode"] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->VendorName }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["DefaultPreferredVendor"] }}</div>
                                             <div class="w-full text-sm text-center mr-1">
-                                                @if($item_price == "WholeSale")
-                                                    سعر مؤسسات
-                                                @elseif($item_price == "Retail")
-                                                    سعر تجزئة
-                                                @elseif($item_price == "MaxDiscount")
-                                                    أقل سعر
-                                                @else
-                                                    السعر
-                                                @endif
+                                                السعر
+{{--                                                @if($item_price == "WholeSale")--}}
+{{--                                                    سعر مؤسسات--}}
+{{--                                                @elseif($item_price == "Retail")--}}
+{{--                                                    سعر تجزئة--}}
+{{--                                                @elseif($item_price == "MaxDiscount")--}}
+{{--                                                    أقل سعر--}}
+{{--                                                @else--}}
+{{--                                                    السعر--}}
+{{--                                                @endif--}}
                                             </div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->$item_price }}</div>
-                                            <div class="w-full text-sm text-center">مخزون فرع</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock) }}</div>
-                                            <div class="w-full text-sm text-center">مخزون كلي</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock_total) }}</div>
+{{--                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->$item_price }}</div>--}}
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record["ItemPrice"], 2) }}</div>
+{{--                                            <div class="w-full text-sm text-center">مخزون فرع</div>--}}
+{{--                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock) }}</div>--}}
+{{--                                            <div class="w-full text-sm text-center">مخزون كلي</div>--}}
+{{--                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record->stock_total) }}</div>--}}
                                         </div>
                                     </th>
                                 </tr>
@@ -343,7 +424,7 @@
                                                         <?php
 //                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('EmpCode', $emp->emp_code)->first(): 0;
                                                         $month_num = "month".$month_counter."_".$emp->emp_code;
-                                                        $new_result = $record->$month_num;
+                                                        $new_result = $record[$month_num];
                                                         ?>
 {{--                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? ($new_result == 0 ? "" : number_format($new_result)) : ""  }}</div>
@@ -391,7 +472,8 @@
                                                 <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
                                                         <?php
                                                         //$new_result = key_exists('ProductCode', $record) ? $new_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept_id[0])->where('user_id', $emp->id)->first(): 0;
-                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_targets` where `product_id` = '". $record->ProductCode ."' AND `branch` = '". $dept_id[0] ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."' and user_id ='". $emp->id ."'");
+                                                        //$new_result = \Illuminate\Support\Facades\DB::select("select target from `product_targets` where `product_id` = '". $record["ItemCode"] ."' AND `branch` = '". $dept_id[0] ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."' and user_id ='". $emp->id ."'");
+                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_targets` where `sap_code` = '". $record["ItemCode"] ."' AND `branch` = '". $old_dept_id[$dept_id[0]] ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."' and user_id ='". $emp->id ."'");
                                                         $new_result = count($new_result) > 0 ? $new_result[0] : 0;
                                                         ?>
                                                     <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "": $new_result->target) : ""  }}</div>
@@ -446,11 +528,13 @@
                                             <div class="text-sm">{{ $total_new_tr == 0 ? "" : number_format($total_new_tr) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                            <?php $sales_total = $total_new_sales*$record->$item_price; ?>
+                                            <?php //$sales_total = $total_new_sales*$record->$item_price; ?>
+                                            <?php $sales_total = $total_new_sales*$record["ItemPrice"]; ?>
                                             <div class="text-sm">{{ $sales_total == 0 ? "" : number_format($sales_total) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <?php $target_total = $total_new_tr*$record->$item_price; ?>
+                                            <?php //$target_total = $total_new_tr*$record->$item_price; ?>
+                                            <?php $target_total = $total_new_tr*$record["ItemPrice"]; ?>
                                             <div class="text-sm">{{ $target_total == 0 ? "" : number_format($target_total) }}</div>
                                         </th>
                                         @php $a = $target_total == 0 ? 0 : (($sales_total/$target_total)*100)-100; @endphp
@@ -462,21 +546,21 @@
                                         $total_s_qty = $total_s_qty + $total_new_sales;
                                         $total_f_qty = $total_f_qty + $total_new_tr;
 
-                                        $total_s_value = $total_s_value + $total_new_sales*$record->$item_price;
-                                        $total_f_value = $total_f_value + $total_new_tr*$record->$item_price;
+                                        $total_s_value = $total_s_value + $total_new_sales*$record["ItemPrice"];
+                                        $total_f_value = $total_f_value + $total_new_tr*$record["ItemPrice"];
 
                                         if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
-                                                $all_total_emp_sales[$emp->emp_code] = $total_new_sales*$record->$item_price;
+                                                $all_total_emp_sales[$emp->emp_code] = $total_new_sales*$record["ItemPrice"];
                                             }
                                             else {
-                                                $all_total_emp_sales[$emp->emp_code] += $total_new_sales*$record->$item_price;
+                                                $all_total_emp_sales[$emp->emp_code] += $total_new_sales*$record["ItemPrice"];
                                             }
 
                                             if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
-                                                $all_total_emp_tr[$emp->emp_code] = $total_new_tr*$record->$item_price;
+                                                $all_total_emp_tr[$emp->emp_code] = $total_new_tr*$record["ItemPrice"];
                                             }
                                             else {
-                                                $all_total_emp_tr[$emp->emp_code] += $total_new_tr*$record->$item_price;
+                                                $all_total_emp_tr[$emp->emp_code] += $total_new_tr*$record["ItemPrice"];
                                             }
                                     @endphp
                                 @endforeach
@@ -701,39 +785,40 @@
                             ?>
                         @foreach($results as $record)
                             <div>
-                                @if($record->VendorNo != $vendor_id)
-                                        <?php $vendor_id = $record->VendorNo ?>
+                                @if($record["CardCode"] != $vendor_id)
+                                        <?php $vendor_id = $record["CardCode"] ?>
                                     <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorNo }}</td>
-                                        <td colspan="31" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record->VendorName }}</td>
+                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record["CardCode"] }}</td>
+                                        <td colspan="31" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record["DefaultPreferredVendor"] }}</td>
                                     </tr>
                                 @endif
-                                    <?php $vendor_id = $record->VendorNo ?>
+                                    <?php $vendor_id = $record["CardCode"] ?>
                                 <tr>
                                     <th colspan="32" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div class="w-full text-sm text-center">رقم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductCode }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemCode"] }}</div>
                                             <div class="w-full text-sm text-center">اسم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->ProductName }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemDescription"] }}</div>
                                             <div class="w-full text-sm text-center">الوحدة</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->BaseUnits }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["SalUnitMsr"] }}</div>
                                             <div class="w-full text-sm text-center">التميز</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->SpecialityCode }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["SpecialityCode"] }}</div>
                                             <div class="w-full text-sm text-center">المورد</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->VendorName }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["DefaultPreferredVendor"] }}</div>
                                             <div class="w-full text-sm text-center mr-1">
-                                                @if($item_price == "WholeSale")
-                                                    سعر مؤسسات
-                                                @elseif($item_price == "Retail")
-                                                    سعر تجزئة
-                                                @elseif($item_price == "MaxDiscount")
-                                                    أقل سعر
-                                                @else
-                                                    السعر
-                                                @endif
+                                                السعر
+{{--                                                @if($item_price == "WholeSale")--}}
+{{--                                                    سعر مؤسسات--}}
+{{--                                                @elseif($item_price == "Retail")--}}
+{{--                                                    سعر تجزئة--}}
+{{--                                                @elseif($item_price == "MaxDiscount")--}}
+{{--                                                    أقل سعر--}}
+{{--                                                @else--}}
+{{--                                                    السعر--}}
+{{--                                                @endif--}}
                                             </div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record->$item_price }}</div>
+                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ number_format($record["ItemPrice"], 2) }}</div>
                                         </div>
                                     </th>
                                 </tr>
@@ -741,9 +826,9 @@
                                     <th rowspan="2" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الشهر</div>
                                     </th>
-                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
-                                        <div class="text-sm">مخزون</div>
-                                    </th>
+{{--                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
+{{--                                        <div class="text-sm">مخزون</div>--}}
+{{--                                    </th>--}}
                                         <?php $loop_counter = 0; ?>
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
@@ -764,12 +849,12 @@
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
-                                        <div class="text-sm">فرع</div>
-                                    </th>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">
-                                        <div class="text-sm">كلي</div>
-                                    </th>
+{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
+{{--                                        <div class="text-sm">فرع</div>--}}
+{{--                                    </th>--}}
+{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #f8d2fa;" class="border p-2">--}}
+{{--                                        <div class="text-sm">كلي</div>--}}
+{{--                                    </th>--}}
                                     @foreach ($list as $year_key => $year)
                                         @foreach ($year as $month)
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
@@ -825,44 +910,44 @@
                                         <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                             @if($dept == '3')
                                                 <div class="text-sm">الاحساء</div>
-                                            @elseif($dept == '10')
-                                                <div class="text-sm">جدة</div>
-                                            @elseif($dept == '7')
-                                                <div class="text-sm">الرياض</div>
-                                            @elseif($dept == '13')
-                                                <div class="text-sm">وادي الدواسر</div>
                                             @elseif($dept == '4')
-                                                <div class="text-sm">الجوف</div>
-                                            @elseif($dept == '6')
-                                                <div class="text-sm">الدمام</div>
+                                                <div class="text-sm">جدة</div>
                                             @elseif($dept == '5')
+                                                <div class="text-sm">الرياض</div>
+                                            @elseif($dept == '6')
+                                                <div class="text-sm">وادي الدواسر</div>
+                                            @elseif($dept == '7')
+                                                <div class="text-sm">الجوف</div>
+                                            @elseif($dept == '8')
+                                                <div class="text-sm">الدمام</div>
+                                            @elseif($dept == '9')
                                                 <div class="text-sm">الخرج</div>
-                                            @elseif($dept == '12')
+                                            @elseif($dept == '10')
                                                 <div class="text-sm">نجران</div>
                                             @elseif($dept == '11')
                                                 <div class="text-sm">حائل</div>
-                                            @elseif($dept == '9')
+                                            @elseif($dept == '12')
                                                 <div class="text-sm">تبوك</div>
-                                            @elseif($dept == '8')
+                                            @elseif($dept == '13')
                                                 <div class="text-sm">القصيم</div>
-                                            @elseif($dept == '505')
+                                            @elseif($dept == '14')
                                                 <div class="text-sm">ساجر</div>
                                             @else
                                                 <div class="text-sm">{{ $dept }}</div>
                                             @endif
                                         </th>
                                         @php
-                                            $stockdept_txt = "stock_".$dept;
-                                            $stocktotal_txt = "stocktotal_".$dept;
+                                            //$stockdept_txt = "stock_".$dept;
+                                            //$stocktotal_txt = "stocktotal_".$dept;
                                         @endphp
-                                        <th style="border: 2px solid black;">
-                                            <div class="text-sm">{{ number_format($record->$stockdept_txt) }}</div>
-                                            @php $stockdept_total += intval($record->$stockdept_txt); @endphp
-                                        </th>
+{{--                                        <th style="border: 2px solid black;">--}}
+{{--                                            <div class="text-sm">{{ number_format($record->$stockdept_txt) }}</div>--}}
+{{--                                            @php //$stockdept_total += intval($record->$stockdept_txt); @endphp--}}
+{{--                                        </th>--}}
                                         @if ($loop->first)
-                                            <th rowspan="{{ count($depts) }}" style="border: 2px solid black;">
-                                                <div class="text-sm">{{ $record->$stocktotal_txt }}</div>
-                                            </th>
+{{--                                            <th rowspan="{{ count($depts) }}" style="border: 2px solid black;">--}}
+{{--                                                <div class="text-sm">{{ $record->$stocktotal_txt }}</div>--}}
+{{--                                            </th>--}}
                                         @endif
                                             <?php $month_counter = 1; ?>
                                         @foreach ($list as $year_key => $year)
@@ -871,7 +956,7 @@
                                                         <?php
 //                                                        $new_result = key_exists('ProductCode', $record) ? $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first(): 0;
                                                         $month_num = "month".$month_counter."_".$dept;
-                                                        $new_result = $record->$month_num;
+                                                        $new_result = $record[$month_num];
                                                         ?>
 {{--                                                    <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>--}}
                                                     <div class="text-sm">{{ $new_result ? ($new_result == 0 ? "" : number_format($new_result)) : ""  }}</div>
@@ -924,7 +1009,7 @@
 
 //                                                        $month_num = "month".$month_counter."_".$dept;
 //                                                        $month_num = "month".$month_counter;
-                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_target_branch_totals` where `product_id` = '". $record->ProductCode ."' AND `branch` = '". $dept ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."'");
+                                                        $new_result = \Illuminate\Support\Facades\DB::select("select target from `product_target_branch_totals` where `sap_code` = '". $record["ItemCode"] ."' AND `branch` = '". $old_dept_id[$dept] ."' AND `month` = '".$month."' AND `year` = '". intval($year_key) ."'");
                                                         $new_result = count($new_result) > 0 ? $new_result[0] : 0;
                                                         ?>
                                                     <div class="text-sm">{{ $new_result ? ($new_result->target == 0 ? "" : $new_result->target) : ""  }}</div>
@@ -981,12 +1066,12 @@
                                             <div class="text-sm">{{ $dept_forecast == 0 ? "" : number_format($dept_forecast) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
-                                            <div class="text-sm">{{ ($dept_sales*$record->$item_price) == 0 ? "" : number_format($dept_sales*$record->$item_price) }}</div>
+                                            <div class="text-sm">{{ ($dept_sales*$record["ItemPrice"]) == 0 ? "" : number_format($dept_sales*$record["ItemPrice"]) }}</div>
                                         </th>
                                         <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border p-2">
-                                            <div class="text-sm">{{ ($dept_forecast*$record->$item_price) == 0 ? "" : number_format($dept_forecast*$record->$item_price) }}</div>
+                                            <div class="text-sm">{{ ($dept_forecast*$record["ItemPrice"]) == 0 ? "" : number_format($dept_forecast*$record["ItemPrice"]) }}</div>
                                         </th>
-                                        @php $a = ($dept_forecast*$record->$item_price) == 0 ? 0 : (((($dept_sales*$record->$item_price)/($dept_forecast*$record->$item_price))*100)-100);  @endphp
+                                        @php $a = ($dept_forecast*$record["ItemPrice"]) == 0 ? 0 : (((($dept_sales*$record["ItemPrice"])/($dept_forecast*$record["ItemPrice"]))*100)-100);  @endphp
                                         <th style="border: 2px solid black; z-index: 10; @if($a > 0) background-color: #cfffbd; @else background-color: #ffcbcb; @endif" class="border p-2">
                                             <div class="text-sm">{{ $a == 0 ? "" : number_format($a) }}</div>
                                         </th>
@@ -995,21 +1080,21 @@
                                         $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
                                         $total_dept_f_qty = $total_dept_f_qty + $dept_forecast;
 
-                                        $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record->$item_price);
-                                        $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record->$item_price);
+                                        $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record["ItemPrice"]);
+                                        $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record["ItemPrice"]);
 
                                         if (!array_key_exists($dept, $all_total_dept_sales)) {
-                                            $all_total_dept_sales[$dept] = $dept_sales*$record->$item_price;
+                                            $all_total_dept_sales[$dept] = $dept_sales*$record["ItemPrice"];
                                         }
                                         else {
-                                            $all_total_dept_sales[$dept] += $dept_sales*$record->$item_price;
+                                            $all_total_dept_sales[$dept] += $dept_sales*$record["ItemPrice"];
                                         }
 
                                         if (!array_key_exists($dept, $all_total_dept_tr)) {
-                                            $all_total_dept_tr[$dept] = $dept_forecast*$record->$item_price;
+                                            $all_total_dept_tr[$dept] = $dept_forecast*$record["ItemPrice"];
                                         }
                                         else {
-                                            $all_total_dept_tr[$dept] += $dept_forecast*$record->$item_price;
+                                            $all_total_dept_tr[$dept] += $dept_forecast*$record["ItemPrice"];
                                         }
                                     @endphp
                                 @endforeach
@@ -1017,12 +1102,12 @@
                                     <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">المجموع</div>
                                     </th>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
-                                        <div class="text-sm">{{ $stockdept_total }}</div>
-                                    </th>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
-                                        <div class="text-sm">{{ $record->$stocktotal_txt }}</div>
-                                    </th>
+{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
+{{--                                        <div class="text-sm">{{ $stockdept_total }}</div>--}}
+{{--                                    </th>--}}
+{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">--}}
+{{--                                        <div class="text-sm">{{ $record->$stocktotal_txt }}</div>--}}
+{{--                                    </th>--}}
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fff6a1;" class="border p-2">
                                         <div class="text-sm">{{ $total_s1 }}</div>
                                     </th>
@@ -1121,7 +1206,7 @@
                                     @endphp
                                 </tr>
                                 <tr>
-                                    <th colspan="3" style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
+                                    <th style="border: 2px solid black; z-index: 10; background-color: #dcdcdc;" class="border p-2">
                                         <div class="text-sm">الفرق %</div>
                                     </th>
                                     @php $a = floatval($total_f1) == 0 ? 0 : number_format((($total_s1/$total_f1)*100) - 100) @endphp
@@ -1201,27 +1286,27 @@
                                         <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
                                             @if($dept == '3')
                                                 الاحساء
-                                            @elseif($dept == '10')
-                                                جدة
-                                            @elseif($dept == '7')
-                                                الرياض
-                                            @elseif($dept == '13')
-                                                وادي الدواسر
                                             @elseif($dept == '4')
-                                                الجوف
-                                            @elseif($dept == '6')
-                                                الدمام
+                                                جدة
                                             @elseif($dept == '5')
+                                                الرياض
+                                            @elseif($dept == '6')
+                                                وادي الدواسر
+                                            @elseif($dept == '7')
+                                                الجوف
+                                            @elseif($dept == '8')
+                                                الدمام
+                                            @elseif($dept == '9')
                                                 الخرج
-                                            @elseif($dept == '12')
+                                            @elseif($dept == '10')
                                                 نجران
                                             @elseif($dept == '11')
                                                حائل
-                                            @elseif($dept == '9')
+                                            @elseif($dept == '12')
                                                 تبوك
-                                            @elseif($dept == '8')
+                                            @elseif($dept == '13')
                                                 القصيم
-                                            @elseif($dept == '505')
+                                            @elseif($dept == '14')
                                                 ساجر
                                             @else
                                                 {{ $dept }}
