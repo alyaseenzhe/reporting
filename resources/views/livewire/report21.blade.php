@@ -50,7 +50,7 @@
                         <select id="customer_name" name="customer_name"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
-{{--                            <option value="customer_all">الكل</option>--}}
+                            {{--                            <option value="customer_all">الكل</option>--}}
                             @foreach($customer_list as $customer)
                                 <option value="{{ $customer['CardCode'] }}">{{$customer['CardCode']}} : {{ $customer['CardName'] }}</option>
                             @endforeach
@@ -74,14 +74,14 @@
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-{{--                <div class="mt-8 text-center w-full">--}}
-{{--                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-{{--                        <span class="mr-2 font-bold">--}}
-{{--                            <span></span>--}}
-{{--                            <span>إعادة ضبط</span>--}}
-{{--                        </span>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
+                {{--                <div class="mt-8 text-center w-full">--}}
+                {{--                    <button id="reset-btn" style="background-color: #01290f;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+                {{--                        <span class="mr-2 font-bold">--}}
+                {{--                            <span></span>--}}
+                {{--                            <span>إعادة ضبط</span>--}}
+                {{--                        </span>--}}
+                {{--                    </button>--}}
+                {{--                </div>--}}
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
@@ -100,255 +100,255 @@
 
     @if($show_msg)
         <div id="tbl2-container" class="overflow-x-auto">
-        <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
-            <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
-            <tr style="border: 2px solid black;">
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">رقم العميل</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">رقم العملية</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">تاريخ العملية</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">نوع السند</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">مدين</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">دائن</div>
-                </th>
-                <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    <div class="text-sm">الاجمالي التراكمي</div>
-                </th>
-            </tr>
-            </thead>
-            <tbody class="text-sm divide-y divide-gray-100">
-            @php
-                $counter = 0;
-            @endphp
-            @foreach($scribes_results as $key => $record)
-                @if(count($scribes_results) > 0 && $key === array_key_first($scribes_results))
+            <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
+                <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
+                <tr style="border: 2px solid black;">
+{{--                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                        <div class="text-sm">رقم العميل</div>--}}
+{{--                    </th>--}}
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">مرجع السند</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">تاريخ العملية</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">نوع السند</div>
+                    </th>
+                    <th style="border-left: 2px solid black; color: #1c7430" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">مدين (+)</div>
+                    </th>
+                    <th style="border-left: 2px solid black; color: #721c24" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">دائن (-)</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">الرصيد</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="text-sm divide-y divide-gray-100">
+                @php
+                    $counter = 0;
+                @endphp
+                @foreach($scribes_results as $key => $record)
+                    @if(count($scribes_results) > 0 && $key === array_key_first($scribes_results))
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+{{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record->CardCode}}--}}
+{{--                            </td>--}}
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                {{--                            {{$record->TransId}}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                {{--                            {{ \Carbon\Carbon::parse($record->RefDate)->format('Y-m-d')}}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                الرصيد الافتتاحي
+                            </td>
+                            @php  $ob = floatval($record->CumulativeBalance) + floatval($record->Credit) - floatval($record->Debit); @endphp
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob > 0 ? number_format($ob, 2) : ''}}
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob < 0 ? number_format($ob, 2) : ''}}
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{--                            {{number_format($record->CumulativeBalance, 2)}}--}}
+                            </td>
+                        </tr>
+                        @php $counter++ @endphp
+                    @endif
                     <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{$record->CardCode}}--}}
+{{--                        </td>--}}
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            {{$record->CardCode}}
-                        </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-{{--                            {{$record->TransId}}--}}
+                            {{$record->TransId}}
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2">
-{{--                            {{ \Carbon\Carbon::parse($record->RefDate)->format('Y-m-d')}}--}}
+                            {{ \Carbon\Carbon::parse($record->RefDate)->format('Y-m-d')}}
                         </td>
+                        @php $trans_code = explode('-', $record->TransId); $trans_code = $trans_code[0];  @endphp
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            الرصيد الافتتاحي
-                        </td>
-                        @php  $ob = floatval($record->CumulativeBalance) + floatval($record->Credit) - floatval($record->Debit); @endphp
-                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{ $ob > 0 ? number_format($ob, 2) : ''}}
-                        </td>
-                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{ $ob < 0 ? number_format($ob, 2) : ''}}
-                        </td>
-                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                            {{number_format($record->CumulativeBalance, 2)}}--}}
-                        </td>
-                    </tr>
-                    @php $counter++ @endphp
-                @endif
-                <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{$record->CardCode}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{$record->TransId}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2">
-                        {{ \Carbon\Carbon::parse($record->RefDate)->format('Y-m-d')}}
-                    </td>
-                    @php $trans_code = explode('-', $record->TransId); $trans_code = $trans_code[0];  @endphp
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        @if($trans_code == "210")
-                            مبيعات
-                        @elseif($trans_code == "211")
-                            مبيعات (عكس)
-                        @elseif($trans_code == "212")
-                            مبيعات (ارتجاع)
-                        @elseif($trans_code == "213")
-                            مبيعات (عكس ارتجاع)
-                        @elseif($trans_code == "220")
-                            مشتريات
-                        @elseif($trans_code == "221")
-                            مشتريات (عكس)
-                        @elseif($trans_code == "222")
-                            مشتريات (ارتجاع)
-                        @elseif($trans_code == "223")
-                            مشتريات (عكس ارتجاع)
-                        @elseif($trans_code == "230")
-                            تسوية موجبة
-                        @elseif($trans_code == "231")
-                            تسوية موجبة (عكس)
-                        @elseif($trans_code == "240")
-                            تسوية سالبة
-                        @elseif($trans_code == "241")
-                            تسوية سالبة (عكس)
-                        @elseif($trans_code == "250")
-                            نقل من
-                        @elseif($trans_code == "251")
-                            نقل من (عكس)
-                        @elseif($trans_code == "260")
-                            نقل إلى
-                        @elseif($trans_code == "261")
-                            نقل إلى (عكس)
-                        @elseif($trans_code == "270")
-                            تسعيرة
-                        @elseif($trans_code == "280")
-                            طلب شراء
-                        @elseif($trans_code == "290")
-                            امر شراء
-                        @elseif($trans_code == "300")
-                            مبيعات داخلية
-                        @elseif($trans_code == "301")
-                            مبيعات داخلية (عكس)
-                        @elseif($trans_code == "302")
-                            مبيعات داخلية (ارتجاع)
-                        @elseif($trans_code == "303")
-                            مبيعات داخلية (عكس ارتجاع)
-                        @elseif($trans_code == "310")
-                            مشتريات فروع
-                        @elseif($trans_code == "311")
-                            مشتريات فروع (عكس)
-                        @elseif($trans_code == "312")
-                            مشتريات فروع (ارتجاع)
-                        @elseif($trans_code == "313")
-                            مشتريات فروع (عكس ارتجاع)
-                        @elseif($trans_code == "320")
-                            استلام مشتريات
-                        @elseif($trans_code == "321")
-                            استلام مشتريات (عكس)
-                        @elseif($trans_code == "322")
-                            استلام مشتريات (ارتجاع)
-                        @elseif($trans_code == "323")
-                            استلام مشتريات (عكس ارتجاع)
+                            @if($trans_code == "210")
+                                مبيعات
+                            @elseif($trans_code == "211")
+                                مبيعات (عكس)
+                            @elseif($trans_code == "212")
+                                مبيعات (ارتجاع)
+                            @elseif($trans_code == "213")
+                                مبيعات (عكس ارتجاع)
+                            @elseif($trans_code == "220")
+                                مشتريات
+                            @elseif($trans_code == "221")
+                                مشتريات (عكس)
+                            @elseif($trans_code == "222")
+                                مشتريات (ارتجاع)
+                            @elseif($trans_code == "223")
+                                مشتريات (عكس ارتجاع)
+                            @elseif($trans_code == "230")
+                                تسوية موجبة
+                            @elseif($trans_code == "231")
+                                تسوية موجبة (عكس)
+                            @elseif($trans_code == "240")
+                                تسوية سالبة
+                            @elseif($trans_code == "241")
+                                تسوية سالبة (عكس)
+                            @elseif($trans_code == "250")
+                                نقل من
+                            @elseif($trans_code == "251")
+                                نقل من (عكس)
+                            @elseif($trans_code == "260")
+                                نقل إلى
+                            @elseif($trans_code == "261")
+                                نقل إلى (عكس)
+                            @elseif($trans_code == "270")
+                                تسعيرة
+                            @elseif($trans_code == "280")
+                                طلب شراء
+                            @elseif($trans_code == "290")
+                                امر شراء
+                            @elseif($trans_code == "300")
+                                مبيعات داخلية
+                            @elseif($trans_code == "301")
+                                مبيعات داخلية (عكس)
+                            @elseif($trans_code == "302")
+                                مبيعات داخلية (ارتجاع)
+                            @elseif($trans_code == "303")
+                                مبيعات داخلية (عكس ارتجاع)
+                            @elseif($trans_code == "310")
+                                مشتريات فروع
+                            @elseif($trans_code == "311")
+                                مشتريات فروع (عكس)
+                            @elseif($trans_code == "312")
+                                مشتريات فروع (ارتجاع)
+                            @elseif($trans_code == "313")
+                                مشتريات فروع (عكس ارتجاع)
+                            @elseif($trans_code == "320")
+                                استلام مشتريات
+                            @elseif($trans_code == "321")
+                                استلام مشتريات (عكس)
+                            @elseif($trans_code == "322")
+                                استلام مشتريات (ارتجاع)
+                            @elseif($trans_code == "323")
+                                استلام مشتريات (عكس ارتجاع)
 
-                        @elseif($trans_code == "010")
-                            قيد
-                        @elseif($trans_code == "011")
-                            قيد (عكس)
-                        @elseif($trans_code == "020")
-                            سند صرف
-                        @elseif($trans_code == "021")
-                            سند صرف (عكس)
-                        @elseif($trans_code == "030")
-                            سند قبض
-                        @elseif($trans_code == "031")
-                            سند قبض (عكس)
-                        @elseif($trans_code == "040")
-                            اشعار دائن
-                        @elseif($trans_code == "041")
-                            اشعار دائن (عكس)
-                        @elseif($trans_code == "050")
-                            اشعار مدين
-                        @elseif($trans_code == "051")
-                            اشعار مدين (عكس)
-                        @elseif($trans_code == "060")
-                            نقل نقدي
-                        @elseif($trans_code == "061")
-                            نقل نقدي (عكس)
-                        @elseif($trans_code == "070")
-                            قبض شيكات آجلة
-                        @elseif($trans_code == "071")
-                            قبض شيكات آجلة (عكس)
-                        @elseif($trans_code == "080")
-                            دفع شيكات آجلة
-                        @elseif($trans_code == "081")
-                            دفع شيكات آجلة (عكس)
-                        @else
-                            N/A
-                        @endif
-{{--                        {{$record->LineMemo}}--}}
-                    </td>
-{{--                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                        {{$record->LineMemo}}--}}
-{{--                    </td>--}}
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record->Debit, 2)}}
-                    </td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record->Credit, 2)}}
-                    </td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record->CumulativeBalance, 2)}}
-                    </td>
-                </tr>
-                @php $counter++ @endphp
-            @endforeach
-            @foreach($sap_results as $key2 => $record)
-                @if(count($scribes_results) == 0 && $key2 === array_key_first($sap_results))
-                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            {{$record['CardCode']}}
+                            @elseif($trans_code == "010")
+                                قيد
+                            @elseif($trans_code == "011")
+                                قيد (عكس)
+                            @elseif($trans_code == "020")
+                                سند صرف
+                            @elseif($trans_code == "021")
+                                سند صرف (عكس)
+                            @elseif($trans_code == "030")
+                                سند قبض
+                            @elseif($trans_code == "031")
+                                سند قبض (عكس)
+                            @elseif($trans_code == "040")
+                                اشعار دائن
+                            @elseif($trans_code == "041")
+                                اشعار دائن (عكس)
+                            @elseif($trans_code == "050")
+                                اشعار مدين
+                            @elseif($trans_code == "051")
+                                اشعار مدين (عكس)
+                            @elseif($trans_code == "060")
+                                نقل نقدي
+                            @elseif($trans_code == "061")
+                                نقل نقدي (عكس)
+                            @elseif($trans_code == "070")
+                                قبض شيكات آجلة
+                            @elseif($trans_code == "071")
+                                قبض شيكات آجلة (عكس)
+                            @elseif($trans_code == "080")
+                                دفع شيكات آجلة
+                            @elseif($trans_code == "081")
+                                دفع شيكات آجلة (عكس)
+                            @else
+                                N/A
+                            @endif
+                            {{--                        {{$record->LineMemo}}--}}
                         </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-{{--                            {{$record['TransId']}}--}}
-                        </td>
-                        <td style="border-left: 2px solid black;" class="border p-2">
-{{--                            {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}--}}
-                        </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            الرصيد الافتتاحي
-                        </td>
-                        @php  $ob = floatval($record['CumulativeBalance']) + floatval($record['Credit']) - floatval($record['Debit']); @endphp
+                        {{--                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                        {{$record->LineMemo}}--}}
+                        {{--                    </td>--}}
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{ $ob > 0 ? number_format($ob, 2) : ''}}
+                            {{number_format($record->Debit, 2)}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{ $ob < 0 ? number_format($ob, 2) : ''}}
+                            {{number_format($record->Credit, 2)}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                            {{number_format($record['CumulativeBalance'], 2)}}--}}
+                            {{number_format($record->CumulativeBalance, 2)}}
                         </td>
                     </tr>
                     @php $counter++ @endphp
-                @endif
-                <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{$record['CardCode']}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        {{$record['TransId']}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2">
-                        {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}
-                    </td>
-                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        @if(str_contains($record['LineMemo'], 'فواتير الحسابات مستحقة القبض'))
-                            مبيعات
-                        @elseif(str_contains($record['LineMemo'], 'الدَفعات الواردة'))
-                            سند قبض
-                        @elseif(str_contains($record['LineMemo'], 'المذكرات الدائنة للحسابات مستحقة القبض'))
-                            مبيعات (ارتجاع)
-                        @else
-                            {{$record['LineMemo']}}
-                        @endif
-                    </td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record['Debit'], 2)}}
-                    </td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record['Credit'], 2)}}
-                    </td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                        {{number_format($record['CumulativeBalance'], 2)}}
-                    </td>
-                </tr>
-                @php $counter++ @endphp
-            @endforeach
-            </tbody>
-        </table>
-    </div>
+                @endforeach
+                @foreach($sap_results as $key2 => $record)
+                    @if(count($scribes_results) == 0 && $key2 === array_key_first($sap_results))
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+{{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['CardCode']}}--}}
+{{--                            </td>--}}
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                {{--                            {{$record['TransId']}}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                {{--                            {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}--}}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                الرصيد الافتتاحي
+                            </td>
+                            @php  $ob = floatval($record['CumulativeBalance']) + floatval($record['Credit']) - floatval($record['Debit']); @endphp
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob > 0 ? number_format($ob, 2) : ''}}
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob < 0 ? number_format($ob, 2) : ''}}
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{--                            {{number_format($record['CumulativeBalance'], 2)}}--}}
+                            </td>
+                        </tr>
+                        @php $counter++ @endphp
+                    @endif
+                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{$record['CardCode']}}--}}
+{{--                        </td>--}}
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{$record['TransId']}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2">
+                            {{ \Carbon\Carbon::parse($record['RefDate'])->format('Y-m-d')}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            @if(str_contains($record['LineMemo'], 'فواتير الحسابات مستحقة القبض'))
+                                مبيعات
+                            @elseif(str_contains($record['LineMemo'], 'الدَفعات الواردة'))
+                                سند قبض
+                            @elseif(str_contains($record['LineMemo'], 'المذكرات الدائنة للحسابات مستحقة القبض'))
+                                مبيعات (ارتجاع)
+                            @else
+                                {{$record['LineMemo']}}
+                            @endif
+                        </td>
+                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            {{number_format($record['Debit'], 2)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            {{number_format($record['Credit'], 2)}}
+                        </td>
+                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            {{number_format($record['CumulativeBalance'], 2)}}
+                        </td>
+                    </tr>
+                    @php $counter++ @endphp
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     @endif
 </div>
 

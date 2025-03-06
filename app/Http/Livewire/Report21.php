@@ -20,7 +20,6 @@ class Report21 extends Component
 
     protected $listeners = ['create-report' => 'create_report'];
 
-
     public function booted() {
 
 
@@ -34,6 +33,7 @@ class Report21 extends Component
             return redirect()->route('dashboard');
         }
     }
+
 
     public function mount() {
 
