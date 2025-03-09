@@ -47,6 +47,7 @@ class Report25 extends Component
             return redirect()->route('dashboard');
         }
     }
+
     public function render()
     {
         $this->getCustomers();
