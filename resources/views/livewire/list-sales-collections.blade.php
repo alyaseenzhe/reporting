@@ -138,7 +138,8 @@
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
 
-                @foreach($final_results as $record)
+                @if ($this->start_date >= '2011-07-01' && $this->end_date <= '2023-12-31')
+                    @foreach($final_results as $record)
                     @if($record['collected'] == 0 && $record['cash'] == 0 && $record['postponed_sales'] == 0 && floatval($record['postponed_amount']) == 0 && floatval($record['postponed_due_amount']) == 0)
                     @else
                         @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
@@ -203,65 +204,137 @@
                         @elseif(($record && /*$record['emp_code'] == \Illuminate\Support\Facades\Auth::user()->emp_code &&*/ \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1'))
                             @if(strlen($record['customer_code'] ) == 7 || strlen($record['customer_code'] ) == 9)
                                 <tr>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{$record['customer_code']}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{$record['customer_name']}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    @if(substr($record['customer_code'], 0, 2) == "01")
-                                        الاحساء
-                                    @elseif(substr($record['customer_code'], 0, 2) == "02")
-                                        جدة
-                                    @elseif(substr($record['customer_code'], 0, 2) == "03")
-                                        الرياض
-                                    @elseif(substr($record['customer_code'], 0, 2) == "04")
-                                        وادي الدواسر
-                                    @elseif(substr($record['customer_code'], 0, 2) == "05")
-                                        الجوف
-                                    @elseif(substr($record['customer_code'], 0, 2) == "06")
-                                        الدمام
-                                    @elseif(substr($record['customer_code'], 0, 2) == "07")
-                                        الخرج
-                                    @elseif(substr($record['customer_code'], 0, 2) == "08")
-                                        نجران
-                                    @elseif(substr($record['customer_code'], 0, 2) == "09")
-                                        حائل
-                                    @elseif(substr($record['customer_code'], 0, 2) == "10")
-                                        تبوك
-                                    @elseif(substr($record['customer_code'], 0, 2) == "11")
-                                        القصيم
-                                    @elseif(substr($record['customer_code'], 0, 2) == "12")
-                                        ساجر
-                                    @endif
-                                </td>
-                                <td class="border p-2">
-                                    {{$record['emp_name']}}
-                                </td>
-                                <td @if($record['collected'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['collected'], 2)}}
-                                </td>
-                                <td @if($record['cash'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['cash'], 2)}}
-                                </td>
-                                <td @if($record['postponed_sales'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['postponed_sales'], 2)}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['postponed_amount'], 2)}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['postponed_due_amount'], 2)}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{ number_format($record['collected'], 2) == '0.00' && number_format($record['cash'], 2) == '0.00' && number_format($record['postponed_sales'], 2) == '0.00' ? "hide" : "show" }}
-                                </td>
-                            </tr>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{$record['customer_code']}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{$record['customer_name']}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        @if(substr($record['customer_code'], 0, 2) == "01")
+                                            الاحساء
+                                        @elseif(substr($record['customer_code'], 0, 2) == "02")
+                                            جدة
+                                        @elseif(substr($record['customer_code'], 0, 2) == "03")
+                                            الرياض
+                                        @elseif(substr($record['customer_code'], 0, 2) == "04")
+                                            وادي الدواسر
+                                        @elseif(substr($record['customer_code'], 0, 2) == "05")
+                                            الجوف
+                                        @elseif(substr($record['customer_code'], 0, 2) == "06")
+                                            الدمام
+                                        @elseif(substr($record['customer_code'], 0, 2) == "07")
+                                            الخرج
+                                        @elseif(substr($record['customer_code'], 0, 2) == "08")
+                                            نجران
+                                        @elseif(substr($record['customer_code'], 0, 2) == "09")
+                                            حائل
+                                        @elseif(substr($record['customer_code'], 0, 2) == "10")
+                                            تبوك
+                                        @elseif(substr($record['customer_code'], 0, 2) == "11")
+                                            القصيم
+                                        @elseif(substr($record['customer_code'], 0, 2) == "12")
+                                            ساجر
+                                        @endif
+                                    </td>
+                                    <td class="border p-2">
+                                        {{$record['emp_name']}}
+                                    </td>
+                                    <td @if($record['collected'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                        {{number_format($record['collected'], 2)}}
+                                    </td>
+                                    <td @if($record['cash'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                        {{number_format($record['cash'], 2)}}
+                                    </td>
+                                    <td @if($record['postponed_sales'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                        {{number_format($record['postponed_sales'], 2)}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{number_format($record['postponed_amount'], 2)}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{number_format($record['postponed_due_amount'], 2)}}
+                                    </td>
+                                    <td class="border p-2 whitespace-nowrap">
+                                        {{ number_format($record['collected'], 2) == '0.00' && number_format($record['cash'], 2) == '0.00' && number_format($record['postponed_sales'], 2) == '0.00' ? "hide" : "show" }}
+                                    </td>
+                                </tr>
                             @endif
                         @endif
                     @endif
                 @endforeach
+                @elseif ($this->start_date > '2023-12-31' && $this->end_date > '2023-12-31')
+                    @foreach($sap_results as $record)
+                        <tr>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['BusinessPartnerCode2']}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['BusinessPartnerName2']}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['BranchName']}}
+                            </td>
+                            <td class="border p-2">
+                                {{$record['SlpName2']}}
+                            </td>
+                            <td @if($record['CollectTotalNEW'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['CollectTotalNEW'], 2)}}
+                            </td>
+                            <td @if($record['CashTotalNEW'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['CashTotalNEW'], 2)}}
+                            </td>
+                            <td @if($record['CreditTotalNEW'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['CreditTotalNEW'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{number_format($record['Balance Due'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{number_format($record['121+'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{ number_format($record['CollectTotalNEW'], 2) == '0.00' && number_format($record['CashTotalNEW'], 2) == '0.00' && number_format($record['CreditTotalNEW'], 2) == '0.00' ? "hide" : "show" }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @elseif ($this->start_date >= '2011-07-01' && $this->end_date > '2023-12-31')
+                    @foreach($sap_results as $record)
+                        <tr>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['customer_code']}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['customer_name']}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record['BranchName']}}
+                            </td>
+                            <td class="border p-2">
+                                {{$record['emp_name']}}
+                            </td>
+                            <td @if($record['collected'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['collected'], 2)}}
+                            </td>
+                            <td @if($record['cash'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['cash'], 2)}}
+                            </td>
+                            <td @if($record['postponed_sales'] > 0) style="background-color: #fff8dc;" @endif class="border p-2 whitespace-nowrap">
+                                {{number_format($record['postponed_sales'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{number_format($record['Balance Due'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{number_format($record['121+'], 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{ number_format($record['collected'], 2) == '0.00' && number_format($record['cash'], 2) == '0.00' && number_format($record['postponed_sales'], 2) == '0.00' ? "hide" : "show" }}
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+
                 </tbody>
             </table>
         </div>

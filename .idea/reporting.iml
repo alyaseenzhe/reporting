@@ -12,6 +12,12 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/barryvdh/laravel-debugbar" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/maximebf/debugbar" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/emetra/php-sapb1" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/carlos-meneses/laravel-mpdf" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mpdf/mpdf" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mpdf/psr-http-message-shim" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mpdf/psr-log-aware-trait" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/setasign/fpdi" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
