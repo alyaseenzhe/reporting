@@ -361,7 +361,7 @@ class Report42 extends Component
 //(DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SIV-') as SP2SalesIncrease ,(select sum(value+ExtraFieldsTotal) from
 //ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_start_date . "' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SRT-') as SP2SalesReturnIncrease ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_end_date . " 23:59:25' and SIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SIV-') as SP2YearSales,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_end_date . " 23:59:25' and PIDate<='" . $end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SRT-') as SP2YearSalesReturn ,(select sum(value+ExtraFieldsTotal) from ALLSInvoice,productmast,DefAccounts where SIdate>'" . $previous_2_end_date . " 23:59:25' and SIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SIV-') as SP2YearSalesIncrease ,(select sum(value+ExtraFieldsTotal) from ALLPInvoice,productmast,DefAccounts where PIdate>'" . $previous_2_end_date . " 23:59:25' and PIDate<= '" . $previous_end_date . " 23:59:25' And  ProductNo=productmast.NodeNo and department=deptnodeno and DefAccounts.Area=areamast.nodeno /*and Area=Areamast.Nodeno*/ And (DonotUpdateStock=0 or productno=10423) And SpecialityCode='2' And ActualVoucherprefix='SRT-') as SP2YearSalesReturnIncrease  /*into CR_DivisionsAnalysis0*/ from Areamast where [group]=0  And NodeNo In (3,6 )";
 
-    $scribesStmt = "
+        $scribesStmt = "
 Select * ,(select SUM(Balance) from (Select Areamast.Nodeno,Areamast.code,Accountdr,voucherno,voucherdate,SUM((amountdr-amountcr)*exchangeRate) as Balance,isnull((select sum(total) from billwise where CustomerNo=accountdr and billwise.type='N' and billwise.voucherno not like '030-%%'  and billwise.voucherno=purchasedata.voucherno and voucherdate<='".$end_date." 23:59:25'),0)  as total  ,isnull((select sum(total) from billwise where CustomerNo=accountdr  and billwise.Refrence=purchasedata.voucherno  and voucherdate<'".$end_date."'),0)  as paid  /*into DebitCustomers*/ from purchasedata ,AccMast,Areamast where   Accmast_Department=Areamast.nodeno and  AccountDr=accmast.NodeNo and accmast.Type in (10 ) And voucherdate<='".$end_date." 23:59:25' And purchasedata.DoNotUpdateAccounts=0 And PDC='N'  And Accmast_Department In (".implode(',', $departments).") and voucherno in (select voucherno from billwise where accountdr=customerno)  Group by Areamast.Nodeno,Areamast.Code,AccountDr,voucherno,voucherdate ) as DebitCustomers where DebitCustomers.Code = tbl1.Code  ) as DebitCustomers ,isNull((select sum(Total+Paid) from (Select Areamast.Nodeno,Areamast.code,Accountdr,voucherno,voucherdate,SUM((amountdr-amountcr)*exchangeRate) as Balance,isnull((select sum(total) from billwise where CustomerNo=accountdr and billwise.type='N' and billwise.voucherno not like '030-%%'  and billwise.voucherno=purchasedata.voucherno and voucherdate<='".$end_date." 23:59:25'),0)  as total  ,isnull((select sum(total) from billwise where CustomerNo=accountdr  and billwise.Refrence=purchasedata.voucherno  and voucherdate<'".$end_date."'),0)  as paid  /*into DebitCustomers*/ from purchasedata ,AccMast,Areamast where   Accmast_Department=Areamast.nodeno and  AccountDr=accmast.NodeNo and accmast.Type in (10 ) And voucherdate<='".$end_date." 23:59:25' And purchasedata.DoNotUpdateAccounts=0 And PDC='N'  And Accmast_Department In (".implode(',', $departments)." ) and voucherno in (select voucherno from billwise where accountdr=customerno)  Group by Areamast.Nodeno,Areamast.Code,AccountDr,voucherno,voucherdate ) as DebitCustomers where DebitCustomers.Code = tbl1.Code  and (total+paid)>0 and  voucherdate<'".$due_date."'),0) as DueBalance  ,(select sum(TotalCost)
 from Pinvoice,Deptmast,DefAccounts where Department=Deptmast.nodeno and department=deptnodeno    and DefAccounts.Area = tbl1.Nodeno and
 (DonotUpdateStock=0 or productno=10423) And PIdate <='" . $end_date . " 23:59:25') as InpuCost, (select sum(TotalCost) from Sinvoice,Deptmast,DefAccounts where
@@ -408,11 +408,11 @@ select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from AL
 
 //        dd($scribesStmt);
 
-            $query = DB::connection('sqlsrv')->select($scribesStmt);
+        $query = DB::connection('sqlsrv')->select($scribesStmt);
 
 //            dd($query);
 
-            $this->scribes_results = $query;
+        $this->scribes_results = $query;
     }
     public function scribesQuery2024($start_date, $end_date, $departments) {
 
@@ -625,47 +625,47 @@ select NodeNo,Code,name,arabic_name ,(select sum(value+ExtraFieldsTotal) from AL
     public function sapQuery($start_date, $end_date, $departments) {
 
 //        if (count($this->sap_codes) > 0) {
-            $depts = ['3' => '3', '10' => '4', '7' =>'5', '13' =>'6', '4' =>'7', '6' => '8', '5' => '9', '12' => '10', '11' => '11', '9' => '12', '8' => '13', '505' => '14'];
-            $sap_depts = [];
+        $depts = ['3' => '3', '10' => '4', '7' =>'5', '13' =>'6', '4' =>'7', '6' => '8', '5' => '9', '12' => '10', '11' => '11', '9' => '12', '8' => '13', '505' => '14'];
+        $sap_depts = [];
 
-            if (in_array('dept_all', $departments)) {
-                $sap_depts = $depts;
+        if (in_array('dept_all', $departments)) {
+            $sap_depts = $depts;
+        }
+        else {
+            foreach ($departments as $department) {
+                array_push($sap_depts, $depts[$department]);
             }
-            else {
-                foreach ($departments as $department) {
-                    array_push($sap_depts, $depts[$department]);
-                }
-            }
+        }
 
-            if (! extension_loaded('odbc'))
-            {
-                die('ODBC extension not enabled / loaded');
-            }
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
 
-            $driver = env('DB_CONNECTION_FOURTH');
+        $driver = env('DB_CONNECTION_FOURTH');
 
 // Host
 // Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
-            $host = env('DB_HOST_FOURTH');
+        $host = env('DB_HOST_FOURTH');
 
 // Default name of your hana instance
-            $db_name = env('DB_DATABASE_FOURTH');
-            $username = env('DB_USERNAME_FOURTH');
-            $password = env('DB_PASSWORD_FOURTH');
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
 
 // Try to connect
-            $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
 
-            if (!$conn)
-            {
-                // Try to get a meaningful error if the connection fails
-                echo "Connection failed.\n";
-                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-            }
-            else
-            {
+        if (!$conn)
+        {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+        }
+        else
+        {
 
-                $sql = 'SELECT
+            $sql = 'SELECT
 
 "BPLId",
 (SELECT OBPL."TaxIdNum" FROM AL_YASEEN_AGRI_PLIVE.OBPL WHERE OBPL."BPLId" = F0."BPLId") as "Code",
@@ -980,23 +980,23 @@ ORDER BY "BPLId"';
 
 
 //                dd($sql);
-                $result = odbc_exec($conn, $sql);
-                if (!$result)
-                {
-                    echo "Error while sending SQL statement to the database server.\n";
-                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-                }
-                else
-                {
+            $result = odbc_exec($conn, $sql);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
 //                dd(odbc_fetch_array($result));
 
-                    while ($row = odbc_fetch_array($result)) {
-                        array_push($this->sap_results, $row);
-                    }
-
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->sap_results, $row);
                 }
-                odbc_close($conn);
+
             }
+            odbc_close($conn);
+        }
 //        }
 
     }
@@ -1419,7 +1419,7 @@ GROUP BY "Cost Center"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", COUNT(DISTINCT "BusinessPartnerCode") AS "NumOfCustomers" FROM (
 
-SELECT * FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",* FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -1434,6 +1434,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1446,6 +1447,7 @@ ON T1."BusinessPartnerCode" = T2."CardCode"
 WHERE T2."QryGroup1" = \'Y\'
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") F1
 ON F0."BPLId" = F1."BranchCode"
@@ -2123,7 +2125,7 @@ GROUP BY "Cost Center"
 LEFT JOIN (
 SELECT "BranchName", "BranchCode", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", COUNT(DISTINCT "BusinessPartnerCode") AS "NumOfCustomers" FROM (
 
-SELECT * FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", * FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -2138,6 +2140,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2150,6 +2153,7 @@ ON T1."BusinessPartnerCode" = T2."CardCode"
 WHERE T2."QryGroup1" = \'Y\'
 )
 WHERE "BranchCode" IS NOT NULL
+AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") F1
 ON F0."BPLId" = F1."BranchCode"
@@ -2293,7 +2297,7 @@ SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "Quant
 SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+WHERE "DocumentDate" > \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
 AND "DocumentNumber" not in (358,359)
 
@@ -2351,7 +2355,7 @@ SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "Quant
 SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+WHERE "DocumentDate" > \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
