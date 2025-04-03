@@ -635,7 +635,7 @@
                                     {{ number_format(floatval($record[1]["DistSales"])/1000) }}
                                 </td>
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    {{ number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) }}
+                                    {{ ((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000)) != 0? number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) : 0 }}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
@@ -835,7 +835,7 @@
                                 {{ number_format(floatval($record[1]["DistSales"])/1000) }}
                             </td>
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                {{ number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) }}
+                                {{ ((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000)) != 0 ?  number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) : 0 }}
                             </td>
                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
