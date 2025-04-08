@@ -45,7 +45,7 @@
                     <label class="block font-bold mb-2">تاريخ البداية
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="start_date" type="date" name="start_date" min="2024-01-01"
+                    <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -54,7 +54,7 @@
                     <label class="block font-bold mb-2">تاريخ النهاية
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="end_date" type="date" name="end_date" min="2024-01-01"
+                    <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -68,22 +68,49 @@
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('dept_id') border: solid 1px #fda4af; @enderror">
                             <option value="dept_all" selected>الكل</option>
-                            <option value="0101" >الاحساء</option>
-                            <option value="0102" >جدة</option>
-                            <option value="0103" >الرياض</option>
-                            <option value="0104" >وادي الدواسر</option>
-                            <option value="0105" >الجوف</option>
-                            <option value="0106" >الدمام</option>
-                            <option value="0107" >الخرج</option>
-                            <option value="0108" >نجران</option>
-                            <option value="0109" >حائل</option>
-                            <option value="0110" >تبوك</option>
-                            <option value="0111" >القصيم</option>
-                            <option value="0112" >ساجر</option>
-                            <option value="0201" >مزرعة الدالوة</option>
-                            <option value="0202" >مزرعة الفضول</option>
-                            <option value="0203" >مزرعة الدلم</option>
-                            <option value="0001" >المركز الرئيسي</option>
+                            @if(in_array("3", $branches))
+                                <option value="0101" >الاحساء</option>
+                            @endif
+                            @if(in_array("10", $branches))
+                                <option value="0102" >جدة</option>
+                            @endif
+                            @if(in_array("7", $branches))
+                                <option value="0103" >الرياض</option>
+                            @endif
+                            @if(in_array("13", $branches))
+                                <option value="0104" >وادي الدواسر</option>
+                            @endif
+                            @if(in_array("4", $branches))
+                                <option value="0105" >الجوف</option>
+                            @endif
+                            @if(in_array("6", $branches))
+                                <option value="0106" >الدمام</option>
+                            @endif
+                            @if(in_array("5", $branches))
+                                <option value="0107" >الخرج</option>
+                            @endif
+                            @if(in_array("12", $branches))
+                                <option value="0108" >نجران</option>
+                            @endif
+                            @if(in_array("11", $branches))
+                                <option value="0109" >حائل</option>
+                            @endif
+                            @if(in_array("9", $branches))
+                                <option value="0110" >تبوك</option>
+                            @endif
+                            @if(in_array("8", $branches))
+                                <option value="0111" >القصيم</option>
+                            @endif
+                            @if(in_array("505", $branches))
+                                <option value="0112" >ساجر</option>
+                            @endif
+                            @if(in_array("3", $branches))
+                                <option value="0201" >مزرعة الدالوة</option>
+                                <option value="0202" >مزرعة الفضول</option>
+                                <option value="0203" >مزرعة الدلم</option>
+                                <option value="0001" >المركز الرئيسي</option>
+                            @endif
+
                         </select>
                     </div>
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -418,7 +445,7 @@
                 {{--                    </div>--}}
                 {{--                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
                 {{--                </div>--}}
-                <div wire:ignore class="w-full">
+                <div id="grouping" wire:ignore class="w-full">
                     <label class="block font-bold mb-2">خيارات التجميع (Grouping)
                         {{--                        <span class="text-red-500">*</span>--}}
                     </label>
@@ -812,8 +839,8 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-                    @foreach($group_results as $outer_record)
-                        @foreach($outer_record as $record)
+{{--                    @foreach($group_results as $outer_record)--}}
+                        @foreach($group_results as $record)
                             @if($currentGroup != $record["OldCode"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -1018,7 +1045,7 @@
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
-                    @endforeach
+{{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1046,8 +1073,8 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-                    @foreach($group_results as $outer_record)
-                        @foreach($outer_record as $record)
+{{--                    @foreach($group_results as $outer_record)--}}
+                        @foreach($group_results as $record)
                             @if($currentGroup != $record["ItemGroup"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -1294,7 +1321,7 @@
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
-                    @endforeach
+{{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1322,8 +1349,9 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-                    @foreach($group_results as $outer_record)
-                        @foreach($outer_record as $record)
+{{--                    @foreach($group_results as $outer_record)--}}
+{{--                        @foreach($outer_record as $record)--}}
+                        @foreach($group_results as $record)
                             @if($currentGroup != $record["Speciality"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -1571,7 +1599,7 @@
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
-                    @endforeach
+{{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1599,8 +1627,11 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-                    @foreach($group_results as $outer_record)
-                        @foreach($outer_record as $record)
+{{--                    @foreach($group_results as $record)--}}
+{{--                    @foreach($group_results as $outer_record)--}}
+
+{{--                        @foreach($outer_record as $record)--}}
+                        @foreach($group_results as $record)
                             @if($currentGroup != $record["mrkt_type"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -1844,7 +1875,7 @@
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
-                    @endforeach
+{{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1872,8 +1903,8 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-                    @foreach($group_results as $outer_record)
-                        @foreach($outer_record as $record)
+{{--                    @foreach($group_results as $outer_record)--}}
+                        @foreach($group_results as $record)
                             @if($currentGroup != $record["VendorName"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -2117,7 +2148,7 @@
                             </tr>
                             @php $counter++ @endphp
                         @endforeach
-                    @endforeach
+{{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -2791,6 +2822,7 @@
                 if (search_type == "item_code_search") {
                     // $('#filteration-row2').addClass('hide');
                     $('#filteration-row3').addClass('hide');
+                    $('#grouping').addClass('hide');
                     $('#product-code-row').removeClass('hide');
                     $('#submit-row').removeClass('hide');
                     $('#product_code').select2({
@@ -2802,6 +2834,7 @@
                 else if(search_type == "advanced_search") {
                     // $('#filteration-row2').removeClass('hide');
                     $('#filteration-row3').removeClass('hide');
+                    $('#grouping').removeClass('hide');
                     $('#product-code-row').addClass('hide');
                     $('#submit-row').addClass('hide');
 
@@ -3194,7 +3227,7 @@
                         });
                         $("#gen-report").html('<b>إنشاء تقرير</b>');
                     }
-                    else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                    /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
                         Swal.fire({
                             title: "حدث خطأ",
                             text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
@@ -3202,7 +3235,7 @@
                             confirmButtonText: "موافق",
                         });
                         $("#gen-report").html('<b>إنشاء تقرير</b>');
-                    }
+                    }*/
                     else {
                         $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -3234,7 +3267,7 @@
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
                         }
-                        else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                        /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
                             Swal.fire({
                                 title: "حدث خطأ",
                                 text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
@@ -3242,7 +3275,7 @@
                                 confirmButtonText: "موافق",
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
-                        }
+                        }*/
                         else {
                             $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -3271,7 +3304,7 @@
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
                         }
-                        else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                        /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
                             Swal.fire({
                                 title: "حدث خطأ",
                                 text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
@@ -3279,7 +3312,7 @@
                                 confirmButtonText: "موافق",
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
-                        }
+                        }*/
                         else {
                             $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
