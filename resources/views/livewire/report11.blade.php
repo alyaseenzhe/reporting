@@ -38,7 +38,10 @@
             </ol>
         </nav>
     </div>
-    <div id="branch-container" class="mb-6 mt-6">
+
+    <button type="button" class="collapsible active">خيارات البحث</button>
+
+    <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
@@ -2739,6 +2742,24 @@
             // $("#cat_type option[value='"+selected_cat_type+"']").prop('selected', true);
             $('.cost').addClass('hide');
             swal.close();
+
+
+            ///////////////////////////
+            var div = document.getElementById("branch-container");
+            var btn = document.getElementsByClassName("collapsible");
+            div.style.display = "none";
+            div.classList.toggle("active");
+            $("button.collapsible").removeClass("active");
+
+            // btn.classList.toggle("active");
+            var content = div.nextElementSibling;
+            if (div.classList.contains("active")) {
+                div.style.display = "none"; // Show content if active
+            } else {
+                div.style.display = "block"; // Hide content if not active
+            }
+
+            //////////////////////////////////////////////////
         });
 
         $(document).ready(function () {
@@ -3227,15 +3248,15 @@
                         });
                         $("#gen-report").html('<b>إنشاء تقرير</b>');
                     }
-                    /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                    else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                         Swal.fire({
                             title: "حدث خطأ",
-                            text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
+                            text: "الرجاء اختيار تواريخ من 2023 واعلى حتى تتمكن من إنشاء التقرير",
                             icon: "error",
                             confirmButtonText: "موافق",
                         });
                         $("#gen-report").html('<b>إنشاء تقرير</b>');
-                    }*/
+                    }
                     else {
                         $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -3267,15 +3288,15 @@
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
                         }
-                        /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                        else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                             Swal.fire({
                                 title: "حدث خطأ",
-                                text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
+                                text: "الرجاء اختيار تواريخ من 2023 واعلى حتى تتمكن من إنشاء التقرير",
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
-                        }*/
+                        }
                         else {
                             $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -3304,15 +3325,15 @@
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
                         }
-                        /*else if((new Date(start_date).getFullYear()) < 2024  || (new Date(end_date).getFullYear()) < 2024) {
+                        else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                             Swal.fire({
                                 title: "حدث خطأ",
-                                text: "الرجاء اختيار تواريخ من 2024 واعلى حتى تتمكن من إنشاء التقرير",
+                                text: "الرجاء اختيار تواريخ من 2023 واعلى حتى تتمكن من إنشاء التقرير",
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
                             $("#gen-report").html('<b>إنشاء تقرير</b>');
-                        }*/
+                        }
                         else {
                             $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
@@ -3417,6 +3438,26 @@
 
         }
 
+        /* start of collapsible code*/
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (this.classList.contains("active")) {
+                    content.style.display = "block"; // Show content if active
+                } else {
+                    content.style.display = "none"; // Hide content if not active
+                }
+
+            });
+        }
+
+        /* end of collapsible code*/
+
     </script>
 @stop
 @section('css-scripts')
@@ -3516,5 +3557,45 @@
             background: #f8fafc;
             border: 2px solid black;
         }
+
+
+
+
+        /* Style the button that is used to open and close the collapsible content */
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            /*text-align: left;*/
+            outline: none;
+            font-size: 15px;
+        }
+
+        /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        /* Style the collapsible content. Note: hidden by default */
+        #branch-container {
+            padding: 18px 18px;
+            display: block;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+
+        .collapsible:after {
+            content: '\02795'; /* Unicode character for "plus" sign (+) */
+            font-size: 13px;
+            color: white;
+            float: left;
+            margin-left: 5px;
+        }
+
+        button.active:after {
+            content: "\2796"; /* Unicode character for "minus" sign (-) */
     </style>
 @stop
