@@ -634,7 +634,15 @@ class Report11 extends Component
         }
         else
         {
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\'';
+            $customer_depts = ['2' => '01%', '3' => '01%', '10' => '02%', '7' => '03%', '13' => '04%', '4' => '05%' , '6' => '06%', '5' => '07%', '12' => '08%', '11' => '09%', '9' => '10%', '8' => '11%', '505' => '12%', '15' => '01%', '500' => '01%', '504' => '01%'];
+            $customer_codes = array_intersect_key($customer_depts, array_flip($this->branches));
+
+
+            $query = implode(' OR ', array_map(function ($value) {
+                return 'T0."CardCode" LIKE \'' . $value . '\'';
+            }, $customer_codes));
+
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' AND ('.$query.')';
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)
