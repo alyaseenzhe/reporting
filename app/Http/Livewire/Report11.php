@@ -17,6 +17,7 @@ class Report11 extends Component
     public $categories = [];
     public $show_msg = false;
     public $report_type = 'byItem';
+    public $emps = null;
 
     public $group_type = "xx";
 
@@ -52,6 +53,7 @@ class Report11 extends Component
 
     public function mount() {
         $this->product_lists();
+        $this->employees();
 
         $this->query = User::where('id', Auth::id())->first();
         $this->branches = json_decode($this->query->branches);
@@ -69,7 +71,7 @@ class Report11 extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code, $marketing_type, $customer_type) {
+    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
 
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -94,11 +96,11 @@ class Report11 extends Component
                 $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type, $customer_type);
             }
             elseif ($start_date > '2023-12-31' && $end_date > '2023-12-31') {
-                $this->sapQuery($start_date, $end_date, $dept_id, $customer_type);
+                $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
             }
             elseif ($start_date >= '2011-07-01' && $end_date > '2023-12-31') {
                 $this->scribesQuery($start_date, '2023-12-31', $dept_id, $sp_type, $customer_type);
-                $this->sapQuery('2024-01-01', $end_date, $dept_id, $customer_type);
+                $this->sapQuery('2024-01-01', $end_date, $dept_id, $customer_type, $emps_type);
             }
 
 
@@ -642,7 +644,22 @@ class Report11 extends Component
                 return 'T0."CardCode" LIKE \'' . $value . '\'';
             }, $customer_codes));
 
-            $customerQuery = 'SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' AND ('.$query.')';
+            $customerQuery = 'SELECT T0."CardCode", T0."CardName",
+       CASE
+	WHEN "CardCode" LIKE \'01%\' THEN \'0101\'
+	WHEN "CardCode" LIKE \'02%\' THEN \'0102\'
+	WHEN "CardCode" LIKE \'03%\' THEN \'0103\'
+	WHEN "CardCode" LIKE \'04%\' THEN \'0104\'
+	WHEN "CardCode" LIKE \'05%\' THEN \'0105\'
+	WHEN "CardCode" LIKE \'06%\' THEN \'0106\'
+	WHEN "CardCode" LIKE \'07%\' THEN \'0107\'
+	WHEN "CardCode" LIKE \'08%\' THEN \'0108\'
+	WHEN "CardCode" LIKE \'09%\' THEN \'0109\'
+	WHEN "CardCode" LIKE \'10%\' THEN \'0110\'
+	WHEN "CardCode" LIKE \'11%\' THEN \'0111\'
+	WHEN "CardCode" LIKE \'12%\' THEN \'0112\'
+END AS "Dept"
+FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' AND ('.$query.')';
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)
@@ -1093,7 +1110,7 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
         }
     }
 
-    public function sapQuery($start_date, $end_date, $departments, $customer_type) {
+    public function sapQuery($start_date, $end_date, $departments, $customer_type, $emps_type) {
 
         if (count($this->sap_codes) > 0) {
             $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' =>'5', '0104' =>'6', '0105' =>'7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' =>  '16', '0203' => '17'];
@@ -1209,13 +1226,13 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName"
 FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1237,7 +1254,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1245,12 +1262,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .= ')
 
 WHERE "ItemDescription" IS NOT NULL
 
@@ -1332,25 +1354,25 @@ ORDER BY "ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1375,7 +1397,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1383,12 +1405,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1430,25 +1457,25 @@ ORDER BY "ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1473,7 +1500,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1481,12 +1508,19 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
 
-)
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+
+$sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1529,25 +1563,25 @@ ORDER BY "ItemGroup","ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1572,7 +1606,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1580,12 +1614,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1628,25 +1667,25 @@ ORDER BY "Speciality","ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1671,7 +1710,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1679,12 +1718,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1727,25 +1771,25 @@ ORDER BY "mrkt_type","ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1771,7 +1815,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1779,12 +1823,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1827,25 +1876,25 @@ ORDER BY "VendorCode","ItemCode"';
 FROM (
 
 SELECT *, CASE
-		WHEN "QryGroup1" = \'Y\' THEN \'0\'
-		WHEN "QryGroup2" = \'Y\' THEN \'1\'
-		WHEN "QryGroup3" = \'Y\' THEN \'2\'
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
 		ELSE \'\'
 	END AS "Speciality",
-	CASE WHEN "U_UDF1" IS NULL THEN "ItemCode" ELSE "U_UDF1" END AS "OldCode",
-	"CardCode" AS "VendorCode",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
 "DefaultPreferredVendor" AS "VendorName",
 --
 CASE
-WHEN "QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN "QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-WHEN "QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-WHEN "QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-WHEN "QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-WHEN "QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-WHEN "QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-WHEN "QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-WHEN "QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
 "InvntItem" AS "IsInventoryItem"
@@ -1871,7 +1920,7 @@ AND "DocumentTypeCode" != \'15\'';
                     if ($customer_type != 'customer_all') {
                         $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
                     }
-$sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
 AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1879,12 +1928,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "CancellationStatus", "DocumentDate",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode2" = T2."ItemCode"
-WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-
-)
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+$sql .=')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BusinessPartnerName", "BusinessPartnerCode", "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1903,7 +1957,6 @@ GROUP BY "BusinessPartnerName", "BusinessPartnerCode", "BranchName", "BranchCode
 ORDER BY "BusinessPartnerCode", "VendorCode","ItemCode"';
 //                    dd($sql);
                 }
-
 
 //                dd($sql);
                 $result = odbc_exec($conn, $sql);
@@ -1977,5 +2030,93 @@ ORDER BY "BusinessPartnerCode", "VendorCode","ItemCode"';
 //        dd($data);
         $this->group_type = $data;
         $this->emit('finished-categories2');
+    }
+
+    public function employees() {
+
+        $this->emps = User::join('user_groups', 'user_groups.id', 'users.group')
+//            ->where('branches', 'like', '%"'.$branch.'"%')
+            ->where('sales_dept_code', '<>', '')
+            ->where('is_active', '1')
+            ->whereIn('write_product_target', ['1', '2'])
+            ->select('users.id', 'users.emp_code', 'users.name', 'users.sales_dept_code')
+            ->get();
+
+        /*
+        $this->employee_ids_in_my_branch = [];
+        foreach ($this->dept_id as $branch) {
+            $emps = User::join('user_groups', 'user_groups.id', 'users.group')
+                ->where('branches', 'like', '%"'.$branch.'"%')
+                ->whereIn('write_product_target', ['1', '2'])
+                ->select('users.id', 'users.emp_code')
+                ->get();
+
+            $dept_code = "";
+
+            if ($branch == "3") {
+                $dept_code = "0101";
+            }
+            elseif ($branch == "6") {
+                $dept_code = "0106";
+            }
+            elseif ($branch == "4") {
+                $dept_code = "0105";
+            }
+            elseif ($branch == "11") {
+                $dept_code = "0109";
+            }
+            elseif ($branch == "8") {
+                $dept_code = "0111";
+            }
+            elseif ($branch == "505") {
+                $dept_code = "0112";
+            }
+            elseif ($branch == "5") {
+                $dept_code = "0107";
+            }
+            elseif ($branch == "7") {
+                $dept_code = "0103";
+            }
+            elseif ($branch == "9") {
+                $dept_code = "0110";
+            }
+            elseif ($branch == "10") {
+                $dept_code = "0102";
+            }
+            elseif ($branch == "12") {
+                $dept_code = "0108";
+            }
+            elseif ($branch == "13") {
+                $dept_code = "0104";
+            }
+            else {
+                $dept_code = "0001";
+            }
+
+
+            foreach ($emps as $emp) {
+//                array_push($this->employee_ids_in_my_branch, $emp->id);
+                $this->employee_ids_in_my_branch[$emp->emp_code] = $emp->id;
+                if (!array_key_exists($dept_code, $this->employee_branch_names)) {
+//                    $this->employee_branch_names[$dept_code] = [$dept_code => $emp->id];
+                    $this->employee_branch_names[$dept_code] = [$emp->id];
+                }
+                else {
+                    $this->employee_branch_names[$dept_code][] = $emp->id;
+//                    $this->employee_ids_in_my_branch[$branch][] = $emp->id;
+//                    array_push($this->employee_ids_in_my_branch[$branch][], $emp->id);
+                }
+            }
+        }
+
+//        dd($this->employee_branch_names);
+//        dd($this->employee_ids_in_my_branch);
+
+        if (count($this->dept_id) == 1 && $this->dept_id[0] == "-1") {
+            $this->dept_id = $this->user_branches;
+        }
+        */
+
+        return $this->emps;
     }
 }

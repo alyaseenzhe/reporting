@@ -11,18 +11,6 @@
                         <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">الصفحة الرئيسية</span>
                     </a>
                 </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                             viewBox="0 0 199.404 199.404"
-                             xml:space="preserve">
-<g>
-    <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
-</g>
-</svg>
-                        <a href="{{ route('sap-reports') }}" class="text-gray-700 hover:text-gray-900 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">تقارير ساب</a>
-                    </div>
-                </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -406,6 +394,24 @@
                     <span class="error text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+                <div id="sales_container" class="w-full">
+                    <label class="block font-bold mb-2">الموظفين
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div wire:ignore>
+                        <select id="emps_type" name="emps_type"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('emps_type') border: solid 1px #fda4af; @enderror">
+                            <option value="employees_all" selected>الكل</option>
+                            @foreach($emps as $employee)
+                                <option value="{{ $employee->emp_code }}" data-dept="{{ $employee->sales_dept_code }}">{{ $employee->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('emps_type')
+                    <span class="error text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
         </div>
         <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
@@ -455,13 +461,13 @@
                     <select id="report_type" name="report_type"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('sp_type') border: solid 1px #fda4af; @enderror">
-{{--                        <option value="byItem" selected>بدون تجميع</option>--}}
+                        {{--                        <option value="byItem" selected>بدون تجميع</option>--}}
                         <option value="byDepartment" selected>بالصنف</option>
                         <option value="byItemGroup">بنوع المواد</option>
                         <option value="bySpeciality">بالمميز</option>
                         <option value="byMarketingType">بالاقسام</option>
                         <option value="byVendor">بالمورد</option>
-{{--                        <option value="byCustomer">بالعميل</option>--}}
+                        {{--                        <option value="byCustomer">بالعميل</option>--}}
                     </select>
                 </div>
                 <div class="mt-8 text-center w-full">
@@ -842,213 +848,213 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-{{--                    @foreach($group_results as $outer_record)--}}
-                        @foreach($group_results as $record)
-                            @if($currentGroup != $record["OldCode"])
+                    {{--                    @foreach($group_results as $outer_record)--}}
+                    @foreach($group_results as $record)
+                        @if($currentGroup != $record["OldCode"])
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
-
-                                @php $currentGroup = $record["OldCode"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
-                            @endif
-
-                            @if($record["OldCode"] != $item_group_code)
-                                    <?php $item_group_code = $record["OldCode"]; ?>
-
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-                                    {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        {{$record["OldCode"]}}--}}
-                                    {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div>({{ $record["OldCode"] }}) - {{$record["ItemName"]}}</div>
-                                            {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
-                                            {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
-                                            {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
-                                            {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
-                                        </div>
+                            {{-- Output subtotals for the previous group --}}
+                            @if($currentGroup !== null)
+                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        مجموع جزئي
                                     </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
-
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
-                                            <div>قسم:
-                                                <span style="color: #227dd7">
-                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
-                                                        ادارة فنية - الاسمدة م1
-                                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")
-                                                        ادارة فنية - المبيدات م1
-                                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")
-                                                        ادارة فنية - البذور م1
-                                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")
-                                                        اقسام تسويقية - الحدائق والصحة العامة
-                                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
-                                                        اقسام تسويقية - المكافحة المتكاملة
-                                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                        الاليات والري - الاليات
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                        الاليات والري - الري
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                        الاليات والري - الري المطري
-                                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                        الاليات والري - الخدمات
-                                                    @else
-                                                        عام
-                                                    @endif
-                                                    </span>
-                                            </div>
-                                            <div>نوع المادة:
-                                                <span style="color: #227dd7">{{$record["ItemGroup"]}}</span>
-                                            </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>التميز:
-                                                <span style="color: #227dd7">
-                                                    {{$record['Speciality']}}
-                                                    </span>
-                                            </div>
-                                            <div>المورد:
-                                                <span style="color: #227dd7">
-                                                    {{$record["VendorName"]}}
-                                                    </span>
-                                            </div>
-                                        </div>
-
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
-                                </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{number_format($itemGroup_item_subtotal, 2)}}
                                     </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
-                                    </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
 
-                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @if($record["Department"] == "0101")
-                                        فرع الاحساء
-                                    @elseif($record["Department"] == "0102")
-                                        فرع جدة
-                                    @elseif($record["Department"] == "0103")
-                                        فرع الرياض
-                                    @elseif($record["Department"] == "0104")
-                                        فرع وادي الدواسر
-                                    @elseif($record["Department"] == "0105")
-                                        فرع الجوف
-                                    @elseif($record["Department"] == "0106")
-                                        فرع الدمام
-                                    @elseif($record["Department"] == "0107")
-                                        فرع الخرج
-                                    @elseif($record["Department"] == "0108")
-                                        فرع نجران
-                                    @elseif($record["Department"] == "0109")
-                                        فرع حائل
-                                    @elseif($record["Department"] == "0110")
-                                        فرع تبوك
-                                    @elseif($record["Department"] == "0111")
-                                        فرع القصيم
-                                    @elseif($record["Department"] == "0112")
-                                        فرع ساجر
-                                    @elseif($record["Department"] == "0201")
-                                        مزرعة الدالوة
-                                    @elseif($record["Department"] == "0202")
-                                        مزرعة الفضول
-                                    @elseif($record["Department"] == "0203")
-                                        مزرعة الدلم
-                                    @elseif($record["Department"] == "0001")
-                                        المركز الرئيسي
-                                    @endif
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalQuantitySold'])}}
-                                    @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
-                                    @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalSalesAmount'], 2)}}
-                                    @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            @php $currentGroup = $record["OldCode"]; @endphp
+                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
+                        @endif
 
+                        @if($record["OldCode"] != $item_group_code)
+                                <?php $item_group_code = $record["OldCode"]; ?>
 
-                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
-                                        {{number_format($record['AverageUnitPrice'], 2)}}
-                                    @endif
+                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        {{$record["OldCode"]}}--}}
+                                {{--                                    </td>--}}
+                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div>({{ $record["OldCode"] }}) - {{$record["ItemName"]}}</div>
+                                        {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
+                                        {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
+                                        {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
+                                        {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                        @if($record["OldCode"] != $item_group_itemCode_code)
+                                <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row justify-between">
+                                        <div>قسم:
+                                            <span style="color: #227dd7">
+                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
+                                                    ادارة فنية - الاسمدة م1
+                                                @elseif($record["mrkt_type"] == "fan - mobedat 1")
+                                                    ادارة فنية - المبيدات م1
+                                                @elseif($record["mrkt_type"] == "fan - bathoor 1")
+                                                    ادارة فنية - البذور م1
+                                                @elseif($record["mrkt_type"] == "tasweeg - sehah")
+                                                    اقسام تسويقية - الحدائق والصحة العامة
+                                                @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
+                                                    اقسام تسويقية - المكافحة المتكاملة
+                                                @elseif($record["mrkt_type"] == "aleyat - aleyat")
+                                                    الاليات والري - الاليات
+                                                @elseif($record["mrkt_type"] == "aleyat - ray")
+                                                    الاليات والري - الري
+                                                @elseif($record["mrkt_type"] == "aleyat - ray matary")
+                                                    الاليات والري - الري المطري
+                                                @elseif($record["mrkt_type"] == "aleyat - khadamat")
+                                                    الاليات والري - الخدمات
+                                                @else
+                                                    عام
+                                                @endif
+                                                    </span>
+                                        </div>
+                                        <div>نوع المادة:
+                                            <span style="color: #227dd7">{{$record["ItemGroup"]}}</span>
+                                        </div>
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                        </div>
+                                        <div>التميز:
+                                            <span style="color: #227dd7">
+                                                    {{$record['Speciality']}}
+                                                    </span>
+                                        </div>
+                                        <div>المورد:
+                                            <span style="color: #227dd7">
+                                                    {{$record["VendorName"]}}
+                                                    </span>
+                                        </div>
+                                    </div>
+
+                                {{--                                            مجموع جزئي للصنف--}}
+                                {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        </td>--}}
+                                {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
+                                {{--                                        @endif--}}
+                            </tr>
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                        @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                        @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
-                                        {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
-                                    </td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
                                 @endif
                             </tr>
-                            @php $counter++ @endphp
-                        @endforeach
-{{--                    @endforeach--}}
+                        @endif
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @if($record["Department"] == "0101")
+                                    فرع الاحساء
+                                @elseif($record["Department"] == "0102")
+                                    فرع جدة
+                                @elseif($record["Department"] == "0103")
+                                    فرع الرياض
+                                @elseif($record["Department"] == "0104")
+                                    فرع وادي الدواسر
+                                @elseif($record["Department"] == "0105")
+                                    فرع الجوف
+                                @elseif($record["Department"] == "0106")
+                                    فرع الدمام
+                                @elseif($record["Department"] == "0107")
+                                    فرع الخرج
+                                @elseif($record["Department"] == "0108")
+                                    فرع نجران
+                                @elseif($record["Department"] == "0109")
+                                    فرع حائل
+                                @elseif($record["Department"] == "0110")
+                                    فرع تبوك
+                                @elseif($record["Department"] == "0111")
+                                    فرع القصيم
+                                @elseif($record["Department"] == "0112")
+                                    فرع ساجر
+                                @elseif($record["Department"] == "0201")
+                                    مزرعة الدالوة
+                                @elseif($record["Department"] == "0202")
+                                    مزرعة الفضول
+                                @elseif($record["Department"] == "0203")
+                                    مزرعة الدلم
+                                @elseif($record["Department"] == "0001")
+                                    المركز الرئيسي
+                                @endif
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalQuantitySold'])}}
+                                @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
+                                @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalSalesAmount'], 2)}}
+                                @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
+                                @endif
+                            </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                    {{number_format($record["Cost"], 2)}}
+                                    @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
+                                    {{number_format($record['GrossProfit'], 2)}}
+                                    @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
+                                    {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
+                                </td>
+                            @endif
+                        </tr>
+                        @php $counter++ @endphp
+                    @endforeach
+                    {{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1076,255 +1082,255 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-{{--                    @foreach($group_results as $outer_record)--}}
-                        @foreach($group_results as $record)
-                            @if($currentGroup != $record["ItemGroup"])
+                    {{--                    @foreach($group_results as $outer_record)--}}
+                    @foreach($group_results as $record)
+                        @if($currentGroup != $record["ItemGroup"])
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
-
-                                @php $currentGroup = $record["ItemGroup"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
-                            @endif
-
-                            @if($record["ItemGroup"] != $item_group_code)
-                                    <?php $item_group_code = $record["ItemGroup"]; ?>
-
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-                                    {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        {{$record["OldCode"]}}--}}
-                                    {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div>{{$record["ItemGroup"]}}</div>
-                                            {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
-                                            {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
-                                            {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
-                                            {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
-                                        </div>
+                            {{-- Output subtotals for the previous group --}}
+                            @if($currentGroup !== null)
+                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        مجموع جزئي
                                     </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
-
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
-                                            <div>قسم:
-                                                <span style="color: #227dd7">
-                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
-                                                        ادارة فنية - الاسمدة م1
-                                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")
-                                                        ادارة فنية - المبيدات م1
-                                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")
-                                                        ادارة فنية - البذور م1
-                                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")
-                                                        اقسام تسويقية - الحدائق والصحة العامة
-                                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
-                                                        اقسام تسويقية - المكافحة المتكاملة
-                                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                        الاليات والري - الاليات
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                        الاليات والري - الري
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                        الاليات والري - الري المطري
-                                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                        الاليات والري - الخدمات
-                                                    @else
-                                                        عام
-                                                    @endif
-                                                    </span>
-                                            </div>
-                                            <div>كودالصنف:
-                                                <span style="color: #227dd7">{{$record["OldCode"]}}</span>
-                                            </div>
-                                            <div>الصنف:
-                                                <span style="color: #227dd7">
-                                                    {{$record["ItemName"]}}
-                                                    </span>
-                                            </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>التميز:
-                                                <span style="color: #227dd7">
-                                                    {{$record['Speciality']}}
-                                                    </span>
-                                            </div>
-                                            <div>المورد:
-                                                <span style="color: #227dd7">
-                                                    {{$record["VendorName"]}}
-                                                    </span>
-                                            </div>
-                                        </div>
-
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
-                                </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{number_format($itemGroup_item_subtotal, 2)}}
                                     </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
-                                    </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
-                                {{--                                        ادارة فنية - الاسمدة م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
-                                {{--                                        ادارة فنية - المبيدات م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
-                                {{--                                        ادارة فنية - البذور م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
-                                {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
-                                {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
-                                {{--                                        الاليات والري - الاليات--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
-                                {{--                                        الاليات والري - الري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
-                                {{--                                        الاليات والري - الري المطري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
-                                {{--                                        الاليات والري - الخدمات--}}
-                                {{--                                    @else--}}
-                                {{--                                        عام--}}
-                                {{--                                    @endif--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["VendorName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["Speciality"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["OldCode"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["ItemName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["SalUnitMsr"]}}--}}
-                                {{--                                </td>--}}
 
-                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @if($record["Department"] == "0101")
-                                        فرع الاحساء
-                                    @elseif($record["Department"] == "0102")
-                                        فرع جدة
-                                    @elseif($record["Department"] == "0103")
-                                        فرع الرياض
-                                    @elseif($record["Department"] == "0104")
-                                        فرع وادي الدواسر
-                                    @elseif($record["Department"] == "0105")
-                                        فرع الجوف
-                                    @elseif($record["Department"] == "0106")
-                                        فرع الدمام
-                                    @elseif($record["Department"] == "0107")
-                                        فرع الخرج
-                                    @elseif($record["Department"] == "0108")
-                                        فرع نجران
-                                    @elseif($record["Department"] == "0109")
-                                        فرع حائل
-                                    @elseif($record["Department"] == "0110")
-                                        فرع تبوك
-                                    @elseif($record["Department"] == "0111")
-                                        فرع القصيم
-                                    @elseif($record["Department"] == "0112")
-                                        فرع ساجر
-                                    @elseif($record["Department"] == "0201")
-                                        مزرعة الدالوة
-                                    @elseif($record["Department"] == "0202")
-                                        مزرعة الفضول
-                                    @elseif($record["Department"] == "0203")
-                                        مزرعة الدلم
-                                    @elseif($record["Department"] == "0001")
-                                        المركز الرئيسي
-                                    @endif
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalQuantitySold'])}}
-                                    @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
-                                    @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalSalesAmount'], 2)}}
-                                    @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            @php $currentGroup = $record["ItemGroup"]; @endphp
+                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
+                        @endif
 
+                        @if($record["ItemGroup"] != $item_group_code)
+                                <?php $item_group_code = $record["ItemGroup"]; ?>
 
-                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
-                                        {{number_format($record['AverageUnitPrice'], 2)}}
-                                    @endif
+                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        {{$record["OldCode"]}}--}}
+                                {{--                                    </td>--}}
+                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div>{{$record["ItemGroup"]}}</div>
+                                        {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
+                                        {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
+                                        {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
+                                        {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                        @if($record["OldCode"] != $item_group_itemCode_code)
+                                <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row justify-between">
+                                        <div>قسم:
+                                            <span style="color: #227dd7">
+                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
+                                                    ادارة فنية - الاسمدة م1
+                                                @elseif($record["mrkt_type"] == "fan - mobedat 1")
+                                                    ادارة فنية - المبيدات م1
+                                                @elseif($record["mrkt_type"] == "fan - bathoor 1")
+                                                    ادارة فنية - البذور م1
+                                                @elseif($record["mrkt_type"] == "tasweeg - sehah")
+                                                    اقسام تسويقية - الحدائق والصحة العامة
+                                                @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
+                                                    اقسام تسويقية - المكافحة المتكاملة
+                                                @elseif($record["mrkt_type"] == "aleyat - aleyat")
+                                                    الاليات والري - الاليات
+                                                @elseif($record["mrkt_type"] == "aleyat - ray")
+                                                    الاليات والري - الري
+                                                @elseif($record["mrkt_type"] == "aleyat - ray matary")
+                                                    الاليات والري - الري المطري
+                                                @elseif($record["mrkt_type"] == "aleyat - khadamat")
+                                                    الاليات والري - الخدمات
+                                                @else
+                                                    عام
+                                                @endif
+                                                    </span>
+                                        </div>
+                                        <div>كودالصنف:
+                                            <span style="color: #227dd7">{{$record["OldCode"]}}</span>
+                                        </div>
+                                        <div>الصنف:
+                                            <span style="color: #227dd7">
+                                                    {{$record["ItemName"]}}
+                                                    </span>
+                                        </div>
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                        </div>
+                                        <div>التميز:
+                                            <span style="color: #227dd7">
+                                                    {{$record['Speciality']}}
+                                                    </span>
+                                        </div>
+                                        <div>المورد:
+                                            <span style="color: #227dd7">
+                                                    {{$record["VendorName"]}}
+                                                    </span>
+                                        </div>
+                                    </div>
+
+                                {{--                                            مجموع جزئي للصنف--}}
+                                {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        </td>--}}
+                                {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
+                                {{--                                        @endif--}}
+                            </tr>
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                        @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                        @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
-                                        {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
-                                    </td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
                                 @endif
                             </tr>
-                            @php $counter++ @endphp
-                        @endforeach
-{{--                    @endforeach--}}
+                        @endif
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
+                            {{--                                        ادارة فنية - الاسمدة م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
+                            {{--                                        ادارة فنية - المبيدات م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
+                            {{--                                        ادارة فنية - البذور م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
+                            {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
+                            {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
+                            {{--                                        الاليات والري - الاليات--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
+                            {{--                                        الاليات والري - الري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
+                            {{--                                        الاليات والري - الري المطري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
+                            {{--                                        الاليات والري - الخدمات--}}
+                            {{--                                    @else--}}
+                            {{--                                        عام--}}
+                            {{--                                    @endif--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["VendorName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["Speciality"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["OldCode"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["ItemName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["SalUnitMsr"]}}--}}
+                            {{--                                </td>--}}
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @if($record["Department"] == "0101")
+                                    فرع الاحساء
+                                @elseif($record["Department"] == "0102")
+                                    فرع جدة
+                                @elseif($record["Department"] == "0103")
+                                    فرع الرياض
+                                @elseif($record["Department"] == "0104")
+                                    فرع وادي الدواسر
+                                @elseif($record["Department"] == "0105")
+                                    فرع الجوف
+                                @elseif($record["Department"] == "0106")
+                                    فرع الدمام
+                                @elseif($record["Department"] == "0107")
+                                    فرع الخرج
+                                @elseif($record["Department"] == "0108")
+                                    فرع نجران
+                                @elseif($record["Department"] == "0109")
+                                    فرع حائل
+                                @elseif($record["Department"] == "0110")
+                                    فرع تبوك
+                                @elseif($record["Department"] == "0111")
+                                    فرع القصيم
+                                @elseif($record["Department"] == "0112")
+                                    فرع ساجر
+                                @elseif($record["Department"] == "0201")
+                                    مزرعة الدالوة
+                                @elseif($record["Department"] == "0202")
+                                    مزرعة الفضول
+                                @elseif($record["Department"] == "0203")
+                                    مزرعة الدلم
+                                @elseif($record["Department"] == "0001")
+                                    المركز الرئيسي
+                                @endif
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalQuantitySold'])}}
+                                @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
+                                @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalSalesAmount'], 2)}}
+                                @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
+                                @endif
+                            </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                    {{number_format($record["Cost"], 2)}}
+                                    @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
+                                    {{number_format($record['GrossProfit'], 2)}}
+                                    @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
+                                    {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
+                                </td>
+                            @endif
+                        </tr>
+                        @php $counter++ @endphp
+                    @endforeach
+                    {{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1352,257 +1358,257 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-{{--                    @foreach($group_results as $outer_record)--}}
-{{--                        @foreach($outer_record as $record)--}}
-                        @foreach($group_results as $record)
-                            @if($currentGroup != $record["Speciality"])
+                    {{--                    @foreach($group_results as $outer_record)--}}
+                    {{--                        @foreach($outer_record as $record)--}}
+                    @foreach($group_results as $record)
+                        @if($currentGroup != $record["Speciality"])
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
-
-                                @php $currentGroup = $record["Speciality"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
-                            @endif
-
-                            @if($record["Speciality"] != $item_group_code)
-                                    <?php $item_group_code = $record["Speciality"]; ?>
-
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-                                    {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        {{$record["OldCode"]}}--}}
-                                    {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div>مميز {{$record["Speciality"]}}</div>
-                                            {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
-                                            {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
-                                            {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
-                                            {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
-                                        </div>
+                            {{-- Output subtotals for the previous group --}}
+                            @if($currentGroup !== null)
+                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        مجموع جزئي
                                     </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
-
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
-                                            <div>قسم:
-                                                <span style="color: #227dd7">
-                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
-                                                        ادارة فنية - الاسمدة م1
-                                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")
-                                                        ادارة فنية - المبيدات م1
-                                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")
-                                                        ادارة فنية - البذور م1
-                                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")
-                                                        اقسام تسويقية - الحدائق والصحة العامة
-                                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
-                                                        اقسام تسويقية - المكافحة المتكاملة
-                                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                        الاليات والري - الاليات
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                        الاليات والري - الري
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                        الاليات والري - الري المطري
-                                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                        الاليات والري - الخدمات
-                                                    @else
-                                                        عام
-                                                    @endif
-                                                    </span>
-                                            </div>
-                                            <div>كودالصنف:
-                                                <span style="color: #227dd7">{{$record["OldCode"]}}</span>
-                                            </div>
-                                            <div>الصنف:
-                                                <span style="color: #227dd7">
-                                                    {{$record["ItemName"]}}
-                                                    </span>
-                                            </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>نوع المادة:
-                                                <span style="color: #227dd7">
-                                                    {{$record['ItemGroup']}}
-                                                    </span>
-                                            </div>
-                                            <div>المورد:
-                                                <span style="color: #227dd7">
-                                                    {{$record["VendorName"]}}
-                                                    </span>
-                                            </div>
-                                        </div>
-
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
-                                </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{number_format($itemGroup_item_subtotal, 2)}}
                                     </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
-                                    </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
-                                {{--                                        ادارة فنية - الاسمدة م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
-                                {{--                                        ادارة فنية - المبيدات م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
-                                {{--                                        ادارة فنية - البذور م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
-                                {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
-                                {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
-                                {{--                                        الاليات والري - الاليات--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
-                                {{--                                        الاليات والري - الري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
-                                {{--                                        الاليات والري - الري المطري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
-                                {{--                                        الاليات والري - الخدمات--}}
-                                {{--                                    @else--}}
-                                {{--                                        عام--}}
-                                {{--                                    @endif--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["VendorName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["Speciality"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["OldCode"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["ItemName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["SalUnitMsr"]}}--}}
-                                {{--                                </td>--}}
 
-                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @if($record["Department"] == "0101")
-                                        فرع الاحساء
-                                    @elseif($record["Department"] == "0102")
-                                        فرع جدة
-                                    @elseif($record["Department"] == "0103")
-                                        فرع الرياض
-                                    @elseif($record["Department"] == "0104")
-                                        فرع وادي الدواسر
-                                    @elseif($record["Department"] == "0105")
-                                        فرع الجوف
-                                    @elseif($record["Department"] == "0106")
-                                        فرع الدمام
-                                    @elseif($record["Department"] == "0107")
-                                        فرع الخرج
-                                    @elseif($record["Department"] == "0108")
-                                        فرع نجران
-                                    @elseif($record["Department"] == "0109")
-                                        فرع حائل
-                                    @elseif($record["Department"] == "0110")
-                                        فرع تبوك
-                                    @elseif($record["Department"] == "0111")
-                                        فرع القصيم
-                                    @elseif($record["Department"] == "0112")
-                                        فرع ساجر
-                                    @elseif($record["Department"] == "0201")
-                                        مزرعة الدالوة
-                                    @elseif($record["Department"] == "0202")
-                                        مزرعة الفضول
-                                    @elseif($record["Department"] == "0203")
-                                        مزرعة الدلم
-                                    @elseif($record["Department"] == "0001")
-                                        المركز الرئيسي
-                                    @endif
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalQuantitySold'])}}
-                                    @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
-                                    @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalSalesAmount'], 2)}}
-                                    @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            @php $currentGroup = $record["Speciality"]; @endphp
+                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
+                        @endif
 
+                        @if($record["Speciality"] != $item_group_code)
+                                <?php $item_group_code = $record["Speciality"]; ?>
 
-                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
-                                        {{number_format($record['AverageUnitPrice'], 2)}}
-                                    @endif
+                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        {{$record["OldCode"]}}--}}
+                                {{--                                    </td>--}}
+                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div>مميز {{$record["Speciality"]}}</div>
+                                        {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
+                                        {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
+                                        {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
+                                        {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                        @if($record["OldCode"] != $item_group_itemCode_code)
+                                <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row justify-between">
+                                        <div>قسم:
+                                            <span style="color: #227dd7">
+                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
+                                                    ادارة فنية - الاسمدة م1
+                                                @elseif($record["mrkt_type"] == "fan - mobedat 1")
+                                                    ادارة فنية - المبيدات م1
+                                                @elseif($record["mrkt_type"] == "fan - bathoor 1")
+                                                    ادارة فنية - البذور م1
+                                                @elseif($record["mrkt_type"] == "tasweeg - sehah")
+                                                    اقسام تسويقية - الحدائق والصحة العامة
+                                                @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
+                                                    اقسام تسويقية - المكافحة المتكاملة
+                                                @elseif($record["mrkt_type"] == "aleyat - aleyat")
+                                                    الاليات والري - الاليات
+                                                @elseif($record["mrkt_type"] == "aleyat - ray")
+                                                    الاليات والري - الري
+                                                @elseif($record["mrkt_type"] == "aleyat - ray matary")
+                                                    الاليات والري - الري المطري
+                                                @elseif($record["mrkt_type"] == "aleyat - khadamat")
+                                                    الاليات والري - الخدمات
+                                                @else
+                                                    عام
+                                                @endif
+                                                    </span>
+                                        </div>
+                                        <div>كودالصنف:
+                                            <span style="color: #227dd7">{{$record["OldCode"]}}</span>
+                                        </div>
+                                        <div>الصنف:
+                                            <span style="color: #227dd7">
+                                                    {{$record["ItemName"]}}
+                                                    </span>
+                                        </div>
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                        </div>
+                                        <div>نوع المادة:
+                                            <span style="color: #227dd7">
+                                                    {{$record['ItemGroup']}}
+                                                    </span>
+                                        </div>
+                                        <div>المورد:
+                                            <span style="color: #227dd7">
+                                                    {{$record["VendorName"]}}
+                                                    </span>
+                                        </div>
+                                    </div>
+
+                                {{--                                            مجموع جزئي للصنف--}}
+                                {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        </td>--}}
+                                {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
+                                {{--                                        @endif--}}
+                            </tr>
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                        @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                        @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
-                                        {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
-                                    </td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
                                 @endif
                             </tr>
-                            @php $counter++ @endphp
-                        @endforeach
-{{--                    @endforeach--}}
+                        @endif
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
+                            {{--                                        ادارة فنية - الاسمدة م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
+                            {{--                                        ادارة فنية - المبيدات م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
+                            {{--                                        ادارة فنية - البذور م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
+                            {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
+                            {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
+                            {{--                                        الاليات والري - الاليات--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
+                            {{--                                        الاليات والري - الري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
+                            {{--                                        الاليات والري - الري المطري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
+                            {{--                                        الاليات والري - الخدمات--}}
+                            {{--                                    @else--}}
+                            {{--                                        عام--}}
+                            {{--                                    @endif--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["VendorName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["Speciality"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["OldCode"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["ItemName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["SalUnitMsr"]}}--}}
+                            {{--                                </td>--}}
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @if($record["Department"] == "0101")
+                                    فرع الاحساء
+                                @elseif($record["Department"] == "0102")
+                                    فرع جدة
+                                @elseif($record["Department"] == "0103")
+                                    فرع الرياض
+                                @elseif($record["Department"] == "0104")
+                                    فرع وادي الدواسر
+                                @elseif($record["Department"] == "0105")
+                                    فرع الجوف
+                                @elseif($record["Department"] == "0106")
+                                    فرع الدمام
+                                @elseif($record["Department"] == "0107")
+                                    فرع الخرج
+                                @elseif($record["Department"] == "0108")
+                                    فرع نجران
+                                @elseif($record["Department"] == "0109")
+                                    فرع حائل
+                                @elseif($record["Department"] == "0110")
+                                    فرع تبوك
+                                @elseif($record["Department"] == "0111")
+                                    فرع القصيم
+                                @elseif($record["Department"] == "0112")
+                                    فرع ساجر
+                                @elseif($record["Department"] == "0201")
+                                    مزرعة الدالوة
+                                @elseif($record["Department"] == "0202")
+                                    مزرعة الفضول
+                                @elseif($record["Department"] == "0203")
+                                    مزرعة الدلم
+                                @elseif($record["Department"] == "0001")
+                                    المركز الرئيسي
+                                @endif
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalQuantitySold'])}}
+                                @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
+                                @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalSalesAmount'], 2)}}
+                                @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
+                                @endif
+                            </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                    {{number_format($record["Cost"], 2)}}
+                                    @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
+                                    {{number_format($record['GrossProfit'], 2)}}
+                                    @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
+                                    {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
+                                </td>
+                            @endif
+                        </tr>
+                        @php $counter++ @endphp
+                    @endforeach
+                    {{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1630,255 +1636,255 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-{{--                    @foreach($group_results as $record)--}}
-{{--                    @foreach($group_results as $outer_record)--}}
+                    {{--                    @foreach($group_results as $record)--}}
+                    {{--                    @foreach($group_results as $outer_record)--}}
 
-{{--                        @foreach($outer_record as $record)--}}
-                        @foreach($group_results as $record)
-                            @if($currentGroup != $record["mrkt_type"])
+                    {{--                        @foreach($outer_record as $record)--}}
+                    @foreach($group_results as $record)
+                        @if($currentGroup != $record["mrkt_type"])
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
-
-                                @php $currentGroup = $record["mrkt_type"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
-                            @endif
-
-                            @if($record["mrkt_type"] != $item_group_code)
-                                    <?php $item_group_code = $record["mrkt_type"]; ?>
-
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-                                    {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        {{$record["OldCode"]}}--}}
-                                    {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div>
-                                                @if($record["mrkt_type"] == "fan - asmedah 1")
-                                                    ادارة فنية - الاسمدة م1
-                                                @elseif($record["mrkt_type"] == "fan - mobedat 1")
-                                                    ادارة فنية - المبيدات م1
-                                                @elseif($record["mrkt_type"] == "fan - bathoor 1")
-                                                    ادارة فنية - البذور م1
-                                                @elseif($record["mrkt_type"] == "tasweeg - sehah")
-                                                    اقسام تسويقية - الحدائق والصحة العامة
-                                                @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
-                                                    اقسام تسويقية - المكافحة المتكاملة
-                                                @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                    الاليات والري - الاليات
-                                                @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                    الاليات والري - الري
-                                                @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                    الاليات والري - الري المطري
-                                                @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                    الاليات والري - الخدمات
-                                                @else
-                                                    عام
-                                                @endif
-                                            </div>
-                                        </div>
+                            {{-- Output subtotals for the previous group --}}
+                            @if($currentGroup !== null)
+                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        مجموع جزئي
                                     </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
-
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
-                                            <div>نوع المادة:
-                                                <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
-                                            </div>
-                                            <div>كودالصنف:
-                                                <span style="color: #227dd7">{{$record["OldCode"]}}</span>
-                                            </div>
-                                            <div>الصنف:
-                                                <span style="color: #227dd7">
-                                                    {{$record["ItemName"]}}
-                                                    </span>
-                                            </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>التميز:
-                                                <span style="color: #227dd7">
-                                                    {{$record['Speciality']}}
-                                                    </span>
-                                            </div>
-                                            <div>المورد:
-                                                <span style="color: #227dd7">
-                                                    {{$record["VendorName"]}}
-                                                    </span>
-                                            </div>
-                                        </div>
-
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
-                                </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{number_format($itemGroup_item_subtotal, 2)}}
                                     </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
-                                    </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
-                                {{--                                        ادارة فنية - الاسمدة م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
-                                {{--                                        ادارة فنية - المبيدات م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
-                                {{--                                        ادارة فنية - البذور م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
-                                {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
-                                {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
-                                {{--                                        الاليات والري - الاليات--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
-                                {{--                                        الاليات والري - الري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
-                                {{--                                        الاليات والري - الري المطري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
-                                {{--                                        الاليات والري - الخدمات--}}
-                                {{--                                    @else--}}
-                                {{--                                        عام--}}
-                                {{--                                    @endif--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["VendorName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["Speciality"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["OldCode"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["ItemName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["SalUnitMsr"]}}--}}
-                                {{--                                </td>--}}
 
-                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @if($record["Department"] == "0101")
-                                        فرع الاحساء
-                                    @elseif($record["Department"] == "0102")
-                                        فرع جدة
-                                    @elseif($record["Department"] == "0103")
-                                        فرع الرياض
-                                    @elseif($record["Department"] == "0104")
-                                        فرع وادي الدواسر
-                                    @elseif($record["Department"] == "0105")
-                                        فرع الجوف
-                                    @elseif($record["Department"] == "0106")
-                                        فرع الدمام
-                                    @elseif($record["Department"] == "0107")
-                                        فرع الخرج
-                                    @elseif($record["Department"] == "0108")
-                                        فرع نجران
-                                    @elseif($record["Department"] == "0109")
-                                        فرع حائل
-                                    @elseif($record["Department"] == "0110")
-                                        فرع تبوك
-                                    @elseif($record["Department"] == "0111")
-                                        فرع القصيم
-                                    @elseif($record["Department"] == "0112")
-                                        فرع ساجر
-                                    @elseif($record["Department"] == "0201")
-                                        مزرعة الدالوة
-                                    @elseif($record["Department"] == "0202")
-                                        مزرعة الفضول
-                                    @elseif($record["Department"] == "0203")
-                                        مزرعة الدلم
-                                    @elseif($record["Department"] == "0001")
-                                        المركز الرئيسي
-                                    @endif
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalQuantitySold'])}}
-                                    @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
-                                    @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalSalesAmount'], 2)}}
-                                    @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            @php $currentGroup = $record["mrkt_type"]; @endphp
+                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
+                        @endif
 
+                        @if($record["mrkt_type"] != $item_group_code)
+                                <?php $item_group_code = $record["mrkt_type"]; ?>
 
-                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
-                                        {{number_format($record['AverageUnitPrice'], 2)}}
-                                    @endif
+                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        {{$record["OldCode"]}}--}}
+                                {{--                                    </td>--}}
+                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div>
+                                            @if($record["mrkt_type"] == "fan - asmedah 1")
+                                                ادارة فنية - الاسمدة م1
+                                            @elseif($record["mrkt_type"] == "fan - mobedat 1")
+                                                ادارة فنية - المبيدات م1
+                                            @elseif($record["mrkt_type"] == "fan - bathoor 1")
+                                                ادارة فنية - البذور م1
+                                            @elseif($record["mrkt_type"] == "tasweeg - sehah")
+                                                اقسام تسويقية - الحدائق والصحة العامة
+                                            @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
+                                                اقسام تسويقية - المكافحة المتكاملة
+                                            @elseif($record["mrkt_type"] == "aleyat - aleyat")
+                                                الاليات والري - الاليات
+                                            @elseif($record["mrkt_type"] == "aleyat - ray")
+                                                الاليات والري - الري
+                                            @elseif($record["mrkt_type"] == "aleyat - ray matary")
+                                                الاليات والري - الري المطري
+                                            @elseif($record["mrkt_type"] == "aleyat - khadamat")
+                                                الاليات والري - الخدمات
+                                            @else
+                                                عام
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                        @if($record["OldCode"] != $item_group_itemCode_code)
+                                <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row justify-between">
+                                        <div>نوع المادة:
+                                            <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
+                                        </div>
+                                        <div>كودالصنف:
+                                            <span style="color: #227dd7">{{$record["OldCode"]}}</span>
+                                        </div>
+                                        <div>الصنف:
+                                            <span style="color: #227dd7">
+                                                    {{$record["ItemName"]}}
+                                                    </span>
+                                        </div>
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                        </div>
+                                        <div>التميز:
+                                            <span style="color: #227dd7">
+                                                    {{$record['Speciality']}}
+                                                    </span>
+                                        </div>
+                                        <div>المورد:
+                                            <span style="color: #227dd7">
+                                                    {{$record["VendorName"]}}
+                                                    </span>
+                                        </div>
+                                    </div>
+
+                                {{--                                            مجموع جزئي للصنف--}}
+                                {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        </td>--}}
+                                {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
+                                {{--                                        @endif--}}
+                            </tr>
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                        @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                        @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
-                                        {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
-                                    </td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
                                 @endif
                             </tr>
-                            @php $counter++ @endphp
-                        @endforeach
-{{--                    @endforeach--}}
+                        @endif
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
+                            {{--                                        ادارة فنية - الاسمدة م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
+                            {{--                                        ادارة فنية - المبيدات م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
+                            {{--                                        ادارة فنية - البذور م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
+                            {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
+                            {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
+                            {{--                                        الاليات والري - الاليات--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
+                            {{--                                        الاليات والري - الري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
+                            {{--                                        الاليات والري - الري المطري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
+                            {{--                                        الاليات والري - الخدمات--}}
+                            {{--                                    @else--}}
+                            {{--                                        عام--}}
+                            {{--                                    @endif--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["VendorName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["Speciality"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["OldCode"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["ItemName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["SalUnitMsr"]}}--}}
+                            {{--                                </td>--}}
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @if($record["Department"] == "0101")
+                                    فرع الاحساء
+                                @elseif($record["Department"] == "0102")
+                                    فرع جدة
+                                @elseif($record["Department"] == "0103")
+                                    فرع الرياض
+                                @elseif($record["Department"] == "0104")
+                                    فرع وادي الدواسر
+                                @elseif($record["Department"] == "0105")
+                                    فرع الجوف
+                                @elseif($record["Department"] == "0106")
+                                    فرع الدمام
+                                @elseif($record["Department"] == "0107")
+                                    فرع الخرج
+                                @elseif($record["Department"] == "0108")
+                                    فرع نجران
+                                @elseif($record["Department"] == "0109")
+                                    فرع حائل
+                                @elseif($record["Department"] == "0110")
+                                    فرع تبوك
+                                @elseif($record["Department"] == "0111")
+                                    فرع القصيم
+                                @elseif($record["Department"] == "0112")
+                                    فرع ساجر
+                                @elseif($record["Department"] == "0201")
+                                    مزرعة الدالوة
+                                @elseif($record["Department"] == "0202")
+                                    مزرعة الفضول
+                                @elseif($record["Department"] == "0203")
+                                    مزرعة الدلم
+                                @elseif($record["Department"] == "0001")
+                                    المركز الرئيسي
+                                @endif
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalQuantitySold'])}}
+                                @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
+                                @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalSalesAmount'], 2)}}
+                                @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
+                                @endif
+                            </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                    {{number_format($record["Cost"], 2)}}
+                                    @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
+                                    {{number_format($record['GrossProfit'], 2)}}
+                                    @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
+                                    {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
+                                </td>
+                            @endif
+                        </tr>
+                        @php $counter++ @endphp
+                    @endforeach
+                    {{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1906,252 +1912,252 @@
                     @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; @endphp
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
-{{--                    @foreach($group_results as $outer_record)--}}
-                        @foreach($group_results as $record)
-                            @if($currentGroup != $record["VendorName"])
+                    {{--                    @foreach($group_results as $outer_record)--}}
+                    @foreach($group_results as $record)
+                        @if($currentGroup != $record["VendorName"])
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
-
-                                @php $currentGroup = $record["VendorName"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
-                            @endif
-
-                            @if($record["VendorName"] != $item_group_code)
-                                    <?php $item_group_code = $record["VendorName"]; ?>
-
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-                                    {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        {{$record["OldCode"]}}--}}
-                                    {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div>
-                                                {{ $record["VendorName"] }}
-                                            </div>
-                                        </div>
+                            {{-- Output subtotals for the previous group --}}
+                            @if($currentGroup !== null)
+                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                        مجموع جزئي
                                     </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
-
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
-                                            <div>نوع المادة:
-                                                <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
-                                            </div>
-                                            <div>كودالصنف:
-                                                <span style="color: #227dd7">{{$record["OldCode"]}}</span>
-                                            </div>
-                                            <div>الصنف:
-                                                <span style="color: #227dd7">
-                                                    {{$record["ItemName"]}}
-                                                    </span>
-                                            </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>التميز:
-                                                <span style="color: #227dd7">
-                                                    {{$record['Speciality']}}
-                                                    </span>
-                                            </div>
-                                            <div>قسم:
-                                                <span style="color: #227dd7">
-                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
-                                                        ادارة فنية - الاسمدة م1
-                                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")
-                                                        ادارة فنية - المبيدات م1
-                                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")
-                                                        ادارة فنية - البذور م1
-                                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")
-                                                        اقسام تسويقية - الحدائق والصحة العامة
-                                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
-                                                        اقسام تسويقية - المكافحة المتكاملة
-                                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                        الاليات والري - الاليات
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                        الاليات والري - الري
-                                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                        الاليات والري - الري المطري
-                                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                        الاليات والري - الخدمات
-                                                    @else
-                                                        عام
-                                                    @endif
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
-                                </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{number_format($itemGroup_item_subtotal, 2)}}
                                     </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
-                                    </td>
-                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
+                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
-                                {{--                                        ادارة فنية - الاسمدة م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
-                                {{--                                        ادارة فنية - المبيدات م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
-                                {{--                                        ادارة فنية - البذور م1--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
-                                {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
-                                {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
-                                {{--                                        الاليات والري - الاليات--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
-                                {{--                                        الاليات والري - الري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
-                                {{--                                        الاليات والري - الري المطري--}}
-                                {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
-                                {{--                                        الاليات والري - الخدمات--}}
-                                {{--                                    @else--}}
-                                {{--                                        عام--}}
-                                {{--                                    @endif--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["VendorName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["Speciality"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["OldCode"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["ItemName"]}}--}}
-                                {{--                                </td>--}}
-                                {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                                {{--                                    {{$record["SalUnitMsr"]}}--}}
-                                {{--                                </td>--}}
 
-                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @if($record["Department"] == "0101")
-                                        فرع الاحساء
-                                    @elseif($record["Department"] == "0102")
-                                        فرع جدة
-                                    @elseif($record["Department"] == "0103")
-                                        فرع الرياض
-                                    @elseif($record["Department"] == "0104")
-                                        فرع وادي الدواسر
-                                    @elseif($record["Department"] == "0105")
-                                        فرع الجوف
-                                    @elseif($record["Department"] == "0106")
-                                        فرع الدمام
-                                    @elseif($record["Department"] == "0107")
-                                        فرع الخرج
-                                    @elseif($record["Department"] == "0108")
-                                        فرع نجران
-                                    @elseif($record["Department"] == "0109")
-                                        فرع حائل
-                                    @elseif($record["Department"] == "0110")
-                                        فرع تبوك
-                                    @elseif($record["Department"] == "0111")
-                                        فرع القصيم
-                                    @elseif($record["Department"] == "0112")
-                                        فرع ساجر
-                                    @elseif($record["Department"] == "0201")
-                                        مزرعة الدالوة
-                                    @elseif($record["Department"] == "0202")
-                                        مزرعة الفضول
-                                    @elseif($record["Department"] == "0203")
-                                        مزرعة الدلم
-                                    @elseif($record["Department"] == "0001")
-                                        المركز الرئيسي
-                                    @endif
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalQuantitySold'])}}
-                                    @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
-                                    @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                    {{number_format($record['TotalSalesAmount'], 2)}}
-                                    @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                    @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
-                                </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            @php $currentGroup = $record["VendorName"]; @endphp
+                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0;  @endphp
+                        @endif
 
+                        @if($record["VendorName"] != $item_group_code)
+                                <?php $item_group_code = $record["VendorName"]; ?>
 
-                                    @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
-                                        {{number_format($record['AverageUnitPrice'], 2)}}
-                                    @endif
+                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        {{$record["OldCode"]}}--}}
+                                {{--                                    </td>--}}
+                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div>
+                                            {{ $record["VendorName"] }}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                        @if($record["OldCode"] != $item_group_itemCode_code)
+                                <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row justify-between">
+                                        <div>نوع المادة:
+                                            <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
+                                        </div>
+                                        <div>كودالصنف:
+                                            <span style="color: #227dd7">{{$record["OldCode"]}}</span>
+                                        </div>
+                                        <div>الصنف:
+                                            <span style="color: #227dd7">
+                                                    {{$record["ItemName"]}}
+                                                    </span>
+                                        </div>
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                        </div>
+                                        <div>التميز:
+                                            <span style="color: #227dd7">
+                                                    {{$record['Speciality']}}
+                                                    </span>
+                                        </div>
+                                        <div>قسم:
+                                            <span style="color: #227dd7">
+                                                    @if($record["mrkt_type"] == "fan - asmedah 1")
+                                                    ادارة فنية - الاسمدة م1
+                                                @elseif($record["mrkt_type"] == "fan - mobedat 1")
+                                                    ادارة فنية - المبيدات م1
+                                                @elseif($record["mrkt_type"] == "fan - bathoor 1")
+                                                    ادارة فنية - البذور م1
+                                                @elseif($record["mrkt_type"] == "tasweeg - sehah")
+                                                    اقسام تسويقية - الحدائق والصحة العامة
+                                                @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
+                                                    اقسام تسويقية - المكافحة المتكاملة
+                                                @elseif($record["mrkt_type"] == "aleyat - aleyat")
+                                                    الاليات والري - الاليات
+                                                @elseif($record["mrkt_type"] == "aleyat - ray")
+                                                    الاليات والري - الري
+                                                @elseif($record["mrkt_type"] == "aleyat - ray matary")
+                                                    الاليات والري - الري المطري
+                                                @elseif($record["mrkt_type"] == "aleyat - khadamat")
+                                                    الاليات والري - الخدمات
+                                                @else
+                                                    عام
+                                                @endif
+                                                </span>
+                                        </div>
+                                    </div>
+
+                                {{--                                            مجموع جزئي للصنف--}}
+                                {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
+                                {{--                                        </td>--}}
+                                {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        </td>--}}
+                                {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
+                                {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
+                                {{--                                        @endif--}}
+                            </tr>
+                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                </td>
+                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                    {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
                                 </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
-                                        {{number_format($record["Cost"], 2)}}
-                                        @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
-                                        @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
-                                        {{number_format($record['GrossProfit'], 2)}}
-                                        @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
-                                        @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
-                                        {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
-                                    </td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
+                                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
                                 @endif
                             </tr>
-                            @php $counter++ @endphp
-                        @endforeach
-{{--                    @endforeach--}}
+                        @endif
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
+                            {{--                                        ادارة فنية - الاسمدة م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
+                            {{--                                        ادارة فنية - المبيدات م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
+                            {{--                                        ادارة فنية - البذور م1--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
+                            {{--                                        اقسام تسويقية - الحدائق والصحة العامة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
+                            {{--                                        اقسام تسويقية - المكافحة المتكاملة--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
+                            {{--                                        الاليات والري - الاليات--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
+                            {{--                                        الاليات والري - الري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
+                            {{--                                        الاليات والري - الري المطري--}}
+                            {{--                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
+                            {{--                                        الاليات والري - الخدمات--}}
+                            {{--                                    @else--}}
+                            {{--                                        عام--}}
+                            {{--                                    @endif--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["VendorName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["Speciality"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["OldCode"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["ItemName"]}}--}}
+                            {{--                                </td>--}}
+                            {{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                    {{$record["SalUnitMsr"]}}--}}
+                            {{--                                </td>--}}
+
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @if($record["Department"] == "0101")
+                                    فرع الاحساء
+                                @elseif($record["Department"] == "0102")
+                                    فرع جدة
+                                @elseif($record["Department"] == "0103")
+                                    فرع الرياض
+                                @elseif($record["Department"] == "0104")
+                                    فرع وادي الدواسر
+                                @elseif($record["Department"] == "0105")
+                                    فرع الجوف
+                                @elseif($record["Department"] == "0106")
+                                    فرع الدمام
+                                @elseif($record["Department"] == "0107")
+                                    فرع الخرج
+                                @elseif($record["Department"] == "0108")
+                                    فرع نجران
+                                @elseif($record["Department"] == "0109")
+                                    فرع حائل
+                                @elseif($record["Department"] == "0110")
+                                    فرع تبوك
+                                @elseif($record["Department"] == "0111")
+                                    فرع القصيم
+                                @elseif($record["Department"] == "0112")
+                                    فرع ساجر
+                                @elseif($record["Department"] == "0201")
+                                    مزرعة الدالوة
+                                @elseif($record["Department"] == "0202")
+                                    مزرعة الفضول
+                                @elseif($record["Department"] == "0203")
+                                    مزرعة الدلم
+                                @elseif($record["Department"] == "0001")
+                                    المركز الرئيسي
+                                @endif
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalQuantitySold'])}}
+                                @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp
+                                @php $itemGroup_quantity_subtotal = $itemGroup_quantity_subtotal + floatval($record['TotalQuantitySold']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{number_format($record['TotalSalesAmount'], 2)}}
+                                @php $itemGroup_item_total = $itemGroup_item_total + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_item_subtotal = $itemGroup_item_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                                @php $itemGroup_itemName_subtotal = $itemGroup_itemName_subtotal + floatval($record['TotalSalesAmount']); @endphp
+                            </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+
+
+                                @if(in_array($warehouse_id[$record["Department"]], json_decode(Auth::user()->branches)) )
+                                    {{number_format($record['AverageUnitPrice'], 2)}}
+                                @endif
+                            </td>
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">
+                                    {{number_format($record["Cost"], 2)}}
+                                    @php $itemGroup_cost_total = $itemGroup_cost_total + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_cost_subtotal = $itemGroup_cost_subtotal + floatval($record['Cost']); @endphp
+                                    @php $itemGroup_costName_subtotal = $itemGroup_costName_subtotal + floatval($record['Cost']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin cost">
+                                    {{number_format($record['GrossProfit'], 2)}}
+                                    @php $itemGroup_gross_total = $itemGroup_gross_total + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_gross_subtotal = $itemGroup_gross_subtotal + floatval($record['GrossProfit']); @endphp
+                                    @php $itemGroup_grossName_subtotal = $itemGroup_grossName_subtotal + floatval($record['GrossProfit']); @endphp
+                                </td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap margin-percentage cost">
+                                    {{ floatval($record['TotalSalesAmount']) == 0 ? 0 : number_format((floatval($record['GrossProfit'])/floatval($record['TotalSalesAmount']))*100, 2)}}
+                                </td>
+                            @endif
+                        </tr>
+                        @php $counter++ @endphp
+                    @endforeach
+                    {{--                    @endforeach--}}
                     @if($currentGroup !== null)
                         <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -2219,7 +2225,7 @@
                                     <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div>
-{{--                                                {{ $record["VendorName"] }}--}}
+                                                {{--                                                {{ $record["VendorName"] }}--}}
                                                 {{ $record["BusinessPartnerCode"] }} - {{ $record["BusinessPartnerName"] }}
                                             </div>
                                         </div>
@@ -2805,6 +2811,14 @@
                 dropdownCssClass: "select-font-size"
             });
 
+            // customers = @this.customer_list;
+            // // console.log(x);
+            // const $select = $("#customer_type");
+            // $.each(customers, function(index, item) {
+            //     $select.append($("<option>").val(item.CardCode).text(item.CardName));
+            // });
+
+
             // $('#cat_type').val($('#cat_type option:first').val());
             $('#cat_type').append('<option value="cat_all" selected>الكل</option>');
             var prev_depts = $('#dept_id').select2("val");
@@ -2834,6 +2848,75 @@
                         $("#dept_id").change();
                     }
                 }
+
+                // to hide the emps based on the selected branch
+                console.log("selected branch:" + prev_depts);
+
+                $('#dept_id option').each(function() {
+                    // Get the value of the data-dept attribute
+                    var deptValue = $(this).val();
+                    // console.log(deptValue);
+
+                    // Check if the value is NOT in the array
+
+                    if (prev_depts.includes('dept_all')) {
+                        // console.log('hide:' + deptValue);
+                        // console.log('hideRORO:' + $('#customer_type').select2().data('cust'));
+                        $('#emps_type option').show();
+                        $('#customer_type option').show();
+                    }
+                    else if (!prev_depts.includes(deptValue)) {
+                        // console.log('hide:' + deptValue);
+                        // console.log('hideCOCO:' + $('#customer_type').select2().data('cust'));
+                        $('option[data-dept="'+ deptValue +'"]').hide();
+
+                        // $('[id^="ab"]').hide();
+                        // var keywordStart = '04';
+                        // // $('.select2-results__option').filter(function() {
+                        // $('[data-cust^="0101"]').filter(function() {
+                        //     var idValue = $(this).attr('id');
+                        //     // $('option[data-cust="'+ idValue +'"]').hide();
+                        //     $('[data-select2-id="select2-data-0100907+0101"]').select().hide();
+                        //     console.log(idValue)
+                        //     return idValue && idValue.match(new RegExp('-' + keywordStart + '\\d*$'));
+                        // }).hide(); // Example action: highlight matching elements
+
+                        // $('option[data-cust="'+ deptValue +'"]').hide();
+                        // $('#customer_type option[data-cust="'+ deptValue +'"]').css('display', 'none')
+                        // $('#customer_type').select2();
+                        // console.log(deptValue)
+
+                        // Use $.grep() to filter the array
+                        // const result = $.grep(customers, function(item) {
+                        //     // return item.Dept == String(deptValue);
+                        //     return  prev_depts.includes(item.Dept);
+                        // });
+
+                        // customers = result;
+                        //
+                        // // console.log(x);
+                        // const $select = $("#customer_type");
+                        // $.each(customers, function(index, item) {
+                        //     $select.append($("<option>").val(item.CardCode).text(item.CardName));
+                        // });
+
+// Check the result
+//                         if (result.length > 0) {
+//                             console.log("Found:", result[0]); // Output: { id: 2, name: "Option 2" }
+//                         } else {
+//                             console.log("Item not found");
+//                         }
+
+                    }
+                    else {
+                        $('option[data-dept="'+ deptValue +'"]').show();
+                        // $('option[data-cust="'+ deptValue +'"]').show();
+                        // $('#customer_type option[data-cust="'+ deptValue +'"]').css('display', 'block')
+                        // $('#customer_type').select2();
+                    }
+                });
+
+
             });
 
             $("input[name='search_type']").change(function () {
@@ -3215,6 +3298,7 @@
                 var marketing_type = group_type == 'groups_all' || group_type == 'commerce' || search_type == 'advanced_search' ? $('#marketing_type').select2("val") : null;
                 var vendor_type = group_type == 'groups_all' || group_type == 'commerce' || search_type == 'advanced_search' ? $('#vendor_type').select2("val") : null;
                 var customer_type = group_type == 'groups_all' || group_type == 'commerce' || search_type == 'advanced_search' ? $('#customer_type').select2("val") : null;
+                var emps_type = group_type == 'groups_all' || group_type == 'commerce' || search_type == 'advanced_search' ? $('#emps_type').val() : null;
 
                 // clear selections
                 $("#cost").prop('checked', false);
@@ -3271,7 +3355,8 @@
                         });
 
                         customer_type = 'customer_all';
-                        Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type);
+                        emps_type = 'employees_all';
+                        Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type, emps_type);
                         // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
                     }
                 }
@@ -3310,7 +3395,7 @@
                                 },
                             });
 
-                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type);
+                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type, emps_type);
                             // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
                         }
                     }
@@ -3347,7 +3432,7 @@
                                 },
                             });
 
-                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type);
+                            Livewire.emit('create-report', start_date, end_date, dept_id, group_type, cat_type, sp_type, vendor_type, report_type, search_type, product_code, marketing_type, customer_type, emps_type);
                             // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
                         }
                     }
