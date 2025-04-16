@@ -247,6 +247,7 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -260,7 +261,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "byItemGroup") {
@@ -297,6 +298,7 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -310,7 +312,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "bySpeciality") {
@@ -344,6 +346,7 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -358,7 +361,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "byMarketingType") {
@@ -392,6 +395,7 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -409,7 +413,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "byVendor") { // bug
@@ -442,6 +446,7 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -456,7 +461,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "byCustomer") { // bug
@@ -492,6 +497,7 @@ class Report11 extends Component
 //                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
                             'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
                             'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'TransCount' => $row->sum('TransCount'),
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
@@ -510,7 +516,7 @@ class Report11 extends Component
 //                dd($groupedByItemName);
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
 
 //                dd($this->totalSalesByItem);
@@ -1211,6 +1217,7 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1241,6 +1248,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1337,6 +1349,7 @@ ORDER BY "ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1384,6 +1397,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+	WHEN "DocumentTypeCode" = 13 THEN 1
+	WHEN "DocumentTypeCode" = 14 THEN -1
+	ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1440,6 +1458,7 @@ ORDER BY "ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1487,6 +1506,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1546,6 +1570,7 @@ ORDER BY "ItemGroup","ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1593,6 +1618,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1650,6 +1680,7 @@ ORDER BY "Speciality","ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1697,6 +1728,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1754,6 +1790,7 @@ ORDER BY "mrkt_type","ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1801,6 +1838,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
@@ -1859,6 +1901,7 @@ ORDER BY "VendorCode","ItemCode"';
 	"ItemCode",
     "ItemDescription" AS "ItemName",
     "ItemGroup",
+    SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
     SUM("NetSalesAmountLC") AS "TotalSalesAmount",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
@@ -1906,6 +1949,11 @@ Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
 SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
