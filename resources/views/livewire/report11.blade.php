@@ -2829,6 +2829,8 @@
             var prev_vendors = $('#vendor_type').select2("val");
             var prev_customers = $('#customer_type').select2("val");
 
+            var cust_codes = [];
+
             $('#dept_id').on('change', function (e) {
                 var data = $('#dept_id').select2("val");
 
@@ -2851,6 +2853,28 @@
 
                 // to hide the emps based on the selected branch
                 console.log("selected branch:" + prev_depts);
+                cust_codes = prev_depts;
+
+                cust_codes = cust_codes.map(function(val) {
+                    if (val === '0101') return '01';
+                    if (val === '0102') return '02';
+                    if (val === '0103') return '03';
+                    if (val === '0104') return '04';
+                    if (val === '0105') return '05';
+                    if (val === '0106') return '06';
+                    if (val === '0107') return '07';
+                    if (val === '0108') return '08';
+                    if (val === '0109') return '09';
+                    if (val === '0110') return '10';
+                    if (val === '0111') return '11';
+                    if (val === '0112') return '12';
+                    if (val === '0201') return '01';
+                    if (val === '0202') return '01';
+                    if (val === '0203') return '01';
+                    if (val === '0001') return '01';
+                    return val; // keep original if no match
+                });
+                // console.log("selected codes:" + cust_codes);
 
                 $('#dept_id option').each(function() {
                     // Get the value of the data-dept attribute
@@ -2864,55 +2888,52 @@
                         // console.log('hideRORO:' + $('#customer_type').select2().data('cust'));
                         $('#emps_type option').show();
                         $('#customer_type option').show();
+
+                        $("#customer_type").select2({
+                            dir: "rtl",
+                            dropdownCssClass: "select-font-size",
+                            templateResult: function (option, container) {
+                                $(container).css("display", "block");
+                                return option.text;
+                            }
+                        });
                     }
                     else if (!prev_depts.includes(deptValue)) {
                         // console.log('hide:' + deptValue);
                         // console.log('hideCOCO:' + $('#customer_type').select2().data('cust'));
                         $('option[data-dept="'+ deptValue +'"]').hide();
-
-                        // $('[id^="ab"]').hide();
-                        // var keywordStart = '04';
-                        // // $('.select2-results__option').filter(function() {
-                        // $('[data-cust^="0101"]').filter(function() {
-                        //     var idValue = $(this).attr('id');
-                        //     // $('option[data-cust="'+ idValue +'"]').hide();
-                        //     $('[data-select2-id="select2-data-0100907+0101"]').select().hide();
-                        //     console.log(idValue)
-                        //     return idValue && idValue.match(new RegExp('-' + keywordStart + '\\d*$'));
-                        // }).hide(); // Example action: highlight matching elements
-
-                        // $('option[data-cust="'+ deptValue +'"]').hide();
-                        // $('#customer_type option[data-cust="'+ deptValue +'"]').css('display', 'none')
-                        // $('#customer_type').select2();
-                        // console.log(deptValue)
-
-                        // Use $.grep() to filter the array
-                        // const result = $.grep(customers, function(item) {
-                        //     // return item.Dept == String(deptValue);
-                        //     return  prev_depts.includes(item.Dept);
-                        // });
-
-                        // customers = result;
-                        //
-                        // // console.log(x);
-                        // const $select = $("#customer_type");
-                        // $.each(customers, function(index, item) {
-                        //     $select.append($("<option>").val(item.CardCode).text(item.CardName));
-                        // });
-
-// Check the result
-//                         if (result.length > 0) {
-//                             console.log("Found:", result[0]); // Output: { id: 2, name: "Option 2" }
-//                         } else {
-//                             console.log("Item not found");
-//                         }
-
                     }
                     else {
                         $('option[data-dept="'+ deptValue +'"]').show();
+                        // console.log('hide:' + deptValue);
                         // $('option[data-cust="'+ deptValue +'"]').show();
                         // $('#customer_type option[data-cust="'+ deptValue +'"]').css('display', 'block')
                         // $('#customer_type').select2();
+
+                        // if (cust_codes.includes('dept_all')) {
+                        //     // cust_codes = ['0101', '0102', '0103', '0104', '0105', '0106', '0107', '0108', '0109', '0110', '0111', '0112', '0201', '0202', '0203', '0001'];
+                        //     cust_codes = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+                        // }
+                        $("#customer_type").select2({
+                            dir: "rtl",
+                            dropdownCssClass: "select-font-size",
+                            templateResult: function (option, container) {
+                                const id = $(option.element).attr("data-select2-id");
+                                const value = $(option.element).attr("value");
+                                // console.log(value);
+
+                                if (id) {
+                                    if (value && cust_codes.some(prefix => value.startsWith(prefix))) {
+                                        $(container).css("display", "block");
+                                    }
+                                    else {
+                                        $(container).css("display", "none");
+                                    }
+                                }
+
+                                return option.text;
+                            }
+                        });
                     }
                 });
 
