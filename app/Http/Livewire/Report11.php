@@ -665,7 +665,8 @@ class Report11 extends Component
 	WHEN "CardCode" LIKE \'11%\' THEN \'0111\'
 	WHEN "CardCode" LIKE \'12%\' THEN \'0112\'
 END AS "Dept"
-FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' AND ('.$query.')';
+FROM AL_YASEEN_AGRI_PLIVE.OCRD T0 WHERE T0."CardType" = \'C\' AND ('.$query.')
+ORDER BY "CardCode"';
 
             $result = odbc_exec($conn, $customerQuery);
             if (!$result)

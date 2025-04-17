@@ -386,7 +386,7 @@
                                 style="@error('customer_type') border: solid 1px #fda4af; @enderror">
                             <option value="customer_all" selected>الكل</option>
                             @foreach($customer_list as $customer)
-                                <option value="{{ $customer['CardCode'] }}">{{ $customer['CardName'] }}</option>
+                                <option value="{{ $customer['CardCode'] }}">{{ $customer['CardCode'] }} - {{ $customer['CardName'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -3052,6 +3052,27 @@
                     /* end of hiding and removing filteration 2-3*/
 
                     re_intialize();
+
+                    $("#customer_type").select2({
+                        dir: "rtl",
+                        dropdownCssClass: "select-font-size",
+                        templateResult: function (option, container) {
+                            const id = $(option.element).attr("data-select2-id");
+                            const value = $(option.element).attr("value");
+                            // console.log(value);
+
+                            if (id) {
+                                if (value && cust_codes.some(prefix => value.startsWith(prefix))) {
+                                    $(container).css("display", "block");
+                                }
+                                else {
+                                    $(container).css("display", "none");
+                                }
+                            }
+
+                            return option.text;
+                        }
+                    });
                 }
 
                 // re-intialize the select2
