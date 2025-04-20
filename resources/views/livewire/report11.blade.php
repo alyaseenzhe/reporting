@@ -1,8 +1,5 @@
-@section('title')
-    تقرير عمليات الأصناف
-@stop
 <div>
-    <div class="mb-5">
+    <div class="mb-1">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
@@ -27,9 +24,9 @@
         </nav>
     </div>
 
-    <button type="button" class="collapsible active">خيارات البحث</button>
+    <button style="border: 1px solid #838383;" type="button" class="collapsible active">خيارات البحث</button>
 
-    <div id="branch-container" class="mb-6">
+    <div style="border: 1px solid #838383;" id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div class="w-full">
@@ -38,7 +35,7 @@
                     </label>
                     <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                           style="@error('start_date') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div wire:ignore class="w-full">
@@ -47,7 +44,7 @@
                     </label>
                     <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                           style="@error('end_date') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="w-full">
@@ -487,33 +484,24 @@
     </div>
 
     @if($show_msg)
-        <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-9">
+        <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-4">
             @if(count($group_results) > 0)
 
-                <div class="mb-5 p-2">
+                <div style="background-color: #f5f5f5;" class="mb-2 p-2">
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                        <div class="flex flex-col sm:flex-row gap-4 w-full">
-                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
-                                <label class="block font-bold mb-5">خيارات اظهار الأعمدة الخاصة</label>
-                                <div class="flex flex-row gap-2.5">
-                                    <div class="flex items-center mb-4 ml-8">
-                                        <input id="cost" type="checkbox" value="cost" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">اظهار</label>
-                                    </div>
-                                    {{--                                    <div class="flex items-center mb-4 ml-8">--}}
-                                    {{--                                        <input id="cost" type="checkbox" value="cost" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                                    {{--                                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التكلفة</label>--}}
-                                    {{--                                    </div>--}}
-                                    {{--                                    <div class="flex items-center mb-4 ml-8">--}}
-                                    {{--                                        <input id="margin" type="checkbox" value="margin" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                                    {{--                                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الهامش</label>--}}
-                                    {{--                                    </div>--}}
-                                    {{--                                    <div class="flex items-center mb-4 ml-8">--}}
-                                    {{--                                        <input id="margin-percentage" type="checkbox" value="margin-percentage" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                                    {{--                                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">النسبة</label>--}}
-                                    {{--                                    </div>--}}
-                                </div>
+                        <div class="flex flex-col sm:flex-row gap-2 w-full">
+                            <div><label class="font-bold mb-5 text-sm">خيارات اظهار الأعمدة الخاصة</label></div>
+                            <div>
+                                <span class="text-xs">(</span>
+                                <input id="cost" type="checkbox" value="cost" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>
+                                <span class="text-xs">)</span>
                             </div>
+{{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
+
+
+
+{{--                            </div>--}}
                         </div>
                 </div>
             @endif
@@ -888,7 +876,7 @@
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
-                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>({{ $record["OldCode"] }}) - {{$record["ItemName"]}}</div>
                                         {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
@@ -904,7 +892,7 @@
 
                             <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
                                         <div>قسم:
                                             <span style="color: #227dd7">
@@ -1132,7 +1120,7 @@
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
-                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>{{$record["ItemGroup"]}}</div>
                                         {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
@@ -1148,7 +1136,7 @@
 
                             <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
                                         <div>قسم:
                                             <span style="color: #227dd7">
@@ -1420,7 +1408,7 @@
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
-                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>مميز {{$record["Speciality"]}}</div>
                                         {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
@@ -1436,7 +1424,7 @@
 
                             <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
                                         <div>قسم:
                                             <span style="color: #227dd7">
@@ -1710,7 +1698,7 @@
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
-                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>
                                             @if($record["mrkt_type"] == "fan - asmedah 1")
@@ -1744,7 +1732,7 @@
 
                             <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
                                         <div>نوع المادة:
                                             <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
@@ -1993,7 +1981,7 @@
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
-                                <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>
                                             {{ $record["VendorName"] }}
@@ -2007,7 +1995,7 @@
 
                             <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
                                         <div>نوع المادة:
                                             <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
@@ -2277,7 +2265,7 @@
                                     {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                     {{--                                        {{$record["OldCode"]}}--}}
                                     {{--                                    </td>--}}
-                                    <td colspan="7" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row">
                                             <div>
                                                 {{--                                                {{ $record["VendorName"] }}--}}
@@ -2292,7 +2280,7 @@
 
                                 <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row justify-between">
                                             <div>نوع المادة:
                                                 <span style="color: #227dd7">{{ $record["ItemGroup"] }}</span>
@@ -2525,7 +2513,7 @@
                 @if($report_type == 'byItem')
                     <tfoot>
                     <tr style="border-top: 2px solid black; background-color: #f8e1ab; font-weight: bold">
-                        <td colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             الإجمالي
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
@@ -2595,6 +2583,9 @@
     @endif
 </div>
 
+@section('fixed-title')
+    <span style="text-align: center">تقرير عمليات الأصناف</span>
+@stop
 @section('scripts')
     {{--    <script src="{{ asset('js/jquery.min.js') }}"></script>--}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -3760,7 +3751,7 @@
             background-color: #eee;
             color: #444;
             cursor: pointer;
-            padding: 18px;
+            padding: 5px;
             width: 100%;
             border: none;
             /*text-align: left;*/
