@@ -1105,8 +1105,8 @@ left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName";
 
             }
-            
-//        dd($scribesStmt);
+
+            //        dd($scribesStmt);
 
             $query = DB::connection('sqlsrv')->select($scribesStmt);
 
