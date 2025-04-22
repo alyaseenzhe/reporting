@@ -32,6 +32,7 @@ class ListSalesCollections extends Component
         'end_date.required' => "مطلوب",
     ];
 
+
     public function booted()
     {
 
@@ -924,6 +925,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'' . $start_date . '\' AND "DocumentDate" <= \'' . $end_date . '\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1074,6 +1076,8 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'' . $start_date . '\' AND "DocumentDate" <= \'' . $end_date . '\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
+
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
