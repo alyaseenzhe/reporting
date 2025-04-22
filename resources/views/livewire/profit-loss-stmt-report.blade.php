@@ -102,7 +102,7 @@
                             <td colspan="3" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['Account Code2'] }} - {{ $record['AccName'] }}</td>
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($record['Total'], 2) }}</td>
                             @php $full_total = $full_total + floatval($record['Total']); @endphp
-                            @if($account_code == 41 || $account_code == 51) {{ $profit = $profit + floatval($record['Total']) }} @endif
+                            @php if($account_code == 41 || $account_code == 51) $profit = $profit + floatval($record['Total']); @endphp
                         </tr>
                             @if($account_code == 51)
                             <tr style="background-color: #d9ddde; border: 2px solid black; font-weight: bold;">
