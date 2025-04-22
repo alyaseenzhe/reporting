@@ -8,18 +8,6 @@
                         <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">الصفحة الرئيسية</span>
                     </a>
                 </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                             viewBox="0 0 199.404 199.404"
-                             xml:space="preserve">
-<g>
-    <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
-</g>
-</svg>
-                        <a href="{{ route('sap-reports') }}" class="text-gray-700 hover:text-gray-900 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">تقارير ساب</a>
-                    </div>
-                </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -60,18 +48,20 @@
                 </div>
                 <div class="w-full">
                     <label class="block font-bold mb-2">تاريخ البداية
+                        <span class="text-red-500">*</span>
                     </label>
                     <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                           style="@error('start_date') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div wire:ignore class="w-full">
                     <label class="block font-bold mb-2">تاريخ النهاية
+                        <span class="text-red-500">*</span>
                     </label>
                     <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                           style="@error('end_date') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 {{--                <div class="mt-8 text-center w-full">--}}
@@ -103,9 +93,9 @@
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
-{{--                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                        <div class="text-sm">رقم العميل</div>--}}
-{{--                    </th>--}}
+                    {{--                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                    {{--                        <div class="text-sm">رقم العميل</div>--}}
+                    {{--                    </th>--}}
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-sm">مرجع السند</div>
                     </th>
@@ -133,9 +123,9 @@
                 @foreach($scribes_results as $key => $record)
                     @if(count($scribes_results) > 0 && $key === array_key_first($scribes_results))
                         <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-{{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record->CardCode}}--}}
-{{--                            </td>--}}
+                            {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record->CardCode}}--}}
+                            {{--                            </td>--}}
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{--                            {{$record->TransId}}--}}
                             </td>
@@ -147,21 +137,22 @@
                             </td>
                             @php  $ob = floatval($record->CumulativeBalance) + floatval($record->Credit) - floatval($record->Debit); @endphp
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{ $ob > 0 ? number_format($ob, 2) : ''}}
+{{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{ $ob < 0 ? number_format($ob, 2) : ''}}
+{{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob != 0 ? number_format($ob, 2) : '' }}
                                 {{--                            {{number_format($record->CumulativeBalance, 2)}}--}}
                             </td>
                         </tr>
                         @php $counter++ @endphp
                     @endif
                     <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{$record->CardCode}}--}}
-{{--                        </td>--}}
+                        {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            {{$record->CardCode}}--}}
+                        {{--                        </td>--}}
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{$record->TransId}}
                         </td>
@@ -274,13 +265,13 @@
                         {{--                        {{$record->LineMemo}}--}}
                         {{--                    </td>--}}
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record->Debit, 2)}}
+                            {{ $record->Debit != 0? number_format($record->Debit, 2) : ''}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record->Credit, 2)}}
+                            {{ $record->Credit != 0? number_format($record->Credit, 2) : ''}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record->CumulativeBalance, 2)}}
+                            {{ $record->CumulativeBalance != 0? number_format($record->CumulativeBalance, 2) : ''}}
                         </td>
                     </tr>
                     @php $counter++ @endphp
@@ -288,9 +279,9 @@
                 @foreach($sap_results as $key2 => $record)
                     @if(count($scribes_results) == 0 && $key2 === array_key_first($sap_results))
                         <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-{{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['CardCode']}}--}}
-{{--                            </td>--}}
+                            {{--                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record['CardCode']}}--}}
+                            {{--                            </td>--}}
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{--                            {{$record['TransId']}}--}}
                             </td>
@@ -302,21 +293,22 @@
                             </td>
                             @php  $ob = floatval($record['CumulativeBalance']) + floatval($record['Credit']) - floatval($record['Debit']); @endphp
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{ $ob > 0 ? number_format($ob, 2) : ''}}
+{{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                {{ $ob < 0 ? number_format($ob, 2) : ''}}
+{{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ $ob != 0 ? number_format($ob, 2) : '' }}
                                 {{--                            {{number_format($record['CumulativeBalance'], 2)}}--}}
                             </td>
                         </tr>
                         @php $counter++ @endphp
                     @endif
                     <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
-{{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                            {{$record['CardCode']}}--}}
-{{--                        </td>--}}
+                        {{--                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            {{$record['CardCode']}}--}}
+                        {{--                        </td>--}}
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{$record['TransId']}}
                         </td>
@@ -335,13 +327,13 @@
                             @endif
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record['Debit'], 2)}}
+                            {{ $record['Debit'] != 0 ? number_format($record['Debit'], 2) : ''}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record['Credit'], 2)}}
+                            {{ $record['Credit'] != 0 ? number_format($record['Credit'], 2) : ''}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($record['CumulativeBalance'], 2)}}
+                            {{ $record['CumulativeBalance'] != 0 ? number_format($record['CumulativeBalance'], 2) : ''}}
                         </td>
                     </tr>
                     @php $counter++ @endphp
@@ -380,44 +372,44 @@
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
 
-                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
-
-                Swal.fire({
-                    title: 'الرجاء الإنتظار',
-                    allowOutsideClick: false,
-                    showCancelButton: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading()
-                    },
-                });
-
-                Livewire.emit('create-report', customer_id, start_date, end_date);
-
-
-                // if(dept_id == null || cat_type == null || sp_type == null || vendor_type == null) {
-                //     Swal.fire({
-                //         title: "حدث خطأ",
-                //         text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
-                //         icon: "error",
-                //         confirmButtonText: "موافق",
-                //     });
-                // }
-                // else {
-                //     $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                // $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
                 //
-                //     Swal.fire({
-                //         title: 'الرجاء الإنتظار',
-                //         allowOutsideClick: false,
-                //         showCancelButton: false,
-                //         showConfirmButton: false,
-                //         willOpen: () => {
-                //             Swal.showLoading()
-                //         },
-                //     });
+                // Swal.fire({
+                //     title: 'الرجاء الإنتظار',
+                //     allowOutsideClick: false,
+                //     showCancelButton: false,
+                //     showConfirmButton: false,
+                //     willOpen: () => {
+                //         Swal.showLoading()
+                //     },
+                // });
                 //
-                //     Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
-                // }
+                // Livewire.emit('create-report', customer_id, start_date, end_date);
+
+
+                if(start_date == '' || end_date == '') {
+                    Swal.fire({
+                        title: "حدث خطأ",
+                        text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                        icon: "error",
+                        confirmButtonText: "موافق",
+                    });
+                }
+                else {
+                    $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                    Swal.fire({
+                        title: 'الرجاء الإنتظار',
+                        allowOutsideClick: false,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading()
+                        },
+                    });
+
+                    Livewire.emit('create-report', customer_id, start_date, end_date);
+                }
             });
 
 

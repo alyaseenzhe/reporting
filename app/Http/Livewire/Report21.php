@@ -140,6 +140,7 @@ class Report21 extends Component
 
         $this->show_msg = false;
 
+        /*
         if (is_null($this->start_date) == false && is_null($this->end_date) == false) {
 
             if ($this->start_date >= '2011-07-01' && $this->end_date <= '2023-12-31') {
@@ -185,6 +186,28 @@ class Report21 extends Component
             }
         }
 
+       */
+
+        // dates
+        if (is_null($this->start_date) == false && is_null($this->end_date) == false) {
+
+            if ($this->start_date >= '2011-07-01' && $this->end_date <= '2023-12-31') {
+                $this->scribesQuery($this->start_date, $this->end_date);
+            }
+            elseif ($this->start_date > '2023-12-31' && $this->end_date > '2023-12-31') {
+                $this->sapQuery($this->start_date, $this->end_date);
+            }
+            elseif ($this->start_date >= '2011-07-01' && $this->end_date > '2023-12-31') {
+                $this->scribesQuery($this->start_date, '2023-12-31');
+                $this->sapQuery('2024-01-01', $this->end_date);
+            }
+
+
+        }
+        else {
+            dd('coco');
+        }
+        // end dates
         $this->show_msg = true;
         $this->emit('finished');
 
