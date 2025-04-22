@@ -92,6 +92,7 @@
                     $counter = 0;
                     $full_total = 0;
                     $account_code = "*";
+                    $profit = 0;
                 @endphp
                 @foreach($sap_results as $key2 => $record)
                     @if($record['Account Code2'] != $account_code)
@@ -101,9 +102,16 @@
                             <td colspan="3" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['Account Code2'] }} - {{ $record['AccName'] }}</td>
                             <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($record['Total'], 2) }}</td>
                             @php $full_total = $full_total + floatval($record['Total']); @endphp
+                            @if($account_code == 41 || $account_code == 51) {{ $profit = $profit + floatval($record['Total']) }} @endif
                         </tr>
+                            @if($account_code == 51)
+                            <tr style="background-color: #d9ddde; border: 2px solid black; font-weight: bold;">
+                                <td colspan="4" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">هامش الربح</td>
+                                <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($profit, 2) }}</td>
+                            </tr>
+                            @endif
                     @endif
-                    <?php $account_code = $record['Account Code2'] ?>
+                        <?php $account_code = $record['Account Code2'] ?>
 
 
                     <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{ $record['Account Code2'] }} hide">
@@ -127,10 +135,10 @@
                 @endforeach
                 </tbody>
                 <tfoot>
-                    <tr style="background-color: #5b5b5b; color: white; border: 2px solid black; font-weight: bold">
-                        <td colspan="4" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">الإجمالي النهائي</td>
-                        <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($full_total, 2) }}</td>
-                    </tr>
+                <tr style="background-color: #5b5b5b; color: white; border: 2px solid black; font-weight: bold">
+                    <td colspan="4" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">الإجمالي النهائي</td>
+                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($full_total, 2) }}</td>
+                </tr>
                 </tfoot>
             </table>
         </div>
