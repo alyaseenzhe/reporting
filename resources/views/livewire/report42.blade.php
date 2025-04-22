@@ -50,7 +50,8 @@
                         <span class="text-red-500">*</span>
                     </label>
                     {{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
-                    <input id="start_date" type="date" min="2024-01-01" onkeydown="return false" name="start_date"
+{{--                    <input id="start_date" type="date" min="2024-01-01" onkeydown="return false" name="start_date"--}}
+                    <input id="start_date" type="date" min="2024-01-01" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -60,7 +61,8 @@
                         <span class="text-red-500">*</span>
                     </label>
                     {{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
-                    <input id="end_date" type="date" onkeydown="return false" name="end_date"
+{{--                    <input id="end_date" type="date" onkeydown="return false" name="end_date"--}}
+                    <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror

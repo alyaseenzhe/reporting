@@ -1435,6 +1435,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1485,6 +1486,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1537,6 +1539,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -1591,6 +1594,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 AND "DocumentNumber" not in (358,359)
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -1648,6 +1652,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \'2024-01-01\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2141,6 +2146,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2191,6 +2197,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2244,6 +2251,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2299,6 +2307,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" > \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 AND "DocumentNumber" not in (358,359)
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -2357,6 +2366,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" > \''.$previous_start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2412,6 +2422,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND "DocumentDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2467,6 +2478,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.Carbon::parse($start_date)->subYear()->format('Y-m-d').'\' AND "DocumentDate" <= \''.Carbon::parse($end_date)->subYear()->format('Y-m-d').'\'
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2522,6 +2534,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND "DocumentDate" <= ADD_YEARS(\''.$end_date.'\',-1)
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
@@ -2577,6 +2590,7 @@ SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= ADD_YEARS(ADD_DAYS(ADD_DAYS(\''.$start_date.'\',1),-365),-1) AND "DocumentDate" <= ADD_YEARS(\''.$end_date.'\',-1)
 AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
