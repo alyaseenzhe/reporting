@@ -128,10 +128,10 @@ INNER JOIN
 AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
 WHERE
 JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
-    if ($branch_id != 'all') {
-        $sql .= 'AND JDT1."ProfitCode" = \''.$branch_id.'\'';
-    }
-$sql .= ' ORDER
+            if ($branch_id != 'all') {
+                $sql .= 'AND JDT1."ProfitCode" = \''.$branch_id.'\'';
+            }
+            $sql .= ' ORDER
 BY JDT1."RefDate"
 )
 
@@ -168,11 +168,11 @@ AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
 WHERE
 JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
 
-    if ($branch_id != 'all') {
-        $sql .= 'AND JDT1."ProfitCode" = \'' . $branch_id . '\'';
-    }
+            if ($branch_id != 'all') {
+                $sql .= 'AND JDT1."ProfitCode" = \'' . $branch_id . '\'';
+            }
 
-$sql .= ' ORDER BY JDT1."RefDate"
+            $sql .= ' ORDER BY JDT1."RefDate"
 )
 
 WHERE
