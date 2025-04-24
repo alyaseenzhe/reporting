@@ -1,7 +1,30 @@
+@section('title')
+    فواتير عميل
+@stop
 <div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">كشف حساب عميل نقدي</div>
+    <div class="mb-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-gray-900 inline-flex items-center">
+                        <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">الصفحة الرئيسية</span>
+                    </a>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                             viewBox="0 0 199.404 199.404"
+                             xml:space="preserve">
+<g>
+    <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
+</g>
+</svg>
+                        <span class="text-gray-400 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">فواتير عميل</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
@@ -24,17 +47,34 @@
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div wire:ignore class="w-full">
+{{--                <div wire:ignore class="w-full">--}}
+{{--                    <label class="block font-bold mb-2">رقم العميل--}}
+{{--                        <span class="text-red-500">*</span>--}}
+{{--                    </label>--}}
+{{--                    <input id="customer_code" type="text" name="customer_code" wire:model="customer_code"--}}
+{{--                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+{{--                           style="@error('item_id') border: solid 1px #fda4af; @enderror">--}}
+{{--                    @error('customer_code') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
+{{--                </div>--}}
+                <div class="w-full">
                     <label class="block font-bold mb-2">رقم العميل
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="customer_code" type="text" name="customer_code" wire:model="customer_code"
-                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                           style="@error('item_id') border: solid 1px #fda4af; @enderror">
-                    @error('customer_code') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <div wire:ignore>
+                        <select id="customer_code" name="customer_code" wire:model="customer_code"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('customer_type') border: solid 1px #fda4af; @enderror">
+                            @foreach($customer_list as $customer)
+                                <option value="{{ $customer['CardCode'] }}">{{ $customer['CardCode'] }} - {{ $customer['CardName'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('customer_code')
+                    <span class="error text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
                 </div>
                 <div class="mt-8 text-center w-full">
-                    <button wire:click.prevent="generateReport" wire:loading.attr="disabled"
+                    <button id="gen-report"
                             style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                             <span></span>
@@ -50,85 +90,366 @@
         </div>
     </div>
     <div id="report-btn" wire:loading.remove wire:target="generateReport" class="printable">
-        <div id="tbl2-container" class="overflow-x-auto">
+        <div id="tbl2-container" class="tbl-fixed overflow-x-auto">
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">رقم العميل</div>
+                        <div class="text-sm">#</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">اسم العميل</div>
+                        <div class="text-sm">اسم الصنف</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">الفرع</div>
+                        <div class="text-sm">كمية</div>
                     </th>
                     <th class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">رقم الفاتورة</div>
+                        <div class="text-sm">سعر</div>
                     </th>
                     <th class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">تاريخ الفاتورة</div>
-                    </th>
-                    <th class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">قيمة الفاتورة</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm">اسم المهندس</div>
+                        <div class="text-sm">مجموع</div>
                     </th>
                 </tr>
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
-
+                @php $total = 0; $voucher_no = "*"; $counter = 0; @endphp
                 @foreach($results as $record)
-                    <tr>
-                        <td class="border p-2 whitespace-nowrap">
-                            {{$record['customer_code']}}
+
+                    @if($record['VoucherNo'] != $voucher_no)
+{{--                        <tr>--}}
+{{--                            <td class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['Name']}}--}}
+{{--                            </td>--}}
+{{--                            <td class="border p-2 whitespace-nowrap">--}}
+{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الاحساء--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    جدة--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الرياض--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    وادي الدواسر--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الجوف--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الدمام--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الخرج--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    نجران--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    حائل--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    تبوك--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    القصيم--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+{{--                                    ساجر--}}
+{{--                                @endif--}}
+{{--                            </td>--}}
+{{--                            <td class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['VoucherNo']}}--}}
+{{--                            </td>--}}
+{{--                            <td class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['VoucherDate']}}--}}
+{{--                            </td>--}}
+{{--                            <td class="border p-2">--}}
+{{--                                {{ number_format($record['Value'], 2) }}--}}
+{{--                                @php $total += floatval($record['Value']); @endphp--}}
+{{--                            </td>--}}
+{{--                            <td class="border p-2">--}}
+{{--                                {{$record['emp_name']}}--}}
+{{--                            </td>--}}
+{{--                        </tr>--}}
+
+                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>
+{{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div class="flex flex-row justify-between">--}}
+{{--                                    <div>العميل--}}
+{{--                                    </div>--}}
+{{--                                    <div>الفرع--}}
+{{--                                    </div>--}}
+{{--                                    <div>رقم الفاتورة--}}
+{{--                                    </div>--}}
+{{--                                    <div>تاريخ الفاتورة--}}
+{{--                                    </div>--}}
+{{--                                    <div>قيمة الفاتورة--}}
+{{--                                    </div>--}}
+{{--                                    <div>اسم المهندس--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
+
+{{--                            --}}{{--                                            مجموع جزئي للصنف--}}
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>العميل--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>الفرع--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>رقم الفاتورة
+                                </div>
+                            </td>
+                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>تاريخ الفاتورة
+                                </div>
+                            </td>
+                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>قيمة الفاتورة
+                                </div>
+                            </td>
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>اسم المهندس--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+                        </tr>
+                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['Name']}}--}}
+{{--                            </td>--}}
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الاحساء--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    جدة--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الرياض--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    وادي الدواسر--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الجوف--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الدمام--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الخرج--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    نجران--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    حائل--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    تبوك--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    القصيم--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+{{--                                    ساجر--}}
+{{--                                @endif--}}
+{{--                            </td>--}}
+                            <td colspan="2" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{$record['VoucherNo']}}
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($record['VoucherDate'])->format('Y-m-d') }}
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ number_format($record['Value'], 2) }}
+                            </td>
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['emp_name']}}--}}
+{{--                            </td>--}}
+
+                        </tr>
+
+                            <?php $voucher_no = $record['VoucherNo']; ?>
+                            <?php $total = $total + $record['Value']; ?>
+
+                    @endif
+
+
+                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{ $record["VoucherNo"] }} hide">
+                        <td style="color: black;" class="border p-2 whitespace-nowrap">
+                            {{$record['item_code']}}
                         </td>
-                        <td class="border p-2 whitespace-nowrap">
-                            {{$record['Name']}}
+                        <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
+                            {{$record['Arabic_Name']}}
                         </td>
-                        <td class="border p-2 whitespace-nowrap">
-                            @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)
-                                الاحساء
-                            @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)
-                                جدة
-                            @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)
-                                الرياض
-                            @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)
-                                وادي الدواسر
-                            @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)
-                                الجوف
-                            @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)
-                                الدمام
-                            @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)
-                                الخرج
-                            @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)
-                                نجران
-                            @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)
-                                حائل
-                            @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)
-                                تبوك
-                            @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)
-                                القصيم
-                            @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))
-                                ساجر
-                            @endif
+                        <td style="color: #ff8659;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['qty'])}}
                         </td>
-                        <td class="border p-2 whitespace-nowrap">
-                            {{$record['VoucherNo']}}
+                        <td style="color: blueviolet;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['rate'])}}
                         </td>
-                        <td class="border p-2 whitespace-nowrap">
-                            {{$record['VoucherDate']}}
-                        </td>
-                        <td class="border p-2">
-                            {{ number_format($record['Value'], 2) }}
-                        </td>
-                        <td class="border p-2">
-                            {{$record['emp_name']}}
+                        <td style="color: green;" class="border p-2 whitespace-nowrap">
+                            {{number_format($record['item_value'], 2)}}
                         </td>
                     </tr>
+                    @php $counter++ @endphp
+                @endforeach
+
+                @foreach($sap_results as $record)
+
+                    @if($record['VoucherNo'] != $voucher_no)
+                        {{--                        <tr>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['Name']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الاحساء--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    جدة--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الرياض--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    وادي الدواسر--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الجوف--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الدمام--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الخرج--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    نجران--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    حائل--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    تبوك--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    القصيم--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+                        {{--                                    ساجر--}}
+                        {{--                                @endif--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['VoucherNo']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['VoucherDate']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2">--}}
+                        {{--                                {{ number_format($record['Value'], 2) }}--}}
+                        {{--                                @php $total += floatval($record['Value']); @endphp--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2">--}}
+                        {{--                                {{$record['emp_name']}}--}}
+                        {{--                            </td>--}}
+                        {{--                        </tr>--}}
+
+                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>
+                            {{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                <div class="flex flex-row justify-between">--}}
+                            {{--                                    <div>العميل--}}
+                            {{--                                    </div>--}}
+                            {{--                                    <div>الفرع--}}
+                            {{--                                    </div>--}}
+                            {{--                                    <div>رقم الفاتورة--}}
+                            {{--                                    </div>--}}
+                            {{--                                    <div>تاريخ الفاتورة--}}
+                            {{--                                    </div>--}}
+                            {{--                                    <div>قيمة الفاتورة--}}
+                            {{--                                    </div>--}}
+                            {{--                                    <div>اسم المهندس--}}
+                            {{--                                    </div>--}}
+                            {{--                                </div>--}}
+
+                            {{--                            --}}{{--                                            مجموع جزئي للصنف--}}
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>العميل--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>الفرع--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>رقم الفاتورة
+                                </div>
+                            </td>
+                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>تاريخ الفاتورة
+                                </div>
+                            </td>
+                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                                <div>قيمة الفاتورة
+                                </div>
+                            </td>
+{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                <div>اسم المهندس--}}
+{{--                                </div>--}}
+{{--                            </td>--}}
+                        </tr>
+                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['Name']}}--}}
+{{--                            </td>--}}
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الاحساء--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    جدة--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الرياض--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    وادي الدواسر--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الجوف--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الدمام--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    الخرج--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    نجران--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    حائل--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    تبوك--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+{{--                                    القصيم--}}
+{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+{{--                                    ساجر--}}
+{{--                                @endif--}}
+{{--                            </td>--}}
+                            <td colspan="2" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{$record['VoucherNo']}}
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($record['VoucherDate'])->format('Y-m-d') }}
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                {{ number_format($record['Value'], 2) }}
+                            </td>
+{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                {{$record['emp_name']}}--}}
+{{--                            </td>--}}
+
+                        </tr>
+
+                            <?php $voucher_no = $record['VoucherNo']; ?>
+                            <?php $total = $total + $record['Value']; ?>
+                    @endif
+
+
+                    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{ $record["VoucherNo"] }} hide">
+                        <td style="color: black;" class="border p-2 whitespace-nowrap">
+                            {{$record['item_code']}}
+                        </td>
+                        <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
+                            {{$record['Arabic_Name']}}
+                        </td>
+                        <td style="color: #ff8659;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['qty'])}}
+                        </td>
+                        <td style="color: blueviolet;" class="border p-2 whitespace-nowrap">
+                            {{ number_format($record['rate'])}}
+                        </td>
+                        <td style="color: green;" class="border p-2 whitespace-nowrap">
+                            {{number_format($record['item_value'], 2)}}
+                        </td>
+                    </tr>
+                    @php $counter++ @endphp
                 @endforeach
                 </tbody>
+                <tfoot style="border: 2px solid black;">
+                <tr>
+                    <th style="padding: 10px; background-color: #e8e8e8;" colspan="7">
+                        <span>المجموع: </span>
+                        <span>{{ number_format($total, 2) }}</span>
+                    </th>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -156,9 +477,76 @@
     </div>
 </div>
 
-{{--@section('scripts')--}}
+@section('scripts')
 
-{{--    <script src="{{ asset('js/jquery.min.js') }}"></script>--}}
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#customer_code').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+        })
+
+        $('#gen-report').on('click', function () {
+
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+            var customer_code = $('#customer_code').select2("val");
+
+            $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+            if(start_date == '' || end_date == '') {
+                Swal.fire({
+                    title: "حدث خطأ",
+                    text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
+                    icon: "error",
+                    confirmButtonText: "موافق",
+                });
+                $("#gen-report").html('<b>إنشاء تقرير</b>');
+            }
+
+            else {
+                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+
+                Swal.fire({
+                    title: 'الرجاء الإنتظار',
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading()
+                    },
+                });
+
+                Livewire.emit('create-report', start_date, end_date, customer_code);
+                // Livewire.emit('create-report', dept_id, cat_type, sp_type, vendor_type);
+            }
+        })
+
+        Livewire.on('finished', () => {
+
+            swal.close();
+        })
+
+        function show_hide(acc) {
+            console.log('hehe');
+            if ($('.row-'+acc).hasClass('hide')) {
+                console.log('coco');
+                $('.row-'+acc).removeClass('hide');
+                $('.parent-'+acc).text('-');
+            } else {
+                console.log('.row-'+acc);
+                console.log('.parent-'+acc);
+                $('.row-'+acc).addClass('hide');
+                $('.parent-'+acc).text('+');
+            }
+        }
+    </script>
+
 {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
 {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
 {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
@@ -410,15 +798,54 @@
 
 
 {{--    </script>--}}
-{{--@stop--}}
+@stop
 @section('css-scripts')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
     <style>
+        .select2-selection__rendered {
+            line-height: 31px !important;
+        }
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            width: 100%;
+            padding-right: 2.5rem;
+            padding-top: 0.2rem;
+        }
+        .select2-selection__arrow {
+            height: 34px !important;
+        }
+
+        .select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__arrow {
+            /* left: 1px; */
+            right: 9px;
+        }
+
+        .select-font-size {
+            font-size: 0.875rem; /* 14px */
+            line-height: 1.25rem; /* 20px */
+        }
+
         .hide {
             display: none;
         }
 
         #report-logo {
             display: none;
+        }
+
+        .tbl-fixed {
+            overflow-x: scroll;
+            overflow-y: scroll;
+            height: fit-content;
+            max-height: 70vh;
+        }
+
+        table th {
+            position: sticky;
+            top: 0px;
+            background: #f8fafc;
+            border: 2px solid black;
         }
 
         @media print {
