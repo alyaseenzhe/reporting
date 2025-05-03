@@ -50,7 +50,7 @@
                         <span class="text-red-500">*</span>
                     </label>
                     {{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
-{{--                    <input id="start_date" type="date" min="2024-01-01" onkeydown="return false" name="start_date"--}}
+                    {{--                    <input id="start_date" type="date" min="2024-01-01" onkeydown="return false" name="start_date"--}}
                     <input id="start_date" type="date" min="2024-01-01" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
@@ -61,7 +61,7 @@
                         <span class="text-red-500">*</span>
                     </label>
                     {{--                    <input id="start_date" type="month" onkeydown="return false" name="start_date"--}}
-{{--                    <input id="end_date" type="date" onkeydown="return false" name="end_date"--}}
+                    {{--                    <input id="end_date" type="date" onkeydown="return false" name="end_date"--}}
                     <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
@@ -112,7 +112,7 @@
                     <th colspan="2" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">مخزون</div>
                     </th>
-                    <th colspan="3" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                    <th colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">عملاء إعادة توزيع</div>
                     </th>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
@@ -183,6 +183,12 @@
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">% مبيعات فترة</div>
                     </th>
+                    <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
+                        <div class="text-xs"># خصم اتفاقية</div>
+                    </th>
+                    <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
+                        <div class="text-xs">$ خصم اتفاقية</div>
+                    </th>
                 </tr>
                 <tr style="border: 2px solid black;">
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -245,7 +251,9 @@
                     $month_old_total = 0;
 
                     $DistNumOfCustomers = 0;
+                    $NumOfCustomers = 0;
                     $DistSales = 0;
+                    $DistDiscount = 0;
                     $DistSalesPer = 0;
 
                     $year_sp1 = 0;
@@ -839,6 +847,16 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ ((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000)) != 0 ?  number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) : 0 }}
                             </td>
+
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                @php $NumOfCustomers += floatval($record[1]["NumOfCust"]);  @endphp
+                                {{ number_format($record[1]["NumOfCust"]) }}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2">
+                                @php $DistDiscount += floatval($record[1]["TotalAmount"]/1000);  @endphp
+                                {{ number_format(floatval($record[1]["TotalAmount"])/1000) }}
+                            </td>
+
                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
                                     @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
@@ -1191,6 +1209,13 @@
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{ floatval($month_total) != 0 ? number_format(((floatval($DistSales)/floatval($month_total)))*100) : 0 }}
+                        </td>
+
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($NumOfCustomers))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($DistDiscount))}}
                         </td>
                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">

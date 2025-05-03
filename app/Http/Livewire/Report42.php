@@ -2625,6 +2625,114 @@ AND "InvType" IS NULL
 
 GROUP BY "BranchName", "BranchCode") tbl9
 ON tbl1."BPLId" = tbl9."BranchCode"
+
+----------------- dist part 2 discounts
+LEFT JOIN (
+SELECT * FROM (
+SELECT "Account Code", "Account Name","Cost Center", "DeptID", COUNT(DISTINCT "ContraAct") AS "NumOfCust", SUM("Debit Amount") AS "DebitAmount", SUM("Credit Amount") AS "CreditAmount", (SUM("Debit Amount")-SUM("Credit Amount")) AS "TotalAmount"  FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+CASE
+	WHEN JDT1."ProfitCode" = \'0001\' THEN \'1\'
+	WHEN JDT1."ProfitCode" = \'0101\' THEN \'3\'
+	WHEN JDT1."ProfitCode" = \'0102\' THEN \'4\'
+	WHEN JDT1."ProfitCode" = \'0103\' THEN \'5\'
+	WHEN JDT1."ProfitCode" = \'0104\' THEN \'6\'
+	WHEN JDT1."ProfitCode" = \'0105\' THEN \'7\'
+	WHEN JDT1."ProfitCode" = \'0106\' THEN \'8\'
+	WHEN JDT1."ProfitCode" = \'0107\' THEN \'9\'
+	WHEN JDT1."ProfitCode" = \'0108\' THEN \'10\'
+	WHEN JDT1."ProfitCode" = \'0109\' THEN \'11\'
+	WHEN JDT1."ProfitCode" = \'0110\' THEN \'12\'
+	WHEN JDT1."ProfitCode" = \'0111\' THEN \'13\'
+	WHEN JDT1."ProfitCode" = \'0112\' THEN \'14\'
+	WHEN JDT1."ProfitCode" = \'0201\' THEN \'15\'
+	WHEN JDT1."ProfitCode" = \'0202\' THEN \'16\'
+	WHEN JDT1."ProfitCode" = \'0203\' THEN \'17\'
+END AS "DeptID",
+JDT1."ContraAct" AS "ContraAct"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+
+ORDER BY JDT1."RefDate"
+)
+
+WHERE
+"Account Code" = \'6101010702\'
+
+GROUP BY "Account Code", "Account Name", "Cost Center", "DeptID"
+ORDER BY "Account Code"
+
+) TBL0
+
+LEFT JOIN (
+SELECT "Account Code2", (SELECT T0."AcctName" FROM AL_YASEEN_AGRI_PLIVE.OACT T0 WHERE T0."AcctCode" = "Account Code2") AS "AccName", (SUM("CreditAmount")-SUM("DebitAmount")) AS "Total" FROM (
+SELECT SUBSTRING("Account Code", 1,2) AS "Account Code2", SUM("Debit Amount") AS "DebitAmount", SUM("Credit Amount") AS "CreditAmount" FROM (
+
+SELECT
+OACT."AcctCode" AS "Account Code",
+OACT."AcctName" AS "Account Name",
+JDT1."RefDate" AS "Transaction Date",
+OJDT."Memo" AS "Transaction Description",
+JDT1."Debit" AS "Debit Amount",
+JDT1."Credit" AS "Credit Amount",
+JDT1."ProfitCode" AS "Cost Center",
+CASE
+	WHEN JDT1."ProfitCode" = \'0001\' THEN \'1\'
+	WHEN JDT1."ProfitCode" = \'0101\' THEN \'3\'
+	WHEN JDT1."ProfitCode" = \'0102\' THEN \'4\'
+	WHEN JDT1."ProfitCode" = \'0103\' THEN \'5\'
+	WHEN JDT1."ProfitCode" = \'0104\' THEN \'6\'
+	WHEN JDT1."ProfitCode" = \'0105\' THEN \'7\'
+	WHEN JDT1."ProfitCode" = \'0106\' THEN \'8\'
+	WHEN JDT1."ProfitCode" = \'0107\' THEN \'9\'
+	WHEN JDT1."ProfitCode" = \'0108\' THEN \'10\'
+	WHEN JDT1."ProfitCode" = \'0109\' THEN \'11\'
+	WHEN JDT1."ProfitCode" = \'0110\' THEN \'12\'
+	WHEN JDT1."ProfitCode" = \'0111\' THEN \'13\'
+	WHEN JDT1."ProfitCode" = \'0112\' THEN \'14\'
+	WHEN JDT1."ProfitCode" = \'0201\' THEN \'15\'
+	WHEN JDT1."ProfitCode" = \'0202\' THEN \'16\'
+	WHEN JDT1."ProfitCode" = \'0203\' THEN \'17\'
+END AS "DeptID",
+JDT1."ContraAct"
+FROM
+AL_YASEEN_AGRI_PLIVE.JDT1
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+WHERE
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+ORDER BY JDT1."RefDate"
+)
+
+WHERE
+"Account Code" = \'6101010702\'
+
+GROUP BY "Account Code"
+ORDER BY "Account Code")
+GROUP BY "Account Code2"
+ORDER BY "Account Code2"
+
+) TBL1 ON SUBSTRING(TBL0."Account Code", 1,2) = TBL1."Account Code2"
+
+) tbl10
+ON tbl1."Code" = tbl10."Cost Center"
+----------------- end discounts
 ';
 
 //            dd($sql);
