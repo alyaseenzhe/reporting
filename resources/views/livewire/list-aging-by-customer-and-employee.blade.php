@@ -10,46 +10,46 @@
                     <label class="block font-bold mb-2">الفرع
                         <span class="text-red-500">*</span>
                     </label>
-{{--                    <select id="area_id" name="area_id" wire:model="area_id"--}}
+                    {{--                    <select id="area_id" name="area_id" wire:model="area_id"--}}
                     <select id="area_id" name="area_id"
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار الفرع</option>
                         @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="01">فرع الاحساء</option>
+                            <option value="0101">فرع الاحساء</option>
                         @endif
                         @if(in_array("10", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="02">فرع جدة</option>
+                            <option value="0102">فرع جدة</option>
                         @endif
                         @if(in_array("7", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="03">فرع الرياض</option>
+                            <option value="0103">فرع الرياض</option>
                         @endif
                         @if(in_array("13", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="04">فرع وادي الدواسر</option>
+                            <option value="0104">فرع وادي الدواسر</option>
                         @endif
                         @if(in_array("4", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="05">فرع الجوف</option>
+                            <option value="0105">فرع الجوف</option>
                         @endif
                         @if(in_array("6", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="06">فرع الدمام</option>
+                            <option value="0106">فرع الدمام</option>
                         @endif
                         @if(in_array("5", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="07">فرع الخرج</option>
+                            <option value="0107">فرع الخرج</option>
                         @endif
                         @if(in_array("12", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="08">فرع نجران</option>
+                            <option value="0108">فرع نجران</option>
                         @endif
                         @if(in_array("11", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="09">فرع حائل</option>
+                            <option value="0109">فرع حائل</option>
                         @endif
                         @if(in_array("9", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="10">فرع تبوك</option>
+                            <option value="0110">فرع تبوك</option>
                         @endif
                         @if(in_array("8", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="11">فرع القصيم</option>
+                            <option value="0111">فرع القصيم</option>
                         @endif
                         @if(in_array("505", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
-                            <option value="12">فرع ساجر</option>
+                            <option value="0112">فرع ساجر</option>
                         @endif
                     </select>
                     @error('area_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -58,14 +58,14 @@
                     <label class="block font-bold mb-2">التاريخ
                         <span class="text-red-500">*</span>
                     </label>
-{{--                    <input id="date" type="date" name="selected_date" wire:model="selected_date"--}}
+                    {{--                    <input id="date" type="date" name="selected_date" wire:model="selected_date"--}}
                     <input id="selected_date" type="date" name="selected_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('selected_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="mt-8 text-center w-full">
-{{--                    <button id="generateReport" wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
+                    {{--                    <button id="generateReport" wire:click.prevent="generateReport" wire:loading.attr="disabled"--}}
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
                             <span></span>
@@ -118,9 +118,9 @@
                     <th class="border p-2">
                         <div class="text-center text-sm">اسم العميل</div>
                     </th>
-{{--                    <th class="border p-2">--}}
-{{--                        <div class="text-center text-sm">#</div>--}}
-{{--                    </th>--}}
+                    {{--                    <th class="border p-2">--}}
+                    {{--                        <div class="text-center text-sm">#</div>--}}
+                    {{--                    </th>--}}
                     <th class="border p-2">
                         <div class="text-center text-sm">اسم الموظف</div>
                     </th>
@@ -193,184 +193,59 @@
                     $active_branch_total_above_120 = 0;
                     ?>
                 @foreach($aging_records as $record)
-{{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
-                        {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
-                        @if($loop->first)
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-                        @endif
-{{--                        total by Business Partner--}}
-                        @if($record["Business Partner Code"] != $customer_id)
+                    {{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
+                    {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
+                    @if($loop->first)
+                            <?php $customer_id = $record["BusinessPartnerCode"]; ?>
+                            <?php $customer_name = $record["BusinessPartnerName"]; ?>
+                            <?php $emp_id = $record["OldSlpCode"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
+                    @endif
+                    {{--                        total by Business Partner--}}
+                    @if($record["BusinessPartnerCode"] != $customer_id)
 
-                            <tr style="background-color: #f2f0f0; color: #233881; border: solid 2px;" class="emp emp-{{$emp_id}} @if($valid_for[$customer_id] == 'N') nonactive-customer @endif">
+                        <tr style="background-color: #f2f0f0; color: #233881; border: solid 2px;" class="emp emp-{{$emp_id}} @if($record["validFor"] == 'N') nonactive-customer @endif">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            <td style="border: 2px solid white;">{{ $customer_id }}</td>
+                            <td style="border: 2px solid white;">{{ $customer_name }}</td>
+                            {{--                                <td style="border: 2px solid white;">{{ $valid_for[$customer_id] }}</td>--}}
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td style="border: 2px solid white;" >{{$emp_name}}</td>
+                            <td style="border: 2px solid white;">{{ number_format($record["CreditLine"]) }}</td>
+                            <td style="border: 2px solid white;">{{ $record["PymntGroup"] }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_60, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_90, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_120, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_above_120, 2) }}</td>
+                        </tr>
+
+                        {{--                        total by Sales Person--}}
+                        @if($record["SlpName"] != $emp_name)
+                            <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
                                 {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                                <td style="border: 2px solid white;">{{ $customer_id }}</td>
-                                <td style="border: 2px solid white;">{{ $customer_name }}</td>
-{{--                                <td style="border: 2px solid white;">{{ $valid_for[$customer_id] }}</td>--}}
-{{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                <td style="border: 2px solid white;" >{{$emp_name}}</td>
-                                <td style="border: 2px solid white;">{{ number_format($customer_credit_limit[$customer_id]) }}</td>
-                                <td style="border: 2px solid white;">{{ $customer_payment_term[$customer_id] }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_60, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_90, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_120, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_above_120, 2) }}</td>
-                            </tr>
-
-                            {{--                        total by Sales Person--}}
-                            @if($record["SlpName"] != $emp_name)
-                                <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
-                                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                                    <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
-                                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                    <td rowspan="2" style="border: 2px solid white;" >{{number_format($emp_customer_total, 2)}}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_30, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_60, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_90, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_120, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_above_120, 2) }}</td>
-                                </tr>
-                                <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
-                                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-{{--                                    <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
-                                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                    <td style="border: 2px solid white;">{{ number_format(($emp_total_30/$emp_customer_total)*100, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format(($emp_total_60/$emp_customer_total)*100, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format(($emp_total_90/$emp_customer_total)*100, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format(($emp_total_120/$emp_customer_total)*100, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format(($emp_total_above_120/$emp_customer_total)*100, 2) }}%</td>
-                                </tr>
-
-                                <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
-                                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                                    <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
-                                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                    <td rowspan="2" style="border: 2px solid white;" >{{number_format($active_emp_customer_total, 2)}}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_total_30, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_total_60, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_total_90, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_total_120, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_total_above_120, 2) }}</td>
-                                </tr>
-                                <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
-                                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-{{--                                    <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
-                                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_30/$active_emp_customer_total)*100) : 0, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_60/$active_emp_customer_total)*100) : 0, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_90/$active_emp_customer_total)*100) : 0, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_120/$active_emp_customer_total)*100) : 0, 2) }}%</td>
-                                    <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_above_120/$active_emp_customer_total)*100) : 0, 2) }}%</td>
-                                </tr>
-
-                                @php $emp_customer_total = 0; $emp_total_30 = 0; $emp_total_60 = 0; $emp_total_90 = 0; $emp_total_120 = 0; $emp_total_above_120 = 0; @endphp
-                                @php $active_emp_customer_total = 0; $active_emp_total_30 = 0; $active_emp_total_60 = 0; $active_emp_total_90 = 0; $active_emp_total_120 = 0; $active_emp_total_above_120 = 0; @endphp
-                            @endif
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-
-                            @php $customer_total = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
-                        @endif
-
-                        @php $num_days = \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date));  @endphp
-                        @php $customer_total += $record["Debit (LC)"]; @endphp
-                        @php $emp_customer_total += $record["Debit (LC)"]; @endphp
-
-
-
-                        @php $active_emp_customer_total += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                        @php $branch_customer_total += $record["Debit (LC)"]; @endphp
-                        @php $active_branch_customer_total += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-
-                        @if($num_days <= 30)
-                            @php $total_30 += $record["Debit (LC)"]; @endphp
-                            @php $emp_total_30 += $record["Debit (LC)"]; @endphp
-                            @php $branch_total_30 += $record["Debit (LC)"]; @endphp
-
-                            @php $active_emp_total_30 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                            @php $active_branch_total_30 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-
-                        @elseif($num_days > 30 && $num_days <= 60)
-                            @php $total_60 += $record["Debit (LC)"]; @endphp
-                            @php $emp_total_60 += $record["Debit (LC)"]; @endphp
-                            @php $branch_total_60 += $record["Debit (LC)"]; @endphp
-
-                            @php $active_emp_total_60 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                            @php $active_branch_total_60 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                        @elseif($num_days > 60 && $num_days <= 90)
-                            @php $total_90 += $record["Debit (LC)"]; @endphp
-                            @php $emp_total_90 += $record["Debit (LC)"]; @endphp
-                            @php $branch_total_90 += $record["Debit (LC)"]; @endphp
-
-                            @php $active_emp_total_90 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                            @php $active_branch_total_90 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                        @elseif($num_days > 90 && $num_days <= 120)
-                            @php $total_120 += $record["Debit (LC)"]; @endphp
-                            @php $emp_total_120 += $record["Debit (LC)"]; @endphp
-                            @php $branch_total_120 += $record["Debit (LC)"]; @endphp
-
-                            @php $active_emp_total_120 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                            @php $active_branch_total_120 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                        @elseif($num_days > 120)
-                            @php $total_above_120 += $record["Debit (LC)"]; @endphp
-                            @php $emp_total_above_120 += $record["Debit (LC)"]; @endphp
-                            @php $branch_total_above_120 += $record["Debit (LC)"]; @endphp
-
-                            @php $active_emp_total_above_120 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                            @php $active_branch_total_above_120 += $valid_for[$customer_id] == 'Y'? $record["Debit (LC)"] : 0; @endphp
-                        @endif
-
-
-
-                        @if($loop->last)
-                            <tr style="background-color: #f2f0f0; color: #233881; border: solid 2px;" class="emp emp-{{$emp_id}} @if($valid_for[$customer_id] == 'N') nonactive-customer @endif">
-                                {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                                <td style="border: 2px solid white;">{{ $customer_id }}</td>
-                                <td style="border: 2px solid white;">{{ $customer_name }}</td>
-{{--                                <td style="border: 2px solid white;">{{ $valid_for[$customer_id] }}</td>--}}
-{{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                <td style="border: 2px solid white;" >{{$emp_name}}</td>
-                                <td style="border: 2px solid white;">{{ number_format($customer_credit_limit[$customer_id]) }}</td>
-                                <td style="border: 2px solid white;">{{ $customer_payment_term[$customer_id] }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_60, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_90, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_120, 2) }}</td>
-                                <td style="border: 2px solid white;">{{ number_format($total_above_120, 2) }}</td>
-                            </tr>
-
-                            {{--                        total by Sales Person--}}
-{{--                            @if($record["SlpName"] != $emp_name)--}}
-                                <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
-                                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                                    <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
-                                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                    <td rowspan="2" style="border: 2px solid white;" >{{number_format($emp_customer_total, 2)}}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_30, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_60, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_90, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_120, 2) }}</td>
-                                    <td style="border: 2px solid white;">{{ number_format($emp_total_above_120, 2) }}</td>
-                                </tr>
-                                <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
-                                {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-{{--                                <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
+                                <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
                                 {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                                <td style="border: 2px solid white;">{{ number_format(($emp_total_30/$emp_customer_total)*100, 2) }}%</td>
-                                <td style="border: 2px solid white;">{{ number_format(($emp_total_60/$emp_customer_total)*100, 2) }}%</td>
-                                <td style="border: 2px solid white;">{{ number_format(($emp_total_90/$emp_customer_total)*100, 2) }}%</td>
-                                <td style="border: 2px solid white;">{{ number_format(($emp_total_120/$emp_customer_total)*100, 2) }}%</td>
-                                <td style="border: 2px solid white;">{{ number_format(($emp_total_above_120/$emp_customer_total)*100, 2) }}%</td>
+                                <td rowspan="2" style="border: 2px solid white;" >{{number_format($emp_customer_total, 2)}}</td>
+                                <td style="border: 2px solid white;">{{ number_format($emp_total_30, 2) }}</td>
+                                <td style="border: 2px solid white;">{{ number_format($emp_total_60, 2) }}</td>
+                                <td style="border: 2px solid white;">{{ number_format($emp_total_90, 2) }}</td>
+                                <td style="border: 2px solid white;">{{ number_format($emp_total_120, 2) }}</td>
+                                <td style="border: 2px solid white;">{{ number_format($emp_total_above_120, 2) }}</td>
+                            </tr>
+                            <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
+                                {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                                {{--                                    <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
+                                {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                                <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_30/$emp_customer_total)*100, 2) : 0 }}%</td>
+                                <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_60/$emp_customer_total)*100, 2) : 0 }}%</td>
+                                <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_90/$emp_customer_total)*100, 2) : 0 }}%</td>
+                                <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_120/$emp_customer_total)*100, 2) : 0 }}%</td>
+                                <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_above_120/$emp_customer_total)*100, 2) : 0 }}%</td>
                             </tr>
 
-                                <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
+                            <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
                                 {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
                                 <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
                                 {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
@@ -381,9 +256,9 @@
                                 <td style="border: 2px solid white;">{{ number_format($active_emp_total_120, 2) }}</td>
                                 <td style="border: 2px solid white;">{{ number_format($active_emp_total_above_120, 2) }}</td>
                             </tr>
-                                <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
+                            <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
                                 {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-{{--                                <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
+                                {{--                                    <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
                                 {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
                                 <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_30/$active_emp_customer_total)*100) : 0, 2) }}%</td>
                                 <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_60/$active_emp_customer_total)*100) : 0, 2) }}%</td>
@@ -392,63 +267,190 @@
                                 <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_above_120/$active_emp_customer_total)*100) : 0, 2) }}%</td>
                             </tr>
 
-                                @php $emp_customer_total = 0; $emp_total_30 = 0; $emp_total_60 = 0; $emp_total_90 = 0; $emp_total_120 = 0; $emp_total_above_120 = 0; @endphp
-                                @php $active_emp_customer_total = 0; $active_emp_total_30 = 0; $active_emp_total_60 = 0; $active_emp_total_90 = 0; $active_emp_total_120 = 0; $active_emp_total_above_120 = 0; @endphp
-{{--                            @endif--}}
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-
-                            @php $customer_total = 0; $customer_total_120 = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
+                            @php $emp_customer_total = 0; $emp_total_30 = 0; $emp_total_60 = 0; $emp_total_90 = 0; $emp_total_120 = 0; $emp_total_above_120 = 0; @endphp
+                            @php $active_emp_customer_total = 0; $active_emp_total_30 = 0; $active_emp_total_60 = 0; $active_emp_total_90 = 0; $active_emp_total_120 = 0; $active_emp_total_above_120 = 0; @endphp
                         @endif
+                            <?php $customer_id = $record["BusinessPartnerCode"]; ?>
+                            <?php $customer_name = $record["BusinessPartnerName"]; ?>
+                            <?php $emp_id = $record["OldSlpCode"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
+
+                        @php $customer_total = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
+                    @endif
+
+{{--                    @php $num_days = \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date));  @endphp--}}
+{{--                    @php $customer_total += $record["Debit (LC)"]; @endphp--}}
+{{--                    @php $emp_customer_total += $record["Debit (LC)"]; @endphp--}}
+                    @php $customer_total += $record["Balance Due"]; @endphp
+                    @php $emp_customer_total += $record["Balance Due"]; @endphp
+
+
+
+                    @php $active_emp_customer_total += $record["validFor"] == 'Y'? $record["Balance Due"] : 0; @endphp
+                    @php $branch_customer_total += $record["Balance Due"]; @endphp
+                    @php $active_branch_customer_total += $record["validFor"] == 'Y'? $record["Balance Due"] : 0; @endphp
+
+{{--                    @if($num_days <= 30)--}}
+                        @php $total_30 += $record["0-30"]; @endphp
+                        @php $emp_total_30 += $record["0-30"]; @endphp
+                        @php $branch_total_30 += $record["0-30"]; @endphp
+
+                        @php $active_emp_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
+                        @php $active_branch_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
+
+{{--                    @elseif($num_days > 30 && $num_days <= 60)--}}
+                        @php $total_60 += $record["31-60"]; @endphp
+                        @php $emp_total_60 += $record["31-60"]; @endphp
+                        @php $branch_total_60 += $record["31-60"]; @endphp
+
+                        @php $active_emp_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
+                        @php $active_branch_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
+{{--                    @elseif($num_days > 60 && $num_days <= 90)--}}
+                        @php $total_90 += $record["61-90"]; @endphp
+                        @php $emp_total_90 += $record["61-90"]; @endphp
+                        @php $branch_total_90 += $record["61-90"]; @endphp
+
+                        @php $active_emp_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
+                        @php $active_branch_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
+{{--                    @elseif($num_days > 90 && $num_days <= 120)--}}
+                        @php $total_120 += $record["91-120"]; @endphp
+                        @php $emp_total_120 += $record["91-120"]; @endphp
+                        @php $branch_total_120 += $record["91-120"]; @endphp
+
+                        @php $active_emp_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
+                        @php $active_branch_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
+{{--                    @elseif($num_days > 120)--}}
+                        @php $total_above_120 += $record["121+"]; @endphp
+                        @php $emp_total_above_120 += $record["121+"]; @endphp
+                        @php $branch_total_above_120 += $record["121+"]; @endphp
+
+                        @php $active_emp_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
+                        @php $active_branch_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
 {{--                    @endif--}}
+
+
+
+                    @if($loop->last)
+                        <tr style="background-color: #f2f0f0; color: #233881; border: solid 2px;" class="emp emp-{{$emp_id}} @if($record["validFor"] == 'N') nonactive-customer @endif">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            <td style="border: 2px solid white;">{{ $customer_id }}</td>
+                            <td style="border: 2px solid white;">{{ $customer_name }}</td>
+                            {{--                                <td style="border: 2px solid white;">{{ $valid_for[$customer_id] }}</td>--}}
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td style="border: 2px solid white;" >{{$emp_name}}</td>
+                            <td style="border: 2px solid white;">{{ number_format($record['CreditLine']) }}</td>
+                            <td style="border: 2px solid white;">{{ $record['PymntGroup'] }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_60, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_90, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_120, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($total_above_120, 2) }}</td>
+                        </tr>
+
+                        {{--                        total by Sales Person--}}
+                        {{--                            @if($record["SlpName"] != $emp_name)--}}
+                        <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td rowspan="2" style="border: 2px solid white;" >{{number_format($emp_customer_total, 2)}}</td>
+                            <td style="border: 2px solid white;">{{ number_format($emp_total_30, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($emp_total_60, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($emp_total_90, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($emp_total_120, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($emp_total_above_120, 2) }}</td>
+                        </tr>
+                        <tr style="background-color: #fff5c2; font-weight: bold; color: #721c24; border: solid 2px;" class="non-emp non-emp-{{$emp_id}}">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            {{--                                <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_30/$emp_customer_total)*100, 2) : 0 }}%</td>
+                            <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_60/$emp_customer_total)*100, 2) : 0 }}%</td>
+                            <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_90/$emp_customer_total)*100, 2) : 0 }}%</td>
+                            <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_120/$emp_customer_total)*100, 2) : 0 }}%</td>
+                            <td style="border: 2px solid white;">{{ $emp_customer_total != 0 ? number_format(($emp_total_above_120/$emp_customer_total)*100, 2) : 0 }}%</td>
+                        </tr>
+
+                        <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            <td rowspan="2" colspan="5" style="border: 2px solid white;"> المجموع والنسبة لـ {{$emp_name}}</td>
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td rowspan="2" style="border: 2px solid white;" >{{number_format($active_emp_customer_total, 2)}}</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_total_30, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_total_60, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_total_90, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_total_120, 2) }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_total_above_120, 2) }}</td>
+                        </tr>
+                        <tr style="background-color: #00a1d3; font-weight: bold; color: #721c24; border: solid 2px;" class="active-emp active-emp-{{$emp_id}} hide">
+                            {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                            {{--                                <td colspan="5" style="border: 2px solid white;"> النسبة لـ {{$emp_name}}</td>--}}
+                            {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_30/$active_emp_customer_total)*100) : 0, 2) }}%</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_60/$active_emp_customer_total)*100) : 0, 2) }}%</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_90/$active_emp_customer_total)*100) : 0, 2) }}%</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_120/$active_emp_customer_total)*100) : 0, 2) }}%</td>
+                            <td style="border: 2px solid white;">{{ number_format($active_emp_customer_total > 0 ? (($active_emp_total_above_120/$active_emp_customer_total)*100) : 0, 2) }}%</td>
+                        </tr>
+
+                        @php $emp_customer_total = 0; $emp_total_30 = 0; $emp_total_60 = 0; $emp_total_90 = 0; $emp_total_120 = 0; $emp_total_above_120 = 0; @endphp
+                        @php $active_emp_customer_total = 0; $active_emp_total_30 = 0; $active_emp_total_60 = 0; $active_emp_total_90 = 0; $active_emp_total_120 = 0; $active_emp_total_above_120 = 0; @endphp
+                        {{--                            @endif--}}
+                            <?php $customer_id = $record["BusinessPartnerCode"]; ?>
+                            <?php $customer_name = $record["BusinessPartnerName"]; ?>
+                            <?php $emp_id = $record["OldSlpCode"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
+
+                        @php $customer_total = 0; $customer_total_120 = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
+                    @endif
+                    {{--                    @endif--}}
                 @endforeach
                 </tbody>
                 <tfoot>
-                    <tr style="background-color: #e6ffcc; font-weight: bold; color: #2d721c; border: solid 2px;" class="full-emps">
-                        {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                        <td colspan="5" style="border: 2px solid white;">المجموع الكلي</td>
-                        {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td rowspan="2" style="border: 2px solid white;" >{{number_format($branch_customer_total, 2)}}</td>
-                        <td style="border: 2px solid white;">{{ number_format($branch_total_30, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($branch_total_60, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($branch_total_90, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($branch_total_120, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($branch_total_above_120, 2) }}</td>
-                    </tr>
-                    <tr style="background-color: #e6ffcc; font-weight: bold; color: #2d721c; border: solid 2px;" class="full-emps">
-                        {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                        <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
-                        {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_30/$branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_60/$branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_90/$branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_120/$branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_above_120/$branch_customer_total)*100, 2) : 0 }}%</td>
-                    </tr>
+                <tr style="background-color: #e6ffcc; font-weight: bold; color: #2d721c; border: solid 2px;" class="full-emps">
+                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                    <td colspan="5" style="border: 2px solid white;">المجموع الكلي</td>
+                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                    <td rowspan="2" style="border: 2px solid white;" >{{number_format($branch_customer_total, 2)}}</td>
+                    <td style="border: 2px solid white;">{{ number_format($branch_total_30, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($branch_total_60, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($branch_total_90, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($branch_total_120, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($branch_total_above_120, 2) }}</td>
+                </tr>
+                <tr style="background-color: #e6ffcc; font-weight: bold; color: #2d721c; border: solid 2px;" class="full-emps">
+                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                    <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
+                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                    <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_30/$branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_60/$branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_90/$branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_120/$branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $branch_customer_total > 0? number_format(($branch_total_above_120/$branch_customer_total)*100, 2) : 0 }}%</td>
+                </tr>
 
-                    <tr style="background-color: #ffbc91; font-weight: bold; color: #2d721c; border: solid 2px;" class="active-full-emps hide">
-                        {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                        <td colspan="5" style="border: 2px solid white;">المجموع الكلي</td>
-                        {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td rowspan="2" style="border: 2px solid white;" >{{number_format($active_branch_customer_total, 2)}}</td>
-                        <td style="border: 2px solid white;">{{ number_format($active_branch_total_30, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($active_branch_total_60, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($active_branch_total_90, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($active_branch_total_120, 2) }}</td>
-                        <td style="border: 2px solid white;">{{ number_format($active_branch_total_above_120, 2) }}</td>
-                    </tr>
-                    <tr style="background-color: #ffbc91; font-weight: bold; color: #2d721c; border: solid 2px;" class="active-full-emps hide">
-                        {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
-                        <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
-                        {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
-                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_30/$active_branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_60/$active_branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_90/$active_branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
-                        <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_above_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
-                    </tr>
+                <tr style="background-color: #ffbc91; font-weight: bold; color: #2d721c; border: solid 2px;" class="active-full-emps hide">
+                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                    <td colspan="5" style="border: 2px solid white;">المجموع الكلي</td>
+                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                    <td rowspan="2" style="border: 2px solid white;" >{{number_format($active_branch_customer_total, 2)}}</td>
+                    <td style="border: 2px solid white;">{{ number_format($active_branch_total_30, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($active_branch_total_60, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($active_branch_total_90, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($active_branch_total_120, 2) }}</td>
+                    <td style="border: 2px solid white;">{{ number_format($active_branch_total_above_120, 2) }}</td>
+                </tr>
+                <tr style="background-color: #ffbc91; font-weight: bold; color: #2d721c; border: solid 2px;" class="active-full-emps hide">
+                    {{--            <td style="border: 2px solid white;" colspan="6">المجموع والنسبة لـ--}}
+                    <td colspan="5" style="border: 2px solid white;">النسبة الكلية </td>
+                    {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
+                    <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_30/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_60/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_90/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                    <td style="border: 2px solid white;">{{ $active_branch_customer_total > 0? number_format(($active_branch_total_above_120/$active_branch_customer_total)*100, 2) : 0 }}%</td>
+                </tr>
                 </tfoot>
             </table>
         @endif
@@ -458,9 +460,9 @@
 
 @section('css-scripts')
     <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
-{{--    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />--}}
-{{--    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />--}}
-{{--    <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.3.1/css/rowGroup.dataTables.min.css" />--}}
+    {{--    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />--}}
+    {{--    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />--}}
+    {{--    <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.3.1/css/rowGroup.dataTables.min.css" />--}}
 
     <style>
         .hide {
