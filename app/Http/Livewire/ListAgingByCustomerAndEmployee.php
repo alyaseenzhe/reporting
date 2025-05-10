@@ -56,14 +56,15 @@ class ListAgingByCustomerAndEmployee extends Component
         $this->getCustomersBalanceDue($this->last_date);
 
         $this->emps = collect($this->aging_records);
-        $this->emps = $this->emps->pluck('Memo', 'SlpName')->unique();
+//        $this->emps = $this->emps->pluck('Memo', 'SlpName')->unique();
+        $this->emps = $this->emps->pluck('OldSlpCode', 'SlpName')->unique();
 
 //        $this->emit('show-data');
         $this->emit('finished');
 
     }
 
-    public function getCustomersBalanceDue($end_date) {
+    public function getCustomersBalanceDue_good_old($end_date) {
 
         $this->customer = [];
         $this->customer_code = [];
@@ -534,6 +535,110 @@ ORDER BY "Posting Date" ASC, "Transaction Number" ASC
                 // end of oldest invoice
             }
 
+
+            odbc_close($conn);
+        }
+
+//        dd($this->aging_records);
+//        return [$customer_balance, $aging_balance, $oldest_inv, $c_code];
+    }
+
+    public function getCustomersBalanceDue($end_date) {
+
+//        $this->customer = [];
+//        $this->customer_code = [];
+//        $this->customer_balance = [];
+//        $this->customer_credit_limit = [];
+//        $this->customer_payment_term = [];
+//        $this->valid_for = [];
+//
+//        $aging_balance = 0;
+//        $customer_balance = 0;
+//        $full_customer_balance = 0;
+//        $oldest_inv = Carbon::now()->format('Y-m-d');
+//        $c_code = '';
+
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+
+        $host = env('DB_HOST_FOURTH');
+
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn)
+        {
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+
+        }
+        else
+        {
+
+            $sql_aging = 'SELECT * FROM (
+SELECT "BusinessPartnerCode", "BusinessPartnerName", OT."PymntGroup", OC."CreditLine", OC."validFor", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) "121+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
+CASE
+WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
+WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
+WHEN "BusinessPartnerCode" LIKE \'03%\' THEN \'0103\'
+WHEN "BusinessPartnerCode" LIKE \'04%\' THEN \'0104\'
+WHEN "BusinessPartnerCode" LIKE \'05%\' THEN \'0105\'
+WHEN "BusinessPartnerCode" LIKE \'06%\' THEN \'0106\'
+WHEN "BusinessPartnerCode" LIKE \'07%\' THEN \'0107\'
+WHEN "BusinessPartnerCode" LIKE \'08%\' THEN \'0108\'
+WHEN "BusinessPartnerCode" LIKE \'09%\' THEN \'0109\'
+WHEN "BusinessPartnerCode" LIKE \'10%\' THEN \'0110\'
+WHEN "BusinessPartnerCode" LIKE \'11%\' THEN \'0111\'
+WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
+ELSE \'0001\'
+END as "BranchCode" FROM (
+
+SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+
+)
+
+GROUP BY "BusinessPartnerCode", "BusinessPartnerName"
+) AG
+
+
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON AG."BusinessPartnerCode" = OC."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCTG OT ON OC."GroupNum" = OT."GroupNum"
+--WHERE OC."validFor" = \'Y\'
+
+ORDER BY "SlpCode", "BusinessPartnerCode"
+
+)
+
+WHERE "BranchCode" = \''. $this->area_id .'\'';
+
+//                dd($sql_aging);
+
+            $result_aging = odbc_exec($conn, $sql_aging);
+            if (!$result_aging)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+                while ($row = odbc_fetch_array($result_aging)) {
+//                        dd($row);
+                    array_push($this->aging_records, $row);
+//                        array_push($this->customer_code, $row["CardCode"]);
+//                        $aging_balance += $row["Aging"];
+                }
+
+            }
 
             odbc_close($conn);
         }
