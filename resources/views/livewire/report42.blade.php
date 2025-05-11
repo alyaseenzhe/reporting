@@ -112,7 +112,7 @@
                     <th colspan="2" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">مخزون</div>
                     </th>
-                    <th colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                    <th colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">عملاء إعادة توزيع</div>
                     </th>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
@@ -175,7 +175,10 @@
                     {{--                        <div class="text-xs">تدوير مخزون</div>--}}
                     {{--                    </th>--}}
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-xs"># عملاء</div>
+                        <div class="text-xs">اجمالي # عملاء</div>
+                    </th>
+                    <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
+                        <div class="text-xs"># عملاء بيع</div>
                     </th>
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">$ مبيعات فترة</div>
@@ -184,10 +187,10 @@
                         <div class="text-xs">% مبيعات فترة</div>
                     </th>
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-xs"># خصم اتفاقية</div>
+                        <div class="text-xs"># عمولة سنوية مدفوعة</div>
                     </th>
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-xs">$ خصم اتفاقية</div>
+                        <div class="text-xs">$ عمولة سنوية مدفوعة</div>
                     </th>
                 </tr>
                 <tr style="border: 2px solid black;">
@@ -250,6 +253,7 @@
                     $month_total = 0;
                     $month_old_total = 0;
 
+                    $TotalDistNumOfCustomers = 0;
                     $DistNumOfCustomers = 0;
                     $NumOfCustomers = 0;
                     $DistSales = 0;
@@ -637,6 +641,10 @@
                                 {{--                                    {{ (floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0) }}--}}
                                 {{--                                </td>--}}
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    @php $TotalDistNumOfCustomers += floatval($record[1]["DistNum"]);  @endphp
+                                    {{ number_format($record[1]["DistNum"]) }}
+                                </td>
+                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     @php $DistNumOfCustomers += floatval($record[1]["DistNumOfCustomers"]);  @endphp
                                     {{ $record[1]["DistNumOfCustomers"] }}
                                 </td>
@@ -837,6 +845,10 @@
                             {{--                                    {{ (floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0) }}--}}
                             {{--                                </td>--}}
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                @php $TotalDistNumOfCustomers += floatval($record[1]["TotalDistNum"]);  @endphp
+                                {{ $record[1]["TotalDistNum"] }}
+                            </td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 @php $DistNumOfCustomers += floatval($record[1]["DistNumOfCustomers"]);  @endphp
                                 {{ $record[1]["DistNumOfCustomers"] }}
                             </td>
@@ -1032,6 +1044,9 @@
                         {{--                    </td>--}}
 
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($TotalDistNumOfCustomers))}}
+                        </td>
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{ number_format(floatval($DistNumOfCustomers))}}
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1201,6 +1216,9 @@
                         {{--                        {{ floatval($stock_value) != 0 ? number_format(((floatval($stock_tadweer)/floatval($stock_value))/1000)*100, 2) : 0 }}--}}
                         {{--                    </td>--}}
 
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                            {{ number_format(floatval($TotalDistNumOfCustomers))}}
+                        </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{ number_format(floatval($DistNumOfCustomers))}}
                         </td>

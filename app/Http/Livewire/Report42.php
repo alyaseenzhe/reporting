@@ -2733,6 +2733,34 @@ ORDER BY "Account Code2"
 ) tbl10
 ON tbl1."Code" = tbl10."Cost Center"
 ----------------- end discounts
+----- start dist cust num total
+
+LEFT JOIN (
+SELECT "BranchCode", COUNT("CardCode") as "TotalDistNum" FROM (
+SELECT CASE
+WHEN "CardCode" LIKE \'01%\' THEN \'3\'
+WHEN "CardCode" LIKE \'02%\' THEN \'4\'
+WHEN "CardCode" LIKE \'03%\' THEN \'5\'
+WHEN "CardCode" LIKE \'04%\' THEN \'6\'
+WHEN "CardCode" LIKE \'05%\' THEN \'7\'
+WHEN "CardCode" LIKE \'06%\' THEN \'8\'
+WHEN "CardCode" LIKE \'07%\' THEN \'9\'
+WHEN "CardCode" LIKE \'08%\' THEN \'10\'
+WHEN "CardCode" LIKE \'09%\' THEN \'11\'
+WHEN "CardCode" LIKE \'10%\' THEN \'12\'
+WHEN "CardCode" LIKE \'11%\' THEN \'13\'
+WHEN "CardCode" LIKE \'12%\' THEN \'14\'
+ELSE \'1\'
+END as "BranchCode"
+,"CardCode", "CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD
+WHERE "QryGroup1" = \'Y\'
+AND "validFor" = \'Y\'
+)
+GROUP BY "BranchCode"
+) distCust_tbl
+ON distCust_tbl."BranchCode" = tbl1."BPLId"
+
+----- end dist cust num total
 ';
 
 //            dd($sql);
