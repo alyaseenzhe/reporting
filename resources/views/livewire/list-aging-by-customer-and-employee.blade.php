@@ -156,6 +156,8 @@
                     $customer_name = "*";
                     $emp_id = "*";
                     $emp_name = "*";
+                    $credit_line = "*";
+                    $payment_group = "*";
                     $customer_total = 0;
                     $customer_total_120 = 0;
                     $total_30 = 0;
@@ -193,6 +195,7 @@
                     $active_branch_total_above_120 = 0;
                     ?>
                 @foreach($aging_records as $record)
+
                     {{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
                     {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
                     @if($loop->first)
@@ -200,6 +203,8 @@
                             <?php $customer_name = $record["BusinessPartnerName"]; ?>
                             <?php $emp_id = $record["OldSlpCode"]; ?>
                             <?php $emp_name = $record["SlpName"]; ?>
+                            <?php $credit_line = $record["CreditLine"]; ?>
+                            <?php $payment_group = $record["PymntGroup"]; ?>
                     @endif
                     {{--                        total by Business Partner--}}
                     @if($record["BusinessPartnerCode"] != $customer_id)
@@ -211,8 +216,9 @@
                             {{--                                <td style="border: 2px solid white;">{{ $valid_for[$customer_id] }}</td>--}}
                             {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
                             <td style="border: 2px solid white;" >{{$emp_name}}</td>
-                            <td style="border: 2px solid white;">{{ number_format($record["CreditLine"]) }}</td>
-                            <td style="border: 2px solid white;">{{ $record["PymntGroup"] }}</td>
+                            <td style="border: 2px solid white;">{{ number_format($credit_line) }}</td>
+{{--                            <td style="border: 2px solid white;">{{ number_format($record["CreditLine"]) }}</td>--}}
+                            <td style="border: 2px solid white;">{{ $payment_group }}</td>
                             <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
                             <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
                             <td style="border: 2px solid white;">{{ number_format($total_60, 2) }}</td>
@@ -274,6 +280,8 @@
                             <?php $customer_name = $record["BusinessPartnerName"]; ?>
                             <?php $emp_id = $record["OldSlpCode"]; ?>
                             <?php $emp_name = $record["SlpName"]; ?>
+                            <?php $credit_line = $record["CreditLine"]; ?>
+                            <?php $payment_group = $record["PymntGroup"]; ?>
 
                         @php $customer_total = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
                     @endif
