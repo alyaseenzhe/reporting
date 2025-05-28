@@ -143,7 +143,7 @@
                     $customer_total_120 = 0;
                     ?>
                 @foreach($aging_records as $record)
-                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
+{{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
                         {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
                         @if($loop->first)
                                 <?php $customer_id = $record["Business Partner Code"]; ?>
@@ -238,7 +238,7 @@
 
                             @php $customer_total = 0; $customer_total_120 = 0; @endphp
                         @endif
-                    @endif
+{{--                    @endif--}}
                 @endforeach
                 </tbody>
             </table>
@@ -262,11 +262,11 @@
 
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
-{{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
-{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
+    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
 
     <script>
         $(document).ready( function () {
@@ -455,4 +455,3 @@
         }
     </script>
 @stop
-
