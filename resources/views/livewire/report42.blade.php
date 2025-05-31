@@ -112,7 +112,7 @@
                     <th colspan="2" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">مخزون</div>
                     </th>
-                    <th colspan="6" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                    <th @if($year >= 2025) colspan="6" @else colspan="4" @endif  style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-xs">عملاء إعادة توزيع</div>
                     </th>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
@@ -186,12 +186,14 @@
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">% مبيعات فترة</div>
                     </th>
+                    @if($year >= 2025)
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs"># عمولة سنوية مدفوعة</div>
                     </th>
                     <th rowspan="2" style="border-left: 2px solid black;" class="border p-2">
                         <div class="text-xs">$ عمولة سنوية مدفوعة</div>
                     </th>
+                    @endif
                 </tr>
                 <tr style="border: 2px solid black;">
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -641,8 +643,8 @@
                                 {{--                                    {{ (floatval($record[1]["Stock Value"]) != 0 ? number_format((floatval($record[1]["COGS"])/floatval($record[1]["Stock Value"]))*100, 2) : 0) }}--}}
                                 {{--                                </td>--}}
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    @php $TotalDistNumOfCustomers += floatval($record[1]["DistNum"]);  @endphp
-                                    {{ number_format($record[1]["DistNum"]) }}
+                                    @php $TotalDistNumOfCustomers += floatval($record[1]["DistNum"] ?? 0);  @endphp
+                                    {{ number_format($record[1]["DistNum"] ?? 0) }}
                                 </td>
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     @php $DistNumOfCustomers += floatval($record[1]["DistNumOfCustomers"]);  @endphp
@@ -655,6 +657,8 @@
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{ ((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000)) != 0? number_format(floatval(($record[1]["DistSales"]/1000))/((floatval($record[1]["S1 Sales"])/1000)+(floatval($record[1]["S2 Sales"])/1000))*100) : 0 }}
                                 </td>
+{{--                                <td>--</td>--}}
+{{--                                <td>--</td>--}}
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
                                         @if(\Carbon\Carbon::parse($start_date)->format('Y-m') == '2024-08')
@@ -1055,6 +1059,9 @@
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{ floatval($month_total) != 0 ? number_format(((floatval($DistSales)/floatval($month_total))/1000)*100) : 0 }}
                         </td>
+{{--                        --}}
+{{--                        <td>--</td>--}}
+{{--                        <td>--</td>--}}
                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->group == 4)
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap print-hide">
                                 {{ number_format($profit_period) }}
