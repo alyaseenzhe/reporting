@@ -2754,7 +2754,7 @@ ELSE \'1\'
 END as "BranchCode"
 ,"CardCode", "CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD
 WHERE "QryGroup1" = \'Y\'
-AND "validFor" = \'Y\'
+--AND "validFor" = \'Y\'
 )
 GROUP BY "BranchCode"
 ) distCust_tbl
