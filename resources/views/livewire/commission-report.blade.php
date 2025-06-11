@@ -259,7 +259,7 @@
                             </td>
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['SalesEmployeeOrBuyerName'] : ""}}</div>
+                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['SalesEmployeeName'] : ""}}</div>
                                 </div>
                             </td>
                             <td class="border p-2 whitespace-nowrap">

@@ -49,7 +49,7 @@ class CommissionReport extends Component
         '10074' =>	'area_manager',
         '10078' =>	'area_manager',
         '10058' =>	'mat_dev_manager2',
-        '10088' =>	'area_manager',
+        '10059' =>	'area_manager',
         '10036' =>	'store_manager',
         '10262' =>	'store_manager',
         '10268' =>	'store_manager',
@@ -306,13 +306,37 @@ Group By T1."BPLId", T0."Warehouse"
 
 
             $sql2 = 'SELECT * FROM (
-Select "BranchCode" AS "BPLId","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-AND "DocumentTypeCode" != \'17\'
-AND "DocumentTypeCode" != \'15\'
-GROUP BY
-"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+    SELECT
+        "BranchCode" AS "BPLId",
+        CR."SlpCode" AS "SalesEmployeeCode",
+        OS."SlpName" AS "SalesEmployeeName",
+        SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+        SUM("GrossProfitLC") AS "GrossProfitLC"
+    FROM (
+        SELECT * FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+    ) SA
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD CR ON SA."BusinessPartnerCode" = CR."CardCode"
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON CR."SlpCode" = OS."SlpCode"
+    WHERE SA."DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+        AND SA."DocumentTypeCode" NOT IN (\'15\', \'17\')
+        AND (
+            SELECT TABL0."DocNum"
+            FROM AL_YASEEN_AGRI_PLIVE.ODPI TABL0
+            INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TABL1 ON TABL0."DocEntry" = TABL1."DocEntry"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TABL2
+                ON TABL2."BaseEntry" = TABL1."DocEntry"
+                AND TABL2."BaseLine" = TABL1."LineNum"
+                AND TABL2."BaseType" = 203
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TABL3
+                ON TABL2."DocEntry" = TABL3."DocEntry"
+            WHERE TABL3."DocNum" = SA."DocumentNumber"
+                AND TABL2."BaseType" = 203
+            GROUP BY TABL0."DocNum"
+        ) IS NULL
+    GROUP BY
+        "BranchCode",
+        CR."SlpCode",
+        OS."SlpName"
 ) tbl1
 
 FULL OUTER JOIN (
@@ -356,7 +380,7 @@ ORDER BY "BusinessPartnerCode"
 
 GROUP BY "SlpCode", "OldSlpCode", "SlpName", "BranchCode"
 
-) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeOrBuyerNumber"
+) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeCode"
 
 WHERE "BPLId" = '.$this->area_id.'
 AND "BPLId" IS NOT NULL';
