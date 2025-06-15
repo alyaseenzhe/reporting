@@ -602,7 +602,7 @@ END as "BranchCode" FROM (
 
 SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
