@@ -422,6 +422,7 @@ class Report11 extends Component
                     return gettype($item) == "object"? $item->Department : $item['Department'];
 //                    return $item['OldCode'];
                 }], true);
+//                dd($groups);
 //
 
                 $this->group_results = $groups->map(function ($outer_row) {
@@ -465,13 +466,110 @@ class Report11 extends Component
                 })->toArray();
             }
             else if ($this->report_type == "byCustomer") { // bug
+                $groupedByBP = $merged_results->groupBy(function ($item) {
+                    return gettype($item) === 'object' ? $item->BusinessPartnerCode : $item['BusinessPartnerCode'];
+                });
+
+                $this->group_results = $groupedByBP->map(function ($itemsGroup) {
+                    // Now group by OldCode within each BusinessPartnerCode
+                    $groupedByItem = $itemsGroup->groupBy(function ($item) {
+                        return gettype($item) === 'object' ? $item->OldCode : $item['OldCode'];
+                    });
+
+                    // Process each item group
+                    return $groupedByItem->map(function ($row) {
+                        $first = $row->first();
+                        $isObject = gettype($first) === 'object';
+
+                        return [
+                            'OldCode' => $isObject ? $first->OldCode : $first['OldCode'],
+                            'ItemName' => $isObject ? $first->ItemName : $first['ItemName'],
+                            'SalUnitMsr' => $isObject ? $first->SalUnitMsr : $first['SalUnitMsr'],
+                            'Speciality' => $isObject ? $first->Speciality : $first['Speciality'],
+                            'VendorName' => $isObject ? $first->VendorName : $first['VendorName'],
+                            'Department' => $isObject ? $first->Department : $first['Department'],
+                            'mrkt_type' => $isObject ? $first->mrkt_type : $first['mrkt_type'],
+                            'ItemGroup' => $isObject ? ($first->group_item ?? $first->ItemGroup) : ($first['group_item'] ?? $first['ItemGroup']),
+                            'BusinessPartnerCode' => $isObject ? $first->BusinessPartnerCode : $first['BusinessPartnerCode'],
+                            'BusinessPartnerName' => $isObject ? $first->BusinessPartnerName : $first['BusinessPartnerName'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0
+                                ? $row->sum('TotalSalesAmount') / $row->sum('TotalQuantitySold') : 0,
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0
+                                ? (($row->sum('GrossProfit') / $row->sum('Cost')) * 100) : 0,
+                            'TransCount' => $row->sum('TransCount'),
+                        ];
+                    });
+                });
+
+// Flattening not needed here since you want nested result
+// You now have:
+// [
+//   BusinessPartnerCode1 => [
+//       OldCode1 => [item info...],
+//       OldCode2 => [item info...],
+//       ...
+//   ],
+//   BusinessPartnerCode2 => [...],
+//   ...
+// ]
+
+// If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
+                $this->group_results = $this->group_results->map(function ($items) {
+                    return $items->values(); // Convert inner maps to arrays
+                });
+
+//                dd($this->group_results);
+                // Step: Flatten all items across partners to group by OldCode
+                $flattenedItems = $this->group_results->flatMap(function ($items) {
+                    return $items;
+                });
+
+//// Group by OldCode
+//                $groupedByItemName = $flattenedItems->groupBy('OldCode');
+//
+//// Summarize totals by item code
+//                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+//                    return [
+//                        $group->sum('TotalSalesAmount'),
+//                        $group->sum('Cost'),
+//                        $group->sum('GrossProfit'),
+//                        $group->sum('TotalQuantitySold'),
+//                        $group->sum('TransCount'),
+//                    ];
+//                })->toArray();
+
+                // Step 1: Group by BusinessPartnerCode, then by OldCode
+                $groupedByPartnerAndItem = $flattenedItems
+                    ->groupBy('BusinessPartnerCode')
+                    ->map(function ($itemsGroup) {
+                        return $itemsGroup->groupBy('OldCode')
+                            ->map(function ($itemGroup) {
+                                return [
+                                    $itemGroup->sum('TotalSalesAmount'),
+                                    $itemGroup->sum('Cost'),
+                                    $itemGroup->sum('GrossProfit'),
+                                    $itemGroup->sum('TotalQuantitySold'),
+                                    $itemGroup->sum('TransCount'),
+                                ];
+                            });
+                    });
+
+// Step 2: Convert to array if needed
+                $this->totalSalesByItem = $groupedByPartnerAndItem->toArray();
+//                dd($this->totalSalesByItem);
+            }
+            else if ($this->report_type == "byCustomerX") { // bug
                 $groups = $merged_results->groupBy(['BusinessPartnerCode', function ($item) {
 //                    dd(gettype($item));
                     return gettype($item) == "object"? $item->Department : $item['BusinessPartnerCode'];
 //                    return $item['OldCode'];
                 }], true)->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
 
-//                dd($groups[1]);
+//                dd($groups);
 //
 
                 $this->group_results = $groups->map(function ($outer_row, $key) {
@@ -502,8 +600,8 @@ class Report11 extends Component
                         ];
                     });
 
-                })->sortBy(['OldCode', 'Department']);
-                dd($this->group_results);
+                })->sortBy(['BusinessPartnerCode', 'Department']);
+//                dd($this->group_results);
                 $this->group_results = $this->group_results->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
 
                 // Step 1: Flatten all sub-collections into a single collection
@@ -513,7 +611,7 @@ class Report11 extends Component
                 $flattened = $flattened->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
                 // Step 2: Group by OldCode
                 $groupedByItemName = $flattened->groupBy(['BusinessPartnerCode']);
-//                dd($groupedByItemName);
+                dd($groupedByItemName);
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
@@ -963,12 +1061,12 @@ ORDER BY "CardCode"';
                 $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo ,sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo ,SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ."  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,-sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ."  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ."  And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName";
@@ -980,16 +1078,16 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
-select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
+select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName, Department
@@ -1003,16 +1101,16 @@ order by OldCode, VendorName";
 select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
-select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
+select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName, Department
@@ -1026,16 +1124,16 @@ order by Speciality,OldCode, VendorName";
 select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
-select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
+select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName, Department
@@ -1049,16 +1147,16 @@ order by mrkt_type, Speciality,OldCode, VendorName";
 select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
-select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
+select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName, Department
@@ -1072,16 +1170,16 @@ order by group_item, mrkt_type, Speciality,OldCode, VendorName";
 select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo , (select top 1 code from DeptMast where NodeNo= Department) as Department , sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo , Department, SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, -sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
 select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And PIDate>='" . $start_date . "'And PIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo, Department
 union all
-select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
+select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo, Department, 0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (" . implode(", ", $this->scribes_codes) . ")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (" . implode(', ', $departments) . ")) And (SpecialityCode in (" . implode(", ", $sps) . ")) And SIDate>='" . $start_date . "'And SIDate <='" . $end_date . " 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo, Department) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName, Department
@@ -1094,19 +1192,20 @@ order by VendorNo,OldCode";
                 $scribesStmt = "select code as OldCode,BaseUnits as SalUnitMsr,Name,Arabic_Name as ItemName,productNo,SpecialityCode as Speciality, VendorNo ,sum(SalesQty) as TotalQuantitySold,sum(Srate) as Srate ,sum(Svalue) as TotalSalesAmount,sum(AVGPrice) as AverageUnitPrice,sum(cost) as cost2,sum(SalesTotalCost) as Cost , (SUM(Svalue)- SUM(SalesTotalCost)) as GrossProfit, (((SUM(Svalue)- SUM(SalesTotalCost))/nullif(SUM(SalesTotalCost),0))*100) as GrossProfitPer, sum(SExtrafieldsTotal) as SExtrafieldsTotal,sum(Spartybalance) as Spartybalance,sum(PurchaseQty) as PurchaseQty,sum(Prate) as Prate ,sum(Pvalue) as Pvalue,sum(PurchasePrice) as PurchasePrice,sum(PExtrafieldsTotal) as PExtrafieldsTotal,sum(Ppartybalance) as Ppartybalance,sum(PurchaseTotalCost) as PurchaseTotalCost, VendorName from (
 select tbl1.code,tbl1.BaseUnits,tbl1.Name,tbl1.Arabic_Name,tbl1.productNo,tbl1.SpecialityCode, tbl1.VendorNo ,SalesQty,Srate,Svalue,AVGPrice,cost,SalesTotalCost ,SExtrafieldsTotal,Spartybalance,PurchaseQty,Prate,Pvalue,PurchasePrice,PExtrafieldsTotal,Ppartybalance,PurchaseTotalCost, AccMast.Arabic_Name as VendorName from (select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,sum(ActualQty+FreeQty) as SalesQty,sum(Rate) as Srate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as AVGPrice,sum(AvgRate*(ActualQty+FreeQty)) as cost,sum(totalcost) as SalesTotalCost ,sum(ExtraFieldsTotal) as SExtrafieldsTotal,sum(partybalance) as Spartybalance,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance,0 as PurchaseTotalCost from sinvoice,Productmast
 where nodeno=productno  and ActualVoucherPrefix='SIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From
-DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select
+DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select
 code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,-sum(ActualQty+FreeQty) as SalesQty,-sum(Rate) as Srate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Svalue],0 as  AVGPrice,-sum(AvgRate*(ActualQty+FreeQty)) as cost,-sum(totalcost) as SalesTotalCost,-sum(ExtraFieldsTotal) as
 SExtrafieldsTotal,sum(partybalance) as Spartybalance ,0 as PurchaseQty,0 as Prate,0 as Pvalue,0 as PurchasePrice,0 as PExtrafieldsTotal,0 as Ppartybalance ,0 as PurchaseTotalCost from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='SRT-' And (Select Name From DeptMast Where NodeNo =
-Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
+Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode = '1' Or SpecialityCode =
 '2') And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0
-as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where NodeNo in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
+as Spartybalance, sum(ActualQty+FreeQty) as PurchaseQty ,(sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as Prate,sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue], (sum([Value]*exchangeRate+ExtraFieldsTotal)/nullif(sum(ActualQty+FreeQty),0)) as PurchasePrice, sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,sum(totalcost) as PurchaseTotalCost  from Pinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PIV-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And PIDate>='".$start_date."'And PIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name,BaseUnits,SpecialityCode, VendorNo  union all select code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,0 as SalesQty,0 as Srate,0 as [Svalue],0 as AVGPrice,0 as cost,0 as SalesTotalCost ,0 as SExtrafieldsTotal,0 as Spartybalance,-sum(ActualQty+FreeQty) as PurchaseQty,-sum(Rate) as Prate,-sum([Value]*exchangeRate+ExtraFieldsTotal) as [Pvalue],0 as  PurchasePrice,-sum(ExtraFieldsTotal) as PExtrafieldsTotal,-sum(partybalance) as Ppartybalance,-sum(totalcost) as PurchaseTotalCost from Sinvoice,Productmast where nodeno=productno  and ActualVoucherPrefix='PRT-' And (Select Name From DeptMast Where NodeNo = Department) Not In (Select DeptName From DeptRights Where UserName='su')  And Blocked='N' ". ($customer_type != 'customer_all' ? " And PartyNo = (SELECT NodeNo FROM AccMast WHERE Code = '".$customer_type."') " : "") ." And ProductNo in (select NodeNo from ProductMast where Code in (".implode(", ", $this->scribes_codes).")) And (Select Name from deptmast where Nodeno=department) Not In (Select DeptName From DeptRights Where UserName ='su') And Department in (select NodeNo from DeptMast where Code in (". implode(', ', $departments). ")) And (SpecialityCode in (".implode(", ", $sps).")) And SIDate>='".$start_date."'And SIDate <='".$end_date." 23:59:25' group by productno,code,Name,Arabic_Name ,BaseUnits,SpecialityCode, VendorNo) as tbl1
 left join AccMast on tbl1.VendorNo = AccMast.NodeNo
 ) as tbl2
 group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,VendorName";
 
             }
 
-            //        dd($scribesStmt);
+
+//        dd($scribesStmt);
 
             $query = DB::connection('sqlsrv')->select($scribesStmt);
 
@@ -1284,7 +1383,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .= ')
+                    $sql .= ')
 
 WHERE "ItemDescription" IS NOT NULL
 
@@ -1433,7 +1532,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .= ')
+                    $sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1544,7 +1643,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
 
-$sql .= ')
+                    $sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1654,7 +1753,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .= ')
+                    $sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1764,7 +1863,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .= ')
+                    $sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1875,7 +1974,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .= ')
+                    $sql .= ')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
@@ -1895,6 +1994,118 @@ ORDER BY "VendorCode","ItemCode"';
 //                    dd($sql);
                 }
                 else if ($this->report_type == "byCustomer") {
+
+                    $sql = 'SELECT
+	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
+	"BusinessPartnerName", "BusinessPartnerCode",
+	"ItemCode",
+    "ItemDescription" AS "ItemName",
+    "ItemGroup",
+    SUM("TransCount") AS "TransCount",
+    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
+    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
+    SUM("GrossProfitLC") as "GrossProfit",
+    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+     "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+"mrkt_type",
+"IsInventoryItem"
+FROM (
+
+SELECT *, CASE
+		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
+		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
+		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
+		ELSE \'\'
+	END AS "Speciality",
+	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
+	T2."CardCode" AS "VendorCode",
+"DefaultPreferredVendor" AS "VendorName",
+--
+CASE
+WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
+WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
+WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
+WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
+WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
+WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
+WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
+ELSE \'general\'
+END AS "mrkt_type",
+"InvntItem" AS "IsInventoryItem"
+--
+FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+CASE
+WHEN "DocumentTypeCode" = 13 THEN 1
+WHEN "DocumentTypeCode" = 14 THEN -1
+ELSE 0
+END AS "TransCount",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'
+AND "DocumentTypeCode" != \'17\'
+AND "DocumentTypeCode" != \'15\'';
+
+                    if ($customer_type != 'customer_all') {
+                        $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
+                    }
+                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
+AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+) T1
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode2" = T2."ItemCode"
+WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
+                    if ($emps_type != 'employees_all') {
+                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
+                    }
+                    $sql .= ')
+WHERE "BranchName" IS NOT NULL
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartnerName", "BusinessPartnerCode", "ItemCode",
+    "ItemDescription",
+    "ItemGroup",
+    "Speciality",
+	"SalUnitMsr",
+"OldCode",
+"VendorCode",
+"VendorName",
+---
+"mrkt_type",
+"IsInventoryItem"
+---
+
+ORDER BY "BusinessPartnerCode","ItemCode"';
+//                    dd($sql);
+                }
+                else if ($this->report_type == "byCustomerX") {
 
                     $sql = 'SELECT
 	"BusinessPartnerName", "BusinessPartnerCode", "BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
@@ -1986,7 +2197,7 @@ WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
                     if ($emps_type != 'employees_all') {
                         $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
                     }
-$sql .=')
+                    $sql .=')
 WHERE "BranchName" IS NOT NULL
 
 GROUP BY "BusinessPartnerName", "BusinessPartnerCode", "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
