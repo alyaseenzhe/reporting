@@ -16,6 +16,20 @@
                         <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">الصفحة الرئيسية</span>
                     </a>
                 </li>
+                <li class="inline-flex items-center">
+                    <a href="{{ route('visit-calendar') }}"
+                       class="text-gray-700 hover:text-gray-900 inline-flex items-center">
+                        <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1"
+                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                             viewBox="0 0 199.404 199.404"
+                             xml:space="preserve">
+<g>
+    <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
+</g>
+</svg>
+                        <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">تقويم الزيارات</span>
+                    </a>
+                </li>
                 <li aria-current="page">
                     <div class="flex items-center">
                         <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1"
@@ -31,6 +45,45 @@
                 </li>
             </ol>
         </nav>
+    </div>
+
+    <div class="mb-5">
+        @if(session()->has('message'))
+            <div
+                style="background-color: #9ad2dd2b;border: 2px solid #5c9fac;text-align: center;color: #5c9fac;margin-bottom: 20px;"
+                class="p-3">
+                {{ session('message') }}
+            </div>
+        @endif
+        @if(session()->has('error-message'))
+            <div
+                style="background-color: #9ad2dd2b;border: 2px solid #5c9fac;text-align: center;color: #5c9fac;margin-bottom: 20px;"
+                class="p-3">
+                {{ session('error-message') }}
+            </div>
+        @endif
+        @if(session()->has('success'))
+            <div x-show="open" x-data="{ open: true }" class="mb-8">
+                <div class="px-4 py-2 rounded-sm text-sm bg-green-100 border border-green-200 text-green-600">
+                    <div class="flex w-full justify-between items-start">
+                        <div class="flex">
+                            <svg class="w-4 h-4 shrink-0 fill-current opacity-80 mt-[3px] mr-3" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM7 11.4L3.6 8 5 6.6l2 2 4-4L12.4 6 7 11.4z"></path>
+                            </svg>
+                            <div class="px-3">{{ session('success') }}</div>
+                        </div>
+                        <button class="opacity-70 hover:opacity-80 ml-3 mt-[3px]" @click="open = false">
+                            <div class="sr-only">اغلاق</div>
+                            <svg class="w-4 h-4 fill-current">
+                                <path
+                                    d="M7.95 6.536l4.242-4.243a1 1 0 111.415 1.414L9.364 7.95l4.243 4.242a1 1 0 11-1.415 1.415L7.95 9.364l-4.243 4.243a1 1 0 01-1.414-1.415L6.536 7.95 2.293 3.707a1 1 0 011.414-1.414L7.95 6.536z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
@@ -80,6 +133,22 @@
                     <div style="color: #5222e1">{{$record->reason}}</div>
                 </div>
             </div>
+
+            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
+                <div class="w-full">
+                    <label class="block font-bold mb-6 text-xs">مقدم الطلب</label>
+                    @foreach($record->emps_requester as $req)
+                        <div style="color: #5222e1">{{ $req->user->name }}</div>
+                    @endforeach
+                </div>
+                <div class="w-full">
+                    <label class="block font-bold mb-6 text-xs">المستلمون</label>
+                    @foreach($record->emps_recipients as $req)
+                        <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">تاريخ بداية الزيارة</label>
@@ -301,14 +370,29 @@
             </div>
         </div>
     @endif
-    <div>
-        <button id="edit-btn"
-                style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
+
+    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
+        <div class="flex flex-row gap-4 justify-center">
+            <div>
+                <button id="edit-btn"
+                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>تعديل</span>
                     </span>
-        </button>
-    </div>
+                </button>
+            </div>
+            <div>
+                <button id="delete-btn"
+                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>حذف</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    @endif
+
+
 
     @if($can_close_visit)
         <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
@@ -703,6 +787,7 @@
             const recRateBtn = document.getElementById('rec-rate-btn');
             const closeBtn = document.getElementById('close-btn');
             const editBtn = document.getElementById('edit-btn');
+            const deleteBtn = document.getElementById('delete-btn');
 
 
             if (approveBtn || rejectBtn) {
@@ -1051,7 +1136,9 @@
                             }
 
                             // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
-                            const startDateTime = combineDateAndTime(visit.start, visitTime);
+
+                            beginningDate = visit.start;
+                            const startDateTime = combineDateAndTime( beginningDate.split(' ')[0], visitTime);
 
                             return {
                                 title,
@@ -1066,8 +1153,20 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
+
+                            Swal.fire({
+                                title: 'الرجاء الإنتظار',
+                                allowOutsideClick: false,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                willOpen: () => {
+                                    Swal.showLoading()
+                                },
+                            });
+
                             Livewire.emit('updateVisit', {
-                                id: info.event.id,
+                                // id: info.event.id,
+                                id: visit.id,
                                 title: result.value.title,
                                 reason: result.value.reason,
                                 goals: result.value.goals,
@@ -1078,6 +1177,83 @@
                             });
                         }
                     });
+                });
+            }
+
+            if(deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+
+                    Swal.fire({
+                        title: 'هل متأكد من ذلك؟',
+                        text: "سوف يتم حذف هذه الزيارة للأبد وإبلاغ الشخص المسؤول بمكان الزيارة",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'نعم، احذف',
+                        cancelButtonText: 'إلغاء'
+                    }).then((delResult) => {
+                        if (delResult.isConfirmed) {
+                            // Livewire.emit('deleteVisit', info.event.id);
+                            // Swal.fire({
+                            //     title: 'تم الحذف!',
+                            //     text: 'هذه الزيارة تم حذفها',
+                            //     icon: 'success',
+                            //     timer: 2000,
+                            //     showConfirmButton: false,
+                            //     timerProgressBar: true
+                            // });
+
+                            Swal.fire({
+                                title: 'سبب الحذف',
+                                html: `
+<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب حذف الزيارة</label>
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+    <textarea id="delete-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
+                 border: 1px solid #64748b;
+                 padding: 0.625em;
+                 border-radius: 0em;
+                 font-family: inherit;
+                 font-size: 10pt;"></textarea>
+    </div>
+  `,
+                                focusConfirm: false,
+                                showCancelButton: true,
+                                confirmButtonText: 'حذف',
+                                cancelButtonText: 'إلغاء',
+                                customClass: {
+                                    popup: 'responsive-modal'
+                                },
+                                preConfirm: () => {
+                                    const reason = document.getElementById('delete-reason').value.trim();
+                                    if (!reason) {
+                                        Swal.showValidationMessage('يجب إدخال السبب قبل الحذف');
+                                        return false;
+                                    }
+                                    return reason;
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const reason = result.value;
+
+                                    Livewire.emit('deleteVisit', {
+                                        id: visit.id,
+                                        delete_reason: reason
+                                    });
+
+                                    // Swal.fire({
+                                    //     title: 'تم الحذف!',
+                                    //     text: 'هذه الزيارة تم حذفها',
+                                    //     icon: 'success',
+                                    //     timer: 2000,
+                                    //     showConfirmButton: false,
+                                    //     timerProgressBar: true
+                                    // });
+                                }
+                            });
+
+
+                        }
+                    });
+
                 });
             }
 
@@ -1098,6 +1274,23 @@
             });
 
         });
+
+        function combineDateAndTime(dateStr, timeStr) {
+            const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
+            const [time, modifier] = timeStr.split(" ");
+            let [hours, minutes] = time.split(":").map(Number);
+
+            if (modifier === "PM" && hours !== 12) hours += 12;
+            if (modifier === "AM" && hours === 12) hours = 0;
+
+            const localDate = new Date(year, month - 1, day, hours, minutes);
+
+            // Instead of .toISOString(), format it manually to keep local time
+            const pad = n => String(n).padStart(2, '0');
+            const localDateTimeString = `${year}-${pad(month)}-${pad(day)}T${pad(hours)}:${pad(minutes)}:00`;
+
+            return localDateTimeString;
+        }
 
         function formatTime(dateObj) {
             if (!dateObj) return '';

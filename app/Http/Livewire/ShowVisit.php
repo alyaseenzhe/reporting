@@ -5,8 +5,10 @@ namespace App\Http\Livewire;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\VisitEmp;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class ShowVisit extends Component
@@ -19,7 +21,7 @@ class ShowVisit extends Component
     public $reviews_done;
     public $emps;
 
-    protected $listeners = ['approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit', 'closeVisit' => 'closeVisit', 'review' => 'review'];
+    protected $listeners = ['approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit', 'closeVisit' => 'closeVisit', 'review' => 'review', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit'];
 
     public function mount($id) {
         try {
@@ -141,6 +143,70 @@ class ShowVisit extends Component
             session()->flash('error-message', 'حدث خطأ ما عند رفض الزيارة');
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
+    }
+
+    public function updateVisit($event) {
+//        dd($event);
+
+        $visit = Visit::find($event['id']);
+
+        if ($visit) {
+
+//            $recipient = User::where('sales_dept_code', $event['branch'])
+//                ->where('group', 8) // branch manger group
+//                ->select('id')->first();
+
+            $visit->title = $event['title'];
+            $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
+//            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
+            $visit->reason =  $event['reason'];
+            $visit->goals = $event['goals'];
+            $visit->branch =  $event['branch'];
+//            $visit->recipient_id =  $recipient->id;
+
+//            $visit->save();
+
+            if ($visit->save()) {
+
+                VisitEmp::where('visit_id', $event['id'])->delete();
+
+                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+                $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
+                array_push($records, $requester_record);
+
+                DB::table('visit_emps')->insert($records);
+
+                session()->flash('success', 'تم تحديث الزيارة بنجاح');
+                return redirect()->route('show.visit', ['id' => $event['id']]);
+
+//                $this->loadVisits();
+
+//                $this->emit("visitsLoaded", $this->visits);
+            }
+        }
+
+//        $this->loadVisits();
+//
+//        $this->emit("visitsLoaded", $this->visits);
+    }
+
+    public function deleteVisit($event) {
+
+        $visit = Visit::find($event['id']);
+
+        if ($visit) {
+            $visit->delete_reason =  $event['delete_reason'];
+            $visit->is_deleted =  1;
+            $visit->save();
+
+            session()->flash('success', 'تم حذف الزيارة بنجاح');
+            return redirect()->route('visit-calendar');
+        } else {
+            // Optional: handle the case if event not found
+            session()->flash('error', 'Visit not found.');
+        }
+
+
     }
 
     public function closeVisit()
