@@ -2,12 +2,15 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\VisitCreated;
+use App\Mail\WeeklyReport;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\VisitEmp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attribute\On;
 use Livewire\WithPagination;
@@ -128,6 +131,10 @@ class VisitCalendar extends Component
             $this->loadVisits();
 
             $this->emit("visitsLoaded", $this->visits);
+
+            $branch_manger = $this->branchMangerByVisitId($visit_data->id);
+
+            $this->visitMail($this->oneVisit($visit_data->id), $branch_manger, 'add');
         }
     }
 
@@ -147,7 +154,8 @@ class VisitCalendar extends Component
 //            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
             $visit->reason =  $event['reason'];
             $visit->goals = $event['goals'];
-            $visit->branch =  $event['branch'];
+//            $visit->branch =  $event['branch']; // no need to change the branch
+
 //            $visit->recipient_id =  $recipient->id;
 
 //            $visit->save();
@@ -185,6 +193,16 @@ class VisitCalendar extends Component
             $this->loadVisits();
 
             $this->emit("visitsLoaded", $this->visits);
+
+            if ($visit->status == 1) {
+                $this->visitMail($visit, $visit->emps(), 'delete');
+            }
+            else if($visit->status == 0) {
+
+                $branch_manger = $this->branchMangerByVisitId($visit->id);
+                $this->visitMail($this->oneVisit($visit->id), $branch_manger, 'delete');
+            }
+
         } else {
             // Optional: handle the case if event not found
             session()->flash('error', 'Visit not found.');
@@ -197,7 +215,7 @@ class VisitCalendar extends Component
     {
 
         $visit = Visit::findOrFail($visit_record['id']);
-        if (Auth::id() !== $visit->recipient_id) {
+        if (!$this->can_approve($visit_record['id'])) {
             abort(403);
         }
 
@@ -208,22 +226,78 @@ class VisitCalendar extends Component
         $this->loadVisits();
 
         $this->emit("visitsLoaded", $this->visits);
+
+
+        $this->visitMail($visit, $visit->emps(), 'approve');
     }
 
     public function rejectVisit($visit_record)
     {
 
         $visit = Visit::findOrFail($visit_record['id']);
-        if (Auth::id() !== $visit->recipient_id) {
+
+        if (!$this->can_approve($visit_record['id'])) {
             abort(403);
         }
 
         $visit->status = '2';
         $visit->status_notice = $visit_record["status_notice"];
-        $visit->save();
+
+        if($visit->save()) {
+            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
+            $this->visitMail($visit, $emails, 'reject');
+        }
 
         $this->loadVisits();
 
         $this->emit("visitsLoaded", $this->visits);
     }
+
+    public function visitMail($visit_record, $branch_manger, $type) {
+//        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
+//            ->where('users.group', '8') // branch manager
+//            ->where('visit_emps.visit_id', $visit_record->id)
+//            ->select('users.email', 'users.name')
+//            ->first();
+//        dd($this->branchMangerByVisitId($visit_record->id));
+//        dd($res_email);
+
+
+        // the email must be this $branch_manger->email
+        Mail::to('basil.alrashed@alyaseenagri.com')->queue(new VisitCreated($visit_record, null, $type));
+    }
+
+    public function oneVisit($id) {
+
+        $record = Visit::find($id);
+
+        return $record;
+    }
+
+    public function branchMangerByVisitId($visitId) {
+        $branch_manger = VisitEmp::join('users', 'visit_emps.user_id', '=', 'users.id')
+            ->where('users.group', 8) // or ->where('users.`group`', 8) if error occurs
+            ->where('visit_emps.visit_id', $visitId)
+            ->select('users.email', 'users.name')
+            ->first();
+
+        return $branch_manger;
+    }
+
+    public function can_approve($visit_id) {
+
+        $x = Visit::where('visits.id', $visit_id)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->leftJoin('users', 'users.id', 'visit_emps.user_id')
+            ->where('visit_emps.type', 'recipient')
+            ->where('visit_emps.user_id', Auth::id())
+            ->where('users.group', '8')
+            ->where('visits.status', '0')
+            ->where('visits.is_deleted', '0')
+            ->exists();
+
+        return $x;
+
+    }
+
 }

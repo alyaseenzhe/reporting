@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\VisitCreated;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\VisitEmp;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class ShowVisit extends Component
@@ -115,6 +117,10 @@ class ShowVisit extends Component
         $visit->status_notice = $visit_record["status_notice"];
 
         if($visit->save()) {
+
+            $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
+            $this->visitMail($visit, $emails, 'approve');
+
             session()->flash('success', 'تمت الموافقة على الزيارة');
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
@@ -136,6 +142,10 @@ class ShowVisit extends Component
         $visit->status_notice = $visit_record["status_notice"];
 
         if($visit->save()) {
+
+            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
+            $this->visitMail($visit, $emails, 'reject');
+
             session()->flash('success', 'تم رفض الزيارة');
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
@@ -256,7 +266,10 @@ class ShowVisit extends Component
 
                 if ($checkReviews == 0) {
                     // send email and whatsapp to tell user that the rating has been finished by all the recipients
-                    dd("تم الانتهاء من جميع التعليقات");
+//                    dd("تم الانتهاء من جميع التعليقات");
+
+//                    $this->visitMail($visit, null, 'reviews-done');
+                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
 
                 }
 
@@ -323,5 +336,27 @@ class ShowVisit extends Component
         $this->reviews_done = $check == 0;
 
         return $this->reviews_done;
+    }
+
+    public function visitMail($visit_record, $branch_manger, $type) {
+//        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
+//            ->where('users.group', '8') // branch manager
+//            ->where('visit_emps.visit_id', $visit_record->id)
+//            ->select('users.email', 'users.name')
+//            ->first();
+//        dd($this->branchMangerByVisitId($visit_record->id));
+//        dd($res_email);
+
+
+        // the email must be this $branch_manger->email (add)
+        // the email must be $branch_manger (approve/reject)
+        Mail::to('basil.alrashed@alyaseenagri.com')->queue(new VisitCreated($visit_record, null, $type));
+    }
+
+    public function oneVisit($id) {
+
+        $record = Visit::find($id);
+
+        return $record;
     }
 }

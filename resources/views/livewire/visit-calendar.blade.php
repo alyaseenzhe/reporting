@@ -625,15 +625,13 @@
                     // console.log(info.event.extendedProps.emps_requester);
                     // console.log(info.event.extendedProps.emps_recipients);
                     //////////// approve or reject
-                    const isRecipient = ((data_recipient.find(item => item.user_id)).user_id == currentUserId) == true;
-                    const isOwner = ((data_requester.find(item => item.user_id)).user_id == currentUserId) == true
+                    const isRecipient = data_recipient.some(item => item.user_id == currentUserId) == true;
+                    const isOwner = data_requester.some(item => item.user_id == currentUserId) == true;
                     const isDeleted = info.event.extendedProps.is_deleted;
                     const status = info.event.extendedProps.status;
                     const viewRouteBase = @json(route('show.visit', ['id' => 'VISIT_ID']));
                     const visitId = info.event.id;
                     const viewUrl = viewRouteBase.replace('VISIT_ID', visitId);
-
-                    console.log(info.event);
 
                     let buttonsHtml = '';
                     if (isRecipient && status == 0 && isDeleted == 0) {
@@ -745,8 +743,6 @@
   </div>
 
   <div></div> <!-- Spacer for layout balance -->
-
-  ${buttonsHtml}
 </div>
 `,
                         showCancelButton: true,
@@ -756,7 +752,114 @@
                         cancelButtonText: 'إغلاق',
                         denyButtonText: 'حذف',
                         didOpen: () => {
-                             /* View Button */
+
+                            if (isRecipient && status == 0 && isDeleted == 0) {
+                                // Approve button
+                                const approveBtn = document.createElement('button');
+                                approveBtn.innerText = 'موافقة';
+                                approveBtn.className = 'swal2-styled';
+                                approveBtn.style.backgroundColor = '#2f9d58';
+                                approveBtn.style.color = '#fff';
+                                approveBtn.style.marginLeft = '10px';
+                                approveBtn.style.borderRadius = '5px';
+                                approveBtn.addEventListener('click', () => {
+                                    // your approve logic here
+                                    Swal.fire({
+                                        title: 'الموافقة',
+                                        html: `
+<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
+                 border: 1px solid #64748b;
+                 padding: 0.625em;
+                 border-radius: 0em;
+                 font-family: inherit;
+                 font-size: 10pt;"></textarea>
+    </div>`,
+                                        preConfirm: () => {
+                                            const reason = document.getElementById('approve-reason').value.trim();
+                                            return reason;
+                                        },
+                                        showCancelButton: true,
+                                        confirmButtonText: 'تأكيد الموافقة',
+                                        cancelButtonText: 'إلغاء',
+                                    }).then((res) => {
+                                        if (res.isConfirmed) {
+                                            Livewire.emit('approveVisit', {
+                                                id: info.event.id,
+                                                status_notice: res.value
+                                            });
+
+                                            Swal.fire({
+                                                title: 'تمت الموافقة!',
+                                                icon: 'success',
+                                                timer: 2000,
+                                                showConfirmButton: false,
+                                                timerProgressBar: true
+                                            });
+                                        }
+                                    });
+                                });
+
+
+                                // Reject button
+                                const rejectBtn = document.createElement('button');
+                                rejectBtn.innerText = 'رفض';
+                                rejectBtn.className = 'swal2-styled';
+                                rejectBtn.style.backgroundColor = '#b91818';
+                                rejectBtn.style.color = '#fff';
+                                rejectBtn.style.marginLeft = '10px';
+                                rejectBtn.style.borderRadius = '5px';
+                                rejectBtn.addEventListener('click', () => {
+                                    // your reject logic here
+                                    Swal.fire({
+                                        title: 'سبب الرفض',
+                                        html: `
+<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+    <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
+                 border: 1px solid #64748b;
+                 padding: 0.625em;
+                 border-radius: 0em;
+                 font-family: inherit;
+                 font-size: 10pt;"></textarea>
+    </div>`,
+                                        preConfirm: () => {
+                                            const reason = document.getElementById('reject-reason').value.trim();
+                                            if (!reason) {
+                                                Swal.showValidationMessage('يرجى كتابة سبب الرفض');
+                                                return false;
+                                            }
+                                            return reason;
+                                        },
+                                        showCancelButton: true,
+                                        confirmButtonText: 'تأكيد الرفض',
+                                        cancelButtonText: 'إلغاء',
+                                    }).then((res) => {
+                                        if (res.isConfirmed) {
+                                            Livewire.emit('rejectVisit', {
+                                                id: info.event.id,
+                                                status_notice: res.value
+                                            });
+
+                                            Swal.fire({
+                                                title: 'تم الرفض!',
+                                                icon: 'info',
+                                                timer: 2000,
+                                                showConfirmButton: false,
+                                                timerProgressBar: true
+                                            });
+                                        }
+                                    });
+                                });
+
+                                // Add buttons to Swal actions
+                                Swal.getActions().appendChild(rejectBtn);
+                                Swal.getActions().appendChild(approveBtn);
+                            }
+
+
+                            /* View Button */
                             const viewBtn = document.createElement('button');
                             viewBtn.innerText = 'عرض';
                             viewBtn.className = 'swal2-styled custom-view-btn';
@@ -775,6 +878,7 @@
                             Swal.getActions().appendChild(viewBtn);
                             /* End of View Button*/
 
+                            /*
                             if (isRecipient && status == 0 && isDeleted == 0) {
                                 document.getElementById('approve-btn').addEventListener('click', () => {
                                     // Livewire.emit('approveVisit', info.event.id);
@@ -861,6 +965,7 @@
                                     });
                                 });
                             }
+                            */
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -935,7 +1040,7 @@
 
   <div class="edit-form-group">
     <label for="edit-branch">مكان الزيارة</label>
-    <select id="edit-branch">
+    <select id="edit-branch" disabled>
       <option value="" disabled>اختر المكان</option>
       ${Object.entries(branchMap).map(([key, name]) =>
                                     `<option value="${key}" ${info.event.extendedProps.branch === key ? 'selected' : ''}>${name}</option>`
