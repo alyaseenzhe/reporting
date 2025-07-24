@@ -265,7 +265,7 @@ END as "BranchCode" FROM (
 
 SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
@@ -341,9 +341,9 @@ Group By T1."BPLId", T0."Warehouse"
 
 FULL OUTER JOIN (
 
-SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121+") as "Balance", SUM("121+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
+SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+") as "Balance", SUM("211+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) "121+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
+SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121-210",0) as "121-210", IFNULL("211+",0) "211+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121-210",0)+IFNULL("211+",0)) as "Balance Due", "OldestInvoice",
 CASE
 	WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
 	WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
@@ -360,9 +360,9 @@ CASE
 	ELSE \'0001\'
 END as "BranchCode" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 AND "days" <= 210 THEN "AgingBalanceDueLC" END) as "121-210", SUM(CASE WHEN "days" >=211 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "211+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
@@ -372,7 +372,7 @@ GROUP BY "BusinessPartnerCode", "BusinessPartnerName"
 
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON AG."BusinessPartnerCode" = OC."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
-WHERE OC."validFor" = \'Y\'
+--WHERE OC."validFor" = \'Y\'
 
 ORDER BY "BusinessPartnerCode"
 
