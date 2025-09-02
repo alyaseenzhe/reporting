@@ -15,12 +15,27 @@ class ListAgingSap extends Component
     public $last_date;
     public $aging_records = [];
 
+    /**
+     * This is a mandatory Livewire method that renders the component's user interface.
+     * It returns the specified Blade view file (`list-aging-sap.blade.php`), which contains the HTML
+     * for the report. It also embeds this view within the application's main `layouts.dashboard`
+     * template to ensure a consistent look and feel.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-aging-sap')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the primary action method for generating the aging report, typically triggered by a
+     * user clicking a "Generate" button on the frontend. It sets a longer script execution time limit,
+     * calculates the last day of the selected month to ensure the query runs against a consistent period,
+     * and then calls the main data-fetching function `getCustomersBalanceDue`. It also emits events to the
+     * frontend to manage the UI state (e.g., showing/hiding loading indicators and results).
+     */
     public function generateReport()
     {
         set_time_limit(2000);
@@ -36,6 +51,15 @@ class ListAgingSap extends Component
 
     }
 
+    /**
+     * This function is the core of the report. It connects to the SAP HANA database via ODBC and executes
+     * a single, efficient query to retrieve the raw, un-bucketed customer aging data. It leverages a powerful,
+     * pre-built SAP analytical view (`CustomerReceivableAgingQuery`) for high performance. The query fetches each
+     * outstanding invoice, joins it with customer and salesperson data for context, filters by the selected
+     * branch/area, and orders the results logically.
+     *
+     * @param string $end_date The date (typically the end of a month) to calculate the aging against.
+     */
     public function getCustomersBalanceDue($end_date) {
 
         if (! extension_loaded('odbc'))

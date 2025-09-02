@@ -45,6 +45,10 @@ class ListWeeklyReport extends Component
         'end_date.required' => "مطلوب",
     ];
 
+    /**
+     * A Livewire lifecycle hook that serves as a security checkpoint. It ensures the user is active and
+     * has the required permission ('list.weekly-report') to access this page.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -58,6 +62,11 @@ class ListWeeklyReport extends Component
         }
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master layout.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
 //        $test = [];
@@ -75,6 +84,11 @@ class ListWeeklyReport extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This function orchestrates the entire data gathering process. It translates the selected area into a
+     * branch ID for SAP, then coordinates the data fetching by first getting sales data and employee codes
+     * from SAP, and then using those employee codes to get corresponding visit data from the local database.
+     */
     public function proccess_report() {
 
         if ($this->area_id == '01') { // ahsa
@@ -145,12 +159,17 @@ class ListWeeklyReport extends Component
 
     }
 
+    /**
+     * This method is responsible for distributing the generated report via email. It contains predefined,
+     * hardcoded recipient lists for each branch. It queues the email to be sent in the background for
+     * better performance, passing all the necessary report data to the `WeeklyReport` mailable class.
+     */
     public function sendReport() {
 
         $ahsa_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'amir.saleh@alyaseenagri.com', 'sales.ahsa@alyaseenagri.com', 'gamil.mohamed@alyaseenagri.com', 'ahmed.wahd@alyaseenagri.com'];
         $jeddah_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ibrahim.talat@alyaseenagri.com', 'sales.jeddah@alyaseenagri.com', 'ahmed.nassef@alyaseenagri.com'];
         $riyadh_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.samy@alyaseenagri.com', 'mohammed.fawzy@alyaseenagri.com', 'sales.riyadh@alyaseenagri.com'];
-        $wadi_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.salem@alyaseenagri.com', 'omar.elhelefy@alyaseenagri.com', 'sales.wadi@alyaseenagri.com', 'ahmed.ibrahim@alyaseenagri.com'];
+        $wadi_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mosab.omer@alyaseenagri.com', 'mohammed.salem@alyaseenagri.com', 'omar.elhelefy@alyaseenagri.com', 'sales.wadi@alyaseenagri.com', 'ahmed.ibrahim@alyaseenagri.com'];
         $jouf_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'alsaid.saad@alyaseenagri.com', 'mosaad.dahshan@alyaseenagri.com', 'sales.aljouf@alyaseenagri.com'];
         $dammam_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.dammam@alyaseenagri.com', 'atef.ibrahem@alyaseenagri.com'];
         $kharaj_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'radwan.hussen@alyaseenagri.com', 'sales.alkharj@alyaseenagri.com', 'abdullah.hatem@alyaseenagri.com'];
@@ -203,6 +222,10 @@ class ListWeeklyReport extends Component
         return 0;
     }
 
+    /**
+     * The primary action method for the user to generate the report. It validates the inputs, prepares the UI,
+     * and then calls the `proccess_report` method to perform all the necessary data retrieval and processing.
+     */
     public function generateReport() {
 
         set_time_limit(2000);
@@ -213,6 +236,17 @@ class ListWeeklyReport extends Component
         $this->proccess_report();
     }
 
+    /**
+     * Retrieves employee visit data from the local application's database (MySQL). It performs a
+     * two-step query process: first, it counts unique visits to specific, named customers, and second,
+     * it counts visits to "general" or non-specific customers. It then merges these two counts to get a
+     * total number of visits for each employee.
+     *
+     * @param array $emp_codes An array of employee codes to fetch visit data for.
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     * @return array An associative array of [emp_code => num_of_visits].
+     */
     public function visits($emp_codes, $start_date, $end_date) {
 
 //        dd($emp_codes);
@@ -350,6 +384,15 @@ class ListWeeklyReport extends Component
         return $visits;
     }
 
+    /**
+     * Connects to the SAP HANA database via ODBC to retrieve a wide range of performance metrics for each
+     * salesperson in a given branch. It executes a single, large query composed of multiple subqueries
+     * that are joined together to calculate sales, specialty sales, category sales, and aging balances.
+     *
+     * @param string $branch The SAP branch code to query.
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     */
     public function sapQuery($branch, $start_date, $end_date) {
 
         if (! extension_loaded('odbc'))

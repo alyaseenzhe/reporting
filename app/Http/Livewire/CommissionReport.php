@@ -28,17 +28,6 @@ class CommissionReport extends Component
     ];
     public $emp_position = [
         '10046' =>	'sales_manager',
-        /*'10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',
-        '10046' =>	'sales_manager',*/
         '10035' =>	'area_manager',
         '10041' =>	'area_manager',
         '10175' =>	'area_manager',
@@ -85,6 +74,8 @@ class CommissionReport extends Component
         '10297' =>	'store_manager',
         '10312' =>	'store_manager',
         '10309' =>	'store_manager',
+        '10330' =>	'store_manager',
+        '10328' =>	'store_manager',
     ];
     public $position_commission = [
         "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
@@ -114,6 +105,14 @@ class CommissionReport extends Component
         'selected_date.required' => "مطلوب",
     ];
 
+    /**
+     * booted - Handles user authentication and redirects.
+     *
+     * This function performs two main checks:
+     * 1. Checks if the authenticated user is **not active**. If so, it redirects to the 'non-active-user' route.
+     * 2. Checks if the user is either an **administrator** or belongs to a user group with access to 'commission-report'. If either condition is true, the function proceeds. Otherwise, it redirects to the 'dashboard' route.
+     *
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -127,6 +126,12 @@ class CommissionReport extends Component
         }
     }
 
+    /**
+     * render - Renders the Livewire component view.
+     *
+     * This function returns the view for the `commission-report` Livewire component.
+     * It also specifies the `layouts.dashboard` file as the layout to be used for the view.
+     */
     public function render()
     {
         $result = 0;
@@ -134,6 +139,14 @@ class CommissionReport extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * generateReport - Generates the commission report based on a selected date.
+     *
+     * This function initiates the report generation process. It first sets the time limit to 2000 seconds
+     * to prevent timeout errors for large reports. It then validates the input, and emits a Livewire event to show a loading container.
+     * The function calculates the first and last day of the month from the `selected_date` property. Finally, it calls the `sapQuery` method with these dates
+     * to fetch the necessary data.
+     */
     public function generateReport()
     {
         set_time_limit(2000);
@@ -146,16 +159,29 @@ class CommissionReport extends Component
 
         $this->sapQuery($this->first_date, $this->last_date);
 
-
-
-        /*
-        $start_of_day = Carbon::parse($this->first_date)->subMonths(3);
-        $end_of_day = Carbon::parse($this->last_date);
-        $days = intval($end_of_day->diffInDays($start_of_day) + 1);
-        */
-
     }
 
+    /**
+     * sapQuery - Fetches data from SAP HANA database for report generation.
+     *
+     * This function connects to a SAP HANA database using ODBC to execute multiple queries
+     * and retrieve data required for the commission report.
+     *
+     * It first initializes several arrays to store the results.
+     * It checks if the ODBC extension is loaded, then constructs the connection string
+     * using environment variables. After successfully connecting, it executes three separate
+     * SQL queries:
+     * 1. `$loss_profit_sql`: Calculates the profit and loss for a specific cost center within a given date range.
+     * 2. `$sql`: Calculates the outstanding balance, gross profit, and inventory values for a specific branch.
+     * 3. `$sql2`: Gathers detailed sales, gross profit, and aging balance data for sales employees within a specific branch and date range.
+     *
+     * The results from these queries are stored in the `sap_results`, `sap_results2`, and `profitAndLoss` properties.
+     * It also calculates the total gross profit from the second query's results. Finally, the database connection is closed.
+     * The function includes error handling for failed connections and query executions.
+     *
+     * @param string $start_date The start date for the query range.
+     * @param string $end_date The end date for the query range.
+     */
     public function sapQuery($start_date, $end_date) {
 
         $this->sap_results = [];
@@ -171,7 +197,6 @@ class CommissionReport extends Component
         $driver = env('DB_CONNECTION_FOURTH');
 
 // Host
-// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
         $host = env('DB_HOST_FOURTH');
 
 // Default name of your hana instance
@@ -191,21 +216,6 @@ class CommissionReport extends Component
         }
         else
         {
-
-            /*
-            $sql = 'SELECT * FROM (
-SELECT T3."CardCode", T0."TransId", T0."RefDate", T1."LineMemo", T1."Debit", T1."Credit",
-       SUM(T1."Debit" - T1."Credit") OVER (PARTITION BY T1."Account" ORDER BY T0."RefDate", T0."TransId") AS "CumulativeBalance"
-FROM AL_YASEEN_AGRI_PLIVE.OJDT T0
-INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
-INNER JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
-INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
-WHERE T0."RefDate" >= \'20230101\'
-AND T3."CardCode" = \''.$this->customer_id.'\'
-ORDER BY T0."TaxDate", T0."TransId") as "tbl1"
-WHERE ("RefDate" >= \''.$start_date.'\' AND "RefDate" <= \''.$end_date.'\')';
-
-            */
 
             $loss_profit_sql = 'SELECT SUM("Credit Amount")-SUM("Debit Amount") AS "ProfitAndLoss" FROM (
 --SELECT * FROM (
@@ -314,6 +324,7 @@ Group By T1."BPLId", T0."Warehouse"
         SUM("GrossProfitLC") AS "GrossProfitLC"
     FROM (
         SELECT * FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+        WHERE "BusinessPartnerCode" != 0000001
     ) SA
     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD CR ON SA."BusinessPartnerCode" = CR."CardCode"
     LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON CR."SlpCode" = OS."SlpCode"
@@ -385,9 +396,6 @@ GROUP BY "SlpCode", "OldSlpCode", "SlpName", "BranchCode"
 WHERE "BPLId" = '.$this->area_id.'
 AND "BPLId" IS NOT NULL';
 
-//            dd($sql);
-//            dd($sql2);
-
             $result_profit = odbc_exec($conn, $loss_profit_sql);
             if (!$result_profit)
             {
@@ -396,18 +404,10 @@ AND "BPLId" IS NOT NULL';
             }
             else
             {
-                // echo odbc_num_rows($result);
-                // var_dump(odbc_fetch_row($result));
-//                $aa = odbc_result_all($result, "border=1");
-//                $x = odbc_fetch_object($result);
-//                $this->sap_results
                 while ($row = odbc_fetch_array($result_profit)) {
-//                    array_push($this->sap_results, $row);
-//                    array_push($this->sap_results, $row);
                     $this->profitAndLoss = $row["ProfitAndLoss"];
                 }
 
-//                dd($this->profitAndLoss);
             }
 
 
@@ -419,24 +419,13 @@ AND "BPLId" IS NOT NULL';
             }
             else
             {
-                // echo odbc_num_rows($result);
-                // var_dump(odbc_fetch_row($result));
-//                $aa = odbc_result_all($result, "border=1");
-//                $x = odbc_fetch_object($result);
-//                $this->sap_results
+
                 while ($row = odbc_fetch_array($result)) {
                     array_push($this->sap_results, $row);
                     $this->branch_balance = $row["Branch Balance"];
                 }
 
-//                dd($this->sap_results);
 
-                // var_dump($result);
-                // while ($row = odbc_fetch_object($result))
-                // {
-                //     // Should output one row containing the string 'X'
-                //     var_dump($row['CardNameXX']);
-                // }
             }
 
 
@@ -511,659 +500,5 @@ AND "BPLId" IS NOT NULL';
 
             odbc_close($conn);
         }
-    }
-
-    public function getCustomers($slpCode, $end_date) {
-
-//        $slpCode = '293';
-
-        $this->customer = [];
-        $this->customer_code = [];
-        $this->customer_balance = [];
-        $aging_balance = 0;
-        $customer_balance = 0;
-        $full_customer_balance = 0;
-        $oldest_inv = Carbon::now()->format('Y-m-d');
-        $c_code = '';
-
-        if (! extension_loaded('odbc'))
-        {
-            die('ODBC extension not enabled / loaded');
-        }
-
-        $driver = env('DB_CONNECTION_FOURTH');
-
-// Host
-// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
-        $host = env('DB_HOST_FOURTH');
-
-// Default name of your hana instance
-        $db_name = env('DB_DATABASE_FOURTH');
-        $username = env('DB_USERNAME_FOURTH');
-        $password = env('DB_PASSWORD_FOURTH');
-
-// Try to connect
-        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
-
-        if (!$conn)
-        {
-            // Try to get a meaningful error if the connection fails
-            echo "Connection failed.\n";
-            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-
-        }
-        else
-        {
-
-//            $sql = 'SELECT T0."CardCode", T1."CumulativeBalance" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
-//--WHERE T0."CardType" = \'C\'
-//LEFT JOIN (
-//SELECT "Name", "CumulativeBalance" FROM (
-//
-//WITH CumulativeBalances AS (
-//    SELECT
-//        T0."RefDate",
-//        T0."TransId",
-//        T0."BaseRef",
-//        T1."FormatCode",
-//        T0."LineMemo",
-//        T0."ShortName" AS "Name",
-//        T0."Debit",
-//        T0."Credit",
-//        T0."Ref1",
-//        T0."Ref2",
-//        T0."Ref3Line",
-//        T0."DueDate",
-//        T0."TaxDate",
-//        SUM(T0."Debit" - T0."Credit") OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
-//        ROW_NUMBER() OVER (PARTITION BY T0."ShortName" ORDER BY T0."RefDate" DESC) AS rn
-//    FROM
-//        AL_YASEEN_AGRI_PLIVE."JDT1" T0
-//    INNER JOIN
-//        AL_YASEEN_AGRI_PLIVE."OACT" T1 ON T0."Account" = T1."AcctCode"
-//    INNER JOIN
-//        AL_YASEEN_AGRI_PLIVE."OJDT" T2 ON T0."TransId" = T2."TransId"
-//    WHERE
-//        T2."RefDate" <= \''.$end_date.'\'
-//)
-//SELECT
-//    "RefDate",
-//    "TransId",
-//    "BaseRef",
-//    "FormatCode",
-//    "LineMemo",
-//    "Name",
-//    "Debit",
-//    "Credit",
-//    "Ref1",
-//    "Ref2",
-//    "Ref3Line",
-//    "DueDate",
-//    "TaxDate",
-//    "CumulativeBalance"
-//FROM
-//    CumulativeBalances
-//WHERE
-//    rn = 1
-//ORDER BY
-//    "Name"
-//
-//    )
-//) T1
-//ON T0."CardCode" = T1."Name"
-//WHERE T0."CardType" = \'C\'
-//AND T1."CumulativeBalance" IS NOT NULL
-//AND T1."CumulativeBalance" != 0
-//AND T1."CumulativeBalance" > 0
-//AND T0."SlpCode" != -1
-//AND T0."SlpCode" = \''.$slpCode.'\'
-//--AND T0."CardCode" = \'0100412\'
-//';
-
-            $sql_customer = '
-            SELECT T0."CardCode", T0."CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
-WHERE T0."CardType" = \'C\'
-AND T0."SlpCode" = \''.$slpCode.'\'
-AND T0."CardCode" NOT IN (\'0100000\', \'0200000\', \'0300000\', \'0400000\', \'0500000\', \'0600000\', \'0700000\', \'0800000\', \'0900000\', \'1000000\', \'1100000\', \'1200000\')
-            ';
-
-
-
-//            dd($sql_customer);
-//            dd($sql);
-
-
-
-
-//            $result = odbc_exec($conn, $sql);
-            $result = odbc_exec($conn, $sql_customer);
-            if (!$result)
-            {
-                echo "Error while sending SQL statement to the database server.\n";
-                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-            }
-            else
-            {
-                while ($row = odbc_fetch_array($result)) {
-                    array_push($this->customer, $row);
-                    array_push($this->customer_code, $row["CardCode"]);
-                }
-
-//                dd($this->customer_code);
-//                $balance_due = collect($this->customer);
-//                $x = collect($balance_due->where('CardCode', '0100590')->first()["CumulativeBalance"]);
-//                $cum_balance = floatval($x[0]);
-//                dd(floatval($cum_balance));
-
-            }
-
-//            $balance_due = collect($this->customer);
-
-
-            // for customer balance due
-            foreach ($this->customer_code as $cust_code) {
-//                $cust_code = '0100582';
-
-
-//                $customer_balance += $cum_balance;
-
-                $sql_balance = '
-                SELECT * FROM (
-SELECT
-    T0."RefDate",
-    T0."TransId",
-    T0."BaseRef",
-    T1."FormatCode",
-    T0."LineMemo",
-    T0."ShortName" AS "Name",
-    T0."Debit",
-    T0."Credit",
-    T0."Ref1",
-    T0."Ref2",
-    T0."Ref3Line",
-    T0."DueDate",
-    T0."TaxDate",
-    SUM(T0."Debit" - T0."Credit") OVER (ORDER BY T0."RefDate" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "CumulativeBalance",
-    CASE
-                WHEN T0."TransType" = 24 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T00."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked A/R Invoice",
-            CASE
-                WHEN T0."TransType" = 13 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T22."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked Incoming Payment"
-
-FROM
-    AL_YASEEN_AGRI_PLIVE."JDT1" T0
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE."OACT" T1 ON T0."Account" = T1."AcctCode"
-INNER JOIN
-    AL_YASEEN_AGRI_PLIVE."OJDT" T2 ON T0."TransId" = T2."TransId"
-WHERE
-    T2."RefDate" <= \''.$end_date.'\'
-    AND T0."ShortName" = \''.$cust_code.'\'
-ORDER BY
-    T0."RefDate"
-    )
-    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-    ORDER BY "RefDate" DESC, "TransId" DESC
-    LIMIT 1';
-//                dd($sql_balance);
-
-                $result_balance = odbc_exec($conn, $sql_balance);
-                if (!$result_balance)
-                {
-                    echo "Error while sending SQL statement to the database server.\n";
-                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-                }
-                else
-                {
-                    while ($row = odbc_fetch_array($result_balance)) {
-//                        array_push($this->customer, $row);
-//                        array_push($this->customer_code, $row["CardCode"]);
-                        if (floatval($row["CumulativeBalance"]) >= 1) {
-//                            array_push($this->customer_balance, [$row["CardCode"] => $row["CumulativeBalance"]]);
-//                            $this->customer_balance[$row["CardCode"]] = $row["CumulativeBalance"];
-                            $this->customer_balance[$row["Name"]] = $row["CumulativeBalance"];
-                            $full_customer_balance += $row["CumulativeBalance"];
-                        }
-                    }
-                }
-
-            }
-//            dd(array_keys($this->customer_balance));
-//            dd($this->customer_balance["0101015"]);
-//            dd($this->customer_balance);
-
-            // for aging 120
-//            foreach ($this->customer_code as $cust_code) {
-            foreach (array_keys($this->customer_balance) as $cust_code) {
-//                $cust_code = '0100582';
-
-//                $x = collect($balance_due->where('CardCode', $cust_code)->first()["CumulativeBalance"]);
-                $x = $this->customer_balance[$cust_code];
-                $cum_balance = floatval($x);
-
-                $customer_balance += $cum_balance;
-
-
-                $sql_aging = 'SELECT IFNULL(SUM("Debit (LC)"), 0) AS "Aging" FROM (
-WITH CumulativeSum AS (
-    SELECT * FROM (
-        SELECT
-            T0."RefDate" AS "Posting Date",
-            T0."DueDate" AS "Due Date",
-            T0."TaxDate" AS "Document Date",
-            CASE
-                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
-                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
-                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
-                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
-                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
-                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
-                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
-            END AS "Document Type",
-            T3."CardCode" AS "Business Partner Code",
-            T3."CardName" AS "Business Partner Name",
-            T0."BaseRef" AS "Document Number",
-            T0."TransId" AS "Transaction Number",
-            T1."Account" AS "Account Code",
-            T2."AcctName" AS "Account Name",
-            --T1."Debit" AS "Debit (LC)",
-            CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END AS "Debit (LC)",
-            T1."Credit" AS "Credit (LC)",
-            (T1."Debit" - T1."Credit") AS "Balance",
-            T0."Memo" AS "Remarks",
-            --SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
-            SUM(CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END) OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
-            CASE
-                WHEN T0."TransType" = 24 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T00."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked A/R Invoice",
-            CASE
-                WHEN T0."TransType" = 13 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T22."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked Incoming Payment"
-        FROM
-            AL_YASEEN_AGRI_PLIVE.OJDT T0
-            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
-            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
-            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
-        WHERE
-            T0."RefDate" <= \''.$end_date.'\'
-            AND T3."CardCode" = \''.$cust_code.'\'
-        ORDER BY T0."RefDate" DESC,T0."TransId" DESC
-    )
-    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-),
-AdjustedSum AS (
-    SELECT *,
-           CASE
-               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
-               ELSE "Debit (LC)"
-           END AS "Adjusted Debit"
-    FROM CumulativeSum
-),
-FinalResult AS (
-    SELECT *,
-           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
-    FROM AdjustedSum
-),
-RankedResults AS (
-    SELECT *,
-           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
-    FROM FinalResult
-)
-SELECT
-    "Posting Date",
-    "Due Date",
-    "Document Date",
-    "Document Type",
-    "Business Partner Code",
-    "Business Partner Name",
-    "Document Number",
-    "Transaction Number",
-    "Account Code",
-    "Account Name",
-    "Adjusted Debit" AS "Debit (LC)",
-    "Credit (LC)",
-    "Balance",
-    "Remarks",
-    "Adjusted Debit",
-    "Cumulative Debit",
-    "Cumulative Adjusted Debit"
-FROM RankedResults
-WHERE rn <= (
-    SELECT MAX(rn)
-    FROM RankedResults
-    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
-)
-ORDER BY "Posting Date" DESC, "Transaction Number" DESC
-
-)
-WHERE DAYS_BETWEEN("Posting Date", \''.$end_date.'\') > 120
-AND "Debit (LC)" != 0;
-';
-
-                $result_aging = odbc_exec($conn, $sql_aging);
-                if (!$result_aging)
-                {
-                    echo "Error while sending SQL statement to the database server.\n";
-                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-                }
-                else
-                {
-                    while ($row = odbc_fetch_array($result_aging)) {
-//                        dd($row);
-//                        array_push($this->customer, $row);
-//                        array_push($this->customer_code, $row["CardCode"]);
-                        $aging_balance += $row["Aging"];
-                    }
-
-                }
-
-                // oldest invoice
-
-                $sql_oldest_invoice = 'SELECT "Posting Date" AS "Oldest_Date" FROM (
-WITH CumulativeSum AS (
-    SELECT * FROM (
-        SELECT
-            T0."RefDate" AS "Posting Date",
-            T0."DueDate" AS "Due Date",
-            T0."TaxDate" AS "Document Date",
-            CASE
-                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
-                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
-                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
-                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
-                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
-                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
-                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
-            END AS "Document Type",
-            T3."CardCode" AS "Business Partner Code",
-            T3."CardName" AS "Business Partner Name",
-            T0."BaseRef" AS "Document Number",
-            T0."TransId" AS "Transaction Number",
-            T1."Account" AS "Account Code",
-            T2."AcctName" AS "Account Name",
-            --T1."Debit" AS "Debit (LC)",
-            CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END AS "Debit (LC)",
-            T1."Credit" AS "Credit (LC)",
-            (T1."Debit" - T1."Credit") AS "Balance",
-            T0."Memo" AS "Remarks",
-            --SUM(T1."Debit") OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
-            SUM(CASE WHEN T1."Debit" >= 0 THEN T1."Debit" ELSE 0 END) OVER (ORDER BY T0."RefDate" DESC, T0."TransId" DESC) AS "Cumulative Debit",
-            CASE
-                WHEN T0."TransType" = 24 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T00."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked A/R Invoice",
-            CASE
-                WHEN T0."TransType" = 13 THEN (
-                    SELECT MAX(T22."DocNum")
-                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-                    WHERE T22."DocNum" = T0."BaseRef"
-                    AND T00."DocDate" = T22."DocDate"
-                    AND T11."SumApplied" = T22."DocTotal"
-                )
-                ELSE NULL
-            END AS "Linked Incoming Payment"
-        FROM
-            AL_YASEEN_AGRI_PLIVE.OJDT T0
-            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
-            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
-            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
-        WHERE
-            T0."RefDate" <= \''.$end_date.'\'
-            AND T3."CardCode" = \''.$cust_code.'\'
-        ORDER BY T0."RefDate" DESC,T0."TransId" DESC
-    )
-    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-),
-AdjustedSum AS (
-    SELECT *,
-           CASE
-               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
-               ELSE "Debit (LC)"
-           END AS "Adjusted Debit"
-    FROM CumulativeSum
-),
-FinalResult AS (
-    SELECT *,
-           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
-    FROM AdjustedSum
-),
-RankedResults AS (
-    SELECT *,
-           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
-    FROM FinalResult
-)
-SELECT
-    "Posting Date",
-    "Due Date",
-    "Document Date",
-    "Document Type",
-    "Business Partner Code",
-    "Business Partner Name",
-    "Document Number",
-    "Transaction Number",
-    "Account Code",
-    "Account Name",
-    "Adjusted Debit" AS "Debit (LC)",
-    "Credit (LC)",
-    "Balance",
-    "Remarks",
-    "Adjusted Debit",
-    "Cumulative Debit",
-    "Cumulative Adjusted Debit"
-FROM RankedResults
-WHERE rn <= (
-    SELECT MAX(rn)
-    FROM RankedResults
-    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
-)
-ORDER BY "Posting Date" DESC, "Transaction Number" DESC
-)
-WHERE "Document Type" != \'Incoming Payment\'
-AND "Debit (LC)" != 0
-ORDER BY "Posting Date" ASC
-LIMIT 1';
-
-
-//                $sql_oldest_invoice2 = 'SELECT * FROM (
-//WITH CumulativeSum AS (
-//    SELECT * FROM (
-//        SELECT
-//            T0."RefDate" AS "Posting Date",
-//            T0."DueDate" AS "Due Date",
-//            T0."TaxDate" AS "Document Date",
-//            CASE
-//                WHEN T0."TransType" = 18 THEN \'A/P Invoice\'
-//                WHEN T0."TransType" = 19 THEN \'A/P Credit Note\'
-//                WHEN T0."TransType" = 46 THEN \'Outgoing Payment\'
-//                WHEN T0."TransType" = 30 THEN \'Journal Entry\'
-//                WHEN T0."TransType" = 13 THEN \'A/R Invoice\'
-//                WHEN T0."TransType" = 24 THEN \'Incoming Payment\'
-//                WHEN T0."TransType" = 14 THEN \'A/R Credit Note\'
-//            END AS "Document Type",
-//            T3."CardCode" AS "Business Partner Code",
-//            T3."CardName" AS "Business Partner Name",
-//            T0."BaseRef" AS "Document Number",
-//            T0."TransId" AS "Transaction Number",
-//            T1."Account" AS "Account Code",
-//            T2."AcctName" AS "Account Name",
-//            T1."Debit" AS "Debit (LC)",
-//            T1."Credit" AS "Credit (LC)",
-//            (T1."Debit" - T1."Credit") AS "Balance",
-//            T0."Memo" AS "Remarks",
-//            SUM(T1."Debit") OVER (ORDER BY T0."TransId" DESC) AS "Cumulative Debit",
-//            CASE
-//                WHEN T0."TransType" = 24 THEN (
-//                    SELECT T22."DocNum"
-//                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-//                    WHERE T00."DocNum" = T0."BaseRef"
-//                    AND T00."DocDate" = T22."DocDate"
-//                    AND T11."SumApplied" = T22."DocTotal"
-//                )
-//                ELSE NULL
-//            END AS "Linked A/R Invoice",
-//            CASE
-//                WHEN T0."TransType" = 13 THEN (
-//                    SELECT T22."DocNum"
-//                    FROM AL_YASEEN_AGRI_PLIVE.ORCT T00
-//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RCT2 T11 ON T00."DocEntry" = T11."DocNum"
-//                    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T22 ON T22."DocEntry" = T11."DocEntry"
-//                    WHERE T22."DocNum" = T0."BaseRef"
-//                    AND T00."DocDate" = T22."DocDate"
-//                    AND T11."SumApplied" = T22."DocTotal"
-//                )
-//                ELSE NULL
-//            END AS "Linked Incoming Payment"
-//        FROM
-//            AL_YASEEN_AGRI_PLIVE.OJDT T0
-//            INNER JOIN AL_YASEEN_AGRI_PLIVE.JDT1 T1 ON T0."TransId" = T1."TransId"
-//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OACT T2 ON T1."Account" = T2."AcctCode"
-//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD T3 ON T1."ShortName" = T3."CardCode"
-//        WHERE
-//            T0."RefDate" <= \''.$end_date.'\'
-//            AND T3."CardCode" = \''.$cust_code.'\'
-//        ORDER BY T0."TransId" DESC
-//    )
-//    WHERE ("Linked A/R Invoice" IS NULL AND "Linked Incoming Payment" IS NULL)
-//),
-//AdjustedSum AS (
-//    SELECT *,
-//           CASE
-//               WHEN "Cumulative Debit" > '.$cum_balance.' THEN '.$cum_balance.' - (SUM("Debit (LC)") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING))
-//               ELSE "Debit (LC)"
-//           END AS "Adjusted Debit"
-//    FROM CumulativeSum
-//),
-//FinalResult AS (
-//    SELECT *,
-//           SUM("Adjusted Debit") OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS "Cumulative Adjusted Debit"
-//    FROM AdjustedSum
-//),
-//RankedResults AS (
-//    SELECT *,
-//           ROW_NUMBER() OVER (ORDER BY "Posting Date" DESC, "Transaction Number" DESC) AS rn
-//    FROM FinalResult
-//)
-//SELECT
-//    "Posting Date",
-//    "Due Date",
-//    "Document Date",
-//    "Document Type",
-//    "Business Partner Code",
-//    "Business Partner Name",
-//    "Document Number",
-//    "Transaction Number",
-//    "Account Code",
-//    "Account Name",
-//    "Adjusted Debit" AS "Debit (LC)",
-//    "Credit (LC)",
-//    "Balance",
-//    "Remarks",
-//    "Adjusted Debit",
-//    "Cumulative Debit",
-//    "Cumulative Adjusted Debit"
-//FROM RankedResults
-//WHERE rn <= (
-//    SELECT MAX(rn)
-//    FROM RankedResults
-//    WHERE "Cumulative Adjusted Debit" = '.$cum_balance.'
-//)
-//ORDER BY "Posting Date" DESC, "Transaction Number" DESC
-//)
-//WHERE "Document Type" != \'Incoming Payment\'
-//ORDER BY "Posting Date" ASC';
-
-                $result_oldest = odbc_exec($conn, $sql_oldest_invoice);
-                if (!$result_oldest)
-                {
-                    echo "Error while sending SQL statement to the database server.\n";
-                    echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-                }
-                else
-                {
-//                    $ss = [];
-                    while ($row = odbc_fetch_array($result_oldest)) {
-//                        dd($row);
-//                        array_push($this->customer, $row);
-//                        array_push($this->customer_code, $row["CardCode"]);
-
-//                        array_push($ss, $row);
-//                        dd(Carbon::parse($row["Oldest_Date"]) . '--' .$oldest_inv . '||' . Carbon::parse($row["Oldest_Date"])->lt($oldest_inv));
-//                        $a = Carbon::parse($row["Oldest_Date"])->format('Y-m-d');
-
-                        $fmt = Carbon::parse($row["Oldest_Date"])->format('Y-m-d');
-//                        dd($oldest_inv);
-
-                        $x = Carbon::createFromFormat('Y-m-d', $fmt);
-//                        $y = Carbon::createFromFormat('Y-m-d', $oldest_inv);
-
-//                        if(Carbon::parse($row["Oldest_Date"])->lt($oldest_inv)) {
-                        if($x->lt($oldest_inv)) {
-                            $oldest_inv = $x->format('Y-m-d');
-                            $c_code = $cust_code;
-//                            $oldest_inv = $row["Oldest_Date"];
-                        }
-                    }
-
-//                    dd($ss);
-
-                }
-
-                // end of oldest invoice
-            }
-
-
-            odbc_close($conn);
-        }
-
-        return [$customer_balance, $aging_balance, $oldest_inv, $c_code];
     }
 }

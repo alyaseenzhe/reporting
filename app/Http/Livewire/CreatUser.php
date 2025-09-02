@@ -41,6 +41,15 @@ class CreatUser extends Component
         'emp_code.required' => 'حقل الرقم الوظيفي مطلوب',
     ];
 
+    /**
+     * Renders the view for creating a new user.
+     *
+     * This function retrieves all user groups from the database to make them
+     * available to the view. It then returns the 'livewire.creat-user' view,
+     * which is rendered using the 'layouts.dashboard' layout.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render()
     {
         $groups = UserGroup::all();
@@ -49,6 +58,17 @@ class CreatUser extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * Creates a new user after validating the input data.
+     *
+     * This method first validates the data submitted from the form. It then
+     * creates a new User record in the database, hashing the password before
+     * storing it. The user's group is set to `null` if no group is selected.
+     * The selected branches are encoded into a JSON string. Finally, it
+     * redirects the user to the user list with a success or error message.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function create() {
 
 //        dd($this->role);

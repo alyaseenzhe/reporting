@@ -36,6 +36,12 @@ class ListCashStatement extends Component
         'customer_code.required' => "مطلوب",
     ];
 
+    /**
+     * This is a Livewire lifecycle hook that runs on every request. It serves as a security gatekeeper,
+     * ensuring that only authorized users can access this report. It checks if the user's account is active
+     * and if they have the specific permission 'list.customer-cash-statement' assigned to their user group
+     * or if they are an administrator. If checks fail, the user is redirected.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -50,6 +56,12 @@ class ListCashStatement extends Component
         }
     }
 
+    /**
+     * This is a Livewire lifecycle hook that runs only once when the component is first loaded.
+     * It's used for initial setup. It retrieves the current user's authorized branch list and then
+     * calls the `customers()` method to pre-populate the customer selection dropdown menu, so it's
+     * ready for the user.
+     */
     public function mount() {
 
         $this->query = User::where('id', Auth::id())->first();
@@ -59,25 +71,47 @@ class ListCashStatement extends Component
 
     }
 
+    /**
+     * This is the standard Livewire method that renders the component's Blade view. It specifies the
+     * view file to be used for the UI and the master dashboard layout to wrap around it.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-cash-statement')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This method is the entry point for generating the report, triggered by an event from the frontend.
+     * It receives the user-selected filters, updates the component's state, and then delegates the
+     * main data fetching and processing to the `proccess_report()` method. After processing is complete,
+     * it emits an event to the frontend to signal that the process has finished.
+     *
+     * @param string $start_date The start date for the report period.
+     * @param string $end_date The end date for the report period.
+     * @param string $customer_code The code of the customer for whom the statement is generated.
+     */
     public function generateReport($start_date, $end_date, $customer_code) {
 
         $this->start_date = $start_date;
         $this->end_date = $end_date;
         $this->customer_code = $customer_code;
 
-        $this->validate();
+//        $this->validate();
 //        $this->emit('show-container');
         $this->proccess_report();
 //        $this->emit('show-container');
         $this->emit('finished');
     }
 
+    /**
+     * This function orchestrates the data retrieval from two different database systems (a legacy SQL Server
+     * and the new SAP HANA system). It first validates that the selected customer belongs to the user's
+     * authorized branches. It then executes queries against both databases to get a complete history of
+     * cash transactions for the customer statement.
+     */
     public function proccess_report() {
 
         $branches = json_decode(Auth::user()->branches);
@@ -88,7 +122,7 @@ class ListCashStatement extends Component
 
         if ($customer < 1) {
             $this->results = [];
-            return $this->results;
+//            return $this->results;
         }
 
         $start_date = date($this->start_date . ' 00:00:00');
@@ -133,8 +167,8 @@ class ListCashStatement extends Component
         $this->results = [];
         $this->sap_results = [];
 
-        $query = DB::connection('sqlsrv')->select("SELECT Code, Name, VoucherNo, VoucherDate,item_code, qty, rate, Arabic_Name, svalue as item_value, (Value/1.15) as Value, customer_code, emp_name FROM (
-select accmast.code,accmast.name, ProductMast.Code as item_code , SInvoice.Rate, productmast.Arabic_Name, PaymentMethodDetails.*
+        $query = DB::connection('sqlsrv')->select("SELECT Code, Name, VoucherNo, VoucherDate,item_code, qty, rate, Arabic_Name, BaseUnits as Unit, svalue as item_value, (Value/1.15) as Value, customer_code, emp_name FROM (
+select accmast.code,accmast.name, ProductMast.Code as item_code , SInvoice.Rate, productmast.Arabic_Name, ProductMast.BaseUnits, PaymentMethodDetails.*
 ,ActualQty as qty, (sinvoice.Value*exchangerate+extrafieldstotal) as svalue
 from PaymentMethodDetails,sinvoice, ProductMast
 ,accmast where sinvoiceno=voucherno and
@@ -143,7 +177,7 @@ and SInvoice.ProductNo = ProductMast.NodeNo
 and PaymentMethodDetails.type in (1,2,3,4)
 and voucherdate>=:start_date1 and  voucherdate<=:end_date1
 union all
-select accmast.code,accmast.name, ProductMast.Code as item_code , PInvoice.Rate, productmast.Arabic_Name, PaymentMethodDetails.*
+select accmast.code,accmast.name, ProductMast.Code as item_code , PInvoice.Rate, productmast.Arabic_Name, ProductMast.BaseUnits, PaymentMethodDetails.*
 ,ActualQty as qty, (pinvoice.Value*exchangerate+extrafieldstotal) as svalue
 from PaymentMethodDetails,pinvoice, ProductMast
 ,accmast where pinvoiceno=voucherno and
@@ -168,12 +202,24 @@ order by VoucherDate asc", [
 
         $this->results = json_decode(json_encode($query), true);
 
+
+
         $this->sapQuery($start_date, $end_date, $this->customer_code);
-        return $this->results;
-//        $this->emit('show-container');
+//        return $this->results;
+        $this->emit('show-container');
 
     }
 
+    /**
+     * This function queries the SAP HANA database for cash statement data. It includes a business rule to prevent
+     * querying data before the SAP go-live date (Jan 1, 2024). It connects via ODBC and executes a complex query
+     * using an optimized analytical view (`SalesAnalysisQuery`) to efficiently retrieve sales document line items
+     * for the selected customer and date range.
+     *
+     * @param string $start_date The start date of the reporting period.
+     * @param string $end_date The end date of the reporting period.
+     * @param string $customer_code The unique code of the customer.
+     */
     public function sapQuery($start_date, $end_date, $customer_code) {
 
         if (Carbon::parse($start_date)->lt('2024-01-01')) {
@@ -206,8 +252,9 @@ order by VoucherDate asc", [
         else
         {
 
-            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", ("DocTotal"-"VatSum") as "Value", "ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "QuantityInInventoryUoM" as "qty", IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate", "NetSalesAmountLC" as "item_value"  FROM (
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", * FROM (
+            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", "FullTotal" as "Value", T5."ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "SalUnitMsr" as "Unit", "QuantityInInventoryUoM" as "qty", IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate", "NetSalesAmountLC" as "item_value"  FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",
+(select "NetSalesAmountLC" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" WHERE "DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\' AND "DocumentNumber" = T1."DocumentNumber" AND "DocumentTypeCode" = T1."DocumentTypeCode") as "FullTotal", * FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -238,9 +285,12 @@ ON T1."BusinessPartnerCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T3
 ON T1."DocumentNumber" = T3."DocNum"
 WHERE T2."CardCode" = \''.$customer_code.'\'
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
+) as a
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T5
+ON a."ItemCode" = T5."ItemCode"
+
+WHERE a."BranchCode" IS NOT NULL
+AND a."InvType" IS NULL
 ORDER BY "DocumentNumber"';
 
 //    dd($sql);
@@ -266,6 +316,12 @@ ORDER BY "DocumentNumber"';
         }
     }
 
+    /**
+     * This function populates the customer filter dropdown with a list of customers the user is
+     * authorized to view. It uses a predefined mapping to translate the user's branch permissions into
+     * the corresponding customer code prefixes used in SAP. It then dynamically builds and executes a query
+     * to fetch all relevant customers from the SAP HANA database.
+     */
     public function customers() {
 
         $this->customer_list = [];

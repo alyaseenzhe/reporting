@@ -12,6 +12,7 @@ use Livewire\Component;
 class ListPostponedByCustomer extends Component
 {
 
+    // Public properties to hold the report's state and data
     public $area_id = -1;
     public $postponed = [];
     public $posponed_due_amount = [];
@@ -19,6 +20,11 @@ class ListPostponedByCustomer extends Component
 
     public $load_data_flage = true;
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It acts as a security check,
+     * ensuring the user is active and has the required permissions ('list.postponed-by-customers')
+     * to view this report. If the checks fail, the user is redirected.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -32,6 +38,11 @@ class ListPostponedByCustomer extends Component
         }
     }
 
+    /**
+     * This method initializes the data loading process, typically triggered by `wire:init` in the view.
+     * It calls the main `load_data` function with a default aging period of 120 days. Once the data
+     * is loaded, it emits an event to the frontend to make the results container visible.
+     */
     public function init()
     {
         $this->load_data(120);
@@ -40,12 +51,26 @@ class ListPostponedByCustomer extends Component
         }
 
     }
+
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-postponed-by-customer')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the core data retrieval function for the report. It executes a series of queries to
+     * build a comprehensive list of postponed (overdue) payments, filtered by the branches the
+     * current user is authorized to view.
+     *
+     * @param int $days The number of days an invoice must be overdue to be considered "postponed".
+     */
     public function load_data($days) {
 
         $end_date = Carbon::now()->format('Y-m-d');
@@ -108,18 +133,18 @@ and (accmast.Code like '0%' or accmast.Code like '1%')
 ) as tbl2
 group by EmpCode, EmpName, Code, Arabic_Name";
 
-            $postponed_stmt .= " having EmpCode in ";
-            foreach ($emp_codes as $key => $emp_code) {
-                if ($key === array_key_first($emp_codes)) {
-                    $postponed_stmt .= "('".$emp_code."', ";
-                }
-                elseif ($key === array_key_last($emp_codes)) {
-                    $postponed_stmt .= "'".$emp_code."')";
-                }
-                else {
-                    $postponed_stmt .= "'".$emp_code."',";
-                }
+        $postponed_stmt .= " having EmpCode in ";
+        foreach ($emp_codes as $key => $emp_code) {
+            if ($key === array_key_first($emp_codes)) {
+                $postponed_stmt .= "('".$emp_code."', ";
             }
+            elseif ($key === array_key_last($emp_codes)) {
+                $postponed_stmt .= "'".$emp_code."')";
+            }
+            else {
+                $postponed_stmt .= "'".$emp_code."',";
+            }
+        }
 
         $this->postponed = DB::connection('sqlsrv')->select($postponed_stmt,
             [

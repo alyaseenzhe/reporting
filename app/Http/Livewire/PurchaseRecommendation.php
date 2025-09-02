@@ -36,6 +36,10 @@ class PurchaseRecommendation extends Component
 
     protected $listeners = ['create-report' => 'createReport', 'export-report' => 'exportReport'];
 
+    /**
+     * A Livewire lifecycle hook that serves as a security checkpoint. It ensures the user is active and
+     * has the required permission ('list.purchase-recommendation') to access this page.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -49,6 +53,11 @@ class PurchaseRecommendation extends Component
         }
     }
 
+    /**
+     * This is a Livewire lifecycle hook that runs once when the component is initialized. It connects
+     * to the SAP database to fetch a list of all active vendors, which is then used to populate a
+     * filter dropdown for the user in the view.
+     */
     public function mount() {
 
 //        $this->vendor_list = AccMast::join('ProductMast', 'ProductMast.VendorNo', 'accmast.NodeNo')
@@ -112,6 +121,13 @@ class PurchaseRecommendation extends Component
         }
     }
 
+    /**
+     * The standard Livewire method to render the component's UI. On each render, it fetches a key
+     * configuration value (`dist_days`) from the settings table. This value represents the "days of supply"
+     * and is crucial for the purchase recommendation calculations.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $settings_record = Setting::first();
@@ -181,6 +197,16 @@ class PurchaseRecommendation extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the core report generation function. It connects to the SAP database and dynamically builds a
+     * specific SQL query based on the user's filter choice (all items, by vendor, or by a single item).
+     * The query gathers crucial inventory data for each item, including current stock on hand, quantity on
+     * open purchase orders, and the total quantity on open purchase quotations.
+     *
+     * @param string $item_type The type of filter to apply ('all_items', 'item_vendor', 'item_code').
+     * @param string $vendor_type The selected vendor code, if applicable.
+     * @param string $product_code The selected product code, if applicable.
+     */
     public function createReport($item_type, $vendor_type, $product_code) {
 
         if (! extension_loaded('odbc'))
@@ -882,6 +908,13 @@ WHERE
         }
     }
 
+    /**
+     * This function is responsible for exporting the generated report data to an Excel file. It does not
+     * perform the final recommendation calculation itself. Instead, it delegates this task to the
+     * `PurchaseRecommendationExport` class, passing it all the necessary data and settings.
+     *
+     * @param string $record_type A filter to determine which records to include in the export (e.g., 'all', 'recommended_only').
+     */
     public function exportReport($record_type) {
 
         $this->show_results = false;

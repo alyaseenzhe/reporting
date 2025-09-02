@@ -86,6 +86,15 @@ class CreateProductTarget extends Component
         'vendor_type.not_in' => "مطلوب",
     ];
 
+     /* booted - Handles user authentication and access control.
+     *
+     * This function is executed upon component boot. It first sets a high execution time limit
+     * and disables the memory limit, which is useful for long-running operations. It then checks
+     * if the authenticated user is active. If not, it redirects them to the 'non-active-user' route.
+     * Subsequently, it verifies if the user has a specific report type permission ('list.my-product-target')
+     * or is an administrator. If the user does not have the required permissions, they are redirected
+     * to the 'dashboard' route.
+     */
     public function booted() {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -108,6 +117,16 @@ class CreateProductTarget extends Component
 //        }
     }
 
+    /**
+     * mount - Initializes the component properties upon creation.
+     *
+     * This function is a Livewire lifecycle hook that runs once, immediately after the component is instantiated.
+     * It sets the execution time and memory limits to handle potentially large datasets. It fetches the
+     * currently authenticated user's data and stores it in the `$query` property. It then retrieves a
+     * distinct list of vendors by joining the `AccMast` and `ProductMast` tables, filtering by a specific
+     * price list, and stores the result in `$this->vendor_list`. Finally, it calls the `get_filters()` method
+     * to set up any necessary filters for the component.
+     */
     public function mount() {
 
         set_time_limit(0);
@@ -119,11 +138,11 @@ class CreateProductTarget extends Component
 //        dd($this->users);
 
         $this->vendor_list = AccMast::join('ProductMast', 'ProductMast.VendorNo', 'accmast.NodeNo')
-        ->where('ProductMast.PriceList', 1)
+            ->where('ProductMast.PriceList', 1)
 //        ->select('accmast.NodeNo as nodeno', 'accmast.Arabic_Name as arabic_name')
-        ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
+            ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
 //        ->distinct()
-        ->get();
+            ->get();
 //        dd($this->vendor_list);
 //        foreach ($this->vendor_list as $list) {
 //            dd($list->Arabic_Name);
@@ -151,6 +170,16 @@ class CreateProductTarget extends Component
 
     }
 
+    /**
+     * render - Renders the Livewire component view and initializes settings.
+     *
+     * This function is responsible for rendering the `create-product-target` view. It first sets
+     * the time and memory limits to handle large data processing. It then retrieves various settings
+     * from the database and the authenticated user's permissions, storing them in component properties.
+     * These settings include distribution days, permissions for writing and editing product targets, and item pricing.
+     * It also fetches the branches associated with the current user. Finally, it returns the view,
+     * passing the branches as a variable, and specifies the `layouts.dashboard` layout.
+     */
     public function render()
     {
         set_time_limit(0);
@@ -206,18 +235,54 @@ class CreateProductTarget extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * updatedDeptId - Responds to changes in the department ID.
+     *
+     * This function is a Livewire hook that automatically runs whenever the `$dept_id` property is updated.
+     * It resets the `show_msg` property, which likely controls a message display, and sets two boolean flags:
+     * `btn_generate` is set to true, and `btn_save` is set to false. This logic controls the visibility
+     * and state of the generate and save buttons in the user interface, prompting the user to generate new data
+     * after changing the department.
+     *
+     * @param mixed $value The new value of `$dept_id`.
+     */
     public function updatedDeptId($value) {
         $this->reset(['show_msg']);
         $this->btn_generate = true;
         $this->btn_save = false;
     }
 
+    /**
+     * updatedSelectedMonth - Responds to changes in the selected month.
+     *
+     * This function is a Livewire hook that runs automatically whenever the `$selected_month` property is changed.
+     * It resets the `show_msg` property, which likely controls a message display, and sets two boolean flags:
+     * `btn_generate` is set to true and `btn_save` is set to false. This behavior likely re-enables the "generate report"
+     * button and disables the "save" button, prompting the user to generate a new report after changing the month.
+     *
+     * @param mixed $value The new value of `$selected_month`.
+     */
     public function updatedSelectedMonth($value) {
         $this->reset(['show_msg']);
         $this->btn_generate = true;
         $this->btn_save = false;
     }
 
+    /**
+     * create_report - Orchestrates the report generation process.
+     *
+     * This function is the main entry point for creating a report. It sets the execution time and
+     * memory limits to handle large data. It receives department, category, special product, and vendor
+     * types as arguments and assigns them to component properties. A special check is performed: if the
+     * `$dept_id` array contains the value "-1", it is replaced with all branches the user has access to.
+     * The function then checks the number of departments selected. If only one department is selected,
+     * it calls `generateReport()`; otherwise, it calls `generateBranchesReport()` to handle a multi-branch report.
+     *
+     * @param array $dept_id The ID or IDs of the department(s).
+     * @param mixed $cat_type The category type.
+     * @param mixed $sp_type The special product type.
+     * @param mixed $vendor_type The vendor type.
+     */
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -237,6 +302,32 @@ class CreateProductTarget extends Component
         }
     }
 
+    /**
+     * generateReport - Generates a detailed product target report.
+     *
+     * This function handles the logic for generating a comprehensive report based on user-selected filters.
+     * It begins by setting unlimited execution time and memory limits to accommodate large data processing.
+     * It resets several properties to ensure a clean slate for the new report and validates the user input.
+     *
+     * It then identifies all employees in the selected branches who have product target writing permissions.
+     * It maps these employees to their respective branch codes and user IDs.
+     * The function determines the appropriate database query based on the authenticated user's permissions,
+     * fetching a list of relevant employees.
+     *
+     * The core of the function involves building a complex SQL query to retrieve product sales data from
+     * the previous 12 months, using `AccountsC5`. This query dynamically builds a series of `SUM(case when ...)`
+     * statements for each month of the past year.
+     *
+     * The query is constructed with various filters for categories, special product types, and vendors.
+     * It handles different category types (`bathoor`, `asmedah`, `mobedat`, `other`) and incorporates them
+     * into the SQL statement. The final query joins product information with sales data.
+     *
+     * After fetching the data, it stores the results in the `$results` property. It also retrieves a
+     * percentage allocation for each employee in the branch and collects a list of special products.
+     *
+     * The function concludes by setting `show_msg` to true and emitting a 'finished' event, indicating that
+     * the report generation is complete and the front-end can update.
+     */
     public function generateReport()
     {
         set_time_limit(0);
@@ -799,6 +890,32 @@ class CreateProductTarget extends Component
 
     }
 
+
+
+    /**
+     * generateBranchesReport - Generates a detailed product target report for multiple branches.
+     *
+     * This function is similar to `generateReport()` but is specifically tailored for scenarios
+     * where multiple branches are selected. It begins by setting unlimited execution time and
+     * memory limits and resets component properties for a fresh report generation. It then validates
+     * the user's input.
+     *
+     * The function iterates through each selected branch, identifies employees with product target
+     * writing permissions, and maps their IDs to a simplified department code. This aggregated list
+     * of employee IDs is then used to filter a list of relevant employees.
+     *
+     * It retrieves historical sales data and existing product targets, using dynamic queries that
+     * account for multiple years and months. It also fetches employee percentage allocations for
+     * the selected branches.
+     *
+     * The function then constructs a complex query to retrieve product sales data from the previous
+     * 12 months for all selected branches. This query uses conditional `SUM` statements for each month
+     * and dynamically incorporates filters for product categories, special product types, and vendors.
+     *
+     * The function concludes by fetching a list of products based on the user's filter criteria and
+     * preparing the data for the front-end. Finally, it sets the `show_msg` flag to true and
+     * emits a 'finished' event to update the user interface.
+     */
     public function generateBranchesReport()
     {
 
@@ -1809,77 +1926,26 @@ class CreateProductTarget extends Component
         $this->emit('finished');
     }
 
-//    public function processData()
-//    {
-//        dd($this->emp_target);
-//        dd($this->target);
-//
-////        $hasTargetSavedForUser = ProductTarget::query()
-////            ->where('', $request->input('date'))
-////            ->where('user_id', $request->input('user_id'))
-////            ->exists();
-////
-////        if ($hasTargetSavedForUser) {
-////            return back()->withErrors([
-////                'date' => 'Expense already saved for this user on this date'
-////            ]);
-////        }
-//
-//
-//        if ($this->target) {
-//            foreach ($this->target as $product_key => $target) {
-//                foreach ($target as $monthyear_key => $monthyear) {
-//                    $str = explode('-', $monthyear_key);
-//                    $year = $str[0];
-//                    $month = $str[1];
-//
-//                    foreach ($monthyear as $target) {
-//                        if ($target != "") {
-//                            $fetch = ProductTarget::where('product_id', $product_key)
-//                                ->where('month', $month)
-//                                ->where('year', $year)
-//                                ->where('branch', $this->dept_id)
-//                                ->where('user_id', Auth::id())
-//                                ->first();
-//
-//                            if ($fetch) {
-//                                $record = ProductTarget::where('product_id', $product_key)
-//                                    ->where('month', $month)
-//                                    ->where('year', $year)
-//                                    ->where('branch', $this->dept_id)
-//                                    ->where('user_id', Auth::id())
-//                                    ->update(['target' => $target]);
-//                            } else {
-//                                $record = ProductTarget::create([
-//                                    'product_id' => $product_key,
-//                                    'month' => $month,
-//                                    'year' => $year,
-//                                    'branch' => $this->dept_id,
-//                                    'user_id' => Auth::id(),
-//                                    'target' => $target
-//                                ]);
-//                            }
-//
-//                            $record = ProductTargetLog::create([
-//                                'product_id' => $product_key,
-//                                'month' => $month,
-//                                'year' => $year,
-//                                'branch' => $this->dept_id,
-//                                'user_id' => Auth::id(),
-//                                'target' => $target
-//                            ]);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            $this->emit('msg');
-//            $this->reset('target');
-////            $this->generateReport();
-//        }
-//
-//    }
-
+    /**
+     * historicalThreeYearsSales - Calculates the average historical sales over three years.
+     *
+     * This function is designed to fetch and process sales data from the previous three years
+     * to provide a historical context for product targets. It first defines the start and end
+     * dates for the three-year period preceding the selected month.
+     *
+     * It then constructs a dynamic SQL query to retrieve sales data from a Microsoft SQL Server database.
+     * The query calculates the average monthly sales for each product over the last three years.
+     * This is achieved by iterating through each month of the past year and creating a `SUM(case when ...)`
+     * statement that sums sales for the corresponding month in the last three years and divides by three.
+     *
+     * The query filters the data based on selected departments, product categories, special product types,
+     * and vendors. It includes logic to handle multiple departments and different product category types
+     * (`bathoor`, `asmedah`, `mobedat`, `other`). The final query joins product master data with sales
+     * invoice data to retrieve comprehensive product details.
+     *
+     * After executing the query, the function stores the results in the `$results2` property, which
+     * contains the average monthly sales for each product over the three-year period.
+     */
     public function historicalThreeYearsSales() {
 
         $selected_year1 = Carbon::parse($this->selected_month)->subYears(3);
@@ -2030,48 +2096,26 @@ class CreateProductTarget extends Component
 
     }
 
-//    public function updatedTarget($value, $key)
-//    {
-////        dd($key);
-//        $diff_key = "diff." . $key;
-//        $emp_key = "target." . $key;
-//        $product_code = explode('.', $key)[0];
-//        $month = intval(explode('.', $key)[2]);
-////        dd($month);
-//
-////        dd($product_code);
-//        $search_key = array_search($product_code, array_column($this->results[0], 'ProductCode'));
-////        dd($this->results[0][$search_key]);
-////        dd(floatval($value)/floatval($this->results[0][$search_key]['month'.$month])*100);
-////        $diff_value = 100;
-//
-////        dd($this->results[0][$search_key]['month' . $month]);
-////        dd('month' . $month);
-//        $diff_value = 0;
-//        if (floatval($this->results[0][$search_key]['month' . $month]) > 0) {
-//            $diff_value = number_format(floatval($value) / floatval($this->results[0][$search_key]['month' . $month]) * 100, 2);
-//        }
-//        elseif (number_format(floatval($this->results[0][$search_key]['month' . $month])) == "0") {
-//            $diff_value = 100;
-//        }
-//
-//        $diff_key = str_replace('.', '--', $diff_key);
-//        $emp_key = str_replace('.', '--', $emp_key);
-////        dd($diff_key);
-//
-//        $this->emit('diff-update', [$diff_key, $diff_value, $emp_key, $value]);
-//    }
-
-    public function updatedEmpsPercentage($value, $key) {
-//        dd($key);
-//        $this->emps_percentage;
-
-//        dd($this->emps_percentage);
-//        $total = array_sum($this->emps_percentage) - end($this->emps_percentage);
-//        dd($total);
-    }
-
-    // function to save the data
+    /**
+     * Handles the saving of product target data from the front-end.
+     *
+     * This function processes four different types of data:
+     * - Employee percentage allocations (`$emps_percents`)
+     * - Special product flags (`$products_codes`)
+     * - Total branch targets for products (`$totaltargets`)
+     * - Individual employee targets for products (`$targets`)
+     *
+     * It utilizes Laravel's `upsert` method for bulk insertion or updating, which is
+     * significantly more efficient than individual `create` or `update` calls within a loop.
+     * The function first parses the data from a simple string format and then prepares
+     * it for the `upsert` method. It is wrapped in a try-catch block to handle potential
+     * errors during the database operations.
+     *
+     * @param array $targets Array of individual employee targets.
+     * @param array $emps_percents Array of employee percentage allocations.
+     * @param array $products_codes Array of product codes to be flagged as 'special'.
+     * @param array $totaltargets Array of total branch targets.
+     */
     public function test($targets, $emps_percents, $products_codes, $totaltargets) {
         set_time_limit(0);
         ini_set('memory_limit', '-1');
@@ -2318,11 +2362,42 @@ class CreateProductTarget extends Component
 
     }
 
+    /**
+     * Resets form fields and emits an event to the front-end.
+     *
+     * This function is typically triggered by a "clear" button in the Livewire component.
+     * It resets the state of three specific properties that likely hold form data:
+     * - `emps_percentage`
+     * - `target`
+     * - `emp_target`
+     *
+     * After resetting the properties, it emits a 'clear-btn' event. This event can be
+     * used by a front-end listener to perform actions like clearing input fields or
+     * hiding a modal without a full page reload.
+     */
     public function clear_btn() {
         $this->reset(['emps_percentage', 'target', 'emp_target']);
         $this->emit('clear-btn');
     }
 
+    /**
+     * Dynamically builds and executes a SQL query to filter products based on categories,
+     * special product types, and vendors.
+     *
+     * This function is designed to take an array of selected categories, special product
+     * types, and a single vendor, then construct a raw SQL query string to retrieve
+     * matching products from the database. It is particularly useful for filtering
+     * product data for reporting or display purposes.
+     *
+     * The function uses a series of hardcoded string variables and conditional logic
+     * to build the WHERE clause of the query. It then executes the raw SQL using
+     * the `DB::connection('sqlsrv')` facade and returns the results.
+     *
+     * @param array $cats An array of selected product categories (e.g., ['bathoor', 'asmedah']).
+     * @param array $sps An array of selected special product codes.
+     * @param string $vendors The selected vendor code, or 'vendor_all'.
+     * @return array A multi-dimensional array of filtered product data.
+     */
     public function filtered_products($cats, $sps, $vendors) {
 
         set_time_limit(0);
@@ -2406,6 +2481,17 @@ AND Pricelist = 1 ";
         return $fetch_products_query;
     }
 
+    /**
+     * Retrieves a user's saved filter preferences for the "create" page.
+     *
+     * This function checks if the currently authenticated user has previously
+     * saved any filter selections (for department, categories, vendors, etc.)
+     * for the product target creation page.
+     *
+     * If a record is found, it populates the class properties with the saved values,
+     * which are stored as JSON strings in the database. If no saved filters are
+     * found, it defaults to setting the selected month to the current month.
+     */
     public function get_filters() {
 
         $record = ProductTargetFilter::where('user_id', Auth::id())
@@ -2421,10 +2507,20 @@ AND Pricelist = 1 ";
 //            dd($this->dept_id);
         }
         else {
-          $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+            $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
         }
     }
 
+    /**
+     * Saves or updates a user's filter preferences to the database.
+     *
+     * This function first checks for an existing filter record for the currently
+     * authenticated user and the specified 'create' page. If a record is found,
+     * it updates the existing one with the current filter selections. If no
+     * record exists, a new one is created. The filter values (department,
+     * categories, special types, vendors, and selected month) are stored as
+     * JSON-encoded strings.
+     */
     public function save_filters() {
 
         $record = ProductTargetFilter::where('user_id', Auth::id())
