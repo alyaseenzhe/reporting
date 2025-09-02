@@ -22,8 +22,15 @@ class ListEmployeesDailyReports extends Component
     public $end_date;
     public $daily_reports;
 
+    // Listens for a 'search' event emitted from the frontend
     protected $listeners = ['search' => 'search'];
 
+    /**
+     * This is a Livewire lifecycle hook that runs once when the component is first initialized.
+     * It's responsible for populating the initial list of employees whose reports can be viewed.
+     * It fetches all users who have report receivers defined, stores their IDs for filtering,
+     * and keeps a copy of the original list so the filter can be reset.
+     */
     public function mount() {
 
         // good
@@ -45,6 +52,13 @@ class ListEmployeesDailyReports extends Component
         $this->original_emp_code = $this->emp_code;
     }
 
+    /**
+     * This is the standard Livewire method that renders the component's Blade view. The actual data fetching
+     * for the reports is handled by the `search()` method, so this function's main role is to render the
+     * initial page structure and filters.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
 //        $daily_reports = DailyReport::select('start_of_week', 'end_of_week', 'added_by')
@@ -64,6 +78,16 @@ class ListEmployeesDailyReports extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the primary action method for fetching and filtering the report data. It's triggered by a
+     * 'search' event from the frontend, taking an employee ID and a date range as parameters. It then
+     * queries the database for a distinct list of weekly report groups submitted by that specific employee
+     * within the given dates.
+     *
+     * @param int $customer_id The ID of the employee to search for.
+     * @param string $start_date The start of the date range filter.
+     * @param string $end_date The end of the date range filter.
+     */
     public function search($customer_id, $start_date, $end_date) {
 //        dd($this->single_emp_code);
 //        $this->emp_code = [$this->single_emp_code];
@@ -80,10 +104,16 @@ class ListEmployeesDailyReports extends Component
             ->orderBy('added_by')
             ->get();
 
+        // Notify the frontend that the search process is complete
         $this->emit('finished');
 
     }
 
+    /**
+     * This is a utility method used to reset the employee filter. It restores the list of employees
+     * to be searched back to the initial, complete list that was loaded when the component was first
+     * mounted. This is typically used for a "Clear Filter" or "Show All" button.
+     */
     public function resetEmps() {
         $this->emp_code = $this->original_emp_code;
     }

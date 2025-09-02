@@ -26,8 +26,12 @@ class ListProductsTargets extends Component
         'selected_month.required' => "مطلوب",
     ];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It serves as a security checkpoint,
+     * ensuring the user is active and has the required permission ('list.products-targets')
+     * to access this page. Unauthorized users are redirected.
+     */
     public function booted() {
-
 
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
@@ -40,12 +44,24 @@ class ListProductsTargets extends Component
         }
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout for a consistent UI.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-products-targets')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the main method for generating the product targets report. It validates user input and
+     * then dynamically constructs a complex SQL query. The query is designed to pivot the data,
+     * transforming rows of monthly targets into a wide, columnar format (one column for each month's
+     * target and last-year sales) that is suitable for display in a report table.
+     */
     public function generateReport()
     {
         $this->validate();

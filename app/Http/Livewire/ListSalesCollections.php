@@ -32,7 +32,10 @@ class ListSalesCollections extends Component
         'end_date.required' => "مطلوب",
     ];
 
-
+    /**
+     * A Livewire lifecycle hook that serves as a security checkpoint. It ensures the user is active and
+     * has the required permission ('list.sales-collections') to access this page.
+     */
     public function booted()
     {
 
@@ -48,12 +51,25 @@ class ListSalesCollections extends Component
         }
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master layout.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-sales-collections')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This function orchestrates the data retrieval from the LEGACY SQL Server database.
+     * It fetches a list of relevant customers and then calls multiple helper functions to get
+     * different financial metrics (collections, cash sales, etc.). Finally, it manually combines
+     * these metrics into a single, unified result set.
+     *
+     * @return array The processed results from the legacy system.
+     */
     public function proccess_report()
     {
 
@@ -194,6 +210,13 @@ class ListSalesCollections extends Component
         return $this->final_results;
     }
 
+    /**
+     * This is the main entry point for generating the report, triggered by the user. It validates the
+     * date range and then uses conditional logic to determine which database(s) to query.
+     * - If the range is before 2024, it queries only the legacy SQL Server system (Scribes).
+     * - If the range is after 2023, it queries only the new SAP HANA system.
+     * - If the range spans both periods, it queries both systems and merges the results.
+     */
     public function generateReport()
     {
 
@@ -223,6 +246,9 @@ class ListSalesCollections extends Component
 
     }
 
+    /**
+     * Fetches basic details (code, name, salesperson) for active customers in the selected area.
+     */
     public function customer_details()
     {
 
@@ -365,6 +391,9 @@ class ListSalesCollections extends Component
 
     }
 
+    /**
+     * Calculates the total value of collected payments for a given list of customers.
+     */
     public function collected2($customer_code, $start_date, $end_date)
     {
 
@@ -474,6 +503,9 @@ class ListSalesCollections extends Component
 
     }
 
+    /**
+     * Calculates total cash sales for a given list of customers.
+     */
     public function cash2($customer_code, $start_date, $end_date)
     {
 
@@ -562,6 +594,9 @@ class ListSalesCollections extends Component
 
     }
 
+    /**
+     * Calculates total credit (postponed) sales for a given list of customers.
+     */
     public function postponed_sales2($customer_code, $start_date, $end_date)
     {
 
@@ -657,6 +692,9 @@ group by Code, Name", [
         return $result ? round($result[0]['DueAmount'], 2) : 0;
     }
 
+    /**
+     * Calculates the total outstanding balance for a given list of customers.
+     */
     public function postponed_amount2($customer_code, $end_date)
     {
 
@@ -769,6 +807,9 @@ group by Code, Name", [
         return $result ? round($result[0]['DueAmount'], 2) : 0;
     }
 
+    /**
+     * Calculates the balance that is overdue by a specific number of days.
+     */
     public function postponed_due_amount2($customer_code, $end_date, $day)
     {
 
@@ -833,6 +874,15 @@ group by Code, Name", [
         return $result;
     }
 
+    /**
+     * Queries the SAP HANA database to retrieve a comprehensive sales and collections summary for a
+     * given branch and date range. It uses optimized analytical views and a complex subquery to
+     * classify each sale as cash, credit, or collected based on payment dates.
+     *
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     * @param string $departments The department/branch code.
+     */
     public function sapQuery($start_date, $end_date, $departments)
     {
 
@@ -984,6 +1034,15 @@ ORDER BY "BusinessPartnerCode"
 
     }
 
+    /**
+     * Performs the same query as `sapQuery` but uses different column aliases in the final output
+     * (e.g., 'cash', 'collected'). This is done specifically to match the data structure of the
+     * legacy system's output, preparing it for the merging process.
+     *
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     * @param string $departments The department/branch code.
+     */
     public function sapQuery_merge($start_date, $end_date, $departments)
     {
 
@@ -1136,6 +1195,11 @@ ORDER BY "BusinessPartnerCode"
 
     }
 
+    /**
+     * This function is responsible for merging the data retrieved from both the legacy system
+     * (`final_results`) and the SAP system (`sap_results`). It uses Laravel Collections to group all
+     * records by customer code and then sums the metrics from both sources to create a final, unified result set.
+     */
     public function mergedQuery() {
 
         $this->merged_results = [];

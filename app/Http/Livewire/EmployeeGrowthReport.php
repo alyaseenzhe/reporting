@@ -39,6 +39,11 @@ class EmployeeGrowthReport extends Component
         'end_date.required' => "مطلوب",
     ];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request, after the component is hydrated.
+     * It's used here for authorization, checking if the user is active and has permissions
+     * to view this report. It redirects unauthorized users.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -52,12 +57,23 @@ class EmployeeGrowthReport extends Component
         }
     }
 
+    /**
+     * The standard Livewire method to render the component's Blade view.
+     * It also specifies the master layout file to be used.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.employee-growth-report')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * Prepares and triggers the data fetching for the report.
+     * It translates a selected area_id into a specific branch_id and then
+     * calls the sapQuery method to retrieve data from the SAP HANA database.
+     */
     public function proccess_report() {
 
         if ($this->area_id == '01') { // ahsa
@@ -128,6 +144,13 @@ class EmployeeGrowthReport extends Component
 
     }
 
+    /**
+     * This method handles the distribution of the generated report via email.
+     * It contains predefined recipient lists for each branch and queues an email
+     * containing the report data using the `WeeklyReport` Mailable.
+     *
+     * @return int
+     */
     public function sendReport() {
 
         $ahsa_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'amir.saleh@alyaseenagri.com', 'sales.ahsa@alyaseenagri.com', 'gamil.mohamed@alyaseenagri.com', 'ahmed.wahd@alyaseenagri.com'];
@@ -186,6 +209,11 @@ class EmployeeGrowthReport extends Component
         return 0;
     }
 
+    /**
+     * The primary action method triggered by the user to generate the report.
+     * It validates the form input, shows a loading state, and then calls
+     * the main processing function.
+     */
     public function generateReport() {
 
         set_time_limit(2000);
@@ -196,7 +224,15 @@ class EmployeeGrowthReport extends Component
         $this->proccess_report();
     }
 
-
+    /**
+     * Connects to the SAP HANA database via ODBC to execute a complex sales analysis query.
+     * The query compares sales data between the selected date range and the same period
+     * in the previous year, aggregating results by salesperson for the specified branch.
+     *
+     * @param string $branch The branch code to filter the query by.
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     */
     public function sapQuery($branch, $start_date, $end_date) {
 
         if (! extension_loaded('odbc'))

@@ -17,6 +17,13 @@ class ListFriendsDailyReports extends Component
     public $original_emp_code = [];
     public $emps;
 
+    /**
+     * This is a Livewire lifecycle hook that runs once when the component is first created.
+     * Its purpose is to set up the initial state by finding all employees who report to the
+     * currently authenticated user. It queries for users whose 'report_receivers' field contains
+     * the current user's employee code, collects their IDs, and stores them for filtering.
+     * A copy of the initial list is saved to allow for resetting the filter.
+     */
     public function mount() {
 
         $this->emps = User::where('report_receivers', 'LIKE' ,"%".Auth::user()->emp_code."%")
@@ -32,6 +39,13 @@ class ListFriendsDailyReports extends Component
         $this->original_emp_code = $this->emp_code;
     }
 
+    /**
+     * This is the standard Livewire method that renders the component's UI. It fetches a distinct list
+     * of weekly reports submitted by the employees who report to the current user. The query only runs
+     * if there are employees in the `$emp_code` array. The results are ordered to show the newest weeks first.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $friends_reports = [];
@@ -50,12 +64,22 @@ class ListFriendsDailyReports extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This method filters the report list to show reports for only a single selected employee.
+     * It's typically triggered by a dropdown or search input in the view. It updates the `$emp_code`
+     * property, which automatically causes the `render` method to run again with the new, specific filter.
+     */
     public function search() {
 //        dd($this->single_emp_code);
         $this->emp_code = [$this->single_emp_code];
 
     }
 
+    /**
+     * This utility method resets the employee filter to its original state. It restores the `$emp_code`
+     * property to the full list of all direct reports that was initially loaded in the `mount` method.
+     * This is likely connected to a "Clear Filter" or "Show All" button in the view.
+     */
     public function resetEmps() {
         $this->emp_code = $this->original_emp_code;
     }
