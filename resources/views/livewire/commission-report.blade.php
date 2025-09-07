@@ -339,7 +339,8 @@
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
                                     @if(floatval(number_format($result2['Balance'])) == 0)
-                                        @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
+                                      {{--   @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210) --}}
+                                             @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 180)
                                             <span style="font-weight: bold; color: green">نعم</span>
                                                 <?php $pay = true; ?>
                                         @else
@@ -347,7 +348,8 @@
                                                 <?php $pay = false; ?>
                                         @endif
                                     @else
-                                        @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
+                                    {{-- @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210) --}}
+                                         @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 180)
                                             <span style="font-weight: bold; color: green">نعم</span>
                                                 <?php $pay = true; ?>
                                         @else
