@@ -166,7 +166,7 @@
                             <td style="border: 1px dotted;" colspan="2">
                                 <span>مستحق: </span>
                                 <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
-                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">@if($customer_total_120 > 0) ({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%) @else  [0%]  @endif</span>
+{{--                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">@if($customer_total_120 > 0) ({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%) @else  [0%]  @endif</span>--}}
                             </td>
                             <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
                             <td style="border: 1px dotted;"></td>
@@ -230,7 +230,7 @@
                             <td style="border: 1px dotted;" colspan="2">
                                 <span>مستحق: </span>
                                 <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
-                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%)</span>
+                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">@if($customer_total_120 > 0) ({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%) @else  [0%]  @endif</span>
                             </td>
                             <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
                             <td style="border: 1px dotted;"></td>
