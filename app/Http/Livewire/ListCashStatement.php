@@ -209,7 +209,10 @@ order by VoucherDate asc", [
         {
 
             $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", "FullTotal" as "Value", T5."ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "SalUnitMsr" as "Unit", "QuantityInInventoryUoM" as "qty",
-       IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate",
+  CASE
+  WHEN "QuantityInInventoryUoM" IS NULL OR "QuantityInInventoryUoM" = 0 THEN 0
+  ELSE "NetSalesAmountLC" / "QuantityInInventoryUoM"
+  END AS "rate",
 
        "NetSalesAmountLC" as "item_value"  FROM (
 SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",
