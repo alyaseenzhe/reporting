@@ -36,12 +36,6 @@ class ListCashStatement extends Component
         'customer_code.required' => "مطلوب",
     ];
 
-    /**
-     * This is a Livewire lifecycle hook that runs on every request. It serves as a security gatekeeper,
-     * ensuring that only authorized users can access this report. It checks if the user's account is active
-     * and if they have the specific permission 'list.customer-cash-statement' assigned to their user group
-     * or if they are an administrator. If checks fail, the user is redirected.
-     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -56,12 +50,6 @@ class ListCashStatement extends Component
         }
     }
 
-    /**
-     * This is a Livewire lifecycle hook that runs only once when the component is first loaded.
-     * It's used for initial setup. It retrieves the current user's authorized branch list and then
-     * calls the `customers()` method to pre-populate the customer selection dropdown menu, so it's
-     * ready for the user.
-     */
     public function mount() {
 
         $this->query = User::where('id', Auth::id())->first();
@@ -71,28 +59,12 @@ class ListCashStatement extends Component
 
     }
 
-    /**
-     * This is the standard Livewire method that renders the component's Blade view. It specifies the
-     * view file to be used for the UI and the master dashboard layout to wrap around it.
-     *
-     * @return \Illuminate\View\View
-     */
     public function render()
     {
         return view('livewire.list-cash-statement')
             ->layout('layouts.dashboard');
     }
 
-    /**
-     * This method is the entry point for generating the report, triggered by an event from the frontend.
-     * It receives the user-selected filters, updates the component's state, and then delegates the
-     * main data fetching and processing to the `proccess_report()` method. After processing is complete,
-     * it emits an event to the frontend to signal that the process has finished.
-     *
-     * @param string $start_date The start date for the report period.
-     * @param string $end_date The end date for the report period.
-     * @param string $customer_code The code of the customer for whom the statement is generated.
-     */
     public function generateReport($start_date, $end_date, $customer_code) {
 
         $this->start_date = $start_date;
@@ -106,12 +78,6 @@ class ListCashStatement extends Component
         $this->emit('finished');
     }
 
-    /**
-     * This function orchestrates the data retrieval from two different database systems (a legacy SQL Server
-     * and the new SAP HANA system). It first validates that the selected customer belongs to the user's
-     * authorized branches. It then executes queries against both databases to get a complete history of
-     * cash transactions for the customer statement.
-     */
     public function proccess_report() {
 
         $branches = json_decode(Auth::user()->branches);
@@ -210,16 +176,6 @@ order by VoucherDate asc", [
 
     }
 
-    /**
-     * This function queries the SAP HANA database for cash statement data. It includes a business rule to prevent
-     * querying data before the SAP go-live date (Jan 1, 2024). It connects via ODBC and executes a complex query
-     * using an optimized analytical view (`SalesAnalysisQuery`) to efficiently retrieve sales document line items
-     * for the selected customer and date range.
-     *
-     * @param string $start_date The start date of the reporting period.
-     * @param string $end_date The end date of the reporting period.
-     * @param string $customer_code The unique code of the customer.
-     */
     public function sapQuery($start_date, $end_date, $customer_code) {
 
         if (Carbon::parse($start_date)->lt('2024-01-01')) {
@@ -252,7 +208,10 @@ order by VoucherDate asc", [
         else
         {
 
-            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", "FullTotal" as "Value", T5."ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "SalUnitMsr" as "Unit", "QuantityInInventoryUoM" as "qty", IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate", "NetSalesAmountLC" as "item_value"  FROM (
+            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", "FullTotal" as "Value", T5."ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "SalUnitMsr" as "Unit", "QuantityInInventoryUoM" as "qty",
+       IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate",
+
+       "NetSalesAmountLC" as "item_value"  FROM (
 SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",
 (select "NetSalesAmountLC" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" WHERE "DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\' AND "DocumentNumber" = T1."DocumentNumber" AND "DocumentTypeCode" = T1."DocumentTypeCode") as "FullTotal", * FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
@@ -316,12 +275,6 @@ ORDER BY "DocumentNumber"';
         }
     }
 
-    /**
-     * This function populates the customer filter dropdown with a list of customers the user is
-     * authorized to view. It uses a predefined mapping to translate the user's branch permissions into
-     * the corresponding customer code prefixes used in SAP. It then dynamically builds and executes a query
-     * to fetch all relevant customers from the SAP HANA database.
-     */
     public function customers() {
 
         $this->customer_list = [];
