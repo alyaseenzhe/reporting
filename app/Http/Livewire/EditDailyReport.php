@@ -42,6 +42,17 @@ class EditDailyReport extends Component
         'customer_name.not_in' => 'مطلوب',
     ];
 
+    /**
+     * The `mount` method is a Livewire lifecycle hook that is called when the component
+     * is first initialized. It's used to pre-populate the component's properties
+     * with data from a database record. In this case, it finds a `DailyReport`
+     * record by its ID and assigns the record's attributes to the public properties
+     * of the Livewire component. If the record is not found, it catches the
+     * `ModelNotFoundException`, sets a flash message, and redirects the user.
+     *
+     * @param int $id The ID of the `DailyReport` record to be edited.
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
     public function mount($id) {
         try {
             $this->record = DailyReport::findOrFail($id);
@@ -63,12 +74,39 @@ class EditDailyReport extends Component
 
     }
 
+    /**
+     * The `render` method is the core of a Livewire component. It is responsible for
+     * returning the view that will be rendered to the user. This function specifies
+     * the `livewire.edit-daily-report` view and applies the `layouts.dashboard` layout
+     * to it.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render()
     {
         return view('livewire.edit-daily-report')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * Updates an existing daily report record in the database.
+     *
+     * This function takes several parameters from the user to update a `DailyReport`
+     * record. It first uses `Carbon` to parse the report date and then finds the
+     * existing record by its ID. It updates the record's properties, including
+     * setting `customer_name` and `companion` to `null` if the `report_type` is not 'visit'.
+     * It also calculates the start and end of the week for the report date,
+     * defining the week as Friday to Thursday. Finally, it attempts to save the
+     * updated record and redirects the user with a flash message indicating success or failure.
+     *
+     * @param string $report_type The type of report being updated.
+     * @param string $report_date The date of the report.
+     * @param string $customer_name The customer's name, if applicable.
+     * @param string $location1 The first location associated with the report.
+     * @param string $location2 The second location associated with the report.
+     * @param string $companion The companion's name, if applicable.
+     * @param string $report_note The notes for the report.
+     */
     public function updateReport($report_type, $report_date, $customer_name, $location1, $location2, $companion, $report_note) {
 
 
@@ -97,6 +135,19 @@ class EditDailyReport extends Component
         }
     }
 
+    /**
+     * Fetches a list of customers from a fourth database connection using ODBC.
+     *
+     * This function establishes a connection to a specific external database
+     * defined by environment variables. It checks if the `odbc` extension is loaded
+     * before attempting to connect. If the connection is successful, it executes
+     * a raw SQL query to retrieve all customers (`CardType = 'C'`) from the `AL_YASEEN_AGRI_PLIVE.OCRD`
+     * table. The results are then fetched row by row and pushed into the component's
+     * `customer_list` property. The function includes error handling for both
+     * the connection and the query execution.
+     *
+     * @return void
+     */
     public function getCustomers()
     {
 

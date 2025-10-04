@@ -91,7 +91,11 @@
                         <div class="flex flex-row gap-2.5">
                             <div class="flex items-center mb-4 ml-8">
                                 <input id="record" type="checkbox" value="record" onchange="hideRows(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">اخفاء التفاصيل</label>
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">اخفاء الفواتير</label>
+                            </div>
+                            <div class="flex items-center mb-4 ml-8">
+                                <input id="record-181" type="checkbox" value="record" onchange="hideRows181(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">اخفاء فواتير (اقل من 181 يوم)</label>
                             </div>
                         </div>
                     </div>
@@ -143,102 +147,102 @@
                     $customer_total_120 = 0;
                     ?>
                 @foreach($aging_records as $record)
-                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')
-                        {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
-                        @if($loop->first)
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-                        @endif
-                        @if($record["Business Partner Code"] != $customer_id)
-
-                            <tr style="background-color: #f2f0f0; font-weight: bold; color: #233881; border: dotted 2px;">
-                                <td style="border: 1px dotted;" >{{$emp_id}}</td>
-                                <td style="border: 1px dotted;" >{{$emp_name}}</td>
-                                {{--            <td style="border: 1px dotted;" colspan="6">المجموع لـ--}}
-                                <td style="border: 1px dotted;">{{ $customer_id }}</td>
-                                <td style="border: 1px dotted;">{{ $customer_name }}</td>
-                                <td style="border: 1px dotted;" colspan="2">
-                                    <span>مستحق: </span>
-                                    <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
-                                    <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%)</span>
-                                </td>
-                                <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
-                                <td style="border: 1px dotted;"></td>
-                            </tr>
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-
-                            @php $customer_total = 0; $customer_total_120 = 0; @endphp
-                        @endif
-                        {{--                        @if (!$loop->first)--}}
-                        {{--                            --}}
-                        {{--                            @php $customer_id = $record["Business Partner Code"]; @endphp--}}
-                        {{--                        @endif--}}
-
-                        <tr class="customer-record">
-                            <td class="border p-2 whitespace-nowrap">
-                                {{$record["Memo"]}}
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                {{$record["SlpName"]}}
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                {{$record["Business Partner Code"]}}
-                            </td>
-                            <td class="border p-2">
-                                {{$record["Business Partner Name"]}}
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                {{$record["Document Number"]}}
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                {{ \Carbon\Carbon::parse($record["Posting Date"])->format('Y-m-d') }}
-                            </td>
-                            <td class="border p-2 whitespace-nowrap">
-                                {{number_format($record["Debit (LC)"], 2)}}
-                                @php $customer_total += $record["Debit (LC)"]; @endphp
-                                @if(floatval(\Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date))) >= 120)
-                                    @php $customer_total_120 += $record["Debit (LC)"]; @endphp
-                                @endif
-                            </td>
-                            {{--                        <td class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format(abs($record->paid), 2)}}--}}
-                            {{--                        </td>--}}
-                            {{--                        <td class="border p-2 whitespace-nowrap">--}}
-                            {{--                            {{number_format($record->DueAmount, 2)}}--}}
-                            {{--                        </td>--}}
-                            <td style="@if(\Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date)) > 120) color:red; @endif" class="border p-2 whitespace-nowrap">
-                                {{ \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date)) }}
-                            </td>
-                        </tr>
-                        {{--                    @endif--}}
-                        @if($loop->last)
-                            <tr style="background-color: #f2f0f0; font-weight: bold; color: #233881; border: dotted 2px;">
-                                <td style="border: 1px dotted;" >{{$emp_id}}</td>
-                                <td style="border: 1px dotted;" >{{$emp_name}}</td>
-                                {{--            <td style="border: 1px dotted;" colspan="6">المجموع لـ--}}
-                                <td style="border: 1px dotted;">{{ $customer_id }}</td>
-                                <td style="border: 1px dotted;">{{ $customer_name }}</td>
-                                <td style="border: 1px dotted;" colspan="2">
-                                    <span>مستحق: </span>
-                                    <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
-                                    <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%)</span>
-                                </td>
-                                <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
-                                <td style="border: 1px dotted;"></td>
-                            </tr>
-                                <?php $customer_id = $record["Business Partner Code"]; ?>
-                                <?php $customer_name = $record["Business Partner Name"]; ?>
-                                <?php $emp_id = $record["Memo"]; ?>
-                                <?php $emp_name = $record["SlpName"]; ?>
-
-                            @php $customer_total = 0; $customer_total_120 = 0; @endphp
-                        @endif
+                    {{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
+                    {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
+                    @if($loop->first)
+                            <?php $customer_id = $record["Business Partner Code"]; ?>
+                            <?php $customer_name = $record["Business Partner Name"]; ?>
+                            <?php $emp_id = $record["Memo"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
                     @endif
+                    @if($record["Business Partner Code"] != $customer_id)
+
+                        <tr style="background-color: #f2f0f0; font-weight: bold; color: #233881; border: dotted 2px;">
+                            <td style="border: 1px dotted;" >{{$emp_id}}</td>
+                            <td style="border: 1px dotted;" >{{$emp_name}}</td>
+                            {{--            <td style="border: 1px dotted;" colspan="6">المجموع لـ--}}
+                            <td style="border: 1px dotted;">{{ $customer_id }}</td>
+                            <td style="border: 1px dotted;">{{ $customer_name }}</td>
+                            <td style="border: 1px dotted;" colspan="2">
+                                <span>مستحق: </span>
+                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
+{{--                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">@if($customer_total_120 > 0) ({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%) @else  [0%]  @endif</span>--}}
+                            </td>
+                            <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
+                            <td style="border: 1px dotted;"></td>
+                        </tr>
+                            <?php $customer_id = $record["Business Partner Code"]; ?>
+                            <?php $customer_name = $record["Business Partner Name"]; ?>
+                            <?php $emp_id = $record["Memo"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
+
+                        @php $customer_total = 0; $customer_total_120 = 0; @endphp
+                    @endif
+                    {{--                        @if (!$loop->first)--}}
+                    {{--                            --}}
+                    {{--                            @php $customer_id = $record["Business Partner Code"]; @endphp--}}
+                    {{--                        @endif--}}
+
+                    <tr class="customer-record @if(\Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date)) < 181) record-181 @endif">
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record["Memo"]}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record["SlpName"]}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record["Business Partner Code"]}}
+                        </td>
+                        <td class="border p-2">
+                            {{$record["Business Partner Name"]}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{$record["Document Number"]}}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($record["Posting Date"])->format('Y-m-d') }}
+                        </td>
+                        <td class="border p-2 whitespace-nowrap">
+                            {{number_format($record["Debit (LC)"], 2)}}
+                            @php $customer_total += $record["Debit (LC)"]; @endphp
+                            @if(floatval(\Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date))) >= 120)
+                                @php $customer_total_120 += $record["Debit (LC)"]; @endphp
+                            @endif
+                        </td>
+                        {{--                        <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                            {{number_format(abs($record->paid), 2)}}--}}
+                        {{--                        </td>--}}
+                        {{--                        <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                            {{number_format($record->DueAmount, 2)}}--}}
+                        {{--                        </td>--}}
+                        <td style="@if(\Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date)) > 181) color:red; @endif" class="border p-2 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date)) }}
+                        </td>
+                    </tr>
+                    {{--                    @endif--}}
+                    @if($loop->last)
+                        <tr style="background-color: #f2f0f0; font-weight: bold; color: #233881; border: dotted 2px;">
+                            <td style="border: 1px dotted;" >{{$emp_id}}</td>
+                            <td style="border: 1px dotted;" >{{$emp_name}}</td>
+                            {{--            <td style="border: 1px dotted;" colspan="6">المجموع لـ--}}
+                            <td style="border: 1px dotted;">{{ $customer_id }}</td>
+                            <td style="border: 1px dotted;">{{ $customer_name }}</td>
+                            <td style="border: 1px dotted;" colspan="2">
+                                <span>مستحق: </span>
+                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">{{number_format($customer_total_120, 2)}}</span>
+                                <span style="@if($customer_total_120 > 0) color:red; @else color:green @endif">@if($customer_total_120 > 0) ({{number_format((floatval($customer_total_120)/floatval($customer_total))*100, 2)}}%) @else  [0%]  @endif</span>
+                            </td>
+                            <td style="border: 1px dotted;" >{{number_format($customer_total, 2)}}</td>
+                            <td style="border: 1px dotted;"></td>
+                        </tr>
+                            <?php $customer_id = $record["Business Partner Code"]; ?>
+                            <?php $customer_name = $record["Business Partner Name"]; ?>
+                            <?php $emp_id = $record["Memo"]; ?>
+                            <?php $emp_name = $record["SlpName"]; ?>
+
+                        @php $customer_total = 0; $customer_total_120 = 0; @endphp
+                    @endif
+                    {{--                    @endif--}}
                 @endforeach
                 </tbody>
             </table>
@@ -262,11 +266,11 @@
 
 @section('scripts')
     <script src="{{ asset('js/jquery.min.js') }}"></script>
-{{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
-{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
+    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
 
     <script>
         $(document).ready( function () {
@@ -445,14 +449,23 @@
         });
 
         function hideRows(type) {
-
             if (type.checked) {
+                $('#record-181').prop('checked', false);
+                $('.record-181').removeClass('hide');
                 $('.customer-record').addClass('hide');
-            }
-            else {
+            } else {
                 $('.customer-record').removeClass('hide');
+            }
+        }
+
+        function hideRows181(type) {
+            if (type.checked) {
+                $('#record').prop('checked', false);
+                $('.customer-record').removeClass('hide');
+                $('.record-181').addClass('hide');
+            } else {
+                $('.record-181').removeClass('hide');
             }
         }
     </script>
 @stop
-

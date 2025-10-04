@@ -34,6 +34,17 @@ class EditUser extends Component
         'branches.min' => 'يجب اختيار فرع واحد على الأقل',
     ];
 
+    /**
+     * The `mount` method is a Livewire lifecycle hook that is called when the component
+     * is first initialized. It's used to pre-populate the component's properties with
+     * data from a database record. In this case, it finds a `User` record by its ID and
+     * assigns the record's attributes to the public properties of the Livewire component.
+     * It also decodes the JSON string for branches. If the user record is not found,
+     * it catches the `ModelNotFoundException`, sets a flash message, and redirects the user.
+     *
+     * @param int $id The ID of the user record to be edited.
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
     public function mount($id) {
         try {
             $this->record = User::findOrFail($id);
@@ -53,6 +64,14 @@ class EditUser extends Component
 
     }
 
+    /**
+     * The `render` method is the core of a Livewire component. It is responsible for
+     * returning the view that will be rendered to the user. This function retrieves
+     * all user groups from the database to make them available to the view, then
+     * returns the `livewire.edit-user` view and applies the `layouts.dashboard` layout.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function render()
     {
         $groups = UserGroup::all();
@@ -61,6 +80,19 @@ class EditUser extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * Updates an existing user's details in the database.
+     *
+     * This function first finds the user record to be updated by their ID. It then
+     * performs a series of conditional validations and updates. The logic is split
+     * based on whether the user's email address has been changed and whether a new
+     * password has been entered. It handles updates for both 'user' (u) and 'admin' (a)
+     * roles, and stores the user's branches as a JSON-encoded string. Finally, it
+     * attempts to save the record and redirects the user with a session flash message
+     * indicating success or failure. If the user record is not found, it catches
+     * the exception and redirects with an error message.
+     *
+     */
     public function update() {
 
         try {

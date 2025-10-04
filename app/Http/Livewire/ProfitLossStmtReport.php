@@ -15,6 +15,7 @@ class ProfitLossStmtReport extends Component
     public $sap_results = [];
     public $show_msg = false;
 
+    // A static map to provide friendly names for the main P&L account groups
     public $acc_name = [
         '41' => '41 - إيرادات النشاط الرئيسي',
         '51' => '51 - تكلفة البضاعة المباعة',
@@ -25,6 +26,11 @@ class ProfitLossStmtReport extends Component
 
     protected $listeners = ['create-report' => 'create_report'];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It serves as a security checkpoint,
+     * ensuring the user is active and has the required permission ('profit-loss-stmt-report')
+     * to access this page. Unauthorized users are redirected.
+     */
     public function booted() {
 
 
@@ -39,12 +45,27 @@ class ProfitLossStmtReport extends Component
         }
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout for a consistent UI.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.profit-loss-stmt-report')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This method acts as an entry point for the report generation, triggered by a frontend event.
+     * It captures the user's filter selections from the event payload and then calls the main
+     * `generateReport` method to perform the actual work.
+     *
+     * @param string $branch_id The selected branch/cost center ID ('all' for all branches).
+     * @param string $start_date The start of the date range.
+     * @param string $end_date The end of the date range.
+     */
     public function create_report($branch_id, $start_date, $end_date) {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -56,6 +77,11 @@ class ProfitLossStmtReport extends Component
         $this->generateReport();
     }
 
+    /**
+     * This is the main orchestrator for generating the report. It prepares the component for a
+     * new report, delegates the data fetching to the `sapQuery` method, and then updates the UI
+     * to display the results.
+     */
     public function generateReport() {
 
         $this->show_msg = false;
@@ -69,6 +95,15 @@ class ProfitLossStmtReport extends Component
 
     }
 
+    /**
+     * This function connects to the SAP HANA database to retrieve all the necessary data for a Profit and
+     * Loss statement. It executes a single, complex query that is broken into two main parts and then joined
+     * to structure the data for the report.
+     *
+     * @param string $branch_id The selected branch/cost center ID.
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     */
     public function sapQuery($branch_id, $start_date, $end_date) {
 
         if (! extension_loaded('odbc'))

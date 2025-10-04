@@ -32,6 +32,11 @@ class ListMarketingDeptSales extends Component
         'end_date.after_or_equal' => "يجب ان يكون التاريخ اعلى او يساوي 2024-01-01",
     ];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It serves as a security gatekeeper,
+     * checking if the user is active and has the correct permissions ('list.marketing-depts-sales')
+     * to access this page. Unauthorized users are redirected.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -45,6 +50,11 @@ class ListMarketingDeptSales extends Component
         }
     }
 
+    /**
+     * A Livewire lifecycle hook that runs once when the component is first initialized. It retrieves
+     * the list of branch codes the currently authenticated user is authorized to view from their
+     * user profile. This list is used later to filter query results.
+     */
     public function mount() {
 
         $query = User::where('id', Auth::id())->first();
@@ -53,12 +63,27 @@ class ListMarketingDeptSales extends Component
 
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-marketing-dept-sales')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the primary action method for generating the report, triggered by an event from the frontend.
+     * It sets a longer script execution time limit, prepares the UI by emitting a 'show-container' event,
+     * and then delegates the complex data retrieval task to the `sapQuery()` method before signaling completion.
+     *
+     * @param string $start_date The start of the date range filter.
+     * @param string $end_date The end of the date range filter.
+     * @param array $depts An array of department/branch codes to filter by.
+     */
     public function generateReport($start_date, $end_date, $depts) {
 //        dd($depts);
 
@@ -75,6 +100,16 @@ class ListMarketingDeptSales extends Component
         $this->emit('finished');
     }
 
+    /**
+     * This is the core data-fetching function. It connects to the SAP HANA database and executes a very
+     * large and complex SQL query to get sales data for various marketing departments. The query is
+     * structured to calculate sales for the current period, the same period last year, and the total for
+     * the previous year, grouped by branch and by marketing department.
+     *
+     * @param string $start_date The start of the reporting period.
+     * @param string $end_date The end of the reporting period.
+     * @param array $depts The list of selected departments/branches to include in the report.
+     */
     public function sapQuery($start_date, $end_date, $depts) {
 
         $prev_month_start = Carbon::parse($start_date)->addYears(-1)->format('Y-m-d');
