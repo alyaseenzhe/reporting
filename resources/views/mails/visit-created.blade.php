@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شركة الياسين الزراعية</title>
+</head>
+<body style="direction: rtl;">
+<div style="direction: rtl; font-family: Arial, sans-serif; background-color: #ffffff; color: #333; padding: 20px">
+    <div style="text-align: center;">
+        <img width="123" height="98" src="https://reporting.alyaseenagri.com/images/logo-horizontal.png" alt="Logo">
+    </div>
+
+    @if($type == 'add')
+
+        <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار طلب زيارة جديد</h2>
+        <p style="font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
+            هلا  {{ $branch_manger_name }}،<br>
+            جاك طلب زيارة جديد وتفاصيله كالتالي، بإمكانك عرض التفاصيل كاملة واتخاذ القرار المناسب بالموافقة او الرفض من خلال الزر أدناه 😊
+        </p>
+
+    @elseif($type == 'delete')
+
+        <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بحذف الزيارة</h2>
+            <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
+                اهلاً،<br>
+                تمت الموافقة على حذف الزيارة وتفاصيلها كما يلي 😊
+            </p>
+
+    @elseif($type == 'approve')
+
+        <h2 style="text-align: center; color: #28a745; margin-top: 10px;">✅ تمت الموافقة على الزيارة</h2>
+        <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
+            اهلاً،<br>
+            تمت الموافقة على طلب الزيارة والتفاصيل كما يلي 😊
+        </p>
+    @elseif($type == 'reject')
+
+        <h2 style="text-align: center; color: #62182e; margin-top: 10px;">❌ تم رفض طلب الزيارة</h2>
+        <p style="color: #62182e; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
+            اهلاً،<br>
+            تم رفض طلب الزيارة والتفاصيل كما يلي 😊
+        </p>
+    @elseif($type == 'reviews-done')
+
+        <h2 style="text-align: center; color: #007C91; margin-top: 10px;">📋 تم الانتهاء من تقييم الزيارة</h2>
+        <p style="color: #007C91; font-size: 16px; margin: 20px 0; background-color: #e6f7fb; padding: 15px; border-radius: 10px;">
+            أهلاً،<br>
+            تم الانتهاء من تقييم الزيارة، يمكنك الاطلاع عليها من خلال الدخول على رابط الصفحة الموجود بالأسفل ✅
+        </p>
+    @endif
+
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">
+
+        <!-- Section 1 -->
+        <tr style="background-color: #f5f5f5;">
+            <td style="padding: 20px;" colspan="3">
+                <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">📍 عنوان الزيارة</label>
+                            <div style="color: #5222e1;">{{ $visit->title }}</div>
+                        </td>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">🗺️ مكان الزيارة</label>
+                            <div style="color: #5222e1;">
+                                @switch($visit->branch)
+                                    @case("0101") فرع الاحساء @break
+                                    @case("0102") فرع جدة @break
+                                    @case("0103") فرع الرياض @break
+                                    @case("0104") فرع وادي الدواسر @break
+                                    @case("0105") فرع الجوف @break
+                                    @case("0106") فرع الدمام @break
+                                    @case("0107") فرع الخرج @break
+                                    @case("0108") فرع نجران @break
+                                    @case("0109") فرع حائل @break
+                                    @case("0110") فرع تبوك @break
+                                    @case("0111") فرع القصيم @break
+                                    @case("0112") فرع ساجر @break
+                                    @case("0201") مزرعة الدالوة @break
+                                    @case("0202") مزرعة الفضول @break
+                                    @case("0203") مزرعة الدلم @break
+                                @endswitch
+                            </div>
+                        </td>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">🎯 سبب الزيارة</label>
+                            <div style="color: #5222e1;">{{ $visit->reason }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- Spacer -->
+        <tr style="background-color: #ffffff;">
+            <td style="height: 15px;"></td>
+        </tr>
+
+        <!-- Section 2 -->
+        <tr style="background-color: #f5f5f5;">
+            <td style="padding: 20px;" colspan="3">
+                <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td width="50%" style="padding: 10px;">
+                            <label style="font-weight: bold;">👤 مقدم الطلب</label>
+                            @foreach($visit->emps_requester as $req)
+                                <div style="color: #5222e1;">{{ $req->user->name }}</div>
+                            @endforeach
+                        </td>
+                        <td width="50%" style="padding: 10px;">
+                            <label style="font-weight: bold;">📬 المستلمون</label>
+                            <div style="color: #5222e1;">
+                                @foreach($visit->emps_recipients as $req)
+                                    <span>{{ $req->user->name }}@if (!$loop->last), @endif </span>
+                                @endforeach
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- Spacer -->
+        <tr style="background-color: #ffffff;">
+            <td style="height: 15px;"></td>
+        </tr>
+
+        <!-- Section 3 -->
+        <tr style="background-color: #f5f5f5;">
+            <td style="padding: 20px;" colspan="3">
+                <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                    <tr>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">📅 تاريخ بداية الزيارة</label>
+                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->start)->format('Y-m-d') }}</div>
+                        </td>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">📆 تاريخ نهاية الزيارة</label>
+                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->end)->subDay()->format('Y-m-d') }}</div>
+                        </td>
+                        <td width="33%" style="padding: 10px;">
+                            <label style="font-weight: bold;">⏰ وقت الزيارة</label>
+                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->start)->format('h:i A') }}</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- Spacer -->
+        <tr style="background-color: #ffffff;">
+            <td style="height: 15px;"></td>
+        </tr>
+
+        <!-- Section 4 -->
+        <tr style="background-color: #f5f5f5;">
+            <td style="padding: 20px;" colspan="3">
+                <label style="font-weight: bold;">🎯 أهداف الزيارة</label>
+                <div style="color: #5222e1; white-space: pre-wrap; margin-top: 10px;">
+                    {{ $visit->goals }}
+                </div>
+            </td>
+        </tr>
+
+        @if($type == 'approve')
+            <!-- Spacer -->
+            <tr style="background-color: #ffffff;">
+                <td style="height: 15px;"></td>
+            </tr>
+
+            <!-- Section 4 -->
+            <tr style="background-color: #ecffd5;">
+                <td style="padding: 20px;" colspan="3">
+                    <label style="font-weight: bold;">ملاحظات إضافية على الموافقة</label>
+                    <div style="color: #3b6200; white-space: pre-wrap; margin-top: 10px;">
+                        {{ $visit->status_notice ? $visit->status_notice : 'لا يوجد' }}
+                    </div>
+                </td>
+            </tr>
+        @elseif($type == 'reject')
+            <!-- Spacer -->
+            <tr style="background-color: #ffffff;">
+                <td style="height: 15px;"></td>
+            </tr>
+
+            <!-- Section 4 -->
+            <tr style="background-color: #ffbcd2;">
+                <td style="padding: 20px;" colspan="3">
+                    <label style="font-weight: bold;">اسباب الرفض</label>
+                    <div style="color: #62182e; white-space: pre-wrap; margin-top: 10px;">
+                        {{ $visit->status_notice ? $visit->status_notice : 'لا يوجد' }}
+                    </div>
+                </td>
+            </tr>
+        @endif
+
+        <!-- Spacer -->
+        <tr style="background-color: #ffffff;">
+            <td style="height: 20px;"></td>
+        </tr>
+
+        <!-- View Details Button -->
+        <tr style="background-color: #ffffff;">
+            <td colspan="3" style="text-align: center; padding: 20px;">
+                <a href="{{ route('show.visit', ['id' => $visit->id]) }}" style="background-color: #5222e1; color: #fff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+{{--                <a href="#" style="background-color: #5222e1; color: #fff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">--}}
+                    👁️‍🗨️ عرض تفاصيل الزيارة
+                </a>
+            </td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>

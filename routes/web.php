@@ -61,13 +61,17 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/list-aging-by-customer-employee', \App\Http\Livewire\ListAgingByCustomerAndEmployee::class)->name('list.aging-by-customer-employee');
     Route::get('/profit-loss-stmt-report', \App\Http\Livewire\ProfitLossStmtReport::class)->name('profit-loss-stmt-report');
     Route::get('/list-marketing-depts-sales', \App\Http\Livewire\ListMarketingDeptSales::class)->name('list.marketing-depts-sales');
-    Route::get('/list-employee-growth', \App\Http\Livewire\EmployeeGrowthReport::class)->name('list.employee-growth');
 
-    Route::match(['get','post'], '/list-aging', \App\Http\Livewire\ListAgingSap::class)->name('list.aging');
+    Route::get('/visit-calendar', \App\Http\Livewire\VisitCalendar::class)->name('visit-calendar');
+    Route::get('/show-visit/{id}', \App\Http\Livewire\ShowVisit::class)->name('show.visit');
+
 
     Route::get('/sap-reports', \App\Http\Livewire\SapReports::class)->name('sap-reports');
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
+  Route::get('/list-employee-growth', \App\Http\Livewire\EmployeeGrowthReport::class)->name('list.employee-growth');
+
+    Route::match(['get','post'], '/list-aging', \App\Http\Livewire\ListAgingSap::class)->name('list.aging');
 
 });
 
