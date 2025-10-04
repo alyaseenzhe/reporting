@@ -172,6 +172,37 @@
                 </div>
             </div>
 
+            @php
+                $extraServicesMap = [
+                    'hotel' => ['label' => 'حجز فندق', 'icon' => '🏨'],
+                    'flight' => ['label' => 'حجز طيران', 'icon' => '✈️'],
+                    'train' => ['label' => 'حجز قطار', 'icon' => '🚆'],
+                ];
+
+                $selectedServices = collect(json_decode($record->extra_services, true));
+            @endphp
+
+            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
+                <div class="w-full">
+                    <label class="block font-bold mb-6 text-xs">خدمات إضافية</label>
+
+                    @if($selectedServices->count())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($extraServicesMap as $key => $item)
+                                @if($selectedServices->contains($key))
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 border border-gray-300">
+                            {{ $item['icon'] }} {{ $item['label'] }}
+                        </span>
+                                @endif
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-sm text-gray-500">لا توجد خدمات إضافية</span>
+                    @endif
+                </div>
+            </div>
+
+
             <div class="w-full flex sm:flex-row flex-col gap-4"
                  style="@if($record->status ==0) background-color: #fffddc; @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @endif border: dashed 1px black; padding: 20px;">
                 <div class="w-full">
