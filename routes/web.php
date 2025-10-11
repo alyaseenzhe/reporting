@@ -67,9 +67,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/sap-reports', \App\Http\Livewire\SapReports::class)->name('sap-reports');
 
     Route::get('/non-active-user', \App\Http\Livewire\NonActiveUser::class)->name('non-active-user');
+    Route::get('/list-contacts', \App\Http\Livewire\ListContacts::class)->name('list.contacts');
+    Route::get('/show-contacts/{contact}', [\App\Http\Livewire\ListContacts::class, 'show'])->name('show.contact');
 
 });
-
 Route::middleware([
     'admin',
     'auth:sanctum',
@@ -92,3 +93,7 @@ Route::middleware([
 
     Route::get('/settings', \App\Http\Livewire\ListSettings::class)->name('list.settings');
 });
+
+Route::get('/contacts', \App\Http\Livewire\Contacts::class)->name('contact');
+
+Route::view('/thanks','livewire.site.thanks')->name('thanks');
