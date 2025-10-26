@@ -19,6 +19,13 @@ class ListAgingByCustomerAndEmployee extends Component
 
     protected $listeners = ['create-report' => 'generateReport'];
 
+    /**
+     * This is a Livewire lifecycle hook executed on every component request. Its primary purpose is to
+     * enforce security and access control. It first checks if the currently authenticated user's account is active.
+     * It then verifies that the user has the necessary permissions to view this specific report, either by
+     * being an administrator ('a') or by having the permission assigned to their user group. If either check fails,
+     * the user is redirected away from the page, preventing unauthorized access.
+     */
     public function booted() {
 
 
@@ -34,12 +41,30 @@ class ListAgingByCustomerAndEmployee extends Component
     }
 
 
+    /**
+     * This is a mandatory Livewire method responsible for rendering the component's user interface.
+     * It returns the specified Blade view file (`list-aging-by-customer-and-employee.blade.php`), which contains
+     * the HTML structure for the report filters and results table. It also embeds this view within the
+     * application's main `layouts.dashboard` template for a consistent look and feel.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-aging-by-customer-and-employee')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the primary method for generating the report, triggered by a 'create-report' event from the frontend.
+     * It sets the component's properties based on user input, increases the script execution time limit for the
+     * potentially long-running query, and then calls the `getCustomersBalanceDue` method to fetch the aging data
+     * from the SAP database. After fetching, it post-processes the results to create a unique list of employees
+     * for display and emits a 'finished' event to notify the frontend that the process is complete.
+     *
+     * @param string $area_id The branch/area code selected by the user.
+     * @param string $selected_date The date selected by the user for the aging calculation.
+     */
     public function generateReport($area_id, $selected_date)
     {
 //        dd($area_id . '--' . $selected_date);
@@ -64,6 +89,17 @@ class ListAgingByCustomerAndEmployee extends Component
 
     }
 
+    /**
+     * DEPRECATED: This is a legacy method for calculating customer aging. It is highly inefficient due to its
+     * multi-step, iterative process that results in N+1 database queries. The process involves:
+     * 1. Fetching a list of all customers.
+     * 2. Looping through each customer to execute a separate, complex query to find their balance due.
+     * 3. Looping through the customers with a balance *again* to run another extremely complex query with
+     * multiple Common Table Expressions (CTEs) to determine the individual aging buckets.
+     * This method has been replaced by the much more efficient `getCustomersBalanceDue` function below.
+     *
+     * @param string $end_date The end date for the aging calculation.
+     */
     public function getCustomersBalanceDue_good_old($end_date) {
 
         $this->customer = [];
@@ -543,6 +579,16 @@ ORDER BY "Posting Date" ASC, "Transaction Number" ASC
 //        return [$customer_balance, $aging_balance, $oldest_inv, $c_code];
     }
 
+    /**
+     * This is the current, optimized method for fetching customer aging data. It connects to the SAP HANA database
+     * and executes a single, efficient SQL query. The query's high performance is achieved by leveraging a
+     * specialized, built-in SAP HANA analytical view (`CustomerReceivableAgingQuery`). This view provides
+     * pre-calculated aging data. The method then joins this aging data with other tables (OCRD for customer details,
+     * OSLP for salesperson details) to retrieve all necessary information in one database operation, which is
+     * significantly faster and more scalable than the deprecated iterative method.
+     *
+     * @param string $end_date The date for which to calculate the aging balances.
+     */
     public function getCustomersBalanceDue($end_date) {
 
 //        $this->customer = [];
@@ -600,9 +646,9 @@ WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
 ELSE \'0001\'
 END as "BranchCode" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN /*"days" >=0 AND*/ "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 /*OR "days" < 0*/ THEN "AgingBalanceDueLC" END) as "121+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 

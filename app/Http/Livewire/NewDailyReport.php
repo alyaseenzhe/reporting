@@ -40,10 +40,21 @@ class NewDailyReport extends Component
         'customer_name.not_in' => 'مطلوب',
     ];
 
+    /**
+     * This is a Livewire lifecycle hook that runs once when the component is initialized.
+     * Its purpose is to prepare the form by pre-loading the list of customers from the
+     * SAP database so the customer dropdown is ready for the user.
+     */
     public function mount() {
         $this->getCustomers();
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout for a consistent UI.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
 //        $customers = AccMast::where('Type', '10')
@@ -55,6 +66,21 @@ class NewDailyReport extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the primary action method for creating and saving a new daily report. It is triggered
+     * by an event from the frontend. It processes the submitted form data, calculates the start and
+     * end of the week for reporting purposes, saves the new record to the database, and then handles
+     * the response based on which save button the user clicked ("Save" vs. "Save and New").
+     *
+     * @param string $report_type Type of the report ('work' or 'visit').
+     * @param string $report_date The date the report is for.
+     * @param string $customer_name The name of the customer visited (if applicable).
+     * @param string $location1 The primary location.
+     * @param string $location2 The secondary location.
+     * @param string $companion Name of the companion on the visit (if applicable).
+     * @param string $report_note The main text/notes for the report.
+     * @param string $btn The identifier for the button clicked ('saveOnly' or 'saveAndNew').
+     */
     public function createReport($report_type, $report_date, $customer_name, $location1, $location2, $companion, $report_note, $btn) {
 
 //        dd($report_type.'||'. $report_date.'||'. $customer_name.'||'. $location1.'||'. $location2.'||'. $companion.'||'. $report_note);
@@ -97,6 +123,11 @@ class NewDailyReport extends Component
         }
     }
 
+    /**
+     * This helper method is responsible for fetching a complete list of customers from the SAP HANA
+     * database via an ODBC connection. The retrieved list is then used to populate the customer
+     * selection dropdown in the component's view.
+     */
     public function getCustomers()
     {
 

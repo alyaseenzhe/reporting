@@ -27,6 +27,11 @@ class ListSalesProfit extends Component
         'selected_date.required' => "مطلوب",
     ];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It serves as a security checkpoint,
+     * ensuring the user is active and has the required permission ('list.sales-profit')
+     * to access this page. Unauthorized users are redirected.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -40,6 +45,12 @@ class ListSalesProfit extends Component
         }
     }
 
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout for a consistent UI.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         $result = 0;
@@ -47,6 +58,12 @@ class ListSalesProfit extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This is the main method for generating the sales profit report. It validates user input and
+     * then executes a very large, complex raw SQL query against the legacy SQL Server database.
+     * The query's primary function is to pivot sales and cost data for each employee into columns
+     * based on the product's "Speciality Code" (0, 1, or 2).
+     */
     public function generateReport()
     {
         set_time_limit(2000);
@@ -265,50 +282,50 @@ and pidate>=:start_date14 and pidate<=:end_date_time14
   and studentmast.nodeno>1
   and AreaMast.NodeNo = :area14
 group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic_Name) as tbl1",
-        [
-            'area1' => $this->area_id,
-            'area2' => $this->area_id,
-            'area3' => $this->area_id,
-            'area4' => $this->area_id,
-            'area5' => $this->area_id,
-            'area6' => $this->area_id,
-            'area7' => $this->area_id,
-            'area8' => $this->area_id,
-            'area9' => $this->area_id,
-            'area10' => $this->area_id,
-            'area11' => $this->area_id,
-            'area12' => $this->area_id,
-            'area13' => $this->area_id,
-            'area14' => $this->area_id,
-            'start_date1' => $this->first_date,
-            'start_date2' => $this->first_date,
-            'start_date3' => $this->first_date,
-            'start_date4' => $this->first_date,
-            'start_date5' => $this->first_date,
-            'start_date6' => $this->first_date,
-            'start_date7' => $this->first_date,
-            'start_date8' => $this->first_date,
-            'start_date9' => $this->first_date,
-            'start_date10' => $this->first_date,
-            'start_date11' => $this->first_date,
-            'start_date12' => $this->first_date,
-            'start_date13' => $this->first_date,
-            'start_date14' => $this->first_date,
-            'end_date_time1' => $this->last_date . " 23:59:23",
-            'end_date_time2' => $this->last_date . " 23:59:23",
-            'end_date_time3' => $this->last_date . " 23:59:23",
-            'end_date_time4' => $this->last_date . " 23:59:23",
-            'end_date_time5' => $this->last_date . " 23:59:23",
-            'end_date_time6' => $this->last_date . " 23:59:23",
-            'end_date_time7' => $this->last_date . " 23:59:23",
-            'end_date_time8' => $this->last_date . " 23:59:23",
-            'end_date_time9' => $this->last_date . " 23:59:23",
-            'end_date_time10' => $this->last_date . " 23:59:23",
-            'end_date_time11' => $this->last_date . " 23:59:23",
-            'end_date_time12' => $this->last_date . " 23:59:23",
-            'end_date_time13' => $this->last_date . " 23:59:23",
-            'end_date_time14' => $this->last_date . " 23:59:23",
-        ]);
+            [
+                'area1' => $this->area_id,
+                'area2' => $this->area_id,
+                'area3' => $this->area_id,
+                'area4' => $this->area_id,
+                'area5' => $this->area_id,
+                'area6' => $this->area_id,
+                'area7' => $this->area_id,
+                'area8' => $this->area_id,
+                'area9' => $this->area_id,
+                'area10' => $this->area_id,
+                'area11' => $this->area_id,
+                'area12' => $this->area_id,
+                'area13' => $this->area_id,
+                'area14' => $this->area_id,
+                'start_date1' => $this->first_date,
+                'start_date2' => $this->first_date,
+                'start_date3' => $this->first_date,
+                'start_date4' => $this->first_date,
+                'start_date5' => $this->first_date,
+                'start_date6' => $this->first_date,
+                'start_date7' => $this->first_date,
+                'start_date8' => $this->first_date,
+                'start_date9' => $this->first_date,
+                'start_date10' => $this->first_date,
+                'start_date11' => $this->first_date,
+                'start_date12' => $this->first_date,
+                'start_date13' => $this->first_date,
+                'start_date14' => $this->first_date,
+                'end_date_time1' => $this->last_date . " 23:59:23",
+                'end_date_time2' => $this->last_date . " 23:59:23",
+                'end_date_time3' => $this->last_date . " 23:59:23",
+                'end_date_time4' => $this->last_date . " 23:59:23",
+                'end_date_time5' => $this->last_date . " 23:59:23",
+                'end_date_time6' => $this->last_date . " 23:59:23",
+                'end_date_time7' => $this->last_date . " 23:59:23",
+                'end_date_time8' => $this->last_date . " 23:59:23",
+                'end_date_time9' => $this->last_date . " 23:59:23",
+                'end_date_time10' => $this->last_date . " 23:59:23",
+                'end_date_time11' => $this->last_date . " 23:59:23",
+                'end_date_time12' => $this->last_date . " 23:59:23",
+                'end_date_time13' => $this->last_date . " 23:59:23",
+                'end_date_time14' => $this->last_date . " 23:59:23",
+            ]);
 
         $this->result_tbl2 = json_decode(json_encode($tbl2_result), true);
 //        dd($this->result_tbl2);

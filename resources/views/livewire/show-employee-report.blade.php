@@ -32,6 +32,22 @@
             </ol>
         </nav>
     </div>
+    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a')
+        <div wire:ignore class="mt-8 mb-4 text-center">
+            <button wire:click.prevent="sendReport" wire:loading.attr="disabled"
+                    style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold" wire:loading.remove wire:target="sendReport">
+                            <span></span>
+                            <span>ارسال التقرير على الايميل</span>
+                        </span>
+                <span class="mr-2 font-bold" wire:loading wire:target="sendReport">
+                        <span></span>
+                        <span>الرجاء الانتظار</span>
+                        </span>
+            </button>
+        </div>
+    @endif
+
     <div>
         <div class="w-full flex sm:flex-row flex-col gap-4 mb-5" style="background-color: #f5f5f5; padding: 20px;">
             <div class="w-full">

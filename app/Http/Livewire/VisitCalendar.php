@@ -20,7 +20,11 @@ class VisitCalendar extends Component
 
     public $visits;
     public $emps;
+
     public $can_approve;
+
+//    protected $wati;
+
 
     protected $listeners = ['addVisit' => 'addVisit', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit', 'approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit'];
 
@@ -69,7 +73,7 @@ class VisitCalendar extends Component
             ->orderBy('start', 'asc')
             ->get([
                 'id', 'title', 'requester_id', 'start', 'end',
-                'reason', 'goals', 'branch', 'recipient_id',
+                'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
                 'status', 'is_deleted'
             ])
             ->toArray(); // Now it's an array of visits
@@ -118,6 +122,7 @@ class VisitCalendar extends Component
             'end' => Carbon::parse($data['end'])->format('Y-m-d H:i:s'),
             'reason' => $data['reason'],
             'goals' => $data['goals'],
+            'extra_services' => json_encode($data['extra_services']),
             'branch' => $data['branch'],
 //            'recipient_id' => $recipient->id,
             'status' => '0', // pending
@@ -135,7 +140,14 @@ class VisitCalendar extends Component
             $this->emit("visitsLoaded", $this->visits);
 
             $branch_manger = $this->branchMangerByVisitId($visit_data->id);
-
+/*
+            $wati = new \App\Services\WatiService();
+            $d = $wati->sendTemplateMessages('visit_add_it', [
+                ['phone_number' => '966567133644', 'parameters' => ['Basil']],
+            ]);
+            dd($d);
+*/
+//            $this->wati();
             $this->visitMail($this->oneVisit($visit_data->id), $branch_manger, 'add');
         }
     }
@@ -156,6 +168,7 @@ class VisitCalendar extends Component
 //            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
             $visit->reason =  $event['reason'];
             $visit->goals = $event['goals'];
+            $visit->extra_services = json_encode($event['extra_services']);
 //            $visit->branch =  $event['branch']; // no need to change the branch
 
 //            $visit->recipient_id =  $recipient->id;
@@ -306,8 +319,41 @@ class VisitCalendar extends Component
         return $x;
 
     }
+
      public function approve(){
          $this->can_approve = auth()->user()->group == 8;
          return $this->can_approve;
      }
+
+    public function wati() {
+
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://live-mt-server.wati.io/356035/api/v2/sendTemplateMessage?whatsappNumber=+966567133644',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+    "template_name": "visit_add",
+    "broadcast_name": "visit_add",
+    "parameters": []
+}',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNjVjOWVjZC1lZjE4LTQ2NDEtODNmNS05ZDQ4NDM1MTk1ZGUiLCJ1bmlxdWVfbmFtZSI6ImJhc2lsLmFscmFzaGVkQGFseWFzZWVuYWdyaS5jb20iLCJuYW1laWQiOiJiYXNpbC5hbHJhc2hlZEBhbHlhc2VlbmFncmkuY29tIiwiZW1haWwiOiJiYXNpbC5hbHJhc2hlZEBhbHlhc2VlbmFncmkuY29tIiwiYXV0aF90aW1lIjoiMDYvMjIvMjAyNSAwNTozNjowNSIsInRlbmFudF9pZCI6IjM1NjAzNSIsImRiX25hbWUiOiJtdC1wcm9kLVRlbmFudHMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBRE1JTklTVFJBVE9SIiwiZXhwIjoyNTM0MDIzMDA4MDAsImlzcyI6IkNsYXJlX0FJIiwiYXVkIjoiQ2xhcmVfQUkifQ.RS4DOw7ha8fNhHUExL6pFknR7b7CLQQnVobNpAMhnjY',
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        echo $response;
+    }
+
 }

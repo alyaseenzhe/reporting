@@ -499,6 +499,17 @@
     <option value="10:00 PM">10:00 PM</option>
   </select>
 </div>
+
+<!-- خدمات إضافية -->
+<div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
+  <label style="min-width: 120px;">خدمات إضافية</label>
+  <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
+    <label><input type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>
+    <label><input type="checkbox" name="extra-services" value="flight"> حجز طيران</label>
+    <label><input type="checkbox" name="extra-services" value="train"> حجز قطار</label>
+  </div>
+</div>
+
 </div>
 
                 `,
@@ -577,6 +588,9 @@
 
                             const startDateTime = combineDateAndTime(info.startStr, visitTime);
 
+                            const extraServices = Array.from(document.querySelectorAll('input[name="extra-services"]:checked'))
+                                .map(cb => cb.value);
+
                             return {
                                 title,
                                 reason,
@@ -584,7 +598,8 @@
                                 branch,
                                 employees: selectedEmployees,
                                 start: startDateTime,
-                                end: info.endStr
+                                end: info.endStr,
+                                extra_services: extraServices
                             };
                         }
                     }).then((result) => {
@@ -596,7 +611,8 @@
                                 reason: result.value.reason,
                                 goals: result.value.goals,
                                 branch: result.value.branch,
-                                employees: result.value.employees
+                                employees: result.value.employees,
+                                extra_services: result.value.extra_services
                             });
                         }
                     });
@@ -648,6 +664,7 @@
 
                     }
                     //////////// end of approve or reject section
+
 
                     Swal.fire({
                         title: 'معلومات الزيارة',
@@ -745,6 +762,70 @@
                             hour12: true
                         }) : 'N/A'}</p>
   </div>
+
+<div class="visit-info-item full-span">
+  <label><strong>الخدمات الإضافية:</strong></label>
+  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px;">
+    ${(() => {
+                            let raw = info.event.extendedProps.extra_services;
+                            console.log(raw);
+
+                            const serviceMap = {
+                                hotel: { label: 'حجز فندق', icon: '🏨', color: '#6293ff' },
+                                flight: { label: 'حجز طيران', icon: '✈️', color: '#47d377' },
+                                train: { label: 'حجز قطار', icon: '🚆', color: '#c48341' }
+                            };
+
+                            // 🔍 Handle JSON string or array
+                            let services = [];
+
+                            try {
+                                if (typeof raw === 'string') {
+                                    // Sometimes it's double-encoded, e.g. "\"[\\\"hotel\\\",\\\"flight\\\"]\""
+                                    raw = raw.trim();
+                                    if (raw.startsWith('"[') || raw.startsWith('[{')) {
+                                        raw = JSON.parse(raw); // unquote the string
+                                    }
+                                    const parsed = JSON.parse(raw);
+                                    if (Array.isArray(parsed)) {
+                                        services = parsed;
+                                    }
+                                } else if (Array.isArray(raw)) {
+                                    services = raw;
+                                }
+                            } catch (e) {
+                                // If parsing fails, fallback to comma-separated string
+                                services = typeof raw === 'string' ? raw.split(',') : [];
+                            }
+
+                            if (!services || services.length === 0) {
+                                return `<li style="color: #08089d;">لا يوجد</li>`;
+                            }
+
+                            return services.map(s => {
+                                const key = s.trim().replace(/['"]+/g, ''); // remove quotes
+                                const svc = serviceMap[key] || { label: key, icon: '🔹', color: '#6b7280' };
+                                return `
+          <li style="
+            background-color: ${svc.color};
+            color: white;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+          ">
+            <span>${svc.icon}</span>
+            <span>${svc.label}</span>
+          </li>
+        `;
+                            }).join('');
+                        })()}
+  </ul>
+</div>
+
 
   <div></div> <!-- Spacer for layout balance -->
 </div>
@@ -1068,6 +1149,51 @@
                                 ).join('')}
     </select>
   </div>
+
+    <div class="edit-form-group" style="grid-column: span 2;">
+  <label style="text-align: right">خدمات إضافية</label>
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    ${(() => {
+                                    const extraServices = info.event.extendedProps.extra_services || [];
+                                    const servicesList = [
+                                        { key: 'hotel', label: 'حجز فندق' },
+                                        { key: 'flight', label: 'حجز طيران' },
+                                        { key: 'train', label: 'حجز قطار' },
+                                    ];
+
+                                    let servicesArray = [];
+                                    if (typeof extraServices === 'string') {
+                                        try {
+                                            servicesArray = JSON.parse(extraServices);
+                                        } catch {
+                                            servicesArray = extraServices.split(',');
+                                        }
+                                    } else if (Array.isArray(extraServices)) {
+                                        servicesArray = extraServices;
+                                    }
+
+                                    return servicesList.map(s => {
+                                        const isChecked = servicesArray.includes(s.key) ? 'checked' : '';
+                                        return `
+          <li style="margin-bottom: 8px;">
+            <label style="
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              white-space: nowrap;
+            ">
+              <input type="checkbox" name="edit-extra-services" value="${s.key}" ${isChecked} style="flex-shrink: 0; width: 16px; height: 16px;">
+              <span>${s.label}</span>
+            </label>
+          </li>
+        `;
+                                    }).join('');
+                                })()}
+  </ul>
+</div>
+
+
 </div>
 `,
                                 focusConfirm: false,
@@ -1160,12 +1286,16 @@
 
                                     const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
 
+                                    const extraServiceCheckboxes = document.querySelectorAll('input[name="edit-extra-services"]:checked');
+                                    const extraServices = Array.from(extraServiceCheckboxes).map(cb => cb.value);
+
                                     return {
                                         title,
                                         reason,
                                         goals,
                                         branch,
                                         employees: selectedEmployees,
+                                        extra_services: extraServices,
                                         start: startDateTime,
                                         end: info.event.endStr
                                     };
@@ -1179,6 +1309,7 @@
                                         goals: result.value.goals,
                                         branch: result.value.branch,
                                         employees: result.value.employees,
+                                        extra_services: result.value.extra_services,
                                         start: result.value.start,
                                         end: result.value.end
                                     });

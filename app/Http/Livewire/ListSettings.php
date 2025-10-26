@@ -21,18 +21,35 @@ class ListSettings extends Component
         'item_price.required' => 'مطلوب',
     ];
 
-
+    /**
+     * This is a Livewire lifecycle hook that runs once when the component is initialized.
+     * It is responsible for loading the existing application settings from the database and
+     * populating the public properties, which in turn fills the form fields with the current values.
+     */
     public function mount() {
         $record = Setting::first();
         $this->dist_days = $record->dist_days;
         $this->item_price = $record->item_price;
     }
+
+    /**
+     * The standard Livewire method that renders the component's Blade view and sets the master
+     * dashboard layout for a consistent UI.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.list-settings')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This action method is responsible for saving the updated settings to the database. It is
+     * triggered when the user submits the form. It first validates the user's input, then updates
+     * the settings record, and finally provides feedback to the user with a success or error message
+     * before redirecting them back to the same page.
+     */
     public function save() {
 
         $this->validate();

@@ -71,7 +71,7 @@ class ListCashStatement extends Component
         $this->end_date = $end_date;
         $this->customer_code = $customer_code;
 
-        $this->validate();
+//        $this->validate();
 //        $this->emit('show-container');
         $this->proccess_report();
 //        $this->emit('show-container');
@@ -88,7 +88,7 @@ class ListCashStatement extends Component
 
         if ($customer < 1) {
             $this->results = [];
-            return $this->results;
+//            return $this->results;
         }
 
         $start_date = date($this->start_date . ' 00:00:00');
@@ -133,8 +133,8 @@ class ListCashStatement extends Component
         $this->results = [];
         $this->sap_results = [];
 
-        $query = DB::connection('sqlsrv')->select("SELECT Code, Name, VoucherNo, VoucherDate,item_code, qty, rate, Arabic_Name, svalue as item_value, (Value/1.15) as Value, customer_code, emp_name FROM (
-select accmast.code,accmast.name, ProductMast.Code as item_code , SInvoice.Rate, productmast.Arabic_Name, PaymentMethodDetails.*
+        $query = DB::connection('sqlsrv')->select("SELECT Code, Name, VoucherNo, VoucherDate,item_code, qty, rate, Arabic_Name, BaseUnits as Unit, svalue as item_value, (Value/1.15) as Value, customer_code, emp_name FROM (
+select accmast.code,accmast.name, ProductMast.Code as item_code , SInvoice.Rate, productmast.Arabic_Name, ProductMast.BaseUnits, PaymentMethodDetails.*
 ,ActualQty as qty, (sinvoice.Value*exchangerate+extrafieldstotal) as svalue
 from PaymentMethodDetails,sinvoice, ProductMast
 ,accmast where sinvoiceno=voucherno and
@@ -143,7 +143,7 @@ and SInvoice.ProductNo = ProductMast.NodeNo
 and PaymentMethodDetails.type in (1,2,3,4)
 and voucherdate>=:start_date1 and  voucherdate<=:end_date1
 union all
-select accmast.code,accmast.name, ProductMast.Code as item_code , PInvoice.Rate, productmast.Arabic_Name, PaymentMethodDetails.*
+select accmast.code,accmast.name, ProductMast.Code as item_code , PInvoice.Rate, productmast.Arabic_Name, ProductMast.BaseUnits, PaymentMethodDetails.*
 ,ActualQty as qty, (pinvoice.Value*exchangerate+extrafieldstotal) as svalue
 from PaymentMethodDetails,pinvoice, ProductMast
 ,accmast where pinvoiceno=voucherno and
@@ -168,9 +168,11 @@ order by VoucherDate asc", [
 
         $this->results = json_decode(json_encode($query), true);
 
+
+
         $this->sapQuery($start_date, $end_date, $this->customer_code);
-        return $this->results;
-//        $this->emit('show-container');
+//        return $this->results;
+        $this->emit('show-container');
 
     }
 
@@ -206,8 +208,15 @@ order by VoucherDate asc", [
         else
         {
 
-            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", ("DocTotal"-"VatSum") as "Value", "ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "QuantityInInventoryUoM" as "qty", IFNULL(("NetSalesAmountLC"/"QuantityInInventoryUoM"), 0) as "rate", "NetSalesAmountLC" as "item_value"  FROM (
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType", * FROM (
+            $sql = 'SELECT "BusinessPartnerCode" as "customer_code", "BusinessPartnerName" as "Name", "SalesEmployeeOrBuyerName" as "emp_name", "DocumentNumber" as "VoucherNo", "DocumentDate" as "VoucherDate", "FullTotal" as "Value", T5."ItemCode" as "item_code", "ItemDescription" as "Arabic_Name", "SalUnitMsr" as "Unit", "QuantityInInventoryUoM" as "qty",
+  CASE
+  WHEN "QuantityInInventoryUoM" IS NULL OR "QuantityInInventoryUoM" = 0 THEN 0
+  ELSE "NetSalesAmountLC" / "QuantityInInventoryUoM"
+  END AS "rate",
+
+       "NetSalesAmountLC" as "item_value"  FROM (
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",
+(select "NetSalesAmountLC" FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" WHERE "DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\' AND "DocumentNumber" = T1."DocumentNumber" AND "DocumentTypeCode" = T1."DocumentTypeCode") as "FullTotal", * FROM (
 Select "BranchName", "BranchCode", "BranchRegistrationNumber",
 "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
 "CancellationStatus", "DocumentDate",
@@ -238,9 +247,12 @@ ON T1."BusinessPartnerCode" = T2."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OINV T3
 ON T1."DocumentNumber" = T3."DocNum"
 WHERE T2."CardCode" = \''.$customer_code.'\'
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
+) as a
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITM T5
+ON a."ItemCode" = T5."ItemCode"
+
+WHERE a."BranchCode" IS NOT NULL
+AND a."InvType" IS NULL
 ORDER BY "DocumentNumber"';
 
 //    dd($sql);

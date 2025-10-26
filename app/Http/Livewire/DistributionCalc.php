@@ -30,6 +30,14 @@ class DistributionCalc extends Component
 
     protected $listeners = ['create-report' => 'createReport'];
 
+    /**
+     * The `booted` method is a Livewire lifecycle hook that runs after the component
+     * is instantiated and before the `mount` method. It is commonly used for
+     * authorization and access control. This function first checks if the authenticated
+     * user is active. If not, it redirects them. It then checks if the user's
+     * permissions (via their group or role) allow them to view this page. If not,
+     * they are redirected to the dashboard.
+     */
     public function booted() {
 
         if (Auth::user()->is_active == '0'){
@@ -43,12 +51,33 @@ class DistributionCalc extends Component
         }
     }
 
+    /**
+     * The `render` method is the core of a Livewire component. It is responsible for
+     * returning the view that will be rendered to the user. This function specifies
+     * the `livewire.distribution-calc` view and applies the `layouts.dashboard` layout
+     * to it.
+     */
     public function render()
     {
         return view('livewire.distribution-calc')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * Creates a detailed report of product targets for a given product and date range.
+     *
+     * This function dynamically generates a SQL query to retrieve and pivot product target data.
+     * It iterates through a period of months and constructs a `SELECT` statement that includes
+     * a `MAX(CASE WHEN ...)` clause for each month and each branch, effectively transforming
+     * the row-based target data into a column-based report. The final query joins product data
+     * with the target data, groups the results, and returns them.
+     * The results are stored in the `$results` property, and the `container_size` is determined
+     * from the first result. Finally, it emits a Livewire event to update the front-end.
+     *
+     * @param string $selected_product_code The product code for which to create the report.
+     * @param string $start_month The starting month of the report period (e.g., '2023-01').
+     * @param string $end_month The ending month of the report period (e.g., '2023-03').
+     */
     public function createReport($selected_product_code, $start_month, $end_month) {
 
         $this->results = [];
@@ -99,10 +128,11 @@ class DistributionCalc extends Component
 
         $this->results = Products::leftJoin('product_target_branch_totals', 'product_target_branch_totals.product_id', 'products.product_code')
 //                                    ->where('product_code', $this->product_code)
-                                    ->where('product_code', $selected_product_code)
-                                    ->selectRaw('vendor_code, vendor_name, product_code, product_name, products.container_size, ' . $stmt)
-                                    ->groupBy('vendor_code', 'vendor_name', 'product_code', 'product_name', 'products.container_size')
-                                    ->get();
+            ->where('product_code', $selected_product_code)
+            ->orWhere('products.sap_code', $selected_product_code)
+            ->selectRaw('vendor_code, vendor_name, product_code, product_name, products.container_size, ' . $stmt)
+            ->groupBy('vendor_code', 'vendor_name', 'product_code', 'product_name', 'products.container_size')
+            ->get();
 
 
 

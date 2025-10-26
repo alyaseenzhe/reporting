@@ -28,6 +28,14 @@ class EditUserGroups extends Component
         'name.required' => 'حقل عنوان المجموعة مطلوب',
     ];
 
+    /**
+     * This is a Livewire lifecycle hook that runs when the component is initialized.
+     * It finds the user group by its ID from the route parameter,
+     * populates the component's public properties with the group's existing data,
+     * and handles the case where the group is not found by redirecting with an error message.
+     *
+     * @param int $id The ID of the user group to be edited.
+     */
     public function mount($id) {
         try {
 
@@ -50,12 +58,23 @@ class EditUserGroups extends Component
 
     }
 
+    /**
+     * This is a required Livewire method that renders the component's view.
+     * It specifies the Blade file to be rendered and the layout to be used.
+     *
+     */
     public function render()
     {
         return view('livewire.edit-user-groups')
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * This method is called when the form is submitted.
+     * It validates the user input, finds the user group record,
+     * updates its attributes with the new values from the component properties,
+     * saves the changes to the database, and redirects with a success or error message.
+     */
     public function update() {
 
 //        dd($this->write_product_target);

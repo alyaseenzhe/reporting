@@ -67,6 +67,11 @@ class ListMyProductTarget extends Component
         'vendor_type.not_in' => "مطلوب",
     ];
 
+    /**
+     * A Livewire lifecycle hook that runs on every request. It serves as a security checkpoint,
+     * ensuring the user is active and has the correct permissions to view this product target report.
+     * Unauthorized users are redirected away from the page.
+     */
     public function booted() {
 
         set_time_limit(2000);
@@ -83,6 +88,11 @@ class ListMyProductTarget extends Component
         }
     }
 
+    /**
+     * A Livewire lifecycle hook that runs once when the component is initialized. It prepares the
+     * component by setting server limits, fetching the list of vendors for the filter dropdown,
+     * and loading the user's last-used filter settings for a better user experience.
+     */
     public function mount() {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -101,6 +111,13 @@ class ListMyProductTarget extends Component
 
     }
 
+    /**
+     * The standard Livewire method to render the component's UI. It also performs some preliminary
+     * data setup on each render, such as retrieving the user's branch permissions and compiling a
+     * list of all employees within those branches who are eligible for product targets.
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         set_time_limit(2000);
@@ -128,11 +145,19 @@ class ListMyProductTarget extends Component
             ->layout('layouts.dashboard');
     }
 
+    /**
+     * A Livewire hook that runs when the 'selected_month' property is updated by the user.
+     * It resets the report's visibility and re-initializes frontend JavaScript components (like Select2)
+     * to ensure the UI updates correctly.
+     */
     public function updatedSelectedMonth($value) {
         $this->reset(['show_msg']);
         $this->emit('re-initialize-select2');
     }
 
+    /**
+     * This method acts as a bridge, receiving filter data from a frontend event and then triggering the main `generateReport` method to run the report.
+     */
     public function create_report($dept_id, $cat_type, $sp_type, $vendor_type) {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -145,6 +170,12 @@ class ListMyProductTarget extends Component
         $this->generateReport();
     }
 
+    /**
+     * This is the main orchestrator for generating the report. It validates user input, saves the
+     * current filters for the user's next visit, handles the "All Departments" logic by substituting
+     * the user's authorized branches, and then calls the core `getSales` function to retrieve the
+     * report data from the SAP database.
+     */
     public function generateReport() {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -677,7 +708,10 @@ class ListMyProductTarget extends Component
         return $results;
     }
 
-
+    /**
+     * Retrieves the user's previously saved filter settings from the database for this specific report page.
+     * This provides convenience by loading their last-used selections when they revisit the page.
+     */
     public function get_filters() {
 
         $record = ProductTargetFilter::where('user_id', Auth::id())
@@ -703,6 +737,10 @@ class ListMyProductTarget extends Component
 
     }
 
+    /**
+     * Saves the user's current filter selections to the database. This is called every time a report
+     * is generated, ensuring their latest choices are remembered for their next visit.
+     */
     public function save_filters() {
 
         $record = ProductTargetFilter::where('user_id', Auth::id())
@@ -1323,6 +1361,9 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
         return $month_stmt;
     }
 
+    /**
+     * Fetches a list of vendors from SAP to populate a filter dropdown in the user interface.
+     */
     public function vendorsList() {
 
         if (! extension_loaded('odbc'))
@@ -1377,6 +1418,13 @@ ON full_stock_details.NodeNo_stock = prods_details.NodeNo
         }
     }
 
+    /**
+     * Fetches a list of relevant product codes from SAP based on the user's filter selections for
+     * specialty, category, and vendor. It dynamically constructs an SQL query, executes it against
+     * the SAP item master table (OITM), and returns an array of matching item codes.
+     *
+     * @return array An array of product item codes.
+     */
     public function getProducts() {
 
         $sp_txt = '';
@@ -1473,7 +1521,7 @@ WHERE '. $sp_txt . ' AND ' . $cat_txt1 . ' AND ' . $vendor_txt;
         }
 
 
-         //////////////////////
+        //////////////////////
 
 //        dd($cat_txt1);
 
@@ -1501,6 +1549,11 @@ WHERE '. $sp_txt . ' AND ' . $cat_txt1 . ' AND ' . $vendor_txt;
 
     }
 
+    /**
+     * This is the core data retrieval method for the entire component. It is highly complex because
+     * it dynamically builds a massive SQL query designed to pivot transactional sales data from a tall
+     * format to a wide, report-friendly format directly in the database.
+     */
     public function getSales() {
 
 //        dd($this->dept_id);

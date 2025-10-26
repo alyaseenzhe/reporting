@@ -259,7 +259,7 @@
                             </td>
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['SalesEmployeeOrBuyerName'] : ""}}</div>
+                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['SalesEmployeeName'] : ""}}</div>
                                 </div>
                             </td>
                             <td class="border p-2 whitespace-nowrap">
@@ -339,7 +339,8 @@
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
                                     @if(floatval(number_format($result2['Balance'])) == 0)
-                                        @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                      {{--   @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210) --}}
+                                             @if( \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 180)
                                             <span style="font-weight: bold; color: green">نعم</span>
                                                 <?php $pay = true; ?>
                                         @else
@@ -347,7 +348,8 @@
                                                 <?php $pay = false; ?>
                                         @endif
                                     @else
-                                        @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                    {{-- @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210) --}}
+                                         @if(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 180)
                                             <span style="font-weight: bold; color: green">نعم</span>
                                                 <?php $pay = true; ?>
                                         @else
@@ -374,9 +376,9 @@
                                 <div>
                                     @php $emp_comm = (floatval($branch_comission)*(floatval($result2["GrossProfitLC"])/$total_grossProfit)); @endphp
                                     <div class="text-center text-gray-800 text-sm">
-                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format((floatval($branch_comission)*(floatval($result2["GrossProfitLC"])/$total_grossProfit)), 2) : ""}}
-                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format((floatval($branch_comission)*(floatval($result2["GrossProfitLC"])/$total_grossProfit)), 2) : ""}}
                                         @else
                                             <span>0</span>
@@ -389,10 +391,10 @@
                                 <div>
                                     <div class="text-center text-gray-800 text-sm">
 
-                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format(floatval($emp_comm)*(5/100)) : ""}}
                                                 <?php $total_sales_manager += (($result2 ? floatval($emp_comm)*(5/100) : 0)*($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)); ?>
-                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format(floatval($emp_comm)*(5/100)) : ""}}
                                                 <?php $total_sales_manager += (($result2 ? floatval($emp_comm)*(5/100) : 0)*($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)); ?>
                                         @else
@@ -407,10 +409,10 @@
                                     <div class="text-center text-gray-800 text-sm">
                                         {{--                                    <span style="color: red">{{ ($commission_percentage[$emp_position[$result2['OldCode']]]) }}</span>--}}
                                         {{--                                    <span style="color: green">{{ ($commission_percentage[$emp_position[$result2['OldCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['area_manager']/100))*$emp_comm) }}</span>--}}
-                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) : ""}}
                                                 <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) ?>
-                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) : ""}}
                                                 <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) ?>
                                         @else
@@ -422,13 +424,13 @@
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
                                     <div class="text-center text-gray-800 text-sm">
-                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}--}}
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) : ""}}
                                                 <?php //$total_store_manager += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['store_manager']/100))*$emp_comm) ?>
                                                 <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) ?>
 
-                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) : ""}}
                                                 <?php //$total_store_manager += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['store_manager']/100))*$emp_comm) ?>
                                                 <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) ?>
@@ -443,13 +445,13 @@
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
                                     <div class="text-center text-gray-800 text-sm">
-                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}--}}
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
                                                 <?php //$total_mat_dev1 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
                                                 <?php $total_mat_dev1 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
 
-                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                        @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}--}}
                                             {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
                                                 <?php //$total_mat_dev1 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
@@ -465,13 +467,13 @@
                                 <div>
                                     <div class="text-center text-gray-800 text-sm">
                                         <div class="text-center text-gray-800 text-sm">
-                                            @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                            @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                                 {{--                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}--}}
                                                 {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
                                                     <?php //$total_mat_dev2 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
                                                     <?php $total_mat_dev2 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
 
-                                            @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 240)
+                                            @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= 210)
                                                 {{--                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}--}}
                                                 {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
                                                     <?php //$total_mat_dev2 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
