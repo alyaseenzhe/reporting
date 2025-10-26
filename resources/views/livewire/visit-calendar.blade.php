@@ -256,6 +256,7 @@
     </div>
 {{--    Ends of Tabs--}}
 </div>
+
 @section('css-scripts')
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/dist/sweetalert2.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -634,14 +635,17 @@
                     const viewUrl = viewRouteBase.replace('VISIT_ID', visitId);
 
                     let buttonsHtml = '';
+
+
                     if (isRecipient && status == 0 && isDeleted == 0) {
-                        alert('coco');
+                        // alert('coco');
                         buttonsHtml = `
     <div style="display: flex; justify-content: center; margin-top: 20px;">
-      <button id="approve-btn" class="swal2-styled" style="background-color: #2f9d58; color: white; border-radius: 5px;">موافقة</button>
+      <button id="approve-btn" class="swal2-styled" style="background-color: #2f9d58; color: white; border-radius: 5px;"  >موافقة</button>
       <button id="reject-btn" class="swal2-styled" style="background-color: #b91818; color: white; border-radius: 5px;">رفض</button>
     </div>
   `;
+
                     }
                     //////////// end of approve or reject section
 
@@ -803,18 +807,21 @@
 
 
                                 // Reject button
-                                const rejectBtn = document.createElement('button');
-                                rejectBtn.innerText = 'رفض';
-                                rejectBtn.className = 'swal2-styled';
-                                rejectBtn.style.backgroundColor = '#b91818';
-                                rejectBtn.style.color = '#fff';
-                                rejectBtn.style.marginLeft = '10px';
-                                rejectBtn.style.borderRadius = '5px';
-                                rejectBtn.addEventListener('click', () => {
-                                    // your reject logic here
-                                    Swal.fire({
-                                        title: 'سبب الرفض',
-                                        html: `
+                                let canApprove = @json($can_approve);
+                                console.log(canApprove);
+                                if (canApprove) {
+                                    const rejectBtn = document.createElement('button');
+                                    rejectBtn.innerText = 'رفض';
+                                    rejectBtn.className = 'swal2-styled';
+                                    rejectBtn.style.backgroundColor = '#b91818';
+                                    rejectBtn.style.color = '#fff';
+                                    rejectBtn.style.marginLeft = '10px';
+                                    rejectBtn.style.borderRadius = '5px';
+                                    rejectBtn.addEventListener('click', () => {
+                                        // your reject logic here
+                                        Swal.fire({
+                                            title: 'سبب الرفض',
+                                            html: `
 <label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
@@ -824,41 +831,40 @@
                  font-family: inherit;
                  font-size: 10pt;"></textarea>
     </div>`,
-                                        preConfirm: () => {
-                                            const reason = document.getElementById('reject-reason').value.trim();
-                                            if (!reason) {
-                                                Swal.showValidationMessage('يرجى كتابة سبب الرفض');
-                                                return false;
+                                            preConfirm: () => {
+                                                const reason = document.getElementById('reject-reason').value.trim();
+                                                if (!reason) {
+                                                    Swal.showValidationMessage('يرجى كتابة سبب الرفض');
+                                                    return false;
+                                                }
+                                                return reason;
+                                            },
+                                            showCancelButton: true,
+                                            confirmButtonText: 'تأكيد الرفض',
+                                            cancelButtonText: 'إلغاء',
+                                        }).then((res) => {
+                                            if (res.isConfirmed) {
+                                                Livewire.emit('rejectVisit', {
+                                                    id: info.event.id,
+                                                    status_notice: res.value
+                                                });
+
+                                                Swal.fire({
+                                                    title: 'تم الرفض!',
+                                                    icon: 'info',
+                                                    timer: 2000,
+                                                    showConfirmButton: false,
+                                                    timerProgressBar: true
+                                                });
                                             }
-                                            return reason;
-                                        },
-                                        showCancelButton: true,
-                                        confirmButtonText: 'تأكيد الرفض',
-                                        cancelButtonText: 'إلغاء',
-                                    }).then((res) => {
-                                        if (res.isConfirmed) {
-                                            Livewire.emit('rejectVisit', {
-                                                id: info.event.id,
-                                                status_notice: res.value
-                                            });
-
-                                            Swal.fire({
-                                                title: 'تم الرفض!',
-                                                icon: 'info',
-                                                timer: 2000,
-                                                showConfirmButton: false,
-                                                timerProgressBar: true
-                                            });
-                                        }
+                                        });
                                     });
-                                });
 
-                                // Add buttons to Swal actions
-                                Swal.getActions().appendChild(rejectBtn);
-                                Swal.getActions().appendChild(approveBtn);
+                                    // Add buttons to Swal actions
+                                    Swal.getActions().appendChild(rejectBtn);
+                                    Swal.getActions().appendChild(approveBtn);
+                                }
                             }
-
-
                             /* View Button */
                             const viewBtn = document.createElement('button');
                             viewBtn.innerText = 'عرض';

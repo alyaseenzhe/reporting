@@ -371,26 +371,27 @@
         </div>
     @endif
 
-    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
-        <div class="flex flex-row gap-4 justify-center">
-            <div>
-                <button id="edit-btn"
-                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>تعديل</span>
-                    </span>
-                </button>
-            </div>
-            <div>
-                <button id="delete-btn"
-                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>حذف</span>
-                    </span>
-                </button>
-            </div>
-        </div>
-    @endif
+{{--    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)--}}
+{{--        <div class="flex flex-row gap-4 justify-center">--}}
+{{--        <div class="flex flex-row gap-4 justify-center">--}}
+{{--            <div>--}}
+{{--                <button id="edit-btn"--}}
+{{--                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>تعديل</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--            <div>--}}
+{{--                <button id="delete-btn"--}}
+{{--                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>حذف</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    @endif--}}
 
 
 

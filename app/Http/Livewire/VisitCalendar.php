@@ -20,12 +20,14 @@ class VisitCalendar extends Component
 
     public $visits;
     public $emps;
+    public $can_approve;
 
     protected $listeners = ['addVisit' => 'addVisit', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit', 'approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit'];
 
     public function mount() {
         $this->loadVisits();
         $this->loadEmps();
+        $this->approve();
 
 //        dd($this->visits->emps_requester);
 //        dd($this->visits);
@@ -234,6 +236,7 @@ class VisitCalendar extends Component
     public function rejectVisit($visit_record)
     {
 
+
         $visit = Visit::findOrFail($visit_record['id']);
 
         if (!$this->can_approve($visit_record['id'])) {
@@ -261,10 +264,14 @@ class VisitCalendar extends Component
 //            ->first();
 //        dd($this->branchMangerByVisitId($visit_record->id));
 //        dd($res_email);
+        $emails = $visit_record->emps
+            ->pluck('user.email')
+            ->unique()
+            ->toArray();
 
 
         // the email must be this $branch_manger->email
-        Mail::to('basil.alrashed@alyaseenagri.com')->queue(new VisitCreated($visit_record, null, $type));
+        Mail::to($emails)->queue(new VisitCreated($visit_record, null, $type));
     }
 
     public function oneVisit($id) {
@@ -299,5 +306,8 @@ class VisitCalendar extends Component
         return $x;
 
     }
-
+     public function approve(){
+         $this->can_approve = auth()->user()->group == 8;
+         return $this->can_approve;
+     }
 }
