@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-
+use App\Jobs\SendVisitReminderJob;
 class Visit extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'start' => 'datetime',
+    ];
 
     protected $guarded = [];
 
@@ -35,5 +39,12 @@ class Visit extends Model
             ->where('type', 'requester')
             ->where('user_id', Auth::id())
             ->exists();
+    }
+
+    public function reminder($visit)
+    {
+
+        SendVisitReminderJob::dispatch($visit, $visit->user->email)
+            ->delay(now()->addDays($visit->reminder_delay_days));
     }
 }

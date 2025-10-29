@@ -15,6 +15,13 @@
                 </svg>
                 وضع الجدول
             </button>
+
+
+
+
+
+
+
         </div>
 
         <!-- Tab Panels -->
@@ -58,7 +65,7 @@
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100">
                             @forelse($visits as $visit)
-                                <tr style="@if($visit['status'] == 0) background-color:#fffddc; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @endif">
+                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @endif">
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
                                     </td>
@@ -316,12 +323,41 @@
         .select2-container--default .select2-selection--multiple,
         .select2-container--default .select2-selection--single {
             border-radius: 0 !important;
+
+
+
+        }
+        .swal2-popup .select2-container .select2-selection--single {
+            background-color: #eef5ff !important;
+            border: 1px solid #007bff !important;
+            border-radius: 8px !important;
+        }
+        .select2-container--default{
+            border-width: 1px !important;
+            --tw-bg-opacity: 1 !important;
+            background-color: rgb(255 255 255/var(--tw-bg-opacity)) !important;
+            font-size: .875rem !important;
+            line-height: 1.5715 !important;
+            --tw-text-opacity: 1 !important;
+            color: rgb(30 41 59/var(--tw-text-opacity)) !important;
+        }
+        .select2-search__field{
+            border-width: 1px !important;
+            --tw-bg-opacity: 1 !important;
+            background-color: rgb(255 255 255/var(--tw-bg-opacity)) !important;
+            font-size: .875rem !important;
+            line-height: 1.5715 !important;
+            --tw-text-opacity: 1 !important;
+            color: rgb(30 41 59/var(--tw-text-opacity)) !important;
+
         }
 
         .select2-container--default .select2-dropdown {
             border-radius: 0 !important;
         }
+        .select2-container .select2-selection--single {
 
+        }
 
 
 
@@ -381,7 +417,8 @@
                     let textColor = '#000000';
 
                     if (status === '0') {
-                        info.el.style.backgroundColor = '#fef3c7'; // yellow-ish
+                        // info.el.style.backgroundColor = '#fef3c7'; // yellow-ish
+                        info.el.style.backgroundColor = '#dceeff';
                         info.el.style.color = '#000';
                     } else if (status === '1') {
                         info.el.style.backgroundColor = '#d1fae5'; // green-ish
@@ -411,30 +448,34 @@
   <!-- عنوان الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <label for="event-title" style="min-width: 120px;">عنوان الزيارة</label>
-    <input type="text" id="event-title" class="swal2-input" style="flex: 1;">
+    <input type="text" id="event-title" class="swal2-input form-input w-full" style="flex: 1;">
   </div>
 
   <!-- سبب الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <label for="visit-reason" style="min-width: 120px;">سبب الزيارة</label>
-    <input type="text" id="visit-reason" class="swal2-input" style="flex: 1;">
+    <input type="text" id="visit-reason" class="swal2-input form-input w-full" style="flex: 1;">
   </div>
 
   <!-- أهداف الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <label for="visit-goals" style="min-width: 120px;">أهداف الزيارة</label>
-    <textarea id="visit-goals" class="swal2-textarea" style="flex: 1; height: 150px; resize: none;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
+    <textarea id="visit-goals" class="swal2-textarea form-textarea w-full"></textarea>
+
+<!--style="flex: 1; height: 150px; resize: none;-->
+<!--                 border: 1px solid #64748b;-->
+<!--                 padding: 0.625em;-->
+<!--                 border-radius: 0em;-->
+<!--                 font-family: inherit;-->
+<!--                 font-size: 10pt;"-->
+
+
   </div>
 
   <!-- مكان الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <label for="branch-select" style="min-width: 120px;">مكان الزيارة</label>
-    <select id="branch-select" class="swal2-select" style="flex: 1; appearance: auto;">
+    <select id="branch-select" class="swal2-select form-select w-full" style="flex: 1; appearance: auto;">
       <option value="" disabled selected>اختر المكان</option>
       <option value="0101">فرع الاحساء</option>
       <option value="0102">فرع جدة</option>
@@ -457,7 +498,7 @@
     <!-- الموظفين -->
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
       <label for="employee-select" style="min-width: 120px;">الموظفين</label>
-      <select id="employee-select" class="swal2-select" multiple style="flex: 1; appearance: auto;"></select>
+      <select id="employee-select" class="swal2-select form-input w-full" multiple style="flex: 1; appearance: auto;"></select>
     </div>
 
 
@@ -465,7 +506,7 @@
     <!-- وقت الزيارة -->
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
   <label for="visit-time" style="min-width: 120px;">وقت الزيارة</label>
-  <select id="visit-time" class="swal2-select" style="flex: 1; appearance: auto;">
+  <select id="visit-time" class="swal2-select form-select w-full" style="flex: 1; appearance: auto;">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
     <option value="08:00 AM">08:00 AM</option>
@@ -528,7 +569,8 @@
                             // Initialize Select2
                             $(employeeSelect).select2({
                                 dir: "rtl",
-                                dropdownCssClass: "select-font-size",
+                                dropdownCssClass: "select-font-size form-select",
+                                class:"from-input",
                                 dropdownParent: document.querySelector('.swal2-popup'),
                                 placeholder: "اختر الموظفين"
                             });
@@ -1016,7 +1058,7 @@
                                         html: `
 <label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
+    <textarea id="reject-reason" class="swal2-tex:tarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
                  border: 1px solid #64748b;
                  padding: 0.625em;
                  border-radius: 0em;

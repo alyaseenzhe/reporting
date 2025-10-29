@@ -81,6 +81,22 @@
         </div>
     </div>
 
+    @if(auth()->user()->role == 'a')
+
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="w-full">
+                <label class="block font-bold mb-2">ارسال رسالة التذكير قبل موعد الزيارة بالأيام
+                    <span class="text-red-500">*</span>
+                </label>
+                <input type="number" min="0" wire:model="reminder_delay_days" class="form-input w-full @error('reminder_delay_days') border-red-300 @enderror">
+                  @error('reminder_delay_days')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="mt-8 text-center">
         <button wire:click.prevent="save" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <span class="mr-2 font-bold" wire:loading.remove wire:target="save">حفظ</span>

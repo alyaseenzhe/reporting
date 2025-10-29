@@ -53,6 +53,10 @@ class VisitCreated extends Mailable
             $subject_txt = "التقييم جاهز! يمكنك الآن الإطلاع على تقييم الزيارة";
         }
 
+        elseif ($this->type == 'reminder') {
+            $subject_txt = "تذكير بالزيارة";
+        }
+
         return $this->subject($subject_txt)
             ->view('mails.visit-created')
             ->with(['visit' => $this->visit, 'branch_manger_name' => $this->branch_manger_name, 'type' => $this->type]);

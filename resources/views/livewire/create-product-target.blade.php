@@ -24,39 +24,39 @@
                     </label>
                     <div wire:ignore>
                         <select id="dept_id" name="dept_id" multiple="multiple"
-                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            style="@error('dept_id') border: solid 1px #fda4af; @enderror">
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                style="@error('dept_id') border: solid 1px #fda4af; @enderror">
                             <option value="-1" @if(in_array("-1", $dept_id)) selected @endif>الكل</option>
-                        @foreach($branches as $branch)
-                            @if($branch == "3")
-                                <option value="3" @if(in_array("3", $dept_id)) selected @endif>الاحساء</option>
-                            @elseif($branch == "10")
-                                <option value="10" @if(in_array("10", $dept_id)) selected @endif>جدة</option>
-                            @elseif($branch == "7")
-                                <option value="7" @if(in_array("7", $dept_id)) selected @endif>الرياض</option>
-                            @elseif($branch == "13")
-                                <option value="13" @if(in_array("13", $dept_id)) selected @endif>وادي الدواسر</option>
-                            @elseif($branch == "4")
-                                <option value="4" @if(in_array("4", $dept_id)) selected @endif>الجوف</option>
-                            @elseif($branch == "6")
-                                <option value="6" @if(in_array("6", $dept_id)) selected @endif>الدمام</option>
-                            @elseif($branch == "5")
-                                <option value="5" @if(in_array("5", $dept_id)) selected @endif>الخرج</option>
-                            @elseif($branch == "12")
-                                <option value="12" @if(in_array("12", $dept_id)) selected @endif>نجران</option>
-                            @elseif($branch == "11")
-                                <option value="11" @if(in_array("11", $dept_id)) selected @endif>حائل</option>
-                            @elseif($branch == "9")
-                                <option value="9" @if(in_array("9", $dept_id)) selected @endif>تبوك</option>
-                            @elseif($branch == "8")
-                                <option value="8" @if(in_array("8", $dept_id)) selected @endif>القصيم</option>
-                            @elseif($branch == "505")
-                                <option value="505" @if(in_array("505", $dept_id)) selected @endif>ساجر</option>
-                            @endif
-                        @endforeach
+                            @foreach($branches as $branch)
+                                @if($branch == "3")
+                                    <option value="3" @if(in_array("3", $dept_id)) selected @endif>الاحساء</option>
+                                @elseif($branch == "10")
+                                    <option value="10" @if(in_array("10", $dept_id)) selected @endif>جدة</option>
+                                @elseif($branch == "7")
+                                    <option value="7" @if(in_array("7", $dept_id)) selected @endif>الرياض</option>
+                                @elseif($branch == "13")
+                                    <option value="13" @if(in_array("13", $dept_id)) selected @endif>وادي الدواسر</option>
+                                @elseif($branch == "4")
+                                    <option value="4" @if(in_array("4", $dept_id)) selected @endif>الجوف</option>
+                                @elseif($branch == "6")
+                                    <option value="6" @if(in_array("6", $dept_id)) selected @endif>الدمام</option>
+                                @elseif($branch == "5")
+                                    <option value="5" @if(in_array("5", $dept_id)) selected @endif>الخرج</option>
+                                @elseif($branch == "12")
+                                    <option value="12" @if(in_array("12", $dept_id)) selected @endif>نجران</option>
+                                @elseif($branch == "11")
+                                    <option value="11" @if(in_array("11", $dept_id)) selected @endif>حائل</option>
+                                @elseif($branch == "9")
+                                    <option value="9" @if(in_array("9", $dept_id)) selected @endif>تبوك</option>
+                                @elseif($branch == "8")
+                                    <option value="8" @if(in_array("8", $dept_id)) selected @endif>القصيم</option>
+                                @elseif($branch == "505")
+                                    <option value="505" @if(in_array("505", $dept_id)) selected @endif>ساجر</option>
+                                @endif
+                            @endforeach
 
 
-                    </select>
+                        </select>
                     </div>
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
@@ -103,7 +103,7 @@
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
                             <option value="vendor_all" @if($vendor_type == "vendor_all") selected @endif>الكل</option>
                             @foreach($vendor_list as $vendor)
-                                <option value="{{ $vendor->NodeNo }}" @if($vendor_type == $vendor->NodeNo) selected @endif>{{ $vendor->Arabic_Name }}</option>
+                                <option value="{{ $vendor["CardCode"] }}" @if($vendor_type == $vendor["CardCode"]) selected @endif>{{ $vendor["CardName"] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -134,17 +134,17 @@
                         @if($write_product_target == '2' || $write_product_target == '3')
                             @if(count($dept_id) == 1)
                                 <div class="mt-8 text-center w-full">
-                                        <button id="test-btn"
-                                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                                    <button id="test-btn"
+                                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                             <span class="mr-2 font-bold">
                                 <span></span>
                                 <span>حفظ</span>
                             </span>
-                                            <span class="mr-2 font-bold" wire:loading wire:target="processData">
+                                        <span class="mr-2 font-bold" wire:loading wire:target="processData">
                             <span></span>
                             <span>الرجاء الانتظار</span>
                             </span>
-                                        </button>
+                                    </button>
                                 </div>
                             @endif
                         @elseif($write_product_target == '1')
@@ -178,36 +178,36 @@
             <?php $total_historical = 0; ?>
         @if(\Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0' || count($dept_id) > 1)
             <div class="mb-5 p-2">
-            <div class="flex flex-col sm:flex-row gap-4 w-full">
-                <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
-                    <label class="block font-bold mb-5">خيارات</label>
-                    <div class="flex flex-row">
-                        <div class="flex items-center mb-4 w-full">
-                            <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
-                        </div>
-                    </div>
-                </div>
-                @if(count($dept_id) > 1)
-                    <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
-                        <label class="block font-bold mb-5">تنويه</label>
-
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
+                    <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
+                        <label class="block font-bold mb-5">خيارات</label>
                         <div class="flex flex-row">
                             <div class="flex items-center mb-4 w-full">
-                                <ul class="list-disc mr-4">
-                                    <li>رمز
-                                        <span class="font-bold">SH</span>
-                                        تعني المبيعات التاريخية (نفس الشهر من العام السابق)</li>
-                                    <li>رمز
-                                        <span class="font-bold">T</span>
-                                        تعني المستهدف المتوقع</li>
-                                </ul>
+                                <input id="item_summary" name="item_summary" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ملخص الصنف</label>
                             </div>
                         </div>
                     </div>
-                @endif
+                    @if(count($dept_id) > 1)
+                        <div style="background-color: #eaf8ff; padding-right: 20px; padding-top: 20px" class="w-full">
+                            <label class="block font-bold mb-5">تنويه</label>
+
+                            <div class="flex flex-row">
+                                <div class="flex items-center mb-4 w-full">
+                                    <ul class="list-disc mr-4">
+                                        <li>رمز
+                                            <span class="font-bold">SH</span>
+                                            تعني المبيعات التاريخية (نفس الشهر من العام السابق)</li>
+                                        <li>رمز
+                                            <span class="font-bold">T</span>
+                                            تعني المستهدف المتوقع</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
-        </div>
         @endif
 
 
@@ -253,6 +253,7 @@
                                 </td>
                             </tr>
                             @foreach($branch_emps as $key => $emp)
+
                                 @php $emp_code = $emps->where('id', $emp)->first()['emp_code']; @endphp
                                 <tr wire:key="emp-code-{{$key}}-{{time()}}" style="background-color: #FFFFFF">
                                     {{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
@@ -269,12 +270,12 @@
                                                      class="emps_percentage_readonly block text-gray-900 w-full text-center"
                                                      style="padding: 10px; @error('emps_percentage') border: solid 1px #fda4af; @enderror">
                                                     {{ $percent }}
-{{--                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}--}}
+                                                    {{--                                                    {{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null}}--}}
                                                 </div>
                                             @else
                                                 <input wire:ignore id="emp--{{$emp_code}}--active" type="number" min="0" max="100" step="0.1" oninput="this.value =!!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 100 ? Math.abs(this.value) : null"
                                                        value="{{ $percent }}"
-{{--                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"--}}
+                                                       {{--                                                       value="{{ $emps_percentage->where('emp_code', $emp_code)->first() ? $emps_percentage->where('emp_code', $emp_code)->first()['emp_percentage'] : null }}"--}}
                                                        class="emps_percentage block text-gray-900 w-full text-center"
                                                        style="@error('emps_percentage') border: solid 1px #fda4af; @enderror" @if(count($dept_id) > 1 || \Illuminate\Support\Facades\Auth::user()->user_group->write_product_target == '0') disabled @endif>
                                             @endif
@@ -324,110 +325,111 @@
             <div id="table-container" class="overflow-x-auto w-full">
                 <table id="tbl2" style="border: 2px solid black;" class="table-fixed table-container w-full border text-center">
                     <tbody class="text-sm divide-y divide-gray-100">
-                        @if($results)
+                    @if($results)
                             <?php
                             $vendor_type = "*";
                             ?>
-{{--                        @foreach($results[0] as $record)--}}
+                        {{--                        @foreach($results[0] as $record)--}}
                         @foreach($results as $record)
-                                @php $all_total_emp_tr = []; @endphp
-                                @if($record['VendorNo'] != $vendor_type)
-                                        <?php $vendor_type = $record['VendorNo'] ?>
-                                    <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
-                                            <div class="flex items-center justify-center w-full">
-                                                <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
-                                            </div>
-                                        </td>
-                                        <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
-                                        <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
-                                    </tr>
-                                @endif
+                            @php $all_total_emp_tr = []; @endphp
+                            @if($record['VendorNo'] != $vendor_type)
                                     <?php $vendor_type = $record['VendorNo'] ?>
-                                <tr>
-                                    <th colspan="15" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row">
-                                            <div style="margin: auto;" class="w-full text-sm text-center">
-                                                <div class="flex items-center justify-center w-full">
-                                                    <input id="item--{{ $record['ProductCode'] }}--{{ $record['VendorNo'] }}" name="item_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($special_product_id->where('product_id', $record['ProductCode'])->first()) checked @endif @if($choose_special_product == 0) disabled @endif>
-                                                </div>
-                                            </div>
-                                            <div class="w-full text-sm text-center">رقم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>
-                                            <div class="w-full text-sm text-center">اسم الصنف</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
-                                            <div class="w-full text-sm text-center">الوحدة</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
-                                            <div class="w-full text-sm text-center">التميز</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
-                                            <div class="w-full text-sm text-center">المورد</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
-                                            <div class="w-full text-sm text-center mr-1">
-                                                @if($item_price == "WholeSale")
-                                                    سعر مؤسسات
-                                                @elseif($item_price == "Retail")
-                                                    سعر تجزئة
-                                                @elseif($item_price == "MaxDiscount")
-                                                    أقل سعر
-                                                @else
-                                                    السعر
-                                                @endif
-                                            </div>
-                                            <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
-                                            <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
-                                            <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
-                                            <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
-                                            <div class="w-full text-sm text-center">
-                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2' || $write_product_target == '3' || $write_product_target == '1') )
-                                                    <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
-                                                @endif
+                                <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">
+                                        <div class="flex items-center justify-center w-full">
+                                            <input id="vendor--{{ $vendor_type }}" name="vendor_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($choose_special_product == 0) disabled @endif>
+                                        </div>
+                                    </td>
+                                    <td style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorCode'] }}</td>
+                                    <td colspan="14" style="border: 2px solid black;background-color: #dcdcdc" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $record['VendorName'] }}</td>
+                                </tr>
+                            @endif
+                                <?php $vendor_type = $record['VendorNo'] ?>
+                            <tr>
+                                <th colspan="15" style="border: 2px solid black; background-color: #faebd7" class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                    <div class="flex flex-row">
+                                        <div style="margin: auto;" class="w-full text-sm text-center">
+                                            <div class="flex items-center justify-center w-full">
+                                                <input id="item--{{ $record['ProductCode'] }}--{{ $record['VendorNo'] }}" name="item_id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @if($special_product_id->where('product_id', $record['ProductCode'])->first()) checked @endif @if($choose_special_product == 0) disabled @endif>
                                             </div>
                                         </div>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">الشهر</div>
-                                    </th>
-                                    @foreach ($current_year_list as $year_key => $year)
-                                        @foreach ($year as $month)
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                <div class="text-sm">{{ $year_key."-".$month }}</div>
-                                            </th>
-                                        @endforeach
+                                        <div class="w-full text-sm text-center">رقم الصنف</div>
+                                        {{--                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductCode'] }}</div>--}}
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['sap_code'] }}</div>
+                                        <div class="w-full text-sm text-center">اسم الصنف</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['ProductName'] }}</div>
+                                        <div class="w-full text-sm text-center">الوحدة</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['BaseUnits'] }}</div>
+                                        <div class="w-full text-sm text-center">التميز</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['SpecialityCode'] }}</div>
+                                        <div class="w-full text-sm text-center">المورد</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['VendorName'] }}</div>
+                                        <div class="w-full text-sm text-center mr-1">
+                                            @if($item_price == "WholeSale")
+                                                سعر مؤسسات
+                                            @elseif($item_price == "Retail")
+                                                سعر تجزئة
+                                            @elseif($item_price == "MaxDiscount")
+                                                أقل سعر
+                                            @else
+                                                السعر
+                                            @endif
+                                        </div>
+                                        <div id="item-price-{{$record['ProductCode']}}" style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record[$item_price] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة الطلب</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record['LeadTime'] }}</div>
+                                        <div class="w-full text-sm text-center mr-5">فترة التوزيع</div>
+                                        <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
+                                        <div class="w-full text-sm text-center">
+                                            @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)) && ($write_product_target == '2' || $write_product_target == '3' || $write_product_target == '1') )
+                                                <button id="btn-target--{{ $record['ProductCode'] }}" class="btn-target" style="color: white; background-color: rosybrown; padding: 5px;">توزيع</button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الشهر</div>
+                                </th>
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $year_key."-".$month }}</div>
+                                        </th>
                                     @endforeach
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">مجموع كمية</div>
-                                    </th>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">مجموع قيمة</div>
-                                    </th>
-                                </tr>
-                                @if(Auth::user()->user_group->write_product_target == '2' || $write_product_target == '3' || $write_product_target == "0")
-                                    <tr style="background-color: #e9e9e9">
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">مجموع كمية</div>
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">مجموع قيمة</div>
+                                </th>
+                            </tr>
+                            @if(Auth::user()->user_group->write_product_target == '2' || $write_product_target == '3' || $write_product_target == "0")
+                                <tr style="background-color: #e9e9e9">
 
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                            <div class="text-xs">مستهدف الفرع</div>
-                                                @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
-                                                    <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                        <div class="text-xs">مستهدف الفرع</div>
+                                        @if((($edit_special_product == 1 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || ($special_product_id->where('product_id', $record['ProductCode'])->count() == 0)))
+                                            <div id="copy--{{ $record['ProductCode'] }}" class="copy-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                                                 </svg>
                                             </div>
-                                                @endif
-                                        </th>
-                                        @php
-                                            $target_counter =1;
-                                            $arr_tar = [];
-                                            $now = \Carbon\Carbon::now();
-                                            $grand_total_target = 0;
-                                            $grand_emp_total_target = 0;
-                                        @endphp
-                                        @foreach ($current_year_list as $year_key => $year)
-                                            @foreach ($year as $month_key => $month)
-                                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                    @php    $fromDate = \Carbon\Carbon::now();
+                                        @endif
+                                    </th>
+                                    @php
+                                        $target_counter =1;
+                                        $arr_tar = [];
+                                        $now = \Carbon\Carbon::now();
+                                        $grand_total_target = 0;
+                                        $grand_emp_total_target = 0;
+                                    @endphp
+                                    @foreach ($current_year_list as $year_key => $year)
+                                        @foreach ($year as $month_key => $month)
+                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                                @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         // good
@@ -443,40 +445,41 @@
                                         $target_month = $year_key."-".$month."-".$month_days;
                                         $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
 
-                                                    @endphp
-                                                        <?php
-                                                            // good
+                                                @endphp
+                                                    <?php
+                                                    // good
 //                                                        $val = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() ? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0;
-                                                        // end of good
+                                                    // end of good
 
 //                                                    dd($dept_id);
-                                                        $val = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
-                                                        $val = count($val) > 0 ? $val[0]->target : 0;
-                                                        $grand_total_target += floatval($val) == null ? 0 : floatval($val);
-                                                        ?>
-                                                    <input wire:key="input-totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{time()}}" min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="{{ $val }}" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || $write_product_target == 0) disabled="disabled" @endif>
+                                                    $val = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
+                                                    $val = count($val) > 0 ? $val[0]->target : 0;
+                                                    $grand_total_target += floatval($val) == null ? 0 : floatval($val);
+                                                    ?>
+                                                <input wire:key="input-totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{time()}}" min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="{{ $val }}" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || $write_product_target == 0) disabled="disabled" @endif>
+                                                <!--<input wire:key="input-totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{time()}}" min="0" id="totaltarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" type="number" class="@if($special_product_id->where('product_id', $record['ProductCode'])->first())special-item @endif total-target form-input w-full" value="{{ $val }}" @if(\Carbon\Carbon::parse($target_month)->lte('2024-01-31') || ($edit_special_product == 0 && $special_product_id->where('product_id', $record['ProductCode'])->count() > 0) || $write_product_target == 0) disabled="disabled" @endif>-->
 
-                                                    @php $target_counter++; @endphp
-                                                </th>
-                                           @endforeach
-                                        @endforeach
-                                        <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-                                            <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
-
-                                        </th>
-                                        <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
-                                            <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record[$item_price]) }}</div>
-                                        </th>
-                                    </tr>
-                                    @foreach($emps as $emp)
-                                        <tr class="employee">
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                <div class="text-sm">{{ $emp->name }}</div>
+                                                @php $target_counter++; @endphp
                                             </th>
-                                            @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
-                                            @foreach ($current_year_list as $year_key => $year)
-                                                @foreach ($year as $month_key => $month)
-                                                    @php    $fromDate = \Carbon\Carbon::now();
+                                        @endforeach
+                                    @endforeach
+                                    <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
+                                        <div id="total-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ $grand_total_target }}</div>
+
+                                    </th>
+                                    <th style="border: 2px solid black; background-color: #fffacd;" class="border p-2">
+                                        <div id="total-val-col--{{ $record['ProductCode'] }}" class="total-col" style="text-align: center;">{{ number_format($grand_total_target*$record[$item_price]) }}</div>
+                                    </th>
+                                </tr>
+                                @foreach($emps as $emp)
+                                    <tr class="employee">
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $emp->name }}</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         // good
@@ -499,65 +502,68 @@
                                         $special = (\Illuminate\Support\Facades\DB::select("SELECT product_id FROM special_products WHERE product_id = '". $record['ProductCode'] . "' LIMIT 1"));
                                         $special = count($special) > 0 ? true : false;
 
-                                                    @endphp
-                                                    <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
-                                                            <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == "0") disabled="disabled" @endif>
-                                                        @php $target_counter++; @endphp
-                                                    </th>
-                                                @endforeach
+                                                @endphp
+                                                <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                                        good, will returned it soon--}}
+                                                    <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="target form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == "0") disabled="disabled" @endif>
+
+                                                    {{--                                                            <input wire:key="emp-target-target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}--{{ time() }}" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="target form-input w-full" @if(\Carbon\Carbon::parse($target_month)->lte('2024-01-31') || ($edit_special_product == 0 && $special) || $write_product_target == "0") disabled="disabled" @endif> --}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
                                             @endforeach
-                                            <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                                <div wire:key="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
-                                            </th>
-                                            <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                                <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record[$item_price]) }}</div>
-                                            </th>
-                                        </tr>
-                                            <?php
-                                            if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
-                                                $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record[$item_price];
-                                            }
-                                            else {
-                                                $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record[$item_price];
-                                            }
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div wire:key="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div wire:key="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp-val--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ number_format($grand_emp_total_target*$record[$item_price]) }}</div>
+                                        </th>
+                                    </tr>
+                                        <?php
+                                        if (!array_key_exists($emp->emp_code, $all_total_emp_sales)) {
+                                            $all_total_emp_sales[$emp->emp_code] = $grand_emp_total_target*$record[$item_price];
+                                        }
+                                        else {
+                                            $all_total_emp_sales[$emp->emp_code] += $grand_emp_total_target*$record[$item_price];
+                                        }
 
-                                            if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
-                                                $all_total_emp_tr[$emp->emp_code] = $grand_emp_total_target;
-                                            }
-                                            else {
-                                                $all_total_emp_tr[$emp->emp_code] += $grand_emp_total_target;
-                                            }
-                                            ?>
-                                    @endforeach
-                                @else
-                                    @php
-                                        $target_counter =1;
-                                        $arr_tar = [];
-                                        $now = \Carbon\Carbon::now();
-                                        $grand_total_target = 0;
-                                        $grand_emp_total_target = 0;
-                                        $fromDate = \Carbon\Carbon::now();
-                                        $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                                        $diff = $fromDate->diffInMonths($toDate, false);
-                                        // good
+                                        if (!array_key_exists($emp->emp_code, $all_total_emp_tr)) {
+                                            $all_total_emp_tr[$emp->emp_code] = $grand_emp_total_target;
+                                        }
+                                        else {
+                                            $all_total_emp_tr[$emp->emp_code] += $grand_emp_total_target;
+                                        }
+                                        ?>
+                                @endforeach
+                            @else
+                                @php
+                                    $target_counter =1;
+                                    $arr_tar = [];
+                                    $now = \Carbon\Carbon::now();
+                                    $grand_total_target = 0;
+                                    $grand_emp_total_target = 0;
+                                    $fromDate = \Carbon\Carbon::now();
+                                    $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                    $diff = $fromDate->diffInMonths($toDate, false);
+                                    // good
 //                                        $current = $current_target->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first();
-                                        // end of good
-                                        $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
-                                        $current_month = $now->year."-".$now->month."-01";
-                                        $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
-                                        $target_month = $year_key."-".$month."-".$month_days;
-                                        $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
+                                    // end of good
+                                    $lead_time = round((intval($record['LeadTime'])+intval($dist_days))/30);
+                                    $current_month = $now->year."-".$now->month."-01";
+                                    $month_days = \Carbon\Carbon::parse($year_key."-".$month."-01")->daysInMonth;
+                                    $target_month = $year_key."-".$month."-".$month_days;
+                                    $diff_month = Carbon\Carbon::parse($current_month)->diffInMonths($target_month, false);
 
-                                    @endphp
-                                    @foreach($emps as $emp)
-                                        <tr>
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                <div class="text-sm">{{ $emp->name }}</div>
-                                            </th>
-                                            @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
-                                            @foreach ($current_year_list as $year_key => $year)
-                                                @foreach ($year as $month_key => $month)
-                                                    @php    $fromDate = \Carbon\Carbon::now();
+                                @endphp
+                                @foreach($emps as $emp)
+                                    <tr>
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            <div class="text-sm">{{ $emp->name }}</div>
+                                        </th>
+                                        @php $target_counter =1; $arr_tar = []; $grand_emp_total_target = 0; @endphp
+                                        @foreach ($current_year_list as $year_key => $year)
+                                            @foreach ($year as $month_key => $month)
+                                                @php    $fromDate = \Carbon\Carbon::now();
                                         $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
                                         $diff = $fromDate->diffInMonths($toDate, false);
                                         // good
@@ -580,165 +586,163 @@
                                         $special = (\Illuminate\Support\Facades\DB::select("SELECT product_id FROM special_products WHERE product_id = '". $record['ProductCode'] . "' LIMIT 1"));
                                         $special = count($special) > 0 ? true : false;
 
-                                                    @endphp
-                                                    <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
-                                                        {{--                                @if($diff < 3)--}}
-                                                        {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
-                                                        {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
-                                                        {{--                                                {{ $current ? $current->target : "-" }}--}}
-                                                        {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
-                                                        {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
-                                                        {{--                                            @else--}}
-{{--                                                        <div>--}}
-                                                            {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
-                                                            {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
-                                                            {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
-                                                            <input wire:key="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == '0') disabled="disabled" @endif>
-{{--                                                        </div>--}}
-                                                        {{--                                            @endif--}}
-                                                        @php $target_counter++; @endphp
-                                                    </th>
-                                                @endforeach
+                                                @endphp
+                                                <th style="border: 2px solid black; z-index: 10; @if($diff_month < $lead_time) background-color: #e9e9e9; @endif" class="border p-2">
+                                                    {{--                                @if($diff < 3)--}}
+                                                    {{--                                            @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                                    {{--                                                --}}{{--                                        {{ $current ? $current->target : $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first() }}--}}
+                                                    {{--                                                {{ $current ? $current->target : "-" }}--}}
+                                                    {{--                                                @php array_push($arr_tar, ($current ? $current->target : "-")); @endphp--}}
+                                                    {{--                                                --}}{{--                                    <div id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$loop->iteration}}" class="w-full">{{ $current ? $current->target : "N/A" }}</div>--}}
+                                                    {{--                                            @else--}}
+                                                    {{--                                                        <div>--}}
+                                                    {{--                                                    <div>{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] }}</div>--}}
+                                                    {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$target_counter}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="form-input w-full">--}}
+                                                    {{--                                                    <input wire:key="key-{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" value="0" min="0" id="target--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" wire:model.defer="emp_target.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$emp->emp_code}}" placeholder="{{ $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('user_id', $user_ids[$emp->emp_code])->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()['target'] : null}}" class="target form-input w-full" @if($diff_month < $lead_time) disabled="disabled" @endif>--}}
+                                                    <input wire:key="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" min="0" id="emptarget--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}--{{$emp->emp_code}}" type="number" value="{{ $current_target_to_edit }}" class="emptarget form-input w-full" @if($diff_month < $lead_time || ($edit_special_product == 0 && $special) || $write_product_target == '0') disabled="disabled" @endif>
+                                                    {{--                                                        </div>--}}
+                                                    {{--                                            @endif--}}
+                                                    @php $target_counter++; @endphp
+                                                </th>
                                             @endforeach
-                                            <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                                <div wire:key="total-emptarget--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
-                                            </th>
-                                        </tr>
-                                    @endforeach
-                                @endif
-                                <tr>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-xs">مبيعات تاريخية</div>
-                                    </th>
-                                    @php $sales = []; @endphp
-                                    @php $target_counter =1; @endphp
+                                        @endforeach
+                                        <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                            <div wire:key="total-emptarget--{{$record['ProductCode']}}--{{$emp->emp_code}}" id="total-emp--{{$record['ProductCode']}}--{{$emp->emp_code}}" class="text-sm">{{ $grand_emp_total_target }}</div>
+                                        </th>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-xs">مبيعات تاريخية</div>
+                                </th>
+                                @php $sales = []; @endphp
+                                @php $target_counter =1; @endphp
                                     <?php
 //                                        dd($record);
 
 //                                        dd($new_result);
 //                                        $record['month'.$target_counter]
                                     ?>
-                                    @foreach ($current_year_list as $year_key => $year)
-                                        @foreach ($year as $month_key => $month)
-                                            @php
-                                                $month_num = "month".$target_counter;
-                                                $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
-        //                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '170224' AND `Department` = '10' AND `year` = '2023'");
-                                                $new_result = $new_result ? $new_result[0]->$month_num : 0;
-                                            @endphp
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($new_result, 0, '', '') }}</div>
-                                                @php array_push($sales, $new_result); @endphp
-                                            </th>
-                                            @php $target_counter++; @endphp
-                                        @endforeach
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month_key => $month)
+
+                                        @php
+                                            $month_num = "month".$target_counter;
+                                            //$new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
+                                            $new_result = $historical_sales->where('ItemCode', $record['sap_code'])->pluck($month_num)->toArray();
+
+//                                            dd($new_result[0]);
+    //                                        $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '170224' AND `Department` = '10' AND `year` = '2023'");
+
+//                                            $new_result = $new_result ? $new_result[0]->$month_num : 0;
+                                            $new_result = $new_result ? $new_result[0] : 0;
+
+                                        @endphp
+
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            {{--                                            <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($new_result, 0, '', '') }}</div>--}}
+                                            <div id="sales--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter}}" class="text-sm">{{ number_format($new_result, 0, '', '') }}</div>
+                                            @php array_push($sales, $new_result); @endphp
+                                        </th>
+                                        @php $target_counter++; @endphp
                                     @endforeach
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        {{ number_format(array_sum($sales)) }}
-                                    </th>
-                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record[$item_price]) }}</div>
-                                    </th>
+                                @endforeach
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    {{ number_format(array_sum($sales)) }}
+                                </th>
+                                <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    <div id="total-sales-emp--{{$record['ProductCode']}}" class="text-sm">{{ number_format(array_sum($sales)*$record[$item_price]) }}</div>
+                                </th>
                                     <?php $total_historical += array_sum($sales)*$record[$item_price]; ?>
-                                </tr>
-{{--                                <tr>--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--                                        <div class="text-xs">متوسط مبيعات تاريخية(3)</div>--}}
-{{--                                    </th>--}}
-{{--                                    @php $sales2 = []; @endphp--}}
-{{--                                    @php $target_counter2 =1; @endphp--}}
-{{--                                    @foreach ($current_year_list as $year_key => $year)--}}
-{{--                                        @foreach ($year as $month_key => $month)--}}
-{{--                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--                                                @php $month_temp = "month".$target_counter2; @endphp--}}
-{{--                                                @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp--}}
-{{--                                                <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>--}}
-{{--                                                @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp--}}
-{{--                                            </th>--}}
-{{--                                            @php $target_counter2++; @endphp--}}
-{{--                                        @endforeach--}}
-{{--                                    @endforeach--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
-{{--                                        {{ number_format(array_sum($sales2)) }}--}}
-{{--                                    </th>--}}
-{{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
-{{--                                        <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>--}}
-{{--                                    </th>--}}
-{{--                                </tr>--}}
-                                <tr>
-                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">الفرق %</div>
-                                        @if((($edit_special_product == 1 && $special) || ($special == 0)))
-                                            <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
+                            </tr>
+                            {{--                                <tr>--}}
+                            {{--                                    <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                            {{--                                        <div class="text-xs">متوسط مبيعات تاريخية(3)</div>--}}
+                            {{--                                    </th>--}}
+                            {{--                                    @php $sales2 = []; @endphp--}}
+                            {{--                                    @php $target_counter2 =1; @endphp--}}
+                            {{--                                    @foreach ($current_year_list as $year_key => $year)--}}
+                            {{--                                        @foreach ($year as $month_key => $month)--}}
+                            {{--                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">--}}
+                            {{--                                                @php $month_temp = "month".$target_counter2; @endphp--}}
+                            {{--                                                @php $check_prod = $this->results2->where("ProductCode", $record['ProductCode'])->first(); @endphp--}}
+                            {{--                                                <div class="text-sm">{{ number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0) }}</div>--}}
+                            {{--                                                @php array_push($sales2, intval(number_format($check_prod ? $this->results2->where("ProductCode", $record['ProductCode'])->first()->$month_temp : 0))); @endphp--}}
+                            {{--                                            </th>--}}
+                            {{--                                            @php $target_counter2++; @endphp--}}
+                            {{--                                        @endforeach--}}
+                            {{--                                    @endforeach--}}
+                            {{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
+                            {{--                                        {{ number_format(array_sum($sales2)) }}--}}
+                            {{--                                    </th>--}}
+                            {{--                                    <th style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">--}}
+                            {{--                                        <div class="text-sm">{{ number_format(array_sum($sales2)*$record[$item_price]) }}</div>--}}
+                            {{--                                    </th>--}}
+                            {{--                                </tr>--}}
+                            <tr>
+                                <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">الفرق %</div>
+                                    @if((($edit_special_product == 1 && $special) || ($special == 0)))
+                                        <div id="historicalsales--{{ $record['ProductCode'] }}" class="historicalsales-btn text-xs" style="text-align: -webkit-center; cursor: pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
                                             </svg>
                                         </div>
-                                        @endif
-                                    </th>
-                                    @php $target_counter2 =1; @endphp
-                                    @foreach ($current_year_list as $year_key => $year)
-                                        @foreach ($year as $month)
-                                            {{--                    @for($i = 1; $i <= 12; $i++)--}}
-                                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                                @php
-                                                    $fromDate = \Carbon\Carbon::now();
-                                                    $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
-                                                    $diff = $fromDate->diffInMonths($toDate, false);
-            //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
-                                                    // goog
+                                    @endif
+                                </th>
+                                @php $target_counter2 =1; @endphp
+                                @foreach ($current_year_list as $year_key => $year)
+                                    @foreach ($year as $month)
+                                        {{--                    @for($i = 1; $i <= 12; $i++)--}}
+                                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                            @php
+                                                $fromDate = \Carbon\Carbon::now();
+                                                $toDate = \Carbon\Carbon::parse($year_key."-". $month ."-01");
+                                                $diff = $fromDate->diffInMonths($toDate, false);
+        //                                        $diff_value = round((floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ?  $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100);
+                                                // goog
 //                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round((floatval($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'], 0, '', ''): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'], 0, '', '')) : 0 )/ floatval($record['month'.$target_counter2]))*100)-100;
-                                                    $old_target = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
-                                                    $old_target = count($old_target) > 0 ? $old_target[0] : 0;
+                                                $old_target = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept_id[0] ."' LIMIT 1"));
+                                                $old_target = count($old_target) > 0 ? $old_target[0] : 0;
 
-                                                    $month_num = "month".$target_counter2;
-                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
-                                                    $new_result = count($new_result) > 0 ? $new_result[0]->$month_num : 0;
-//                                                    dd($new_result);
+                                                $month_num = "month".$target_counter2;
+                                                //$new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept_id[0] ."' AND `year` = '". intval($year_key)-1 ."'");
+
+                                                 $new_result = $historical_sales->where('ItemCode', $record['sap_code'])->pluck($month_num)->toArray();
+                                               // $new_result = count($new_result) > 0 ? $new_result[0]->$month_num : 0;
+
+                                                   $new_result = count($new_result) > 0 ? $new_result[0] : 0;
+
+
 //                                                    dd($old_target->target);
-                                                    // good
+                                                // good
 //                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
-                                                    // end of good
-                                                    // good
+                                                // end of good
+                                                // good
 //                                                    $old_diff_value = floatval($record['month'.$target_counter2]) == 0 ? 0 : round(((($old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()? $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->first()->target : 0)/ floatval($record['month'.$target_counter2]))*100)-100);
-                                                    // end of good
+                                                // end of good
 
-                                                    $old_diff_value = floatval($new_result) == 0 ? 0 : round(((($old_target? $old_target->target : 0)/ floatval($new_result))*100)-100);
-//                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
-//                                                    $diff_value = round((floatval($record['month'.$target_counter2]) == 0 ? 0 :floatval($current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0 ? $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') : 0) / floatval($record['month'.$target_counter2]))*100)-100;
-            //                                        echo $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? $diff_value: null;
+                                                $old_diff_value = floatval($new_result) == 0 ? 0 : round(((($old_target? $old_target->target : 0)/ floatval($new_result))*100)-100);
 
-                                                @endphp
-                                                {{--                                    @if($diff < 3)--}}
-                                                {{--                                    @if($toDate->lt(\Carbon\Carbon::parse('2023-07-01')))--}}
+                                            @endphp
 
-                                                {{--                                        @if(array_key_exists($target_counter2, $arr_tar) && is_numeric($arr_tar[$target_counter2-1]))--}}
-                                                {{--                                            @php $res = $sales[$target_counter2-1] == 0? 0 :  number_format(floatval($arr_tar[$target_counter2-1]) / floatval($sales[$target_counter2-1])*100, '0', '', '');  @endphp--}}
-                                                {{--                                            <div style="@if($res > 0) color: #6ab200 @else color: #fd162c @endif">{{ $res }}</div>--}}
-                                                {{--                                        @else--}}
-                                                {{--                                            <div style="color: #fd162c">-</div>--}}
-                                                {{--                                        @endif--}}
-                                                {{--                                    @else--}}
-                                                {{--                                        <span>{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->sum('target') }}</span>--}}
-                                                {{--                                        <span wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" class="w-full"></span>--}}
-                                                {{--                                        ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->count() > 0 ? ($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget'] != 0 ? number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Taget']): number_format($old_targets->where('Code', $record['ProductCode'])->where('month', $month)->where('Year', $year_key)->first()['Revision'])) : null);--}}
-{{--                                                good --}}
-{{--                                                <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ $current_target_to_edit->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->count() > 0? ($record['month'.$target_counter2] == 0 ? "*" : $diff_value) : ($record['month'.$target_counter2] == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">--}}
+                                            @dd($new_result)
                                                 <input wire:key="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}--{{time()}}" style="text-align: center; font-weight: bold;" type="text" wire:ignore id="diff--{{$record['ProductCode']}}--{{$year_key."-".$month}}--{{$target_counter2}}" placeholder="{{ ($new_result == 0 ? "*" : $old_diff_value)}}" class="w-full form-input" disabled="disabled">
-                                                {{--                                    @endif--}}
-                                                {{--                                <span id="x" class="w-full">--}}
+                                            {{--                                    @endif--}}
+                                            {{--                                <span id="x" class="w-full">--}}
 
-                                                {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
-                                            </th>
-                                            {{--                    @endfor--}}
-                                            @php $target_counter2++; @endphp
-                                        @endforeach
+                                            {{--                                <input type="number" wire:model="diff.{{$record['ProductCode']}}.{{$year_key."-".$month}}.{{$loop->iteration}}" value="{{ $record['month'. $loop->iteration] }}" class="form-input w-full" readonly>--}}
+                                        </th>
+                                        {{--                    @endfor--}}
+                                        @php $target_counter2++; @endphp
                                     @endforeach
-                                    <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
-                                        {{--                                                                <div>good: {{ array_sum($sales) }} - total: {{ array_sum($all_total_emp_tr) }}</div>--}}
-                                        <div wire:key="total-diff-emp--{{$record['ProductCode']}}--{{time()}}" id="total-diff-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) == 0 ? "*" : number_format(((array_sum($all_total_emp_tr)/array_sum($sales))*100)-100, 0, '', '') }}</div>
-                                    </th>
-                                </tr>
+                                @endforeach
+                                <th colspan="2" style="border: 2px solid black; z-index: 10; background-color: #fffacd;" class="border p-2">
+                                    {{--                                                                <div>good: {{ array_sum($sales) }} - total: {{ array_sum($all_total_emp_tr) }}</div>--}}
+                                    <div wire:key="total-diff-emp--{{$record['ProductCode']}}--{{time()}}" id="total-diff-emp--{{$record['ProductCode']}}" class="text-sm">{{ array_sum($sales) == 0 ? "*" : number_format(((array_sum($all_total_emp_tr)/array_sum($sales))*100)-100, 0, '', '') }}</div>
+                                </th>
+                            </tr>
                         @endforeach
                     @endif
                     </tbody>
@@ -788,13 +792,14 @@
                 </div>
             </div>
         @elseif(count($dept_id) > 1)
+
             <div id="table-container2" class="overflow-x-auto w-full">
                 <table id="tbl3" style="border: 2px solid black;" class="table-container w-full border text-center">
                     <tbody class="text-sm divide-y divide-gray-100">
                         <?php
                         $vendor_id = "*";
                         ?>
-
+{{--@dd($items)--}}
                     @foreach($items as $record)
 
                         <div>
@@ -944,6 +949,7 @@
 
                                     @foreach ($current_year_list as $year_key => $year)
                                         @foreach ($year as $month)
+
                                             <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border">
 
                                                     <?php
@@ -951,14 +957,27 @@
 //                                                    $new_result = $results->where('ProductCode', $record['ProductCode'])->where('Department', $dept)->first();
 //                                                    $new_result = \Illuminate\Support\Facades\DB::select("select". $month_num ." from `sales` inner join `products` on `sales`.`ProductCode` = `products`.`product_code` where `year` = ? and products.VendorNo is not null and sales.Department IN (3,7) and products.SpecialityCode IN (0,1,2) and ProductCode is not null")
                                                     $month_num = "month".$month_counter;
-                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept ."' AND `year` = '". intval($year_key)-1 ."'");
+//                                                    $new_result = \Illuminate\Support\Facades\DB::select("select ". $month_num ." from `sales` where `ProductCode` = '". $record['ProductCode'] ."' AND `Department` = '". $dept ."' AND `year` = '". intval($year_key)-1 ."'");
+//                                                    $new_result = $historical_sales->where('ItemCode', $record['sap_code'])->pluck($month_num)->toArray();
+                                                    $new_result = $historical_sales->where('ItemCode', $record['sap_code'])->pluck($month_num)->toArray();
+
                                                     $new_result = count($new_result) > 0 ? $new_result[0] : 0;
 
                                                     ?>
-                                                <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>
-                                                    <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>
-                                                    <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>
-                                                @php $total_dept_new_sales += $new_result ? $new_result->$month_num : 0; @endphp
+
+{{--                                                @dd($new_result);--}}
+{{--                                                <div class="text-sm">{{ $new_result ? ($new_result->$month_num == 0 ? "" : number_format($new_result->$month_num)) : ""  }}</div>--}}
+{{--                                                    <?php array_push($new_sales, ($new_result ? $new_result->$month_num : 0) ) ?>--}}
+{{--                                                    <?php $dept_sales += ($new_result ? $new_result->$month_num : 0); ?>--}}
+{{--                                                @php $total_dept_new_sales += $new_result ? $new_result->$month_num : 0; @endphp--}}
+
+                                                <div class="text-sm">{{ $new_result ? ($new_result == 0 ? "" : number_format($new_result)) : ""  }}</div>
+                                                    <?php array_push($new_sales, ($new_result ? $new_result : 0) ) ?>
+                                                    <?php $dept_sales += ($new_result ? $new_result : 0); ?>
+                                                @php $total_dept_new_sales += $new_result ? $new_result : 0; @endphp
+
+
+
                                                 @switch($month_counter)
                                                     @case(1)
                                                         @php $total_s1 = $total_s1 + ($new_result ? $new_result->$month_num : 0); @endphp
@@ -997,12 +1016,53 @@
                                                         @php $total_s12 = $total_s12 + ($new_result ? $new_result->$month_num : 0); @endphp
                                                         @break
                                                 @endswitch
-                                            </th>
+
+{{--                                                @switch($month_counter)--}}
+{{--                                                    @case(1)--}}
+{{--                                                        @php $total_s1 = $total_s1 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(2)--}}
+{{--                                                        @php $total_s2 = $total_s2 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(3)--}}
+{{--                                                        @php $total_s3 = $total_s3 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(4)--}}
+{{--                                                        @php $total_s4 = $total_s4 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(5)--}}
+{{--                                                        @php $total_s5 = $total_s5 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(6)--}}
+{{--                                                        @php $total_s6 = $total_s6 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(7)--}}
+{{--                                                        @php $total_s7 = $total_s7 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(8)--}}
+{{--                                                        @php $total_s8 = $total_s8 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(9)--}}
+{{--                                                        @php $total_s9 = $total_s9 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(10)--}}
+{{--                                                        @php $total_s10 = $total_s10 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(11)--}}
+{{--                                                        @php $total_s11 = $total_s11 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                    @case(12)--}}
+{{--                                                        @php $total_s12 = $total_s12 + ($new_result ? $new_result : 0); @endphp--}}
+{{--                                                        @break--}}
+{{--                                                @endswitch--}}
+{{--                                            </th>--}}
                                             <th style="border: 2px solid black; z-index: 10; background-color: #e4fdf7;" class="border">
 
                                                     <?php
 //                                                    $new_result = $old_targets->where('product_id', $record['ProductCode'])->where('month', $month)->where('year', $year_key)->where('branch', $dept)->first();
+
                                                     $new_result = (\Illuminate\Support\Facades\DB::select("SELECT target FROM product_target_branch_totals WHERE product_id = '". $record['ProductCode'] ."' AND month = '". $month ."' AND year = '" . $year_key ."' AND branch='". $dept ."' LIMIT 1"));
+
                                                     $new_result = count($new_result) > 0 ? $new_result[0] : 0;
 //                                                    dd($new_result->target);
 //                                                    dd($new_result[0]->target);
@@ -1056,6 +1116,7 @@
                                             @php $month_counter++; @endphp
                                         @endforeach
                                     @endforeach
+
                                     <th style="border: 2px solid black; z-index: 10; background-color: #fafad2;" class="border p-2">
                                         <div class="text-sm">{{ $dept_sales == 0 ? "" : number_format($dept_sales) }}</div>
                                     </th>
@@ -1073,6 +1134,7 @@
                                         <div class="text-sm">{{ $a == 0 ? "" : $a }}</div>
                                     </th>
                                 </tr>
+
                                 @php
                                     $total_dept_s_qty = $total_dept_s_qty + $dept_sales;
                                     $total_dept_f_qty = $total_dept_f_qty + $dept_forecast;
@@ -1080,11 +1142,16 @@
                                     $total_dept_s_value = $total_dept_s_value + ($dept_sales*$record[$item_price]);
                                     $total_dept_f_value = $total_dept_f_value + ($dept_forecast*$record[$item_price]);
 
+
+
                                     if (!array_key_exists($dept, $all_total_dept_sales)) {
+
                                         $all_total_dept_sales[$dept] = $dept_sales*$record[$item_price];
+
                                     }
                                     else {
                                         $all_total_dept_sales[$dept] += $dept_sales*$record[$item_price];
+
                                     }
 
                                     if (!array_key_exists($dept, $all_total_dept_tr)) {
@@ -1265,6 +1332,8 @@
                         <?php $total_dept_sum_s = 0; ?>
                         <?php $total_dept_sum_f = 0; ?>
                         <?php $depts =  $dept_id ?>
+
+
                     @foreach($depts as $dept)
                         <tr class="department" style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
                             <td style="border: 2px solid black;background-color: #FFFFFF" class="border p-2 whitespace-nowrap col-id-no" scope="row">
@@ -1296,9 +1365,10 @@
                                     {{ $dept }}
                                 @endif
                             </td>
+
                             <td style="border: 2px solid black; background-color: #fffacd;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_sales[$dept]) }}</td>
                             <td style="border: 2px solid black; background-color: #e4fdf7;" class="bold border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($all_total_dept_tr[$dept]) }}</td>
-                            <?php $total_dept_diff = $all_total_dept_sales[$dept] == 0 ? 0 : number_format((($all_total_dept_tr[$dept]/$all_total_dept_sales[$dept])*100)-100); ?>
+                                <?php $total_dept_diff = $all_total_dept_sales[$dept] == 0 ? 0 : number_format((($all_total_dept_tr[$dept]/$all_total_dept_sales[$dept])*100)-100); ?>
                             <td style="border: 2px solid black;@if(floatval($total_dept_diff) > 0) background-color: #e8ffdf; @else background-color: #ffeded; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $total_dept_diff }}</td>
                             @php
                                 $total_dept_sum_s += $all_total_dept_sales[$dept];
@@ -1310,7 +1380,7 @@
                         <td style="border: 2px solid black;background-color: #dcdcdc; font-weight: bold;" class="border p-2 whitespace-nowrap col-id-no" scope="row">المجموع</td>
                         <td style="border: 2px solid black; font-weight: bold; background-color: #fff6a1;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_s) }}</td>
                         <td style="border: 2px solid black; font-weight: bold; background-color: #c0fff0;" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ number_format($total_dept_sum_f) }}</td>
-                        <?php $grand_total_dept_diff = $total_dept_sum_s == 0 ? 0 : number_format((($total_dept_sum_f/$total_dept_sum_s)*100)-100); ?>
+                            <?php $grand_total_dept_diff = $total_dept_sum_s == 0 ? 0 : number_format((($total_dept_sum_f/$total_dept_sum_s)*100)-100); ?>
                         <td style="border: 2px solid black; font-weight: bold;@if(floatval($grand_total_dept_diff) > 0) background-color: #cfffbd; @else background-color: #ffdcdc; @endif" class="border p-2 whitespace-nowrap col-id-no" scope="row">{{ $grand_total_dept_diff }}</td>
                     </tr>
                     </tbody>
@@ -1319,27 +1389,27 @@
         @endif
     @endif
     <div wire:loading wire:target="generateReport" class="w-full">
-            <div class="w-full" style="border: solid 1px grey;">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-                    <rect x="17.5" y="30" width="15" height="40" fill="#e15b64">
-                        <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="18;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
-                        <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="64;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
-                    </rect>
-                    <rect x="42.5" y="30" width="15" height="40" fill="#f8b26a">
-                        <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
-                        <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
-                    </rect>
-                    <rect x="67.5" y="30" width="15" height="40" fill="#abbd81">
-                        <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
-                        <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
-                    </rect>
-                </svg>
+        <div class="w-full" style="border: solid 1px grey;">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                <rect x="17.5" y="30" width="15" height="40" fill="#e15b64">
+                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="18;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
+                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="64;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
+                </rect>
+                <rect x="42.5" y="30" width="15" height="40" fill="#f8b26a">
+                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
+                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
+                </rect>
+                <rect x="67.5" y="30" width="15" height="40" fill="#abbd81">
+                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
+                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
+                </rect>
+            </svg>
 
-                <div class="mb-4 bold text-2xl text-center">
-                    الرجاء الإنتظار
-                </div>
+            <div class="mb-4 bold text-2xl text-center">
+                الرجاء الإنتظار
             </div>
         </div>
+    </div>
 </div>
 
 
@@ -1722,6 +1792,7 @@
                             btn_id = btn_id.split('--');
                             selector_txt = 'totaltarget--'+ btn_id[1];
 
+//                            const elements = document.querySelectorAll(".total-target:not(.special-item)");
                             const elements = document.querySelectorAll(".total-target:not(.special-item):not([disabled])");
 
                             elements.forEach(element =>{
@@ -1816,6 +1887,7 @@
                         item_price_txt = "#item-price-"+product_id;
                         historical_sales = parseFloat($('#historical-grand-total-sales').text().replace(/,/g, ""));
                         // const elements = document.querySelectorAll(".total-target");
+                        // const elements = document.querySelectorAll("input[id^='"+selector_txt+"']");
                         const elements = document.querySelectorAll("input:not([disabled])[id^='"+selector_txt+"']");
 
                         $("#total-diff-emp--"+product_id).text(parseFloat($('#total-sales-emp--'+product_id).text()) == 0 ? "*" : Math.round((parseFloat($('#total-col--'+product_id).text())/parseFloat($('#total-sales-emp--'+product_id).text()))*100)-100);
@@ -1949,7 +2021,7 @@
 
                 // Livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
                 // window.livewire.emit('targets-entered', targets, emps_percents, products_codes, totaltargets);
-                @this.test(targets, emps_percents, products_codes, totaltargets);
+            @this.test(targets, emps_percents, products_codes, totaltargets);
 
             });
 
@@ -2058,13 +2130,13 @@
                         elements.forEach(element =>{
                             // if (element.value) {
 
-                                // recalculating indiviuals based on the percentage
-                                var txt = element.id;
-                                txt = txt.split("--");
-                                txt= txt[1]+"--"+txt[2]+"--"+txt[3];
+                            // recalculating indiviuals based on the percentage
+                            var txt = element.id;
+                            txt = txt.split("--");
+                            txt= txt[1]+"--"+txt[2]+"--"+txt[3];
 
-                                var sales = $("#sales--"+txt).text();
-                                $("#"+element.id).val(Math.round(parseFloat(sales)*(1+(parseFloat(result.value)/100)))).change();
+                            var sales = $("#sales--"+txt).text();
+                            $("#"+element.id).val(Math.round(parseFloat(sales)*(1+(parseFloat(result.value)/100)))).change();
                         });
 
                     }
@@ -2076,7 +2148,7 @@
 
 
         Livewire.on('msg', value => {
-           // sendNotification('success', 'تم حفظ البيانات بنجاح!');
+            // sendNotification('success', 'تم حفظ البيانات بنجاح!');
             swal.close();
             Swal.fire({
                 title: "تم إضافة المستهدف بنجاح",
@@ -2085,11 +2157,11 @@
                 timerProgressBar: true,
             });
 
-           $('th span').empty();
+            $('th span').empty();
 
-           $('.total-target').empty();
-           $('.target').empty();
-           emps_percents = [];
+            $('.total-target').empty();
+            $('.target').empty();
+            emps_percents = [];
 
         });
 
@@ -2099,7 +2171,7 @@
 
         Livewire.on('clear-btn', value => {
             $('th span').empty();
-                $('.emps_percentage_readonly').text('');
+            $('.emps_percentage_readonly').text('');
         });
 
 
