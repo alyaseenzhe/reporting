@@ -1148,7 +1148,7 @@
     padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: inherit;
     box-sizing: border-box;
     width: 100%;
