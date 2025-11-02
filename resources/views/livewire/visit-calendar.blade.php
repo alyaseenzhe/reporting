@@ -426,6 +426,9 @@
                     } else if (status === '2') {
                         info.el.style.backgroundColor = '#fecaca'; // red-ish
                         info.el.style.color = '#000';
+                    } else if (status === '3') {
+                        info.el.style.backgroundColor = '#dadada'; // grey-ish
+                        info.el.style.color = '#000';
                     }
                 },
                 // select : function (info) {

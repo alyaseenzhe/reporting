@@ -381,26 +381,26 @@
             {{-- end of collapsaple--}}
         </div>
     </div>
-    @if($can_recipient_approve)
-        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
-            <div>
-                <button id="approve-btn"
-                        style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>قبول</span>
-                    </span>
-                </button>
-            </div>
-            <div>
-                <button id="reject-btn"
-                        style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>رفض</span>
-                    </span>
-                </button>
-            </div>
-        </div>
-    @endif
+{{--    @if($can_recipient_approve)--}}
+{{--        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">--}}
+{{--            <div>--}}
+{{--                <button id="approve-btn"--}}
+{{--                        style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>قبول</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--            <div>--}}
+{{--                <button id="reject-btn"--}}
+{{--                        style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>رفض</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    @endif--}}
 
 {{--    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)--}}
 {{--        <div class="flex flex-row gap-4 justify-center">--}}
