@@ -327,6 +327,23 @@
 
 
         }
+        .select2, .select2-selection{
+            /*width: 287px;*/
+            --tw-border-opacity: 1;
+            border-color: rgb(226 232 240 / var(--tw-border-opacity));
+            padding: .5rem .75rem;
+            line-height: 1.25rem;
+            --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 transparent), var(--tw-ring-shadow, 0 0 transparent) 0 0 transparent, var(--tw-shadow);
+            width: 100% !important;
+            border-radius: 6px;
+            margin-right: 30px;
+
+        }
+        span.select2-selection.select2-selection--multiple{
+            border: unset;
+        }
         .swal2-popup .select2-container .select2-selection--single {
             background-color: #eef5ff !important;
             border: 1px solid #007bff !important;
@@ -548,9 +565,9 @@
 <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
   <label style="min-width: 120px;">خدمات إضافية</label>
   <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-    <label><input type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>
-    <label><input type="checkbox" name="extra-services" value="flight"> حجز طيران</label>
-    <label><input type="checkbox" name="extra-services" value="train"> حجز قطار</label>
+    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>
+    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="flight"> حجز طيران</label>
+    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="train"> حجز قطار</label>
   </div>
 </div>
 
