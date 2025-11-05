@@ -40,8 +40,8 @@ class VisitCreated extends Mailable
         if ($this->type == 'add') {
             $subject_txt = "طلب زيارة جديد";
         }
-        elseif ($this->type == 'delete') {
-            $subject_txt = "تم حذف الزيارة";
+        elseif ($this->type == 'cancel') {
+            $subject_txt = "تم إلغاء الزيارة";
         }
         elseif ($this->type == 'approve') {
             $subject_txt = "تمت الموافقة على الزيارة";

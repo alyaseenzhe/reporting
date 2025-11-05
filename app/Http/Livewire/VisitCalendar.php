@@ -22,6 +22,7 @@ class VisitCalendar extends Component
     public $emps;
 
     public $can_approve;
+    public $showAllVisits;
 
 //    protected $wati;
 
@@ -63,12 +64,13 @@ class VisitCalendar extends Component
 //            ->orderBy('visits.start', 'asc') // soonest start date first
 //            ->get()
 //            ->toArray();
+        $this->showAllVisits = Visit::where('status' ,'!=', '4')->get();
 
         $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
         ->whereHas('emps', function ($q) {
             $q->where('user_id', Auth::id());
         })
-            ->where('is_deleted', 0)
+//            ->where('is_deleted', 0)
             ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
             ->orderBy('start', 'asc')
             ->get([
@@ -203,6 +205,8 @@ class VisitCalendar extends Component
         if ($visit) {
             $visit->delete_reason =  $event['delete_reason'];
             $visit->is_deleted =  1;
+//            $visit->status = 4;
+
             $visit->save();
             // Emit event to refresh FullCalendar events
             $this->loadVisits();
@@ -311,7 +315,7 @@ class VisitCalendar extends Component
             ->leftJoin('users', 'users.id', 'visit_emps.user_id')
             ->where('visit_emps.type', 'recipient')
             ->where('visit_emps.user_id', Auth::id())
-            ->where('users.group', '8')
+//            ->where('users.group', '8')
             ->where('visits.status', '0')
             ->where('visits.is_deleted', '0')
             ->exists();
@@ -321,7 +325,7 @@ class VisitCalendar extends Component
     }
 
      public function approve(){
-         $this->can_approve = auth()->user()->group == 8;
+         $this->can_approve = auth()->user()->group == 8 || 7;
          return $this->can_approve;
      }
 

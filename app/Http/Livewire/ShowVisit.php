@@ -115,6 +115,7 @@ class ShowVisit extends Component
 
         $visit->status = '1';
         $visit->status_notice = $visit_record["status_notice"];
+         $visit->approved_by = auth()->user()->id;
 
         if($visit->save()) {
 
@@ -207,15 +208,19 @@ class ShowVisit extends Component
         if ($visit) {
             $visit->delete_reason =  $event['delete_reason'];
             $visit->is_deleted =  1;
-            $visit->save();
+            $visit->status ='4';
 
-            session()->flash('success', 'تم حذف الزيارة بنجاح');
+            $visit->save();
+            $this->visitMail($visit, null, 'cancel');
+
+            session()->flash('success', 'تم الغاء الزيارة بنجاح');
+
+//            $branch_manger = $this->branchMangerByVisitId($visit->id);
             return redirect()->route('visit-calendar');
         } else {
             // Optional: handle the case if event not found
             session()->flash('error', 'Visit not found.');
         }
-
 
     }
 
@@ -292,7 +297,7 @@ class ShowVisit extends Component
             ->leftJoin('users', 'users.id', 'visit_emps.user_id')
             ->where('visit_emps.type', 'recipient')
             ->where('visit_emps.user_id', Auth::id())
-            ->where('users.group', '8')
+//            ->where('users.group', '8')
             ->where('visits.status', '0')
             ->where('visits.is_deleted', '0')
             ->exists();

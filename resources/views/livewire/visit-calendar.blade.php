@@ -65,7 +65,7 @@
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100">
                             @forelse($visits as $visit)
-                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @endif">
+                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @endif">
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
                                     </td>
@@ -154,6 +154,8 @@
                                                 مرفوضة
                                             @elseif($visit["status"] == 3)
                                                 مغلقة
+                                            @elseif($visit["status"] == 4)
+                                                ملغية
                                             @endif
                                         </div>
                                     </td>
@@ -421,7 +423,14 @@
         document.addEventListener('DOMContentLoaded', function () {
 
 
-            const visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string
+            const visit = '';
+            @if(auth()->user()->group == 7)
+            visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string
+
+            @else
+            visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string
+
+            @endif
             const currentUserId = {{ \Illuminate\Support\Facades\Auth::id()  }};
 
             var calendarEl = document.getElementById('calendar');
@@ -467,7 +476,7 @@
                   <div style="direction: rtl; max-width: 100%; width: 100%;">
   <!-- عنوان الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="event-title" style="min-width: 120px;">عنوان الزيارة</label>
+    <label for="event-title" style="min-width: 120px;">موضوع الزيارة</label>
     <input type="text" id="event-title" class="swal2-input form-input w-full" style="flex: 1;">
   </div>
 
@@ -479,7 +488,7 @@
 
   <!-- أهداف الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-goals" style="min-width: 120px;">أهداف الزيارة</label>
+    <label for="visit-goals" style="min-width: 120px;">التحضيرات المطلوبه من الفرع</label>
     <textarea id="visit-goals" class="swal2-textarea form-textarea w-full"></textarea>
 
 <!--style="flex: 1; height: 150px; resize: none;-->
@@ -517,7 +526,7 @@
 
     <!-- الموظفين -->
     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-      <label for="employee-select" style="min-width: 120px;">الموظفين</label>
+      <label for="employee-select" style="min-width: 120px;">ابلاغ الموظفين</label>
       <select id="employee-select" class="swal2-select form-input w-full" multiple style="flex: 1; appearance: auto;"></select>
     </div>
 
@@ -561,14 +570,15 @@
   </select>
 </div>
 
-<!-- خدمات إضافية -->
+<!-- المرافقون -->
 <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
-  <label style="min-width: 120px;">خدمات إضافية</label>
-  <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>
-    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="flight"> حجز طيران</label>
-    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="train"> حجز قطار</label>
-  </div>
+  <label style="min-width: 120px;">المرافقون</label>
+<input type="text" id="visit-reason" class="swal2-input form-input w-full" style="flex: 1;">
+<!--  <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">-->
+<!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>-->
+<!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="flight"> حجز طيران</label>-->
+<!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="train"> حجز قطار</label>-->
+<!--  </div>-->
 </div>
 
 </div>

@@ -19,12 +19,12 @@
             جاك طلب زيارة جديد وتفاصيله كالتالي، بإمكانك عرض التفاصيل كاملة واتخاذ القرار المناسب بالموافقة او الرفض من خلال الزر أدناه 😊
         </p>
 
-    @elseif($type == 'delete')
+    @elseif($type == 'cancel')
 
-        <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بحذف الزيارة</h2>
+        <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بإلغاء الزيارة</h2>
             <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
                 اهلاً،<br>
-                تمت الموافقة على حذف الزيارة وتفاصيلها كما يلي 😊
+                تم إلغاء الزيارة وتفاصيلها كما يلي 😊
             </p>
 
     @elseif($type == 'approve')
@@ -32,8 +32,9 @@
         <h2 style="text-align: center; color: #28a745; margin-top: 10px;">✅ تمت الموافقة على الزيارة</h2>
         <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
             اهلاً،<br>
-            تمت الموافقة على طلب الزيارة والتفاصيل كما يلي 😊
+            تمت الموافقة على طلب الزيارة من قبل {{ App\Models\User::find($visit->approved_by)->name }} والتفاصيل كما يلي 😊
         </p>
+
     @elseif($type == 'reject')
 
         <h2 style="text-align: center; color: #62182e; margin-top: 10px;">❌ تم رفض طلب الزيارة</h2>
@@ -66,7 +67,7 @@
                 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                         <td width="33%" style="padding: 10px;">
-                            <label style="font-weight: bold;">📍 عنوان الزيارة</label>
+                            <label style="font-weight: bold;">📍 موضوع الزيارة</label>
                             <div style="color: #5222e1;">{{ $visit->title }}</div>
                         </td>
                         <td width="33%" style="padding: 10px;">
@@ -117,7 +118,7 @@
                             @endforeach
                         </td>
                         <td width="50%" style="padding: 10px;">
-                            <label style="font-weight: bold;">📬 المستلمون</label>
+                            <label style="font-weight: bold;">📬 ابلاغ الموظفين</label>
                             <div style="color: #5222e1;">
                                 @foreach($visit->emps_recipients as $req)
                                     <span>{{ $req->user->name }}@if (!$loop->last), @endif </span>
@@ -164,7 +165,7 @@
         <!-- Section 4 -->
         <tr style="background-color: #f5f5f5;">
             <td style="padding: 20px;" colspan="3">
-                <label style="font-weight: bold;">🎯 أهداف الزيارة</label>
+                <label style="font-weight: bold;">🎯 التحضيرات المطلوبه من الفرع</label>
                 <div style="color: #5222e1; white-space: pre-wrap; margin-top: 10px;">
                     {{ $visit->goals }}
                 </div>

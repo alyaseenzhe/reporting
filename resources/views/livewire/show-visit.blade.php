@@ -89,7 +89,7 @@
         <div class="flex flex-col gap-4">
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">عنوان الزيارة</label>
+                    <label class="block font-bold mb-6 text-xs">موضوع الزيارة</label>
                     <div style="color: #5222e1">{{$record->title}}</div>
                 </div>
                 <div class="w-full">
@@ -142,7 +142,7 @@
                     @endforeach
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">المستلمون</label>
+                    <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>
                     @foreach($record->emps_recipients as $req)
                         <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>
                     @endforeach
@@ -167,44 +167,49 @@
 
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">أهداف الزيارة</label>
+                    <label class="block font-bold mb-6 text-xs">التحضيرات المطلوبه من الفرع</label>
                     <div style="color: #5222e1; white-space: pre-wrap;">{{$record->goals}}</div>
                 </div>
             </div>
 
-            @php
-                $extraServicesMap = [
-                    'hotel' => ['label' => 'حجز فندق', 'icon' => '🏨'],
-                    'flight' => ['label' => 'حجز طيران', 'icon' => '✈️'],
-                    'train' => ['label' => 'حجز قطار', 'icon' => '🚆'],
-                ];
-
-                $selectedServices = collect(json_decode($record->extra_services, true));
-            @endphp
-
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">خدمات إضافية</label>
-
-                    @if($selectedServices->count())
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($extraServicesMap as $key => $item)
-                                @if($selectedServices->contains($key))
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 border border-gray-300">
-                            {{ $item['icon'] }} {{ $item['label'] }}
-                        </span>
-                                @endif
-                            @endforeach
-                        </div>
-                    @else
-                        <span class="text-sm text-gray-500">لا توجد خدمات إضافية</span>
-                    @endif
+                    <label class="block font-bold mb-6 text-xs">المرافقون</label>
                 </div>
             </div>
+{{--            @php--}}
+{{--                $extraServicesMap = [--}}
+{{--                    'hotel' => ['label' => 'حجز فندق', 'icon' => '🏨'],--}}
+{{--                    'flight' => ['label' => 'حجز طيران', 'icon' => '✈️'],--}}
+{{--                    'train' => ['label' => 'حجز قطار', 'icon' => '🚆'],--}}
+{{--                ];--}}
+
+{{--                $selectedServices = collect(json_decode($record->extra_services, true));--}}
+{{--            @endphp--}}
+
+{{--            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">--}}
+{{--                <div class="w-full">--}}
+{{--                    <label class="block font-bold mb-6 text-xs">خدمات إضافية</label>--}}
+
+{{--                    @if($selectedServices->count())--}}
+{{--                        <div class="flex flex-wrap gap-2">--}}
+{{--                            @foreach($extraServicesMap as $key => $item)--}}
+{{--                                @if($selectedServices->contains($key))--}}
+{{--                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 border border-gray-300">--}}
+{{--                            {{ $item['icon'] }} {{ $item['label'] }}--}}
+{{--                        </span>--}}
+{{--                                @endif--}}
+{{--                            @endforeach--}}
+{{--                        </div>--}}
+{{--                    @else--}}
+{{--                        <span class="text-sm text-gray-500">لا توجد خدمات إضافية</span>--}}
+{{--                    @endif--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
 
             <div class="w-full flex sm:flex-row flex-col gap-4"
-                 style="@if($record->status ==0) background-color: #fffddc; @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @endif border: dashed 1px black; padding: 20px;">
+                 style="@if($record->status ==0) background-color: #fffddc; @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @elseif($record->status == 4) background-color: #ffd7b5; @endif border: dashed 1px black; padding: 20px;">
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">
                         حالة الزيارة
@@ -219,6 +224,8 @@
                             مرفوضة
                         @elseif($record->status == 3)
                             مغلقة
+                        @elseif($record->status == 4)
+                            ملغية
                         @endif
                     </div>
                 </div>
@@ -226,7 +233,7 @@
                     <label class="block font-bold mb-6 text-xs">
                         @if($record->status == 2)
                             اسباب الرفض
-                        @elseif($record->status == 1)
+                        @elseif($record->status == 1 || $record->status == 4)
                             ملاحظات
                         @endif
                     </label>
@@ -234,7 +241,11 @@
                         style="@if($record->status ==0) color: #7d781a; @elseif($record->status == 1) color: #418f30; @else color: #701345; @endif">
                         @if($record->status == 1 || $record->status == 2)
                             {{ $record->status_notice }}
+                        @elseif($record->status == 4)
+                           <p> {{$record->delete_reason}}</p>
                         @endif
+
+
                     </div>
                 </div>
 
@@ -381,48 +392,48 @@
             {{-- end of collapsaple--}}
         </div>
     </div>
-{{--    @if($can_recipient_approve)--}}
-{{--        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">--}}
-{{--            <div>--}}
-{{--                <button id="approve-btn"--}}
-{{--                        style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>قبول</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--            <div>--}}
-{{--                <button id="reject-btn"--}}
-{{--                        style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>رفض</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    @endif--}}
+    @if($can_recipient_approve)
+        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
+            <div>
+                <button id="approve-btn"
+                        style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>قبول</span>
+                    </span>
+                </button>
+            </div>
+            <div>
+                <button id="reject-btn"
+                        style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>رفض</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    @endif
 
-{{--    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)--}}
-{{--        <div class="flex flex-row gap-4 justify-center">--}}
-{{--        <div class="flex flex-row gap-4 justify-center">--}}
-{{--            <div>--}}
-{{--                <button id="edit-btn"--}}
-{{--                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>تعديل</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--            <div>--}}
-{{--                <button id="delete-btn"--}}
-{{--                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>حذف</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    @endif--}}
+    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
+        <div class="flex flex-row gap-4 justify-center">
+        <div class="flex flex-row gap-4 justify-center">
+            <div>
+                <button id="edit-btn"
+                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>تعديل</span>
+                    </span>
+                </button>
+            </div>
+            <div>
+                <button id="delete-btn"
+                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>الغاء الزيارة</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    @endif
 
 
 
@@ -1217,11 +1228,11 @@
 
                     Swal.fire({
                         title: 'هل متأكد من ذلك؟',
-                        text: "سوف يتم حذف هذه الزيارة للأبد وإبلاغ الشخص المسؤول بمكان الزيارة",
+                        text: "سوف يتم إلغاء هذه الزيارة وإبلاغ الشخص المسؤول بمكان الزيارة",
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'نعم، احذف',
-                        cancelButtonText: 'إلغاء'
+                        confirmButtonText: 'نعم، الغي الزيارة',
+                        cancelButtonText: 'إلغاء الامر'
                     }).then((delResult) => {
                         if (delResult.isConfirmed) {
                             // Livewire.emit('deleteVisit', info.event.id);
@@ -1235,9 +1246,9 @@
                             // });
 
                             Swal.fire({
-                                title: 'سبب الحذف',
+                                title: 'سبب الإلغاء',
                                 html: `
-<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب حذف الزيارة</label>
+<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب إلغاء الزيارة</label>
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
     <textarea id="delete-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
                  border: 1px solid #64748b;
@@ -1249,15 +1260,15 @@
   `,
                                 focusConfirm: false,
                                 showCancelButton: true,
-                                confirmButtonText: 'حذف',
-                                cancelButtonText: 'إلغاء',
+                                confirmButtonText: 'إلغاء الزيارة',
+                                cancelButtonText: 'عودة',
                                 customClass: {
                                     popup: 'responsive-modal'
                                 },
                                 preConfirm: () => {
                                     const reason = document.getElementById('delete-reason').value.trim();
                                     if (!reason) {
-                                        Swal.showValidationMessage('يجب إدخال السبب قبل الحذف');
+                                        Swal.showValidationMessage('يجب إدخال السبب قبل الإلغاء');
                                         return false;
                                     }
                                     return reason;
