@@ -85,6 +85,7 @@
                         </span>
                     </button>
                 </div>
+                @if(auth()->user()->role == 'a')
                 <div wire:ignore class="mt-8 text-center w-full">
                     <button wire:click.prevent="sendReport" wire:loading.attr="disabled"
                             style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
@@ -98,6 +99,7 @@
                         </span>
                     </button>
                 </div>
+                @endif
             </div>
         </div>
     </div>
