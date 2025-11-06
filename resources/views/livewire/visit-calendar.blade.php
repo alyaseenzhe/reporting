@@ -431,20 +431,26 @@
             visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string
 
             @endif
+
             const currentUserId = {{ \Illuminate\Support\Facades\Auth::id()  }};
 
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 selectable: true,
-                events: visits.map(formatVisit),
+                 events: visits.map(formatVisit),
+                // events:            [ {
+                //     title: 'Accepted Order',
+                //     start: '2025-11-04',
+                //     url: '/show-visit/88' // 👈 your route link here
+                // }],
                 eventDidMount: function (info) {
                     const status = info.event.extendedProps.status;
                     let textColor = '#000000';
 
                     if (status === '0') {
                         // info.el.style.backgroundColor = '#fef3c7'; // yellow-ish
-                        info.el.style.backgroundColor = '#dceeff';
+                        info.el.style.backgroundColor = '#dceeff';  // blue-ish
                         info.el.style.color = '#000';
                     } else if (status === '1') {
                         info.el.style.backgroundColor = '#d1fae5'; // green-ish
@@ -524,11 +530,11 @@
     </select>
   </div>
 
-    <!-- الموظفين -->
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-      <label for="employee-select" style="min-width: 120px;">ابلاغ الموظفين</label>
-      <select id="employee-select" class="swal2-select form-input w-full" multiple style="flex: 1; appearance: auto;"></select>
-    </div>
+<!--    &lt;!&ndash; الموظفين &ndash;&gt;-->
+<!--    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">-->
+<!--      <label for="employee-select" style="min-width: 120px;">ابلاغ الموظفين</label>-->
+<!--      <select id="employee-select" class="swal2-select form-input w-full" multiple style="flex: 1; appearance: auto;"></select>-->
+<!--    </div>-->
 
 
     <!-- وقت الزيارة -->
@@ -573,7 +579,7 @@
 <!-- المرافقون -->
 <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
   <label style="min-width: 120px;">المرافقون</label>
-<input type="text" id="visit-reason" class="swal2-input form-input w-full" style="flex: 1;">
+<input type="text" id="attendants" class="swal2-input form-input w-full" style="flex: 1;">
 <!--  <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">-->
 <!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>-->
 <!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="flight"> حجز طيران</label>-->
@@ -645,15 +651,17 @@
                             const goals = document.getElementById('visit-goals').value;
                             const branch = document.getElementById('branch-select').value;
                             const visitTime = document.getElementById('visit-time').value;
+                            const attendants = document.getElementById('attendants').value;
                             // const selectedEmployees = $('#employee-select').val(); // returns an array of selected employee IDs
-                            let selectedEmployees = $('#employee-select').val() || [];
-                            disabledEmployees.forEach(id => {
-                                if (!selectedEmployees.includes(id)) {
-                                    selectedEmployees.push(id); // Ensure they're included
-                                }
-                            });
+                            // let selectedEmployees = $('#employee-select').val() || [];
+                            // disabledEmployees.forEach(id => {
+                            //     if (!selectedEmployees.includes(id)) {
+                            //         selectedEmployees.push(id); // Ensure they're included
+                            //     }
+                            // });
 
-                            if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime || !selectedEmployees.length) {
+                            // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime || !selectedEmployees.length) {
+                            if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
                                 Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');
                                 return false;
                             }
@@ -668,7 +676,8 @@
                                 reason,
                                 goals,
                                 branch,
-                                employees: selectedEmployees,
+                                attendants,
+                                // employees: selectedEmployees,
                                 start: startDateTime,
                                 end: info.endStr,
                                 extra_services: extraServices
@@ -683,7 +692,8 @@
                                 reason: result.value.reason,
                                 goals: result.value.goals,
                                 branch: result.value.branch,
-                                employees: result.value.employees,
+                                // employees: result.value.employees,
+                                attendants: result.value.attendants,
                                 extra_services: result.value.extra_services
                             });
                         }
@@ -705,766 +715,766 @@
                 //         });
                 //     }
                 // }
-                eventClick: function (info) {
-                    data_requester =info.event.extendedProps.emps_requester;
-                    data_recipient =info.event.extendedProps.emps_recipients;
-                    // // console.log((info.event.extendedProps.emps_recipients).find(item => item.user_id === currentUserId));
-                    // console.log((data.find(item => item.user_id)).user_id);
-                    // console.log(((data.find(item => item.user_id)).user_id == currentUserId) == true);
-                    // console.log(info.event.extendedProps.emps_requester);
-                    // console.log(info.event.extendedProps.emps_recipients);
-                    //////////// approve or reject
-                    const isRecipient = data_recipient.some(item => item.user_id == currentUserId) == true;
-                    const isOwner = data_requester.some(item => item.user_id == currentUserId) == true;
-                    const isDeleted = info.event.extendedProps.is_deleted;
-                    const status = info.event.extendedProps.status;
-                    const viewRouteBase = @json(route('show.visit', ['id' => 'VISIT_ID']));
-                    const visitId = info.event.id;
-                    const viewUrl = viewRouteBase.replace('VISIT_ID', visitId);
-
-                    let buttonsHtml = '';
-
-
-                    if (isRecipient && status == 0 && isDeleted == 0) {
-                        // alert('coco');
-                        buttonsHtml = `
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
-      <button id="approve-btn" class="swal2-styled" style="background-color: #2f9d58; color: white; border-radius: 5px;"  >موافقة</button>
-      <button id="reject-btn" class="swal2-styled" style="background-color: #b91818; color: white; border-radius: 5px;">رفض</button>
-    </div>
-  `;
-
-                    }
-                    //////////// end of approve or reject section
-
-
-                    Swal.fire({
-                        title: 'معلومات الزيارة',
-                        html: `<style>
-  .visit-info-container {
-    direction: rtl;
-    text-align: right;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .visit-info-item {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .full-span {
-    grid-column: span 2;
-  }
-
-  @media (max-width: 768px) {
-    .visit-info-container {
-      grid-template-columns: 1fr;
-    }
-    .full-span {
-      grid-column: span 1;
-    }
-  }
-</style>
-
-<div class="visit-info-container">
-  <div class="visit-info-item">
-    <label><strong>عنوان الزيارة:</strong></label>
-    <p style="color: #08089d">${info.event.title || 'N/A'}</p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>سبب الزيارة:</strong></label>
-    <p style="color: #08089d">${info.event.extendedProps.reason || 'N/A'}</p>
-  </div>
-
-  <div class="visit-info-item full-span">
-    <label><strong>أهداف الزيارة:</strong></label>
-    <p style="white-space: pre-wrap; color: #08089d">${info.event.extendedProps.goals || 'N/A'}</p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>مكان الزيارة:</strong></label>
-    <p style="color: #08089d">${branchMap[info.event.extendedProps.branch] || 'N/A'}</p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>مقدم الطلب:</strong></label>
-    <p style="color: #08089d">
-      ${(() => {
-                            const requester = (info.event.extendedProps.emps_requester || []).find(e => e.type === 'requester');
-                            return requester?.user?.name || 'N/A';
-                        })()}
-    </p>
-  </div>
-
-  <div class="visit-info-item full-span">
-    <label><strong>المستلمون:</strong></label>
-    <p style="color: #08089d">
-      ${(() => {
-                            const recipients = info.event.extendedProps.emps_recipients || [];
-                            if (recipients.length === 0) return 'N/A';
-                            return recipients.map(r => r.user?.name).filter(Boolean).join(', ');
-                        })()}
-    </p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>تاريخ بداية الزيارة:</strong></label>
-    <p style="color: #08089d">${info.event.startStr ? new Date(info.event.startStr).toLocaleDateString('en-GB') : 'N/A'}</p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>تاريخ نهاية الزيارة:</strong></label>
-    <p style="color: #08089d">
-      ${info.event.endStr
-                            ? new Date(new Date(info.event.endStr).setDate(new Date(info.event.endStr).getDate() - 1)).toLocaleDateString('en-GB')
-                            : 'N/A'}
-    </p>
-  </div>
-
-  <div class="visit-info-item">
-    <label><strong>وقت الزيارة:</strong></label>
-    <p style="color: #08089d">${info.event.startStr ? new Date(info.event.startStr).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true
-                        }) : 'N/A'}</p>
-  </div>
-
-<div class="visit-info-item full-span">
-  <label><strong>الخدمات الإضافية:</strong></label>
-  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px;">
-    ${(() => {
-                            let raw = info.event.extendedProps.extra_services;
-                            console.log(raw);
-
-                            const serviceMap = {
-                                hotel: { label: 'حجز فندق', icon: '🏨', color: '#6293ff' },
-                                flight: { label: 'حجز طيران', icon: '✈️', color: '#47d377' },
-                                train: { label: 'حجز قطار', icon: '🚆', color: '#c48341' }
-                            };
-
-                            // 🔍 Handle JSON string or array
-                            let services = [];
-
-                            try {
-                                if (typeof raw === 'string') {
-                                    // Sometimes it's double-encoded, e.g. "\"[\\\"hotel\\\",\\\"flight\\\"]\""
-                                    raw = raw.trim();
-                                    if (raw.startsWith('"[') || raw.startsWith('[{')) {
-                                        raw = JSON.parse(raw); // unquote the string
-                                    }
-                                    const parsed = JSON.parse(raw);
-                                    if (Array.isArray(parsed)) {
-                                        services = parsed;
-                                    }
-                                } else if (Array.isArray(raw)) {
-                                    services = raw;
-                                }
-                            } catch (e) {
-                                // If parsing fails, fallback to comma-separated string
-                                services = typeof raw === 'string' ? raw.split(',') : [];
-                            }
-
-                            if (!services || services.length === 0) {
-                                return `<li style="color: #08089d;">لا يوجد</li>`;
-                            }
-
-                            return services.map(s => {
-                                const key = s.trim().replace(/['"]+/g, ''); // remove quotes
-                                const svc = serviceMap[key] || { label: key, icon: '🔹', color: '#6b7280' };
-                                return `
-          <li style="
-            background-color: ${svc.color};
-            color: white;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            white-space: nowrap;
-          ">
-            <span>${svc.icon}</span>
-            <span>${svc.label}</span>
-          </li>
-        `;
-                            }).join('');
-                        })()}
-  </ul>
-</div>
-
-
-  <div></div> <!-- Spacer for layout balance -->
-</div>
-`,
-                        showCancelButton: true,
-                        showDenyButton: isOwner && status == 0 && isDeleted == 0,
-                        showConfirmButton: isOwner && status == 0 && isDeleted == 0,
-                        confirmButtonText: 'تعديل',
-                        cancelButtonText: 'إغلاق',
-                        denyButtonText: 'حذف',
-                        didOpen: () => {
-
-                            if (isRecipient && status == 0 && isDeleted == 0) {
-                                // Approve button
-                                const approveBtn = document.createElement('button');
-                                approveBtn.innerText = 'موافقة';
-                                approveBtn.className = 'swal2-styled';
-                                approveBtn.style.backgroundColor = '#2f9d58';
-                                approveBtn.style.color = '#fff';
-                                approveBtn.style.marginLeft = '10px';
-                                approveBtn.style.borderRadius = '5px';
-                                approveBtn.addEventListener('click', () => {
-                                    // your approve logic here
-                                    Swal.fire({
-                                        title: 'الموافقة',
-                                        html: `
-<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
-    </div>`,
-                                        preConfirm: () => {
-                                            const reason = document.getElementById('approve-reason').value.trim();
-                                            return reason;
-                                        },
-                                        showCancelButton: true,
-                                        confirmButtonText: 'تأكيد الموافقة',
-                                        cancelButtonText: 'إلغاء',
-                                    }).then((res) => {
-                                        if (res.isConfirmed) {
-                                            Livewire.emit('approveVisit', {
-                                                id: info.event.id,
-                                                status_notice: res.value
-                                            });
-
-                                            Swal.fire({
-                                                title: 'تمت الموافقة!',
-                                                icon: 'success',
-                                                timer: 2000,
-                                                showConfirmButton: false,
-                                                timerProgressBar: true
-                                            });
-                                        }
-                                    });
-                                });
-
-
-                                // Reject button
-                                let canApprove = @json($can_approve);
-                                console.log(canApprove);
-                                if (canApprove) {
-                                    const rejectBtn = document.createElement('button');
-                                    rejectBtn.innerText = 'رفض';
-                                    rejectBtn.className = 'swal2-styled';
-                                    rejectBtn.style.backgroundColor = '#b91818';
-                                    rejectBtn.style.color = '#fff';
-                                    rejectBtn.style.marginLeft = '10px';
-                                    rejectBtn.style.borderRadius = '5px';
-                                    rejectBtn.addEventListener('click', () => {
-                                        // your reject logic here
-                                        Swal.fire({
-                                            title: 'سبب الرفض',
-                                            html: `
-<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
-    </div>`,
-                                            preConfirm: () => {
-                                                const reason = document.getElementById('reject-reason').value.trim();
-                                                if (!reason) {
-                                                    Swal.showValidationMessage('يرجى كتابة سبب الرفض');
-                                                    return false;
-                                                }
-                                                return reason;
-                                            },
-                                            showCancelButton: true,
-                                            confirmButtonText: 'تأكيد الرفض',
-                                            cancelButtonText: 'إلغاء',
-                                        }).then((res) => {
-                                            if (res.isConfirmed) {
-                                                Livewire.emit('rejectVisit', {
-                                                    id: info.event.id,
-                                                    status_notice: res.value
-                                                });
-
-                                                Swal.fire({
-                                                    title: 'تم الرفض!',
-                                                    icon: 'info',
-                                                    timer: 2000,
-                                                    showConfirmButton: false,
-                                                    timerProgressBar: true
-                                                });
-                                            }
-                                        });
-                                    });
-
-                                    // Add buttons to Swal actions
-                                    Swal.getActions().appendChild(rejectBtn);
-                                    Swal.getActions().appendChild(approveBtn);
-                                }
-                            }
-                            /* View Button */
-                            const viewBtn = document.createElement('button');
-                            viewBtn.innerText = 'عرض';
-                            viewBtn.className = 'swal2-styled custom-view-btn';
-                            viewBtn.style.backgroundColor = '#4caf50';
-                            viewBtn.style.color = '#fff';
-                            viewBtn.style.marginLeft = '10px';
-                            viewBtn.style.padding = '0.625em 1.2em';
-                            viewBtn.style.borderRadius = '0.25em';
-                            viewBtn.style.fontWeight = 'bold';
-                            viewBtn.style.border = 'none';
-
-                            viewBtn.addEventListener('click', () => {
-                                window.location.href = viewUrl;
-                            });
-
-                            Swal.getActions().appendChild(viewBtn);
-                            /* End of View Button*/
-
-                            /*
-                            if (isRecipient && status == 0 && isDeleted == 0) {
-                                document.getElementById('approve-btn').addEventListener('click', () => {
-                                    // Livewire.emit('approveVisit', info.event.id);
-                                    // Swal.fire('تمت الموافقة!', '', 'success');
-
-                                    Swal.fire({
-                                        title: 'الموافقة',
-                                        html: `
-<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
-    </div>`,
-                                        preConfirm: () => {
-                                            const reason = document.getElementById('approve-reason').value.trim();
-                                            return reason;
-                                        },
-                                        showCancelButton: true,
-                                        confirmButtonText: 'تأكيد الموافقة',
-                                        cancelButtonText: 'إلغاء',
-                                    }).then((res) => {
-                                        if (res.isConfirmed) {
-                                            Livewire.emit('approveVisit', {
-                                                id: info.event.id,
-                                                status_notice: res.value
-                                            });
-
-                                            Swal.fire({
-                                                title: 'تمت الموافقة!',
-                                                icon: 'success',
-                                                timer: 2000,
-                                                showConfirmButton: false,
-                                                timerProgressBar: true
-                                            });
-                                        }
-                                    });
-
-
-                                });
-
-                                document.getElementById('reject-btn').addEventListener('click', () => {
-                                    Swal.fire({
-                                        title: 'سبب الرفض',
-                                        html: `
-<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="reject-reason" class="swal2-tex:tarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
-    </div>`,
-                                        preConfirm: () => {
-                                            const reason = document.getElementById('reject-reason').value.trim();
-                                            if (!reason) {
-                                                Swal.showValidationMessage('يرجى كتابة سبب الرفض');
-                                                return false;
-                                            }
-                                            return reason;
-                                        },
-                                        showCancelButton: true,
-                                        confirmButtonText: 'تأكيد الرفض',
-                                        cancelButtonText: 'إلغاء',
-                                    }).then((res) => {
-                                        if (res.isConfirmed) {
-                                            Livewire.emit('rejectVisit', {
-                                                id: info.event.id,
-                                                status_notice: res.value
-                                            });
-
-                                            Swal.fire({
-                                                title: 'تم الرفض!',
-                                                icon: 'info',
-                                                timer: 2000,
-                                                showConfirmButton: false,
-                                                timerProgressBar: true
-                                            });
-                                        }
-                                    });
-                                });
-                            }
-                            */
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Edit event - open SweetAlert2 edit form
-                            Swal.fire({
-                                title: 'تعديل الزيارة',
-                                html:`<style>
-  .edit-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    direction: rtl;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .edit-form-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .edit-form-group label {
-    font-weight: bold;
-    margin-bottom: 6px;
-    font-size: 14px;
-  }
-
-  .edit-form-group input,
-  .edit-form-group select,
-  .edit-form-group textarea {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: inherit;
-    box-sizing: border-box;
-    width: 100%;
-  }
-
-  .edit-form-group textarea {
-    resize: none;
-    height: 120px;
-  }
-
-  /* Mobile: force single column */
-  @media (max-width: 600px) {
-    .edit-form {
-      grid-template-columns: 1fr !important;
-    }
-
-    .edit-form-group[style*="grid-column"] {
-      grid-column: span 1 !important;
-    }
-  }
-</style>
-
-<div class="edit-form">
-  <div class="edit-form-group">
-    <label for="edit-title">عنوان الزيارة</label>
-    <input type="text" id="edit-title" value="${info.event.title || ''}">
-  </div>
-
-  <div class="edit-form-group">
-    <label for="edit-reason">سبب الزيارة</label>
-    <input type="text" id="edit-reason" value="${info.event.extendedProps.reason || ''}">
-  </div>
-
-  <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-goals">أهداف الزيارة</label>
-    <textarea id="edit-goals">${info.event.extendedProps.goals || ''}</textarea>
-  </div>
-
-  <div class="edit-form-group">
-    <label for="edit-branch">مكان الزيارة</label>
-    <select id="edit-branch" disabled>
-      <option value="" disabled>اختر المكان</option>
-      ${Object.entries(branchMap).map(([key, name]) =>
-                                    `<option value="${key}" ${info.event.extendedProps.branch === key ? 'selected' : ''}>${name}</option>`
-                                ).join('')}
-    </select>
-  </div>
-
-  <div class="edit-form-group">
-    <label for="edit-employees">الموظفين</label>
-    <select id="edit-employees" multiple></select>
-  </div>
-
-  <div class="edit-form-group">
-    <label for="edit-visit-time">وقت الزيارة</label>
-    <select id="edit-visit-time">
-      <option value="" disabled>اختر الوقت</option>
-      ${timeOptions.map(time =>
-                                    `<option value="${time}" ${formatTime(info.event.start) === time ? 'selected' : ''}>${time}</option>`
-                                ).join('')}
-    </select>
-  </div>
-
-    <div class="edit-form-group" style="grid-column: span 2;">
-  <label style="text-align: right">خدمات إضافية</label>
-  <ul style="list-style: none; padding: 0; margin: 0;">
-    ${(() => {
-                                    const extraServices = info.event.extendedProps.extra_services || [];
-                                    const servicesList = [
-                                        { key: 'hotel', label: 'حجز فندق' },
-                                        { key: 'flight', label: 'حجز طيران' },
-                                        { key: 'train', label: 'حجز قطار' },
-                                    ];
-
-                                    let servicesArray = [];
-                                    if (typeof extraServices === 'string') {
-                                        try {
-                                            servicesArray = JSON.parse(extraServices);
-                                        } catch {
-                                            servicesArray = extraServices.split(',');
-                                        }
-                                    } else if (Array.isArray(extraServices)) {
-                                        servicesArray = extraServices;
-                                    }
-
-                                    return servicesList.map(s => {
-                                        const isChecked = servicesArray.includes(s.key) ? 'checked' : '';
-                                        return `
-          <li style="margin-bottom: 8px;">
-            <label style="
-              cursor: pointer;
-              display: inline-flex;
-              align-items: center;
-              gap: 6px;
-              white-space: nowrap;
-            ">
-              <input type="checkbox" name="edit-extra-services" value="${s.key}" ${isChecked} style="flex-shrink: 0; width: 16px; height: 16px;">
-              <span>${s.label}</span>
-            </label>
-          </li>
-        `;
-                                    }).join('');
-                                })()}
-  </ul>
-</div>
-
-
-</div>
-`,
-                                focusConfirm: false,
-                                showCancelButton: true,
-                                confirmButtonText: 'تحديث',
-                                cancelButtonText: 'إلغاء',
-                                reverseButtons: true,
-                                didOpen: () => {
-                                    const branchSelect = document.getElementById('edit-branch');
-                                    const employeeSelect = document.getElementById('edit-employees');
-
-                                    $(employeeSelect).select2({
-                                        dir: "rtl",
-                                        dropdownCssClass: "select-font-size",
-                                        dropdownParent: document.querySelector('.swal2-popup'),
-                                        placeholder: "اختر الموظفين"
-                                    });
-
-                                    const populateEmployees = (branchId, selected = []) => {
-                                        const employees = employeesByBranch[branchId] || [];
-                                        $(employeeSelect).empty();
-                                        disabledEmployees = []; // Reset
-
-                                        employees.forEach(emp => {
-                                            const isGroup8 = emp.group == 8;
-                                            const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
-
-                                            const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
-
-                                            if (isGroup8) {
-                                                option.disabled = true;
-                                                disabledEmployees.push(emp.id.toString());
-                                            }
-
-                                            $(employeeSelect).append(option);
-                                        });
-
-                                        $(employeeSelect).trigger('change');
-                                    };
-
-
-                                    const initialBranchId = branchSelect.value;
-                                    const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());
-
-                                    console.log('======= employees =======')
-                                    console.log(info.event.extendedProps.employees);
-                                    console.log(info.event);
-
-                                    populateEmployees(initialBranchId, selectedEmpIds);
-
-                                    branchSelect.addEventListener('change', () => {
-                                        const newBranchId = branchSelect.value;
-                                        populateEmployees(newBranchId);
-                                    });
-
-                                    $(employeeSelect).on('select2:unselecting', function (e) {
-                                        const id = e.params.args.data.id;
-                                        const option = $(this).find(`option[value="${id}"]`);
-                                        if (option.prop('disabled')) {
-                                            e.preventDefault();
-                                        }
-                                    });
-                                },
-                                preConfirm: () => {
-                                    const title = document.getElementById('edit-title').value;
-                                    const reason = document.getElementById('edit-reason').value;
-                                    const goals = document.getElementById('edit-goals').value;
-                                    const branch = document.getElementById('edit-branch').value;
-                                    const visitTime = document.getElementById('edit-visit-time').value;
-                                    // const selectedEmployees = $('#edit-employees').val();
-                                    let selectedEmployees = $('#edit-employees').val() || [];
-                                    disabledEmployees.forEach(id => {
-                                        if (!selectedEmployees.includes(id)) {
-                                            selectedEmployees.push(id);
-                                        }
-                                    });
-
-                                    if (
-                                        !title.trim() ||
-                                        !reason.trim() ||
-                                        !goals.trim() ||
-                                        !branch ||
-                                        !visitTime ||
-                                        !selectedEmployees ||
-                                        selectedEmployees.length === 0
-                                    ) {
-                                        Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');
-                                        return false;
-                                    }
-
-                                    const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
-
-                                    const extraServiceCheckboxes = document.querySelectorAll('input[name="edit-extra-services"]:checked');
-                                    const extraServices = Array.from(extraServiceCheckboxes).map(cb => cb.value);
-
-                                    return {
-                                        title,
-                                        reason,
-                                        goals,
-                                        branch,
-                                        employees: selectedEmployees,
-                                        extra_services: extraServices,
-                                        start: startDateTime,
-                                        end: info.event.endStr
-                                    };
-                                }
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    Livewire.emit('updateVisit', {
-                                        id: info.event.id,
-                                        title: result.value.title,
-                                        reason: result.value.reason,
-                                        goals: result.value.goals,
-                                        branch: result.value.branch,
-                                        employees: result.value.employees,
-                                        extra_services: result.value.extra_services,
-                                        start: result.value.start,
-                                        end: result.value.end
-                                    });
-                                }
-                            });
-
-
-                        } else if (result.isDenied) {
-                            // Delete confirmation
-                            Swal.fire({
-                                title: 'هل متأكد من ذلك؟',
-                                text: "سوف يتم حذف هذه الزيارة للأبد وإبلاغ الشخص المسؤول بمكان الزيارة",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: 'نعم، احذف',
-                                cancelButtonText: 'إلغاء'
-                            }).then((delResult) => {
-                                if (delResult.isConfirmed) {
-                                    // Livewire.emit('deleteVisit', info.event.id);
-                                    // Swal.fire({
-                                    //     title: 'تم الحذف!',
-                                    //     text: 'هذه الزيارة تم حذفها',
-                                    //     icon: 'success',
-                                    //     timer: 2000,
-                                    //     showConfirmButton: false,
-                                    //     timerProgressBar: true
-                                    // });
-
-                                    Swal.fire({
-                                        title: 'سبب الحذف',
-                                        html: `
-<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب حذف الزيارة</label>
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <textarea id="delete-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;
-                 border: 1px solid #64748b;
-                 padding: 0.625em;
-                 border-radius: 0em;
-                 font-family: inherit;
-                 font-size: 10pt;"></textarea>
-    </div>
-  `,
-                                        focusConfirm: false,
-                                        showCancelButton: true,
-                                        confirmButtonText: 'حذف',
-                                        cancelButtonText: 'إلغاء',
-                                        customClass: {
-                                            popup: 'responsive-modal'
-                                        },
-                                        preConfirm: () => {
-                                            const reason = document.getElementById('delete-reason').value.trim();
-                                            if (!reason) {
-                                                Swal.showValidationMessage('يجب إدخال السبب قبل الحذف');
-                                                return false;
-                                            }
-                                            return reason;
-                                        }
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            const reason = result.value;
-
-                                            Livewire.emit('deleteVisit', {
-                                                id: info.event.id,
-                                                delete_reason: reason
-                                            });
-
-                                            Swal.fire({
-                                                title: 'تم الحذف!',
-                                                text: 'هذه الزيارة تم حذفها',
-                                                icon: 'success',
-                                                timer: 2000,
-                                                showConfirmButton: false,
-                                                timerProgressBar: true
-                                            });
-                                        }
-                                    });
-
-
-                                }
-                            });
-                        }
-                        // If Cancel: do nothing (close details)
-                    });
-                }
+{{--                eventClick: function (info) {--}}
+{{--                    data_requester =info.event.extendedProps.emps_requester;--}}
+{{--                    data_recipient =info.event.extendedProps.emps_recipients;--}}
+{{--                    // // console.log((info.event.extendedProps.emps_recipients).find(item => item.user_id === currentUserId));--}}
+{{--                    // console.log((data.find(item => item.user_id)).user_id);--}}
+{{--                    // console.log(((data.find(item => item.user_id)).user_id == currentUserId) == true);--}}
+{{--                    // console.log(info.event.extendedProps.emps_requester);--}}
+{{--                    // console.log(info.event.extendedProps.emps_recipients);--}}
+{{--                    //////////// approve or reject--}}
+{{--                    const isRecipient = data_recipient.some(item => item.user_id == currentUserId) == true;--}}
+{{--                    const isOwner = data_requester.some(item => item.user_id == currentUserId) == true;--}}
+{{--                    const isDeleted = info.event.extendedProps.is_deleted;--}}
+{{--                    const status = info.event.extendedProps.status;--}}
+{{--                    const viewRouteBase = @json(route('show.visit', ['id' => 'VISIT_ID']));--}}
+{{--                    const visitId = info.event.id;--}}
+{{--                    const viewUrl = viewRouteBase.replace('VISIT_ID', visitId);--}}
+
+{{--                    let buttonsHtml = '';--}}
+
+
+{{--                    if (isRecipient && status == 0 && isDeleted == 0) {--}}
+{{--                        // alert('coco');--}}
+{{--                        buttonsHtml = `--}}
+{{--    <div style="display: flex; justify-content: center; margin-top: 20px;">--}}
+{{--      <button id="approve-btn" class="swal2-styled" style="background-color: #2f9d58; color: white; border-radius: 5px;"  >موافقة</button>--}}
+{{--      <button id="reject-btn" class="swal2-styled" style="background-color: #b91818; color: white; border-radius: 5px;">رفض</button>--}}
+{{--    </div>--}}
+{{--  `;--}}
+
+{{--                    }--}}
+{{--                    //////////// end of approve or reject section--}}
+
+
+{{--                    Swal.fire({--}}
+{{--                        title: 'معلومات الزيارة',--}}
+{{--                        html: `<style>--}}
+{{--  .visit-info-container {--}}
+{{--    direction: rtl;--}}
+{{--    text-align: right;--}}
+{{--    display: grid;--}}
+{{--    grid-template-columns: 1fr 1fr;--}}
+{{--    gap: 20px;--}}
+{{--    max-width: 700px;--}}
+{{--    margin: 0 auto;--}}
+{{--  }--}}
+
+{{--  .visit-info-item {--}}
+{{--    display: flex;--}}
+{{--    flex-direction: column;--}}
+{{--  }--}}
+
+{{--  .full-span {--}}
+{{--    grid-column: span 2;--}}
+{{--  }--}}
+
+{{--  @media (max-width: 768px) {--}}
+{{--    .visit-info-container {--}}
+{{--      grid-template-columns: 1fr;--}}
+{{--    }--}}
+{{--    .full-span {--}}
+{{--      grid-column: span 1;--}}
+{{--    }--}}
+{{--  }--}}
+{{--</style>--}}
+
+{{--<div class="visit-info-container">--}}
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>عنوان الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">${info.event.title || 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>سبب الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">${info.event.extendedProps.reason || 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item full-span">--}}
+{{--    <label><strong>أهداف الزيارة:</strong></label>--}}
+{{--    <p style="white-space: pre-wrap; color: #08089d">${info.event.extendedProps.goals || 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>مكان الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">${branchMap[info.event.extendedProps.branch] || 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>مقدم الطلب:</strong></label>--}}
+{{--    <p style="color: #08089d">--}}
+{{--      ${(() => {--}}
+{{--                            const requester = (info.event.extendedProps.emps_requester || []).find(e => e.type === 'requester');--}}
+{{--                            return requester?.user?.name || 'N/A';--}}
+{{--                        })()}--}}
+{{--    </p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item full-span">--}}
+{{--    <label><strong>المستلمون:</strong></label>--}}
+{{--    <p style="color: #08089d">--}}
+{{--      ${(() => {--}}
+{{--                            const recipients = info.event.extendedProps.emps_recipients || [];--}}
+{{--                            if (recipients.length === 0) return 'N/A';--}}
+{{--                            return recipients.map(r => r.user?.name).filter(Boolean).join(', ');--}}
+{{--                        })()}--}}
+{{--    </p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>تاريخ بداية الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">${info.event.startStr ? new Date(info.event.startStr).toLocaleDateString('en-GB') : 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>تاريخ نهاية الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">--}}
+{{--      ${info.event.endStr--}}
+{{--                            ? new Date(new Date(info.event.endStr).setDate(new Date(info.event.endStr).getDate() - 1)).toLocaleDateString('en-GB')--}}
+{{--                            : 'N/A'}--}}
+{{--    </p>--}}
+{{--  </div>--}}
+
+{{--  <div class="visit-info-item">--}}
+{{--    <label><strong>وقت الزيارة:</strong></label>--}}
+{{--    <p style="color: #08089d">${info.event.startStr ? new Date(info.event.startStr).toLocaleTimeString('en-US', {--}}
+{{--                            hour: 'numeric',--}}
+{{--                            minute: 'numeric',--}}
+{{--                            hour12: true--}}
+{{--                        }) : 'N/A'}</p>--}}
+{{--  </div>--}}
+
+{{--<div class="visit-info-item full-span">--}}
+{{--  <label><strong>الخدمات الإضافية:</strong></label>--}}
+{{--  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px;">--}}
+{{--    ${(() => {--}}
+{{--                            let raw = info.event.extendedProps.extra_services;--}}
+{{--                            console.log(raw);--}}
+
+{{--                            const serviceMap = {--}}
+{{--                                hotel: { label: 'حجز فندق', icon: '🏨', color: '#6293ff' },--}}
+{{--                                flight: { label: 'حجز طيران', icon: '✈️', color: '#47d377' },--}}
+{{--                                train: { label: 'حجز قطار', icon: '🚆', color: '#c48341' }--}}
+{{--                            };--}}
+
+{{--                            // 🔍 Handle JSON string or array--}}
+{{--                            let services = [];--}}
+
+{{--                            try {--}}
+{{--                                if (typeof raw === 'string') {--}}
+{{--                                    // Sometimes it's double-encoded, e.g. "\"[\\\"hotel\\\",\\\"flight\\\"]\""--}}
+{{--                                    raw = raw.trim();--}}
+{{--                                    if (raw.startsWith('"[') || raw.startsWith('[{')) {--}}
+{{--                                        raw = JSON.parse(raw); // unquote the string--}}
+{{--                                    }--}}
+{{--                                    const parsed = JSON.parse(raw);--}}
+{{--                                    if (Array.isArray(parsed)) {--}}
+{{--                                        services = parsed;--}}
+{{--                                    }--}}
+{{--                                } else if (Array.isArray(raw)) {--}}
+{{--                                    services = raw;--}}
+{{--                                }--}}
+{{--                            } catch (e) {--}}
+{{--                                // If parsing fails, fallback to comma-separated string--}}
+{{--                                services = typeof raw === 'string' ? raw.split(',') : [];--}}
+{{--                            }--}}
+
+{{--                            if (!services || services.length === 0) {--}}
+{{--                                return `<li style="color: #08089d;">لا يوجد</li>`;--}}
+{{--                            }--}}
+
+{{--                            return services.map(s => {--}}
+{{--                                const key = s.trim().replace(/['"]+/g, ''); // remove quotes--}}
+{{--                                const svc = serviceMap[key] || { label: key, icon: '🔹', color: '#6b7280' };--}}
+{{--                                return `--}}
+{{--          <li style="--}}
+{{--            background-color: ${svc.color};--}}
+{{--            color: white;--}}
+{{--            padding: 6px 12px;--}}
+{{--            border-radius: 999px;--}}
+{{--            font-size: 13px;--}}
+{{--            display: flex;--}}
+{{--            align-items: center;--}}
+{{--            gap: 5px;--}}
+{{--            white-space: nowrap;--}}
+{{--          ">--}}
+{{--            <span>${svc.icon}</span>--}}
+{{--            <span>${svc.label}</span>--}}
+{{--          </li>--}}
+{{--        `;--}}
+{{--                            }).join('');--}}
+{{--                        })()}--}}
+{{--  </ul>--}}
+{{--</div>--}}
+
+
+{{--  <div></div> <!-- Spacer for layout balance -->--}}
+{{--</div>--}}
+{{--`,--}}
+{{--                        showCancelButton: true,--}}
+{{--                        showDenyButton: isOwner && status == 0 && isDeleted == 0,--}}
+{{--                        showConfirmButton: isOwner && status == 0 && isDeleted == 0,--}}
+{{--                        confirmButtonText: 'تعديل',--}}
+{{--                        cancelButtonText: 'إغلاق',--}}
+{{--                        denyButtonText: 'حذف',--}}
+{{--                        didOpen: () => {--}}
+
+{{--                            if (isRecipient && status == 0 && isDeleted == 0) {--}}
+{{--                                // Approve button--}}
+{{--                                const approveBtn = document.createElement('button');--}}
+{{--                                approveBtn.innerText = 'موافقة';--}}
+{{--                                approveBtn.className = 'swal2-styled';--}}
+{{--                                approveBtn.style.backgroundColor = '#2f9d58';--}}
+{{--                                approveBtn.style.color = '#fff';--}}
+{{--                                approveBtn.style.marginLeft = '10px';--}}
+{{--                                approveBtn.style.borderRadius = '5px';--}}
+{{--                                approveBtn.addEventListener('click', () => {--}}
+{{--                                    // your approve logic here--}}
+{{--                                    Swal.fire({--}}
+{{--                                        title: 'الموافقة',--}}
+{{--                                        html: `--}}
+{{--<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>--}}
+{{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+{{--    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+{{--                 border: 1px solid #64748b;--}}
+{{--                 padding: 0.625em;--}}
+{{--                 border-radius: 0em;--}}
+{{--                 font-family: inherit;--}}
+{{--                 font-size: 10pt;"></textarea>--}}
+{{--    </div>`,--}}
+{{--                                        preConfirm: () => {--}}
+{{--                                            const reason = document.getElementById('approve-reason').value.trim();--}}
+{{--                                            return reason;--}}
+{{--                                        },--}}
+{{--                                        showCancelButton: true,--}}
+{{--                                        confirmButtonText: 'تأكيد الموافقة',--}}
+{{--                                        cancelButtonText: 'إلغاء',--}}
+{{--                                    }).then((res) => {--}}
+{{--                                        if (res.isConfirmed) {--}}
+{{--                                            Livewire.emit('approveVisit', {--}}
+{{--                                                id: info.event.id,--}}
+{{--                                                status_notice: res.value--}}
+{{--                                            });--}}
+
+{{--                                            Swal.fire({--}}
+{{--                                                title: 'تمت الموافقة!',--}}
+{{--                                                icon: 'success',--}}
+{{--                                                timer: 2000,--}}
+{{--                                                showConfirmButton: false,--}}
+{{--                                                timerProgressBar: true--}}
+{{--                                            });--}}
+{{--                                        }--}}
+{{--                                    });--}}
+{{--                                });--}}
+
+
+{{--                                // Reject button--}}
+{{--                                let canApprove = @json($can_approve);--}}
+{{--                                console.log(canApprove);--}}
+{{--                                if (canApprove) {--}}
+{{--                                    const rejectBtn = document.createElement('button');--}}
+{{--                                    rejectBtn.innerText = 'رفض';--}}
+{{--                                    rejectBtn.className = 'swal2-styled';--}}
+{{--                                    rejectBtn.style.backgroundColor = '#b91818';--}}
+{{--                                    rejectBtn.style.color = '#fff';--}}
+{{--                                    rejectBtn.style.marginLeft = '10px';--}}
+{{--                                    rejectBtn.style.borderRadius = '5px';--}}
+{{--                                    rejectBtn.addEventListener('click', () => {--}}
+{{--                                        // your reject logic here--}}
+{{--                                        Swal.fire({--}}
+{{--                                            title: 'سبب الرفض',--}}
+{{--                                            html: `--}}
+{{--<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>--}}
+{{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+{{--    <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+{{--                 border: 1px solid #64748b;--}}
+{{--                 padding: 0.625em;--}}
+{{--                 border-radius: 0em;--}}
+{{--                 font-family: inherit;--}}
+{{--                 font-size: 10pt;"></textarea>--}}
+{{--    </div>`,--}}
+{{--                                            preConfirm: () => {--}}
+{{--                                                const reason = document.getElementById('reject-reason').value.trim();--}}
+{{--                                                if (!reason) {--}}
+{{--                                                    Swal.showValidationMessage('يرجى كتابة سبب الرفض');--}}
+{{--                                                    return false;--}}
+{{--                                                }--}}
+{{--                                                return reason;--}}
+{{--                                            },--}}
+{{--                                            showCancelButton: true,--}}
+{{--                                            confirmButtonText: 'تأكيد الرفض',--}}
+{{--                                            cancelButtonText: 'إلغاء',--}}
+{{--                                        }).then((res) => {--}}
+{{--                                            if (res.isConfirmed) {--}}
+{{--                                                Livewire.emit('rejectVisit', {--}}
+{{--                                                    id: info.event.id,--}}
+{{--                                                    status_notice: res.value--}}
+{{--                                                });--}}
+
+{{--                                                Swal.fire({--}}
+{{--                                                    title: 'تم الرفض!',--}}
+{{--                                                    icon: 'info',--}}
+{{--                                                    timer: 2000,--}}
+{{--                                                    showConfirmButton: false,--}}
+{{--                                                    timerProgressBar: true--}}
+{{--                                                });--}}
+{{--                                            }--}}
+{{--                                        });--}}
+{{--                                    });--}}
+
+{{--                                    // Add buttons to Swal actions--}}
+{{--                                    Swal.getActions().appendChild(rejectBtn);--}}
+{{--                                    Swal.getActions().appendChild(approveBtn);--}}
+{{--                                }--}}
+{{--                            }--}}
+{{--                            /* View Button */--}}
+{{--                            const viewBtn = document.createElement('button');--}}
+{{--                            viewBtn.innerText = 'عرض';--}}
+{{--                            viewBtn.className = 'swal2-styled custom-view-btn';--}}
+{{--                            viewBtn.style.backgroundColor = '#4caf50';--}}
+{{--                            viewBtn.style.color = '#fff';--}}
+{{--                            viewBtn.style.marginLeft = '10px';--}}
+{{--                            viewBtn.style.padding = '0.625em 1.2em';--}}
+{{--                            viewBtn.style.borderRadius = '0.25em';--}}
+{{--                            viewBtn.style.fontWeight = 'bold';--}}
+{{--                            viewBtn.style.border = 'none';--}}
+
+{{--                            viewBtn.addEventListener('click', () => {--}}
+{{--                                window.location.href = viewUrl;--}}
+{{--                            });--}}
+
+{{--                            Swal.getActions().appendChild(viewBtn);--}}
+{{--                            /* End of View Button*/--}}
+
+{{--                            /*--}}
+{{--                            if (isRecipient && status == 0 && isDeleted == 0) {--}}
+{{--                                document.getElementById('approve-btn').addEventListener('click', () => {--}}
+{{--                                    // Livewire.emit('approveVisit', info.event.id);--}}
+{{--                                    // Swal.fire('تمت الموافقة!', '', 'success');--}}
+
+{{--                                    Swal.fire({--}}
+{{--                                        title: 'الموافقة',--}}
+{{--                                        html: `--}}
+{{--<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>--}}
+{{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+{{--    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+{{--                 border: 1px solid #64748b;--}}
+{{--                 padding: 0.625em;--}}
+{{--                 border-radius: 0em;--}}
+{{--                 font-family: inherit;--}}
+{{--                 font-size: 10pt;"></textarea>--}}
+{{--    </div>`,--}}
+{{--                                        preConfirm: () => {--}}
+{{--                                            const reason = document.getElementById('approve-reason').value.trim();--}}
+{{--                                            return reason;--}}
+{{--                                        },--}}
+{{--                                        showCancelButton: true,--}}
+{{--                                        confirmButtonText: 'تأكيد الموافقة',--}}
+{{--                                        cancelButtonText: 'إلغاء',--}}
+{{--                                    }).then((res) => {--}}
+{{--                                        if (res.isConfirmed) {--}}
+{{--                                            Livewire.emit('approveVisit', {--}}
+{{--                                                id: info.event.id,--}}
+{{--                                                status_notice: res.value--}}
+{{--                                            });--}}
+
+{{--                                            Swal.fire({--}}
+{{--                                                title: 'تمت الموافقة!',--}}
+{{--                                                icon: 'success',--}}
+{{--                                                timer: 2000,--}}
+{{--                                                showConfirmButton: false,--}}
+{{--                                                timerProgressBar: true--}}
+{{--                                            });--}}
+{{--                                        }--}}
+{{--                                    });--}}
+
+
+{{--                                });--}}
+
+{{--                                document.getElementById('reject-btn').addEventListener('click', () => {--}}
+{{--                                    Swal.fire({--}}
+{{--                                        title: 'سبب الرفض',--}}
+{{--                                        html: `--}}
+{{--<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>--}}
+{{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+{{--    <textarea id="reject-reason" class="swal2-tex:tarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+{{--                 border: 1px solid #64748b;--}}
+{{--                 padding: 0.625em;--}}
+{{--                 border-radius: 0em;--}}
+{{--                 font-family: inherit;--}}
+{{--                 font-size: 10pt;"></textarea>--}}
+{{--    </div>`,--}}
+{{--                                        preConfirm: () => {--}}
+{{--                                            const reason = document.getElementById('reject-reason').value.trim();--}}
+{{--                                            if (!reason) {--}}
+{{--                                                Swal.showValidationMessage('يرجى كتابة سبب الرفض');--}}
+{{--                                                return false;--}}
+{{--                                            }--}}
+{{--                                            return reason;--}}
+{{--                                        },--}}
+{{--                                        showCancelButton: true,--}}
+{{--                                        confirmButtonText: 'تأكيد الرفض',--}}
+{{--                                        cancelButtonText: 'إلغاء',--}}
+{{--                                    }).then((res) => {--}}
+{{--                                        if (res.isConfirmed) {--}}
+{{--                                            Livewire.emit('rejectVisit', {--}}
+{{--                                                id: info.event.id,--}}
+{{--                                                status_notice: res.value--}}
+{{--                                            });--}}
+
+{{--                                            Swal.fire({--}}
+{{--                                                title: 'تم الرفض!',--}}
+{{--                                                icon: 'info',--}}
+{{--                                                timer: 2000,--}}
+{{--                                                showConfirmButton: false,--}}
+{{--                                                timerProgressBar: true--}}
+{{--                                            });--}}
+{{--                                        }--}}
+{{--                                    });--}}
+{{--                                });--}}
+{{--                            }--}}
+{{--                            */--}}
+{{--                        }--}}
+{{--                    }).then((result) => {--}}
+{{--                        if (result.isConfirmed) {--}}
+{{--                            // Edit event - open SweetAlert2 edit form--}}
+{{--                            Swal.fire({--}}
+{{--                                title: 'تعديل الزيارة',--}}
+{{--                                html:`<style>--}}
+{{--  .edit-form {--}}
+{{--    display: grid;--}}
+{{--    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));--}}
+{{--    gap: 20px;--}}
+{{--    direction: rtl;--}}
+{{--    width: 100%;--}}
+{{--    box-sizing: border-box;--}}
+{{--  }--}}
+
+{{--  .edit-form-group {--}}
+{{--    display: flex;--}}
+{{--    flex-direction: column;--}}
+{{--  }--}}
+
+{{--  .edit-form-group label {--}}
+{{--    font-weight: bold;--}}
+{{--    margin-bottom: 6px;--}}
+{{--    font-size: 14px;--}}
+{{--  }--}}
+
+{{--  .edit-form-group input,--}}
+{{--  .edit-form-group select,--}}
+{{--  .edit-form-group textarea {--}}
+{{--    padding: 10px;--}}
+{{--    font-size: 14px;--}}
+{{--    border: 1px solid #ccc;--}}
+{{--    border-radius: 4px;--}}
+{{--    font-family: inherit;--}}
+{{--    box-sizing: border-box;--}}
+{{--    width: 100%;--}}
+{{--  }--}}
+
+{{--  .edit-form-group textarea {--}}
+{{--    resize: none;--}}
+{{--    height: 120px;--}}
+{{--  }--}}
+
+{{--  /* Mobile: force single column */--}}
+{{--  @media (max-width: 600px) {--}}
+{{--    .edit-form {--}}
+{{--      grid-template-columns: 1fr !important;--}}
+{{--    }--}}
+
+{{--    .edit-form-group[style*="grid-column"] {--}}
+{{--      grid-column: span 1 !important;--}}
+{{--    }--}}
+{{--  }--}}
+{{--</style>--}}
+
+{{--<div class="edit-form">--}}
+{{--  <div class="edit-form-group">--}}
+{{--    <label for="edit-title">عنوان الزيارة</label>--}}
+{{--    <input type="text" id="edit-title" value="${info.event.title || ''}">--}}
+{{--  </div>--}}
+
+{{--  <div class="edit-form-group">--}}
+{{--    <label for="edit-reason">سبب الزيارة</label>--}}
+{{--    <input type="text" id="edit-reason" value="${info.event.extendedProps.reason || ''}">--}}
+{{--  </div>--}}
+
+{{--  <div class="edit-form-group" style="grid-column: span 2;">--}}
+{{--    <label for="edit-goals">أهداف الزيارة</label>--}}
+{{--    <textarea id="edit-goals">${info.event.extendedProps.goals || ''}</textarea>--}}
+{{--  </div>--}}
+
+{{--  <div class="edit-form-group">--}}
+{{--    <label for="edit-branch">مكان الزيارة</label>--}}
+{{--    <select id="edit-branch" disabled>--}}
+{{--      <option value="" disabled>اختر المكان</option>--}}
+{{--      ${Object.entries(branchMap).map(([key, name]) =>--}}
+{{--                                    `<option value="${key}" ${info.event.extendedProps.branch === key ? 'selected' : ''}>${name}</option>`--}}
+{{--                                ).join('')}--}}
+{{--    </select>--}}
+{{--  </div>--}}
+
+{{--  <div class="edit-form-group">--}}
+{{--    <label for="edit-employees">الموظفين</label>--}}
+{{--    <select id="edit-employees" multiple></select>--}}
+{{--  </div>--}}
+
+{{--  <div class="edit-form-group">--}}
+{{--    <label for="edit-visit-time">وقت الزيارة</label>--}}
+{{--    <select id="edit-visit-time">--}}
+{{--      <option value="" disabled>اختر الوقت</option>--}}
+{{--      ${timeOptions.map(time =>--}}
+{{--                                    `<option value="${time}" ${formatTime(info.event.start) === time ? 'selected' : ''}>${time}</option>`--}}
+{{--                                ).join('')}--}}
+{{--    </select>--}}
+{{--  </div>--}}
+
+{{--    <div class="edit-form-group" style="grid-column: span 2;">--}}
+{{--  <label style="text-align: right">خدمات إضافية</label>--}}
+{{--  <ul style="list-style: none; padding: 0; margin: 0;">--}}
+{{--    ${(() => {--}}
+{{--                                    const extraServices = info.event.extendedProps.extra_services || [];--}}
+{{--                                    const servicesList = [--}}
+{{--                                        { key: 'hotel', label: 'حجز فندق' },--}}
+{{--                                        { key: 'flight', label: 'حجز طيران' },--}}
+{{--                                        { key: 'train', label: 'حجز قطار' },--}}
+{{--                                    ];--}}
+
+{{--                                    let servicesArray = [];--}}
+{{--                                    if (typeof extraServices === 'string') {--}}
+{{--                                        try {--}}
+{{--                                            servicesArray = JSON.parse(extraServices);--}}
+{{--                                        } catch {--}}
+{{--                                            servicesArray = extraServices.split(',');--}}
+{{--                                        }--}}
+{{--                                    } else if (Array.isArray(extraServices)) {--}}
+{{--                                        servicesArray = extraServices;--}}
+{{--                                    }--}}
+
+{{--                                    return servicesList.map(s => {--}}
+{{--                                        const isChecked = servicesArray.includes(s.key) ? 'checked' : '';--}}
+{{--                                        return `--}}
+{{--          <li style="margin-bottom: 8px;">--}}
+{{--            <label style="--}}
+{{--              cursor: pointer;--}}
+{{--              display: inline-flex;--}}
+{{--              align-items: center;--}}
+{{--              gap: 6px;--}}
+{{--              white-space: nowrap;--}}
+{{--            ">--}}
+{{--              <input type="checkbox" name="edit-extra-services" value="${s.key}" ${isChecked} style="flex-shrink: 0; width: 16px; height: 16px;">--}}
+{{--              <span>${s.label}</span>--}}
+{{--            </label>--}}
+{{--          </li>--}}
+{{--        `;--}}
+{{--                                    }).join('');--}}
+{{--                                })()}--}}
+{{--  </ul>--}}
+{{--</div>--}}
+
+
+{{--</div>--}}
+{{--`,--}}
+{{--                                focusConfirm: false,--}}
+{{--                                showCancelButton: true,--}}
+{{--                                confirmButtonText: 'تحديث',--}}
+{{--                                cancelButtonText: 'إلغاء',--}}
+{{--                                reverseButtons: true,--}}
+{{--                                didOpen: () => {--}}
+{{--                                    const branchSelect = document.getElementById('edit-branch');--}}
+{{--                                    const employeeSelect = document.getElementById('edit-employees');--}}
+
+{{--                                    $(employeeSelect).select2({--}}
+{{--                                        dir: "rtl",--}}
+{{--                                        dropdownCssClass: "select-font-size",--}}
+{{--                                        dropdownParent: document.querySelector('.swal2-popup'),--}}
+{{--                                        placeholder: "اختر الموظفين"--}}
+{{--                                    });--}}
+
+{{--                                    const populateEmployees = (branchId, selected = []) => {--}}
+{{--                                        const employees = employeesByBranch[branchId] || [];--}}
+{{--                                        $(employeeSelect).empty();--}}
+{{--                                        disabledEmployees = []; // Reset--}}
+
+{{--                                        employees.forEach(emp => {--}}
+{{--                                            const isGroup8 = emp.group == 8;--}}
+{{--                                            const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8--}}
+
+{{--                                            const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);--}}
+
+{{--                                            if (isGroup8) {--}}
+{{--                                                option.disabled = true;--}}
+{{--                                                disabledEmployees.push(emp.id.toString());--}}
+{{--                                            }--}}
+
+{{--                                            $(employeeSelect).append(option);--}}
+{{--                                        });--}}
+
+{{--                                        $(employeeSelect).trigger('change');--}}
+{{--                                    };--}}
+
+
+{{--                                    const initialBranchId = branchSelect.value;--}}
+{{--                                    const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());--}}
+
+{{--                                    console.log('======= employees =======')--}}
+{{--                                    console.log(info.event.extendedProps.employees);--}}
+{{--                                    console.log(info.event);--}}
+
+{{--                                    populateEmployees(initialBranchId, selectedEmpIds);--}}
+
+{{--                                    branchSelect.addEventListener('change', () => {--}}
+{{--                                        const newBranchId = branchSelect.value;--}}
+{{--                                        populateEmployees(newBranchId);--}}
+{{--                                    });--}}
+
+{{--                                    $(employeeSelect).on('select2:unselecting', function (e) {--}}
+{{--                                        const id = e.params.args.data.id;--}}
+{{--                                        const option = $(this).find(`option[value="${id}"]`);--}}
+{{--                                        if (option.prop('disabled')) {--}}
+{{--                                            e.preventDefault();--}}
+{{--                                        }--}}
+{{--                                    });--}}
+{{--                                },--}}
+{{--                                preConfirm: () => {--}}
+{{--                                    const title = document.getElementById('edit-title').value;--}}
+{{--                                    const reason = document.getElementById('edit-reason').value;--}}
+{{--                                    const goals = document.getElementById('edit-goals').value;--}}
+{{--                                    const branch = document.getElementById('edit-branch').value;--}}
+{{--                                    const visitTime = document.getElementById('edit-visit-time').value;--}}
+{{--                                    // const selectedEmployees = $('#edit-employees').val();--}}
+{{--                                    let selectedEmployees = $('#edit-employees').val() || [];--}}
+{{--                                    disabledEmployees.forEach(id => {--}}
+{{--                                        if (!selectedEmployees.includes(id)) {--}}
+{{--                                            selectedEmployees.push(id);--}}
+{{--                                        }--}}
+{{--                                    });--}}
+
+{{--                                    if (--}}
+{{--                                        !title.trim() ||--}}
+{{--                                        !reason.trim() ||--}}
+{{--                                        !goals.trim() ||--}}
+{{--                                        !branch ||--}}
+{{--                                        !visitTime ||--}}
+{{--                                        !selectedEmployees ||--}}
+{{--                                        selectedEmployees.length === 0--}}
+{{--                                    ) {--}}
+{{--                                        Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');--}}
+{{--                                        return false;--}}
+{{--                                    }--}}
+
+{{--                                    const startDateTime = combineDateAndTime(info.event.startStr, visitTime);--}}
+
+{{--                                    const extraServiceCheckboxes = document.querySelectorAll('input[name="edit-extra-services"]:checked');--}}
+{{--                                    const extraServices = Array.from(extraServiceCheckboxes).map(cb => cb.value);--}}
+
+{{--                                    return {--}}
+{{--                                        title,--}}
+{{--                                        reason,--}}
+{{--                                        goals,--}}
+{{--                                        branch,--}}
+{{--                                        employees: selectedEmployees,--}}
+{{--                                        extra_services: extraServices,--}}
+{{--                                        start: startDateTime,--}}
+{{--                                        end: info.event.endStr--}}
+{{--                                    };--}}
+{{--                                }--}}
+{{--                            }).then((result) => {--}}
+{{--                                if (result.isConfirmed) {--}}
+{{--                                    Livewire.emit('updateVisit', {--}}
+{{--                                        id: info.event.id,--}}
+{{--                                        title: result.value.title,--}}
+{{--                                        reason: result.value.reason,--}}
+{{--                                        goals: result.value.goals,--}}
+{{--                                        branch: result.value.branch,--}}
+{{--                                        employees: result.value.employees,--}}
+{{--                                        extra_services: result.value.extra_services,--}}
+{{--                                        start: result.value.start,--}}
+{{--                                        end: result.value.end--}}
+{{--                                    });--}}
+{{--                                }--}}
+{{--                            });--}}
+
+
+{{--                        } else if (result.isDenied) {--}}
+{{--                            // Delete confirmation--}}
+{{--                            Swal.fire({--}}
+{{--                                title: 'هل متأكد من ذلك؟',--}}
+{{--                                text: "سوف يتم حذف هذه الزيارة للأبد وإبلاغ الشخص المسؤول بمكان الزيارة",--}}
+{{--                                icon: 'warning',--}}
+{{--                                showCancelButton: true,--}}
+{{--                                confirmButtonText: 'نعم، احذف',--}}
+{{--                                cancelButtonText: 'إلغاء'--}}
+{{--                            }).then((delResult) => {--}}
+{{--                                if (delResult.isConfirmed) {--}}
+{{--                                    // Livewire.emit('deleteVisit', info.event.id);--}}
+{{--                                    // Swal.fire({--}}
+{{--                                    //     title: 'تم الحذف!',--}}
+{{--                                    //     text: 'هذه الزيارة تم حذفها',--}}
+{{--                                    //     icon: 'success',--}}
+{{--                                    //     timer: 2000,--}}
+{{--                                    //     showConfirmButton: false,--}}
+{{--                                    //     timerProgressBar: true--}}
+{{--                                    // });--}}
+
+{{--                                    Swal.fire({--}}
+{{--                                        title: 'سبب الحذف',--}}
+{{--                                        html: `--}}
+{{--<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب حذف الزيارة</label>--}}
+{{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+{{--    <textarea id="delete-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+{{--                 border: 1px solid #64748b;--}}
+{{--                 padding: 0.625em;--}}
+{{--                 border-radius: 0em;--}}
+{{--                 font-family: inherit;--}}
+{{--                 font-size: 10pt;"></textarea>--}}
+{{--    </div>--}}
+{{--  `,--}}
+{{--                                        focusConfirm: false,--}}
+{{--                                        showCancelButton: true,--}}
+{{--                                        confirmButtonText: 'حذف',--}}
+{{--                                        cancelButtonText: 'إلغاء',--}}
+{{--                                        customClass: {--}}
+{{--                                            popup: 'responsive-modal'--}}
+{{--                                        },--}}
+{{--                                        preConfirm: () => {--}}
+{{--                                            const reason = document.getElementById('delete-reason').value.trim();--}}
+{{--                                            if (!reason) {--}}
+{{--                                                Swal.showValidationMessage('يجب إدخال السبب قبل الحذف');--}}
+{{--                                                return false;--}}
+{{--                                            }--}}
+{{--                                            return reason;--}}
+{{--                                        }--}}
+{{--                                    }).then((result) => {--}}
+{{--                                        if (result.isConfirmed) {--}}
+{{--                                            const reason = result.value;--}}
+
+{{--                                            Livewire.emit('deleteVisit', {--}}
+{{--                                                id: info.event.id,--}}
+{{--                                                delete_reason: reason--}}
+{{--                                            });--}}
+
+{{--                                            Swal.fire({--}}
+{{--                                                title: 'تم الحذف!',--}}
+{{--                                                text: 'هذه الزيارة تم حذفها',--}}
+{{--                                                icon: 'success',--}}
+{{--                                                timer: 2000,--}}
+{{--                                                showConfirmButton: false,--}}
+{{--                                                timerProgressBar: true--}}
+{{--                                            });--}}
+{{--                                        }--}}
+{{--                                    });--}}
+
+
+{{--                                }--}}
+{{--                            });--}}
+{{--                        }--}}
+{{--                        // If Cancel: do nothing (close details)--}}
+{{--                    });--}}
+{{--                }--}}
 
             });
 
@@ -1522,10 +1532,12 @@
                 }
 
                 return {
-                    ...visit,
+                     ...visit,
                     backgroundColor,
                     textColor,
-                    borderColor: 'transparent'
+                    borderColor: 'transparent',
+                    url: `/show-visit/${visit.id}`,
+                    title: `${visit.requester?.name}` || 'لايوجد',
                 };
             }
 

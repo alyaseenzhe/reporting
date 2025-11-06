@@ -27,6 +27,9 @@ class Visit extends Model
         return $this->hasMany(VisitEmp::class)->where('type', 'recipient');
     }
 
+    public function requester(){
+        return $this->belongsTo(User::class, 'requester_id');
+    }
     public function is_recipient() {
         return $this->hasMany(VisitEmp::class)
             ->where('type', 'recipient')

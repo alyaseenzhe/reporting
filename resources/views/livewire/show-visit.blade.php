@@ -3,7 +3,7 @@
 @stop
 <div>
     <div class="mb-5">
-        <nav class="flex" aria-label="Breadcrumb">
+        <nav class="flex justify-between" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
                     <a href="{{ route('dashboard') }}"
@@ -44,6 +44,44 @@
                     </div>
                 </li>
             </ol>
+
+
+            @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
+                <div class="flex flex-row gap-4 justify-center">
+                    <div class="flex flex-row gap-4 justify-center">
+                        <div>
+                            <button id="edit-btn"
+                                    style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>تعديل</span>
+                    </span>
+                            </button>
+                        </div>
+                        <div>
+                            <button id="delete-btn"
+                                    style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>الغاء الزيارة</span>
+                    </span>
+                            </button>
+                        </div>
+                    </div>
+                    @endif
+
+
+
+                    @if($can_close_visit)
+                        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
+                            <div>
+                                <button id="close-btn"
+                                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                            <span>إتمام الزيارة</span>
+                        </span>
+                                </button>
+                            </div>
+                        </div>
+            @endif
         </nav>
     </div>
 
@@ -85,7 +123,51 @@
             </div>
         @endif
     </div>
-    <div id="branch-container" class="mb-6">
+
+    <div class="w-full flex sm:flex-row flex-col gap-4"
+         style="@if($record->status ==0) background-color: #dceeff; /*#fffddc;*/ @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @elseif($record->status == 4) background-color: #ffd7b5; @endif border: dashed 1px black; padding: 20px;">
+        <div class="w-full">
+            <label class="block font-bold mb-6 text-xs">
+                حالة الزيارة
+            </label>
+            <div
+                style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @else color: #701345; @endif ">
+                @if($record->status == 0)
+                    تحت الإجراء
+                @elseif($record->status == 1)
+                    مقبولة
+                @elseif($record->status == 2)
+                    مرفوضة
+                @elseif($record->status == 3)
+                    مغلقة
+                @elseif($record->status == 4)
+                    ملغية
+                @endif
+            </div>
+        </div>
+        <div class="w-full">
+            <label class="block font-bold mb-6 text-xs">
+                @if($record->status == 2)
+                    اسباب الرفض
+                @elseif($record->status == 1 || $record->status == 4)
+                    ملاحظات
+                @endif
+            </label>
+            <div
+                style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @else color: #701345; @endif">
+                @if($record->status == 1 || $record->status == 2)
+                    {{ $record->status_notice }}
+                @elseif($record->status == 4)
+                    <p> {{$record->delete_reason}}</p>
+                @endif
+
+
+            </div>
+        </div>
+
+    </div>
+    <div id="branch-container" class="my-6">
+
         <div class="flex flex-col gap-4">
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
@@ -142,11 +224,19 @@
                     @endforeach
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>
-                    @foreach($record->emps_recipients as $req)
-                        <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>
-                    @endforeach
+                    <label class="block font-bold mb-6 text-xs">التحضيرات المطلوبه من الفرع</label>
+                    <div style="color: #5222e1; white-space: pre-wrap;">{{$record->goals}}</div>
                 </div>
+                <div class="w-full">
+                    <label class="block font-bold mb-6 text-xs">المرافقون</label>
+                    <div style="color: #5222e1; white-space: pre-wrap;">{{$record->attendants}}</div>
+                </div>
+{{--                <div class="w-full">--}}
+{{--                    <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>--}}
+{{--                    @foreach($record->emps_recipients as $req)--}}
+{{--                        <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>--}}
+{{--                    @endforeach--}}
+{{--                </div>--}}
             </div>
 
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
@@ -165,18 +255,9 @@
                 </div>
             </div>
 
-            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
-                <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">التحضيرات المطلوبه من الفرع</label>
-                    <div style="color: #5222e1; white-space: pre-wrap;">{{$record->goals}}</div>
-                </div>
-            </div>
 
-            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
-                <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">المرافقون</label>
-                </div>
-            </div>
+
+
 {{--            @php--}}
 {{--                $extraServicesMap = [--}}
 {{--                    'hotel' => ['label' => 'حجز فندق', 'icon' => '🏨'],--}}
@@ -208,48 +289,6 @@
 {{--            </div>--}}
 
 
-            <div class="w-full flex sm:flex-row flex-col gap-4"
-                 style="@if($record->status ==0) background-color: #fffddc; @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @elseif($record->status == 4) background-color: #ffd7b5; @endif border: dashed 1px black; padding: 20px;">
-                <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">
-                        حالة الزيارة
-                    </label>
-                    <div
-                        style="@if($record->status ==0) color: #7d781a; @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @endif">
-                        @if($record->status == 0)
-                            تحت الإجراء
-                        @elseif($record->status == 1)
-                            مقبولة
-                        @elseif($record->status == 2)
-                            مرفوضة
-                        @elseif($record->status == 3)
-                            مغلقة
-                        @elseif($record->status == 4)
-                            ملغية
-                        @endif
-                    </div>
-                </div>
-                <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">
-                        @if($record->status == 2)
-                            اسباب الرفض
-                        @elseif($record->status == 1 || $record->status == 4)
-                            ملاحظات
-                        @endif
-                    </label>
-                    <div
-                        style="@if($record->status ==0) color: #7d781a; @elseif($record->status == 1) color: #418f30; @else color: #701345; @endif">
-                        @if($record->status == 1 || $record->status == 2)
-                            {{ $record->status_notice }}
-                        @elseif($record->status == 4)
-                           <p> {{$record->delete_reason}}</p>
-                        @endif
-
-
-                    </div>
-                </div>
-
-            </div>
 
             {{--             collapsable--}}
             @if($record->status == 3)
@@ -413,42 +452,42 @@
         </div>
     @endif
 
-    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
-        <div class="flex flex-row gap-4 justify-center">
-        <div class="flex flex-row gap-4 justify-center">
-            <div>
-                <button id="edit-btn"
-                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>تعديل</span>
-                    </span>
-                </button>
-            </div>
-            <div>
-                <button id="delete-btn"
-                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>الغاء الزيارة</span>
-                    </span>
-                </button>
-            </div>
-        </div>
-    @endif
+{{--    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)--}}
+{{--        <div class="flex flex-row gap-4 justify-center">--}}
+{{--        <div class="flex flex-row gap-4 justify-center">--}}
+{{--            <div>--}}
+{{--                <button id="edit-btn"--}}
+{{--                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>تعديل</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--            <div>--}}
+{{--                <button id="delete-btn"--}}
+{{--                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold">--}}
+{{--                        <span>الغاء الزيارة</span>--}}
+{{--                    </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    @endif--}}
 
 
 
-    @if($can_close_visit)
-        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
-            <div>
-                <button id="close-btn"
-                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
-                            <span>إتمام الزيارة</span>
-                        </span>
-                </button>
-            </div>
-        </div>
-    @endif
+{{--    @if($can_close_visit)--}}
+{{--        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">--}}
+{{--            <div>--}}
+{{--                <button id="close-btn"--}}
+{{--                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">--}}
+{{--                        <span class="mr-2 font-bold">--}}
+{{--                            <span>إتمام الزيارة</span>--}}
+{{--                        </span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    @endif--}}
 
     @if($can_rate)
         @if($record->is_requester())
@@ -1047,18 +1086,18 @@
 </style>
 
 <div class="edit-form">
-  <div class="edit-form-group">
-    <label for="edit-title">عنوان الزيارة</label>
+  <div class="edit-form-group" style="grid-column: span 2;">
+    <label for="edit-title" >عنوان الزيارة</label>
     <input type="text" id="edit-title" value="${visit.title || ''}">
   </div>
 
-  <div class="edit-form-group">
+  <div class="edit-form-group" style="grid-column: span 2;">
     <label for="edit-reason">سبب الزيارة</label>
     <input type="text" id="edit-reason" value="${visit.reason || ''}">
   </div>
 
   <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-goals">أهداف الزيارة</label>
+    <label for="edit-goals">التحضيرات المطلوبه من الفرع</label>
     <textarea id="edit-goals">${visit.goals || ''}</textarea>
   </div>
 
@@ -1072,10 +1111,10 @@
     </select>
   </div>
 
-  <div class="edit-form-group">
-    <label for="edit-employees">الموظفين</label>
-    <select id="edit-employees" multiple></select>
-  </div>
+<!--  <div class="edit-form-group">-->
+<!--    <label for="edit-employees">الموظفين</label>-->
+<!--    <select id="edit-employees" multiple></select>-->
+<!--  </div>-->
 
   <div class="edit-form-group">
     <label for="edit-visit-time">وقت الزيارة</label>
@@ -1086,6 +1125,18 @@
                         ).join('')}
     </select>
   </div>
+   <div class="edit-form-group w-full" >
+     <label style="min-width: 120px;">تاريخ البداية</label>
+     <input type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
+   </div>
+   <div class="edit-form-group w-full" >
+     <label style="min-width: 120px;">تاريخ النهاية</label>
+     <input type="date" id="end" value="${visit.end ? new Date(visit.end).toISOString().split('T')[0] : ''}"  >
+   </div>
+   <div class="edit-form-group w-full" style="grid-column: span 2;">
+     <label style="min-width: 120px;">المرافقون</label>
+     <input type="text" id="attendants" value="${visit.reason || ''}" >
+   </div>
 </div>
 `,
                         focusConfirm: false,
@@ -1093,94 +1144,98 @@
                         confirmButtonText: 'تحديث',
                         cancelButtonText: 'إلغاء',
                         reverseButtons: true,
-                        didOpen: () => {
-                            const branchSelect = document.getElementById('edit-branch');
-                            const employeeSelect = document.getElementById('edit-employees');
-
-                            $(employeeSelect).select2({
-                                dir: "rtl",
-                                dropdownCssClass: "select-font-size",
-                                dropdownParent: document.querySelector('.swal2-popup'),
-                                placeholder: "اختر الموظفين"
-                            });
-
-                            const populateEmployees = (branchId, selected = []) => {
-                                const employees = employeesByBranch[branchId] || [];
-                                $(employeeSelect).empty();
-                                disabledEmployees = []; // Reset
-
-                                employees.forEach(emp => {
-                                    const isGroup8 = emp.group == 8;
-                                    const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
-
-                                    const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
-
-                                    if (isGroup8) {
-                                        option.disabled = true;
-                                        disabledEmployees.push(emp.id.toString());
-                                    }
-
-                                    $(employeeSelect).append(option);
-                                });
-
-                                $(employeeSelect).trigger('change');
-                            };
-
-
-                            const initialBranchId = branchSelect.value;
-                            // const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());
-                            const selectedEmpIds = (x_recipients || []).map(emp => emp.user_id.toString());
-
-                            console.log('======= employees =======')
-                            // console.log(info.event.extendedProps.employees);
-                            // console.log(info.event);
-                            console.log(x_recipients);
-
-                            populateEmployees(initialBranchId, selectedEmpIds);
-
-                            branchSelect.addEventListener('change', () => {
-                                const newBranchId = branchSelect.value;
-                                populateEmployees(newBranchId);
-                            });
-
-                            $(employeeSelect).on('select2:unselecting', function (e) {
-                                const id = e.params.args.data.id;
-                                const option = $(this).find(`option[value="${id}"]`);
-                                if (option.prop('disabled')) {
-                                    e.preventDefault();
-                                }
-                            });
-                        },
+                        // didOpen: () => {
+                        //     const branchSelect = document.getElementById('edit-branch');
+                        //     const employeeSelect = document.getElementById('edit-employees');
+                        //
+                        //     $(employeeSelect).select2({
+                        //         dir: "rtl",
+                        //         dropdownCssClass: "select-font-size",
+                        //         dropdownParent: document.querySelector('.swal2-popup'),
+                        //         placeholder: "اختر الموظفين"
+                        //     });
+                        //
+                        //     const populateEmployees = (branchId, selected = []) => {
+                        //         const employees = employeesByBranch[branchId] || [];
+                        //         $(employeeSelect).empty();
+                        //         disabledEmployees = []; // Reset
+                        //
+                        //         employees.forEach(emp => {
+                        //             const isGroup8 = emp.group == 8;
+                        //             const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
+                        //
+                        //             const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
+                        //
+                        //             if (isGroup8) {
+                        //                 option.disabled = true;
+                        //                 disabledEmployees.push(emp.id.toString());
+                        //             }
+                        //
+                        //             $(employeeSelect).append(option);
+                        //         });
+                        //
+                        //         $(employeeSelect).trigger('change');
+                        //     };
+                        //
+                        //
+                        //     const initialBranchId = branchSelect.value;
+                        //     // const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());
+                        //     const selectedEmpIds = (x_recipients || []).map(emp => emp.user_id.toString());
+                        //
+                        //     console.log('======= employees =======')
+                        //     // console.log(info.event.extendedProps.employees);
+                        //     // console.log(info.event);
+                        //     console.log(x_recipients);
+                        //
+                        //     populateEmployees(initialBranchId, selectedEmpIds);
+                        //
+                        //     branchSelect.addEventListener('change', () => {
+                        //         const newBranchId = branchSelect.value;
+                        //         populateEmployees(newBranchId);
+                        //     });
+                        //
+                        //     $(employeeSelect).on('select2:unselecting', function (e) {
+                        //         const id = e.params.args.data.id;
+                        //         const option = $(this).find(`option[value="${id}"]`);
+                        //         if (option.prop('disabled')) {
+                        //             e.preventDefault();
+                        //         }
+                        //     });
+                        // },
                         preConfirm: () => {
                             const title = document.getElementById('edit-title').value;
                             const reason = document.getElementById('edit-reason').value;
                             const goals = document.getElementById('edit-goals').value;
                             const branch = document.getElementById('edit-branch').value;
                             const visitTime = document.getElementById('edit-visit-time').value;
+                            const attendants = document.getElementById('attendants').value;
+                            const start = document.getElementById('start').value;
+                            const end = document.getElementById('end').value;
                             // const selectedEmployees = $('#edit-employees').val();
-                            let selectedEmployees = $('#edit-employees').val() || [];
-                            disabledEmployees.forEach(id => {
-                                if (!selectedEmployees.includes(id)) {
-                                    selectedEmployees.push(id);
-                                }
-                            });
+                            // let selectedEmployees = $('#edit-employees').val() || [];
+                            // disabledEmployees.forEach(id => {
+                            //     if (!selectedEmployees.includes(id)) {
+                            //         selectedEmployees.push(id);
+                            //     }
+                            // });
 
                             if (
                                 !title.trim() ||
                                 !reason.trim() ||
                                 !goals.trim() ||
                                 !branch ||
-                                !visitTime ||
-                                !selectedEmployees ||
-                                selectedEmployees.length === 0
+                                !visitTime
+                                // !selectedEmployees ||
+                                // selectedEmployees.length === 0
                             ) {
                                 Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');
                                 return false;
                             }
 
-                            // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
+                             // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
+                             beginningDate = visit.start;
+                            // const formatted = beginningDate.toLocaleDateString('en-GB');
 
-                            beginningDate = visit.start;
                             const startDateTime = combineDateAndTime( beginningDate.split(' ')[0], visitTime);
 
                             return {
@@ -1188,9 +1243,12 @@
                                 reason,
                                 goals,
                                 branch,
-                                employees: selectedEmployees,
-                                start: startDateTime,
-                                end: visit.end
+                                // employees: selectedEmployees,
+                                start,
+                                //  start: startDateTime,
+                                // end: visit.end,
+                                end,
+                                attendants: visit.attendants
                                 // end: info.event.endStr
                             };
                         }
@@ -1214,9 +1272,10 @@
                                 reason: result.value.reason,
                                 goals: result.value.goals,
                                 branch: result.value.branch,
-                                employees: result.value.employees,
+                                // employees: result.value.employees,
                                 start: result.value.start,
-                                end: result.value.end
+                                end: result.value.end,
+                                attendants: result.value.attendants
                             });
                         }
                     });

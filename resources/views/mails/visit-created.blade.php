@@ -19,6 +19,15 @@
             جاك طلب زيارة جديد وتفاصيله كالتالي، بإمكانك عرض التفاصيل كاملة واتخاذ القرار المناسب بالموافقة او الرفض من خلال الزر أدناه 😊
         </p>
 
+    @elseif($type == 'update')
+
+        <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بتعديل الزيارة</h2>
+            <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
+                اهلاً،<br>
+                تم إلغاء تعديل وتفاصيلها كما يلي 😊
+            </p>
+
+
     @elseif($type == 'cancel')
 
         <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بإلغاء الزيارة</h2>
@@ -117,14 +126,20 @@
                                 <div style="color: #5222e1;">{{ $req->user->name }}</div>
                             @endforeach
                         </td>
-                        <td width="50%" style="padding: 10px;">
-                            <label style="font-weight: bold;">📬 ابلاغ الموظفين</label>
-                            <div style="color: #5222e1;">
-                                @foreach($visit->emps_recipients as $req)
-                                    <span>{{ $req->user->name }}@if (!$loop->last), @endif </span>
-                                @endforeach
+                        <td style="padding: 20px;">
+                            <label style="font-weight: bold;">🎯 التحضيرات المطلوبه من الفرع</label>
+                            <div style="color: #5222e1; white-space: pre-wrap; margin-top: 10px;">
+                                {{ $visit->goals }}
                             </div>
                         </td>
+{{--                        <td width="50%" style="padding: 10px;">--}}
+{{--                            <label style="font-weight: bold;">📬 ابلاغ الموظفين</label>--}}
+{{--                            <div style="color: #5222e1;">--}}
+{{--                                @foreach($visit->emps_recipients as $req)--}}
+{{--                                    <span>{{ $req->user->name }}@if (!$loop->last), @endif </span>--}}
+{{--                                @endforeach--}}
+{{--                            </div>--}}
+{{--                        </td>--}}
                     </tr>
                 </table>
             </td>
@@ -204,10 +219,10 @@
             </tr>
         @endif
 
-        <!-- Spacer -->
-        <tr style="background-color: #ffffff;">
-            <td style="height: 20px;"></td>
-        </tr>
+{{--        <!-- Spacer -->--}}
+{{--        <tr style="background-color: #ffffff;">--}}
+{{--            <td style="height: 20px;"></td>--}}
+{{--        </tr>--}}
 
         <!-- View Details Button -->
         <tr style="background-color: #ffffff;">

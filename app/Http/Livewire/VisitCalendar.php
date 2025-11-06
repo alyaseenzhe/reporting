@@ -64,7 +64,7 @@ class VisitCalendar extends Component
 //            ->orderBy('visits.start', 'asc') // soonest start date first
 //            ->get()
 //            ->toArray();
-        $this->showAllVisits = Visit::where('status' ,'!=', '4')->get();
+        $this->showAllVisits = Visit::with('requester')->where('status' ,'!=', '4')->get();
 
         $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
         ->whereHas('emps', function ($q) {
@@ -116,22 +116,52 @@ class VisitCalendar extends Component
 //        $recipient = User::where('sales_dept_code', $data['branch'])
 //            ->where('group', 8) // branch manger group
 //            ->select('id')->first();
+//        $employees = User::where('group', 8)->orWhere('group', 4)
+//        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
+
+        $employees = [
+            '0101'=> ['49','50','51','43'], //alahsaa branch
+            '0102' => ['28','33'], // jeddah
+            '0103' => ['20','54', '52'], //riyadh
+            '0104'=> ['55'], // wadi adwasir
+            '0105' => ['34','27','41'], //jouf
+            '0106' => ['58','29'], //dammam
+            '0107'=> ['36', '35'],   //kharj
+            '0108' => ['40','60','26'], //najran
+            '0109' => ['61','62'],   //hail
+            '0110' => ['30','63','44'], //tabouk
+            '0111' => ['57','22','86'], //qaseem
+            '0112' => ['47','46'], //sajer
+        ];
+//        dd($employees[$data['branch']]?? []);
+
 
         $visit_data = Visit::create([
             'title' => $data['title'],
-//            'requester_id' => Auth::id(),
+            'requester_id' => Auth::id(),
             'start' => Carbon::parse($data['start'])->format('Y-m-d H:i:s'),
             'end' => Carbon::parse($data['end'])->format('Y-m-d H:i:s'),
             'reason' => $data['reason'],
             'goals' => $data['goals'],
             'extra_services' => json_encode($data['extra_services']),
             'branch' => $data['branch'],
+            'attendants' => $data['attendants'],
 //            'recipient_id' => $recipient->id,
             'status' => '0', // pending
         ]);
 
         if ($visit_data) {
-            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+//            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+            $records = collect($employees)
+                ->flatMap(fn($user_ids) =>
+                collect($user_ids)->map(fn($id) => [
+                    'visit_id' => $visit_data->id,
+                    'type' => 'recipient',
+                    'user_id' => $id,
+                ])
+                )
+                ->values()
+                ->toArray();
             $requester_record = ['visit_id' => $visit_data->id, 'type' => 'requester', 'user_id' => Auth::id() ];
             array_push($records, $requester_record);
 
@@ -153,82 +183,82 @@ class VisitCalendar extends Component
             $this->visitMail($this->oneVisit($visit_data->id), $branch_manger, 'add');
         }
     }
-
-    public function updateVisit($event) {
-//        dd($event);
-
-        $visit = Visit::find($event['id']);
-
-        if ($visit) {
-
-            $recipient = User::where('sales_dept_code', $event['branch'])
-                ->where('group', 8) // branch manger group
-                ->select('id')->first();
-
-            $visit->title = $event['title'];
-            $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
-//            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
-            $visit->reason =  $event['reason'];
-            $visit->goals = $event['goals'];
-            $visit->extra_services = json_encode($event['extra_services']);
-//            $visit->branch =  $event['branch']; // no need to change the branch
-
-//            $visit->recipient_id =  $recipient->id;
-
-//            $visit->save();
-
-            if ($visit->save()) {
-
-                VisitEmp::where('visit_id', $event['id'])->delete();
-
-                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
-                $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
-                array_push($records, $requester_record);
-
-                DB::table('visit_emps')->insert($records);
-
-                $this->loadVisits();
-
-                $this->emit("visitsLoaded", $this->visits);
-            }
-        }
-
-//        $this->loadVisits();
 //
-//        $this->emit("visitsLoaded", $this->visits);
-    }
-
-    public function deleteVisit($event) {
-
-        $visit = Visit::find($event['id']);
-
-        if ($visit) {
-            $visit->delete_reason =  $event['delete_reason'];
-            $visit->is_deleted =  1;
-//            $visit->status = 4;
-
-            $visit->save();
-            // Emit event to refresh FullCalendar events
-            $this->loadVisits();
-
-            $this->emit("visitsLoaded", $this->visits);
-
-            if ($visit->status == 1) {
-                $this->visitMail($visit, $visit->emps(), 'delete');
-            }
-            else if($visit->status == 0) {
-
-                $branch_manger = $this->branchMangerByVisitId($visit->id);
-                $this->visitMail($this->oneVisit($visit->id), $branch_manger, 'delete');
-            }
-
-        } else {
-            // Optional: handle the case if event not found
-            session()->flash('error', 'Visit not found.');
-        }
-
-
-    }
+//    public function updateVisit($event) {
+////        dd($event);
+//
+//        $visit = Visit::find($event['id']);
+//
+//        if ($visit) {
+//
+//            $recipient = User::where('sales_dept_code', $event['branch'])
+//                ->where('group', 8) // branch manger group
+//                ->select('id')->first();
+//
+//            $visit->title = $event['title'];
+//            $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
+////            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
+//            $visit->reason =  $event['reason'];
+//            $visit->goals = $event['goals'];
+//            $visit->extra_services = json_encode($event['extra_services']);
+////            $visit->branch =  $event['branch']; // no need to change the branch
+//
+////            $visit->recipient_id =  $recipient->id;
+//
+////            $visit->save();
+//
+//            if ($visit->save()) {
+//
+//                VisitEmp::where('visit_id', $event['id'])->delete();
+//
+//                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+//                $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
+//                array_push($records, $requester_record);
+//
+//                DB::table('visit_emps')->insert($records);
+//
+//                $this->loadVisits();
+//
+//                $this->emit("visitsLoaded", $this->visits);
+//            }
+//        }
+//
+////        $this->loadVisits();
+////
+////        $this->emit("visitsLoaded", $this->visits);
+//    }
+//
+//    public function deleteVisit($event) {
+//
+//        $visit = Visit::find($event['id']);
+//
+//        if ($visit) {
+//            $visit->delete_reason =  $event['delete_reason'];
+//            $visit->is_deleted =  1;
+////            $visit->status = 4;
+//
+//            $visit->save();
+//            // Emit event to refresh FullCalendar events
+//            $this->loadVisits();
+//
+//            $this->emit("visitsLoaded", $this->visits);
+//
+//            if ($visit->status == 1) {
+//                $this->visitMail($visit, $visit->emps(), 'delete');
+//            }
+//            else if($visit->status == 0) {
+//
+//                $branch_manger = $this->branchMangerByVisitId($visit->id);
+//                $this->visitMail($this->oneVisit($visit->id), $branch_manger, 'delete');
+//            }
+//
+//        } else {
+//            // Optional: handle the case if event not found
+//            session()->flash('error', 'Visit not found.');
+//        }
+//
+//
+//    }
 
     public function approveVisit($visit_record)
     {
@@ -281,14 +311,25 @@ class VisitCalendar extends Component
 //            ->first();
 //        dd($this->branchMangerByVisitId($visit_record->id));
 //        dd($res_email);
-        $emails = $visit_record->emps
+
+        $emails = config('emails');
+
+        $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
+      //dd($visit_record->branch);
+
+        if (empty(   $branchEmail)) {
+            return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
+        }
+
+        $recipientEmail = $visit_record->emps
+            ->where('type', 'requester')
             ->pluck('user.email')
             ->unique()
-            ->toArray();
+            ->first();
 
 
         // the email must be this $branch_manger->email
-        Mail::to($emails)->queue(new VisitCreated($visit_record, null, $type));
+        Mail::to([$branchEmail,$recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
     }
 
     public function oneVisit($id) {

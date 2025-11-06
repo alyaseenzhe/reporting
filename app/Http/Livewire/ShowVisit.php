@@ -169,25 +169,31 @@ class ShowVisit extends Component
 
             $visit->title = $event['title'];
             $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
+            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
 //            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
             $visit->reason =  $event['reason'];
             $visit->goals = $event['goals'];
             $visit->branch =  $event['branch'];
+            $visit->attendants =  $event['attendants'];
 //            $visit->recipient_id =  $recipient->id;
 
 //            $visit->save();
 
             if ($visit->save()) {
 
-                VisitEmp::where('visit_id', $event['id'])->delete();
-
-                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+//                VisitEmp::where('visit_id', $event['id'])->delete();
+//
+//                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
                 $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
-                array_push($records, $requester_record);
+//                array_push($records, $requester_record);
+                array_push( $requester_record);
 
-                DB::table('visit_emps')->insert($records);
+//                DB::table('visit_emps')->insert($records);
 
                 session()->flash('success', 'تم تحديث الزيارة بنجاح');
+              //  $branch_manger = $this->branchMangerByVisitId($visit->id);
+
+                $this->visitMail($this->oneVisit($visit->id), null, 'update');
                 return redirect()->route('show.visit', ['id' => $event['id']]);
 
 //                $this->loadVisits();
@@ -344,18 +350,24 @@ class ShowVisit extends Component
     }
 
     public function visitMail($visit_record, $branch_manger, $type) {
-//        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
-//            ->where('users.group', '8') // branch manager
-//            ->where('visit_emps.visit_id', $visit_record->id)
-//            ->select('users.email', 'users.name')
-//            ->first();
-//        dd($this->branchMangerByVisitId($visit_record->id));
-//        dd($res_email);
+        $emails = config('emails');
+
+        $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
+        //dd($visit_record->branch);
+
+        if (empty(   $branchEmail)) {
+            return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
+        }
+
+        $recipientEmail = $visit_record->emps
+            ->where('type', 'requester')
+            ->pluck('user.email')
+            ->unique()
+            ->first();
 
 
-        // the email must be this $branch_manger->email (add)
-        // the email must be $branch_manger (approve/reject)
-        Mail::to('basil.alrashed@alyaseenagri.com')->queue(new VisitCreated($visit_record, null, $type));
+        // the email must be this $branch_manger->email
+        Mail::to([$branchEmail,$recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
     }
 
     public function oneVisit($id) {
