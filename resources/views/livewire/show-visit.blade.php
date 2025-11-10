@@ -1,7 +1,8 @@
 @section('title')
     عرض الزيارة
 @stop
-<div>
+
+
     <div class="mb-5">
         <nav class="flex justify-between" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -71,7 +72,7 @@
 
 
                     @if($can_close_visit)
-                        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
+                        <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
                             <div>
                                 <button id="close-btn"
                                         style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
@@ -168,60 +169,80 @@
     </div>
     <div id="branch-container" class="my-6">
 
-        <div class="flex flex-col gap-4">
-            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
+
+        <div class="sticky top-16 z-40  p-4  flex items-center justify-between mb-6
+     py-2 px-6 text-sm text-white" style=" background-color: #009245; padding: 20px;">
+            <div id="visit-info-bar" class="w-full flex sm:flex-row flex-col gap-4">
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">موضوع الزيارة</label>
-                    <div style="color: #5222e1">{{$record->title}}</div>
+                <h2 class="font-bold text-md">موضوع الزيارة: {{ $record->title }}</h2>
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">مكان الزيارة</label>
-                    <div style="color: #5222e1">
-                        @if($record->branch == "0101")
-                            فرع الاحساء
-                        @elseif($record->branch == "0102")
-                            فرع جدة
-                        @elseif($record->branch == "0103")
-                            فرع الرياض
-                        @elseif($record->branch == "0104")
-                            فرع وادي الدواسر
-                        @elseif($record->branch == "0105")
-                            فرع الجوف
-                        @elseif($record->branch == "0106")
-                            فرع الدمام
-                        @elseif($record->branch == "0107")
-                            فرع الخرج
-                        @elseif($record->branch == "0108")
-                            فرع نجران
-                        @elseif($record->branch == "0109")
-                            فرع حائل
-                        @elseif($record->branch == "0110")
-                            فرع تبوك
-                        @elseif($record->branch == "0111")
-                            فرع القصيم
-                        @elseif($record->branch == "0112")
-                            فرع ساجر
-                        @elseif($record->branch == "0201")
-                            مزرعة الدالوة
-                        @elseif($record->branch == "0202")
-                            مزرعة الفضول
-                        @elseif($record->branch == "0203")
-                            مزرعة الدلم
-                        @endif
-                    </div>
+                <p class="text-sm text-gray-200">الزائر: {{ $record->requester->name }}</p>
                 </div>
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">سبب الزيارة</label>
-                    <div style="color: #5222e1">{{$record->reason}}</div>
+                    الفرع: {{ $branches[$record->branch] }}
                 </div>
             </div>
 
+        </div>
+
+{{--        <div class="flex flex-col gap-4">--}}
+{{--            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">--}}
+
+
+{{--                <div class="w-full">--}}
+
+{{--                    <label class="block font-bold mb-6 text-xs">موضوع الزيارة</label>--}}
+{{--                    <div style="color: #5222e1">{{$record->title}}</div>--}}
+{{--                </div>--}}
+{{--                <div class="w-full">--}}
+{{--                    <label class="block font-bold mb-6 text-xs">مكان الزيارة</label>--}}
+{{--                    <div style="color: #5222e1">--}}
+{{--                        {{$branches[$record->branch]}}--}}
+
+{{--                        @if($record->branch == "0101")--}}
+{{--                            فرع الاحساء--}}
+{{--                        @elseif($record->branch == "0102")--}}
+{{--                            فرع جدة--}}
+{{--                        @elseif($record->branch == "0103")--}}
+{{--                            فرع الرياض--}}
+{{--                        @elseif($record->branch == "0104")--}}
+{{--                            فرع وادي الدواسر--}}
+{{--                        @elseif($record->branch == "0105")--}}
+{{--                            فرع الجوف--}}
+{{--                        @elseif($record->branch == "0106")--}}
+{{--                            فرع الدمام--}}
+{{--                        @elseif($record->branch == "0107")--}}
+{{--                            فرع الخرج--}}
+{{--                        @elseif($record->branch == "0108")--}}
+{{--                            فرع نجران--}}
+{{--                        @elseif($record->branch == "0109")--}}
+{{--                            فرع حائل--}}
+{{--                        @elseif($record->branch == "0110")--}}
+{{--                            فرع تبوك--}}
+{{--                        @elseif($record->branch == "0111")--}}
+{{--                            فرع القصيم--}}
+{{--                        @elseif($record->branch == "0112")--}}
+{{--                            فرع ساجر--}}
+{{--                        @elseif($record->branch == "0201")--}}
+{{--                            مزرعة الدالوة--}}
+{{--                        @elseif($record->branch == "0202")--}}
+{{--                            مزرعة الفضول--}}
+{{--                        @elseif($record->branch == "0203")--}}
+{{--                            مزرعة الدلم--}}
+{{--                        @endif--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="w-full">--}}
+{{--                    <label class="block font-bold mb-6 text-xs">سبب الزيارة</label>--}}
+{{--                    <div style="color: #5222e1">{{$record->reason}}</div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
-                    <label class="block font-bold mb-6 text-xs">مقدم الطلب</label>
-                    @foreach($record->emps_requester as $req)
-                        <div style="color: #5222e1">{{ $req->user->name }}</div>
-                    @endforeach
+                    <label class="block font-bold mb-6 text-xs">سبب الزيارة</label>
+                    <div style="color: #5222e1">{{$record->reason}}</div>
                 </div>
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">التحضيرات المطلوبه من الفرع</label>
@@ -239,7 +260,7 @@
 {{--                </div>--}}
             </div>
 
-            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
+            <div class="w-full flex sm:flex-row flex-col gap-4 mb-6" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">تاريخ بداية الزيارة</label>
                     <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->start)->format('Y-m-d')}}</div>
@@ -247,7 +268,8 @@
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">تاريخ نهاية الزيارة</label>
                     <div
-                        style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->addDays(-1)->format('Y-m-d') }}</div>
+{{--                        style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->addDays(-1)->format('Y-m-d') }}</div>--}}
+                        style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->format('Y-m-d') }}</div>
                 </div>
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">وقت الزيارة</label>
@@ -296,9 +318,9 @@
                 <!-- Column 1 -->
                 <div class="space-y-4">
                     @foreach($record->emps_requester as $req_record)
-                        @php
-                            $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection
-                        @endphp
+{{--                        @php--}}
+{{--                            $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection--}}
+{{--                        @endphp--}}
                         <div class="border rounded-xl shadow p-4">
                             <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
                                 <div class="flex items-center gap-2">
@@ -312,16 +334,17 @@
 
                                     <!-- Name + Status -->
                                     {{ $req_record->user->name }}
-                                    @php
-                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';
-                                        $isMyReview = $req_record->user_id == auth()->id(); // adjust auth if needed
-                                        $allReviewsDone = $this->reviews_done();
-                                    @endphp
+{{--                                    @php--}}
+{{--                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';--}}
+{{--                                        $isMyReview = $req_record->user_id == auth()->id(); // adjust auth if needed--}}
+{{--                                        $allReviewsDone = $this->reviews_done();--}}
+{{--                                    @endphp--}}
 
                                     @if(!$isReviewWritten)
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
-                                    @elseif(!$isMyReview && !$allReviewsDone)
-                                        <span style="color: #287c0c;">(تم التقييم)</span>
+{{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
+{{--                                    @elseif(!$allReviewsDone)--}}
+{{--                                        <span style="color: #287c0c;">(تم التقييم)</span>--}}
                                     @else
                                         (
                                         <span class="text-yellow-500 ml-1">&#9733;</span>
@@ -334,7 +357,8 @@
                                 </div>
                             </h2>
 
-                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))
+{{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
+                            @if($isReviewWritten )
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
                                     @foreach($reviews['answers'] as $answer)
                                         <div class="mb-4">
@@ -362,16 +386,16 @@
 
                 <!-- Column 2 -->
                 <div class="space-y-4">
-                    @foreach($record->emps_recipients as $rec_record)
-                        @php
-                            $reviews = collect(json_decode($rec_record->reviews, true)); // decode to collection
-                        @endphp
-                        @php
-                            $isReviewWritten = $rec_record->reviews && $rec_record->reviews != '';
-                            $isMyReview = $rec_record->user_id == auth()->id();
-                            $allReviewsDone = $this->reviews_done();
-                            $parsedReview = $isReviewWritten ? json_decode($rec_record->reviews, true) : null;
-                        @endphp
+{{--                    @foreach($record->emps_recipients as $rec_record)--}}
+{{--                        @php--}}
+{{--                            $reviews = collect(json_decode($rec_record->reviews, true)); // decode to collection--}}
+{{--                        @endphp--}}
+{{--                        @php--}}
+{{--                            $isReviewWritten = $rec_record->reviews && $rec_record->reviews != '';--}}
+{{--                            $isMyReview = $rec_record->user_id == auth()->id();--}}
+{{--                            $allReviewsDone = $this->reviews_done();--}}
+{{--                            $parsedReview = $isReviewWritten ? json_decode($rec_record->reviews, true) : null;--}}
+{{--                        @endphp--}}
 
                         <div class="border rounded-xl shadow p-4">
                             <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
@@ -385,11 +409,12 @@
                                     </svg>
 
                                     <!-- Name + Status -->
-                                    {{ $rec_record->user->name }}
+                                    {{ $branches[$record->branch]}}
 
                                     @if(!$isReviewWritten)
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
-                                    @elseif(!$isMyReview && !$allReviewsDone)
+{{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
+                                    @elseif(!$allReviewsDone)
                                         <span style="color: #287c0c;">(تم التقييم)</span>
                                     @else
                                         (
@@ -402,9 +427,10 @@
                                 </div>
                             </h2>
 
-                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))
+{{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
+                            @if($isReviewWritten)
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
-                                    @foreach($parsedReview['answers'] as $answer)
+                                    @foreach($parsedReviewRecipient['answers'] as $answer)
                                         <div class="mb-4">
                                             <label class="font-semibold">{{ $answer['text'] }}</label><br>
 
@@ -424,7 +450,7 @@
                             @endif
                         </div>
 
-                    @endforeach
+{{--                    @endforeach--}}
                 </div>
             </div>
             @endif
@@ -565,10 +591,10 @@
 
         /* Ensure input stretches correctly */
         .swal2-input,
-        .swal2-textarea {
-            width: 100% !important;
-            box-sizing: border-box;
-        }
+        /*.swal2-textarea {*/
+        /*    width: 100% !important;*/
+        /*    box-sizing: border-box;*/
+        /*}*/
 
         .star {
             font-size: 2rem;
@@ -583,6 +609,116 @@
     </style>
 @stop
 @section('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('reviewComponent', () => ({
+                questions: [
+                    {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
+                    {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
+                    {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
+                    {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},
+                    {text: 'ملاحظات', id: 'notes', type: 'textarea'}
+                ],
+
+                showRecipientReviewWithNotes() {
+                    Swal.fire({
+                        title: 'تقييم الزيارة',
+                        html: this.questions.map(q => {
+                            if (q.type === 'rating') {
+                                return `
+                                <div class="rating-block" id="block-${q.id}">
+                                    <label>${q.text}</label><br/>
+                                    ${[1, 2, 3, 4, 5].map(i =>
+                                    `<i class="star" data-question="${q.id}" data-value="${i}">&#9733;</i>`
+                                ).join('')}
+                                </div>`;
+                            } else if (q.type === 'textarea') {
+                                return `
+                                <div class="textarea-block" id="block-${q.id}">
+                                    <label>${q.text}</label><br/>
+                                    <textarea id="textarea-${q.id}" rows="3"
+                                        style="width: 100%; padding: 4px; text-align: right; direction: rtl"></textarea>
+                                </div>`;
+                            }
+                        }).join(''),
+                        confirmButtonText: 'إرسال',
+
+                        didOpen: () => {
+                            const ratings = {};
+                            const stars = Swal.getPopup().querySelectorAll('.star');
+
+                            stars.forEach(star => {
+                                star.addEventListener('click', () => {
+                                    const qid = star.dataset.question;
+                                    const value = parseInt(star.dataset.value);
+                                    ratings[qid] = value;
+                                    updateStarStyles(qid, value);
+                                });
+                            });
+
+                            function updateStarStyles(questionId, rating) {
+                                const groupStars = Swal.getPopup().querySelectorAll(`.star[data-question="${questionId}"]`);
+                                groupStars.forEach(s => {
+                                    s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);
+                                });
+                            }
+
+                            Swal._formResults = ratings;
+                        },
+
+                        preConfirm: () => {
+                            const ratings = Swal._formResults || {};
+                            const finalResults = [];
+                            let ratingSum = 0;
+
+                            this.questions.forEach(q => {
+                                let value;
+                                if (q.type === 'rating') {
+                                    value = ratings[q.id] || null;
+                                    if (value !== null) ratingSum += value;
+                                } else if (q.type === 'textarea') {
+                                    const val = document.getElementById(`textarea-${q.id}`).value.trim();
+                                    value = val;
+                                }
+
+                                finalResults.push({
+                                    text: q.text,
+                                    value: value
+                                });
+                            });
+
+                            const missing = finalResults.find(r => {
+                                const question = this.questions.find(q => q.text === r.text);
+                                return question.type === 'rating' && (r.value === null || r.value === undefined);
+                            });
+
+                            if (missing) {
+                                Swal.showValidationMessage(`الرجاء تقييم: "${missing.text}"`);
+                                return false;
+                            }
+
+                            return {
+                                answers: finalResults,
+                                totalRating: ratingSum
+                            };
+                        }
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'الرجاء الإنتظار',
+                                allowOutsideClick: false,
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                willOpen: () => Swal.showLoading(),
+                            });
+
+                            Livewire.emit('review', result.value);
+                        }
+                    });
+                }
+            }));
+        });
+    </script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -614,7 +750,6 @@
             "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",
             "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM"
         ];
-
 
         {{--        ratings --}}
         function showArabicReviewWithNotes() {
@@ -731,12 +866,12 @@
 
         function showRecipientReviewWithNotes() {
             const questions = [
-                {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
+                {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
                 {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
-                {text: 'مستوى الدعم الفني المقدم', id: 'technical_support', type: 'rating'},
-                {text: 'جودة التدريب للفريق', id: 'team_training', type: 'rating'},
-                {text: 'مستوى الرضا عن الزيارة', id: 'customer_satisfaction', type: 'rating'},
-                {text: 'أهداف الزيارة', id: 'visit_goals', type: 'rating'},
+                {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
+                // {text: 'مستوى الدعم الفني المقدم', id: 'technical_support', type: 'rating'},
+                // {text: 'مستوى الرضا عن الزيارة', id: 'customer_satisfaction', type: 'rating'},
+                {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},
                 {text: 'ملاحظات', id: 'notes', type: 'textarea'}
             ];
 
@@ -893,7 +1028,7 @@
                         },
                         showCancelButton: true,
                         confirmButtonText: 'تأكيد الموافقة',
-                        cancelButtonText: 'إلغاء',
+                        cancelButtonText: 'عودة',
                     }).then((res) => {
                         if (res.isConfirmed) {
 
@@ -948,7 +1083,7 @@
                         },
                         showCancelButton: true,
                         confirmButtonText: 'تأكيد الرفض',
-                        cancelButtonText: 'إلغاء',
+                        cancelButtonText: 'عودة',
                     }).then((res) => {
                         if (res.isConfirmed) {
 
@@ -1098,7 +1233,7 @@
 
   <div class="edit-form-group" style="grid-column: span 2;">
     <label for="edit-goals">التحضيرات المطلوبه من الفرع</label>
-    <textarea id="edit-goals">${visit.goals || ''}</textarea>
+    <input id="edit-goals">${visit.goals || ''}</input>
   </div>
 
   <div class="edit-form-group">
@@ -1135,14 +1270,14 @@
    </div>
    <div class="edit-form-group w-full" style="grid-column: span 2;">
      <label style="min-width: 120px;">المرافقون</label>
-     <input type="text" id="attendants" value="${visit.reason || ''}" >
+     <input type="text" id="attendants" value="${visit.attendants || ''}" >
    </div>
 </div>
 `,
                         focusConfirm: false,
                         showCancelButton: true,
                         confirmButtonText: 'تحديث',
-                        cancelButtonText: 'إلغاء',
+                        cancelButtonText: 'عودة',
                         reverseButtons: true,
                         // didOpen: () => {
                         //     const branchSelect = document.getElementById('edit-branch');
@@ -1222,7 +1357,7 @@
                             if (
                                 !title.trim() ||
                                 !reason.trim() ||
-                                !goals.trim() ||
+                                // !goals.trim() ||
                                 !branch ||
                                 !visitTime
                                 // !selectedEmployees ||

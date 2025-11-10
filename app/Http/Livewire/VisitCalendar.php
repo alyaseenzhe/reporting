@@ -64,7 +64,8 @@ class VisitCalendar extends Component
 //            ->orderBy('visits.start', 'asc') // soonest start date first
 //            ->get()
 //            ->toArray();
-        $this->showAllVisits = Visit::with('requester')->where('status' ,'!=', '4')->get();
+
+        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status' ,'!=', '4')->get();
 
         $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
         ->whereHas('emps', function ($q) {
@@ -72,7 +73,7 @@ class VisitCalendar extends Component
         })
 //            ->where('is_deleted', 0)
             ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
-            ->orderBy('start', 'asc')
+            ->orderBy('start', 'desc')
             ->get([
                 'id', 'title', 'requester_id', 'start', 'end',
                 'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
@@ -120,7 +121,7 @@ class VisitCalendar extends Component
 //        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
 
         $employees = [
-            '0101'=> ['49','50','51','43'], //alahsaa branch
+            '0101'=> ['49','50','51'], //alahsaa branch
             '0102' => ['28','33'], // jeddah
             '0103' => ['20','54', '52'], //riyadh
             '0104'=> ['55'], // wadi adwasir
@@ -152,7 +153,7 @@ class VisitCalendar extends Component
 
         if ($visit_data) {
 //            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
-            $records = collect($employees)
+            $records = collect($employees[$visit_data->branch])
                 ->flatMap(fn($user_ids) =>
                 collect($user_ids)->map(fn($id) => [
                     'visit_id' => $visit_data->id,

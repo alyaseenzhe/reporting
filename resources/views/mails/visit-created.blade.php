@@ -121,7 +121,7 @@
                 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                         <td width="50%" style="padding: 10px;">
-                            <label style="font-weight: bold;">👤 مقدم الطلب</label>
+                            <label style="font-weight: bold;">👤الزائر</label>
                             @foreach($visit->emps_requester as $req)
                                 <div style="color: #5222e1;">{{ $req->user->name }}</div>
                             @endforeach
@@ -161,7 +161,8 @@
                         </td>
                         <td width="33%" style="padding: 10px;">
                             <label style="font-weight: bold;">📆 تاريخ نهاية الزيارة</label>
-                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->end)->subDay()->format('Y-m-d') }}</div>
+{{--                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->end)->subDay()->format('Y-m-d') }}</div>--}}
+                            <div style="color: #5222e1;">{{ \Carbon\Carbon::parse($visit->end)->format('Y-m-d') }}</div>
                         </td>
                         <td width="33%" style="padding: 10px;">
                             <label style="font-weight: bold;">⏰ وقت الزيارة</label>

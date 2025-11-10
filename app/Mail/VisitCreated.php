@@ -52,9 +52,13 @@ class VisitCreated extends Mailable
         elseif ($this->type == 'reject') {
             $subject_txt = "تم رفض الزيارة";
         }
+        elseif ($this->type == 'review') {
+            $subject_txt = "ملاحظاتكم تهمنا - تقييم تجربتكم";
+        }
         elseif ($this->type == 'reviews-done') {
             $subject_txt = "التقييم جاهز! يمكنك الآن الإطلاع على تقييم الزيارة";
         }
+
 
         elseif ($this->type == 'reminder') {
             $subject_txt = "تذكير بالزيارة";

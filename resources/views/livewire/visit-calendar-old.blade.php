@@ -383,7 +383,7 @@
     </style>
 @stop
 @section('scripts')
-{{--    <script src="{{ asset('js/jquery.min.js') }}"></script>--}}
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {{--    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>--}}
@@ -483,20 +483,20 @@
                   <div style="direction: rtl; max-width: 100%; width: 100%;">
   <!-- عنوان الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="event-title" style="min-width: 120px;">موضوع الزيارة<span class="mx-1 text-red-500">*</span></label>
+    <label for="event-title" style="min-width: 120px;">موضوع الزيارة</label>
     <input type="text" id="event-title" class="swal2-input form-input w-full" style="flex: 1;">
   </div>
 
   <!-- سبب الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-reason" style="min-width: 120px;">سبب الزيارة<span class="mx-1 text-red-500">*</span></label>
+    <label for="visit-reason" style="min-width: 120px;">سبب الزيارة</label>
     <input type="text" id="visit-reason" class="swal2-input form-input w-full" style="flex: 1;">
   </div>
 
   <!-- أهداف الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-goals" style="min-width: 120px;">التحضيرات المطلوبه من الفرع<span class="mx-1 text-red-500">*</span></label>
-    <input id="visit-goals" class="swal2-input form-input w-full">
+    <label for="visit-goals" style="min-width: 120px;">التحضيرات المطلوبه من الفرع</label>
+    <textarea id="visit-goals" class="swal2-textarea form-textarea w-full"></textarea>
 
 <!--style="flex: 1; height: 150px; resize: none;-->
 <!--                 border: 1px solid #64748b;-->
@@ -510,7 +510,7 @@
 
   <!-- مكان الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="branch-select" style="min-width: 120px;">مكان الزيارة<span class="mx-1 text-red-500">*</span></label>
+    <label for="branch-select" style="min-width: 120px;">مكان الزيارة</label>
     <select id="branch-select" class="swal2-select form-select w-full" style="flex: 1; appearance: auto;">
       <option value="" disabled selected>اختر المكان</option>
       <option value="0101">فرع الاحساء</option>
@@ -541,7 +541,7 @@
     <!-- وقت الزيارة -->
     <!-- وقت الزيارة -->
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-  <label for="visit-time" style="min-width: 120px;">وقت الزيارة<span class="mx-1 text-red-500">*</span></label>
+  <label for="visit-time" style="min-width: 120px;">وقت الزيارة</label>
   <select id="visit-time" class="swal2-select form-select w-full" style="flex: 1; appearance: auto;">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
@@ -600,53 +600,53 @@
                             popup: 'responsive-modal'
                         },
 
-                        // didOpen: () => {
-                        //     const branchSelect = document.getElementById('branch-select');
-                        //     const employeeSelect = document.getElementById('employee-select');
-                        //
-                        //     // Initialize Select2
-                        //     $(employeeSelect).select2({
-                        //         dir: "rtl",
-                        //         dropdownCssClass: "select-font-size form-select",
-                        //         class:"from-input",
-                        //         dropdownParent: document.querySelector('.swal2-popup'),
-                        //         placeholder: "اختر الموظفين"
-                        //     });
-                        //
-                        //
-                        //     branchSelect.addEventListener('change', () => {
-                        //         const selectedBranchId = branchSelect.value;
-                        //         const employees = employeesByBranch[selectedBranchId] || [];
-                        //
-                        //         disabledEmployees = []; // Reset list
-                        //
-                        //         // Clear previous options
-                        //         $(employeeSelect).empty();
-                        //
-                        //         employees.forEach(emp => {
-                        //             const isGroup8 = emp.group == 8;
-                        //             const option = new Option(emp.name, emp.id, isGroup8, isGroup8);
-                        //             if (isGroup8) {
-                        //                 option.disabled = true;
-                        //                 disabledEmployees.push(emp.id.toString());
-                        //             }
-                        //             $(employeeSelect).append(option);
-                        //         });
-                        //
-                        //         // Trigger change to refresh Select2 UI
-                        //         $(employeeSelect).trigger('change');
-                        //     });
-                        //
-                        //     $(employeeSelect).on('select2:unselecting', function (e) {
-                        //         const id = e.params.args.data.id;
-                        //
-                        //         // Check if the option is disabled (group 8)
-                        //         const option = $(this).find(`option[value="${id}"]`);
-                        //         if (option.prop('disabled')) {
-                        //             e.preventDefault(); // prevent unselect
-                        //         }
-                        //     });
-                        // },
+                        didOpen: () => {
+                            const branchSelect = document.getElementById('branch-select');
+                            const employeeSelect = document.getElementById('employee-select');
+
+                            // Initialize Select2
+                            $(employeeSelect).select2({
+                                dir: "rtl",
+                                dropdownCssClass: "select-font-size form-select",
+                                class:"from-input",
+                                dropdownParent: document.querySelector('.swal2-popup'),
+                                placeholder: "اختر الموظفين"
+                            });
+
+
+                            branchSelect.addEventListener('change', () => {
+                                const selectedBranchId = branchSelect.value;
+                                const employees = employeesByBranch[selectedBranchId] || [];
+
+                                disabledEmployees = []; // Reset list
+
+                                // Clear previous options
+                                $(employeeSelect).empty();
+
+                                employees.forEach(emp => {
+                                    const isGroup8 = emp.group == 8;
+                                    const option = new Option(emp.name, emp.id, isGroup8, isGroup8);
+                                    if (isGroup8) {
+                                        option.disabled = true;
+                                        disabledEmployees.push(emp.id.toString());
+                                    }
+                                    $(employeeSelect).append(option);
+                                });
+
+                                // Trigger change to refresh Select2 UI
+                                $(employeeSelect).trigger('change');
+                            });
+
+                            $(employeeSelect).on('select2:unselecting', function (e) {
+                                const id = e.params.args.data.id;
+
+                                // Check if the option is disabled (group 8)
+                                const option = $(this).find(`option[value="${id}"]`);
+                                if (option.prop('disabled')) {
+                                    e.preventDefault(); // prevent unselect
+                                }
+                            });
+                        },
                         preConfirm: () => {
                             const title = document.getElementById('event-title').value;
                             const reason = document.getElementById('visit-reason').value;
@@ -664,7 +664,7 @@
 
                             // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime || !selectedEmployees.length) {
                             if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
-                                Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
+                                Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');
                                 return false;
                             }
 
@@ -684,9 +684,7 @@
                                 end: info.endStr,
                                 extra_services: extraServices
                             };
-
                         }
-
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Livewire.emit('addVisit', {
@@ -699,35 +697,10 @@
                                 // employees: result.value.employees,
                                 attendants: result.value.attendants,
                                 extra_services: result.value.extra_services
-
                             });
                         }
                     });
-
                 },
-                eventClick: function(info) {
-                    info.jsEvent.preventDefault(); // prevent default link behavior
-
-                    const visit = info.event.extendedProps;
-                    const authUserId = {{auth()->user()->id}}
-                    // 👇 Example condition:
-                    // Replace this with your actual logic
-                    const isAllowed = visit.emps.some(emp => emp.user_id === authUserId); // for example, something you send from backend
-                     console.log(visit)
-                    if (isAllowed) {
-                        // ✅ Go to the URL
-                        window.location.href = `/show-visit/${info.event.id}`;
-                    } else {
-                        // 🚫 Show alert or popup
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'تنبيه',
-                            text: 'لا يمكنك الدخول إلى هذه الزيارة',
-                            confirmButtonText: 'حسنًا'
-                        });
-                    }
-                }
-
                 // When an existing event is clicked
                 // eventClick: function(info) {
                 //     var newTitle = prompt('Edit Event Title:', info.event.title);
@@ -1509,18 +1482,12 @@
 
             calendar.render();
 
-
             Livewire.on('visitsLoaded', (visits) => {
-
-                // window.location.reload();
-
-                   calendar.removeAllEvents();
-                // calendar.getEventById(visit.id)?.remove();
+                  calendar.removeAllEvents();
+                //calendar.getEventById(visit.id)?.remove();
                 // calendar.addEvent(formatVisit(visit));
-                   calendar.addEventSource(visits.map(formatVisit)); // Apply formatting again
-                // console.log(visits.emps);
-
-
+                 calendar.addEventSource(visits.map(formatVisit)); // Apply formatting again
+                console.log(visits);
             });
 
             function combineDateAndTime(dateStr, timeStr) {
@@ -1551,21 +1518,8 @@
             }
 
             function formatVisit(visit) {
-                const authUserId ={{auth()->user()->id}};
-                const branchName = branchMap[visit.branch] || 'فرع غير معروف';
-
                 let backgroundColor;
                 let textColor = '#000000';
-                let eventUrl = `visit-calendar`;
-                // visit.emps = [
-                //     { id: 1, name: "Zahra", type: "requester" },
-                //     { id: 2, name: "Ali", type: "recipient" },
-                // ];
-
-                if (Array.isArray(visit.emps) && visit.emps.some(emp => emp.user_id === authUserId)) {
-                    eventUrl = `/show-visit/${visit.id}`;
-                }
-
 
                 switch (visit.status) {
                     case '0':
@@ -1586,9 +1540,8 @@
                     backgroundColor,
                     textColor,
                     borderColor: 'transparent',
-                    // url: eventUrl,
-                    // url: `/show-visit/${visit.id}`,
-                    title: `${visit.requester?.name}  - ${branchName}` || 'لايوجد',
+                    url: `/show-visit/${visit.id}`,
+                    title: `${visit.requester?.name}` || 'لايوجد',
                 };
             }
 

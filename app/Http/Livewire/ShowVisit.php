@@ -22,6 +22,13 @@ class ShowVisit extends Component
     public $can_rate;
     public $reviews_done;
     public $emps;
+    public  $isReviewWritten;
+    public  $isMyReview;
+    public  $allReviewsDone;
+    public  $parsedReview;
+    public  $reviews; //
+    public  $branches;
+
 
     protected $listeners = ['approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit', 'closeVisit' => 'closeVisit', 'review' => 'review', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit'];
 
@@ -30,17 +37,45 @@ class ShowVisit extends Component
 
             $this->record = Visit::findOrFail($id);
             $this->visit_id = $id;
+            $this->branches =[
+                "0101"=> "فرع الاحساء",
+            "0102"=> "فرع جدة",
+            "0103"=> "فرع الرياض",
+            "0104"=> "فرع وادي الدواسر",
+            "0105"=> "فرع الجوف",
+            "0106"=> "فرع الدمام",
+            "0107"=> "فرع الخرج",
+            "0108"=> "فرع نجران",
+            "0109"=> "فرع حائل",
+            "0110"=> "فرع تبوك",
+            "0111"=> "فرع القصيم",
+            "0112"=> "فرع ساجر",
+            "0201"=> "مزرعة الدالوة",
+            "0202"=> "مزرعة الفضول",
+            "0203"=> "مزرعة الدلم"
+            ];
+
 
 //            $this->is_recipient = $this->record->is_requester();
 ////                ->where('user_id', Auth::id())
 ////                ->exists();
 //
 //            dd($this->is_recipient);
+            $this->reviews = collect(json_decode($this->record->requester_reviews, true));
 
-            if ($this->record->is_requester() && $this->record->is_recipient() && Auth::user()->role != 'a') {
-                session()->flash('message', 'هذه الزيارة غير موجودة');
-                return redirect()->route('list.daily-reports');
-            }
+            $this->isReviewWritten = $this->record->requester_reviews && $this->record->recipient_reviews;
+//          $this->isMyReview = $rec_record->user_id == auth()->id();
+            $this->allReviewsDone = $this->reviews_done();
+            $this->parsedReview = $this->isReviewWritten ? json_decode($this->record->requester_reviews , true) : null  ;
+            $this->parsedReviewRecipient = $this->isReviewWritten ? json_decode($this->record->recipient_reviews , true) : null  ;
+
+
+            //todo should find out why this condition was exist
+//            if ($this->record->is_requester() && $this->record->is_recipient() && Auth::user()->role != 'a') {
+//                session()->flash('message', 'هذه الزيارة غير موجودة');
+//                return redirect()->route('visit-calender');
+//            }
+
 
             $this->can_approve();
             $this->can_close();
@@ -64,7 +99,7 @@ class ShowVisit extends Component
         } catch (ModelNotFoundException $exception) {
 
             session()->flash('message', 'هذه الزيارة غير موجودة');
-            return redirect()->route('list.daily-reports');
+            return redirect()->route('visit.calendar');
         }
 
     }
@@ -241,7 +276,10 @@ class ShowVisit extends Component
         $visit->status = '3';
 
         if($visit->save()) {
+
             session()->flash('success', 'تم إغلاق الزيارة');
+            $this->visitMail($visit, null, 'review');
+
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
         else {
@@ -252,37 +290,58 @@ class ShowVisit extends Component
 
     public function review($data) {
 
-        $visit = VisitEmp::where('visit_id', $this->visit_id)
-            ->where('user_id', Auth::id())
-            ->where(function($query) {
-                $query->whereNull('reviews')
-                    ->orWhere('reviews', '');
-            })
-            ->first();
 
-        if ($visit) {
+        $visit = Visit::find($this->visit_id);
 
-            $editRecord = VisitEmp::findOrFail($visit->id);
+        $is_requester = $visit->where('requester_id', Auth::id())->count();
+//        dd($is_recipient);
 
-            $editRecord->reviews = json_encode($data);
+            if( $is_requester && $visit->requester_reviews == Null) {
+                $visit->requester_reviews = json_encode($data);
 
-            if ($editRecord->save()) {
 
-                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
-                    ->where(function($query) {
-                        $query->whereNull('reviews')
-                            ->orWhere('reviews', '');
-                    })
-                    ->count();
+            }
 
-                if ($checkReviews == 0) {
-                    // send email and whatsapp to tell user that the rating has been finished by all the recipients
-//                    dd("تم الانتهاء من جميع التعليقات");
+            elseif($visit->recipient_reviews == Null){
+                $visit->recipient_reviews = json_encode($data);
 
-//                    $this->visitMail($visit, null, 'reviews-done');
-                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+            }
+                if($visit->save())
+                {
 
-                }
+//            }
+
+//        $visit = VisitEmp::where('visit_id', $this->visit_id)
+//            ->where('user_id', Auth::id())
+//            ->where(function($query) {
+//                $query->whereNull('reviews')
+//                    ->orWhere('reviews', '');
+//            })
+//            ->first();
+//
+//        if ($visit) {
+//
+//            $editRecord = VisitEmp::findOrFail($visit->id);
+//
+//            $editRecord->reviews = json_encode($data);
+//
+//            if ($visit->recipient_reviews ->save()) {
+//
+//                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
+//                    ->where(function($query) {
+//                        $query->whereNull('reviews')
+//                            ->orWhere('reviews', '');
+//                    })
+//                    ->count();
+//
+//                if ($checkReviews == 0) {
+//                    // send email and whatsapp to tell user that the rating has been finished by all the recipients
+////                    dd("تم الانتهاء من جميع التعليقات");
+//
+////                    $this->visitMail($visit, null, 'reviews-done');
+//                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+//
+//                }
 
                 session()->flash('success', 'تم تقييم الزيارة');
                 return redirect()->route('show.visit', ['id' => $this->visit_id]);
@@ -292,7 +351,7 @@ class ShowVisit extends Component
                 session()->flash('error-message', 'حدث خطأ ما عند تقييم الزيارة');
                 return redirect()->route('show.visit', ['id' => $this->visit_id]);
             }
-        }
+
 
     }
 
@@ -324,16 +383,32 @@ class ShowVisit extends Component
 
     public function can_rate() {
 
-        return $this->can_rate = Visit::where('visits.id', $this->visit_id)
+        return  $this->can_rate = Visit::where('visits.id', $this->visit_id)
             ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
             ->where('visit_emps.user_id', Auth::id())
             ->where('visits.status', '3')
             ->where('visits.is_deleted', '0')
-            ->where(function($query) {
-                $query->whereNull('reviews')
-                    ->orWhere('reviews', '');
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->where('visit_emps.type', 'requester')
+                        ->whereNull('requester_reviews');
+                })
+                    ->orWhere(function ($q) {
+                        $q->where('visit_emps.type', 'recipient')
+                            ->whereNull('recipient_reviews');
+                    });
             })
             ->exists();
+//        return $this->can_rate = Visit::where('visits.id', $this->visit_id)
+//            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+//            ->where('visit_emps.user_id', Auth::id())
+//            ->where('visits.status', '3')
+//            ->where('visits.is_deleted', '0')
+//            ->where(function($query) {
+//                $query->whereNull('reviews')
+//                    ->orWhere('reviews', '');
+//            })
+//            ->exists();
     }
 
     public function reviews_done() {
