@@ -389,6 +389,9 @@
 {{--    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>--}}
 
     <script>
+        async function checkDuplicate(branch, visitDate) {
+            return await @this.call('checkDuplicate', branch, visitDate);
+        }
 
         const branchMap = {
             "0101": "فرع الاحساء",
@@ -416,7 +419,6 @@
             "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",
             "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM"
         ];
-
 
 
 
@@ -525,9 +527,9 @@
       <option value="0110">فرع تبوك</option>
       <option value="0111">فرع القصيم</option>
       <option value="0112">فرع ساجر</option>
-      <option value="0201">مزرعة الدالوة</option>
-      <option value="0202">مزرعة الفضول</option>
-      <option value="0203">مزرعة الدلم</option>
+<!--      <option value="0201">مزرعة الدالوة</option>-->
+<!--      <option value="0202">مزرعة الفضول</option>-->
+<!--      <option value="0203">مزرعة الدلم</option>-->
     </select>
   </div>
 
@@ -600,6 +602,8 @@
                             popup: 'responsive-modal'
                         },
 
+
+
                         // didOpen: () => {
                         //     const branchSelect = document.getElementById('branch-select');
                         //     const employeeSelect = document.getElementById('employee-select');
@@ -647,13 +651,15 @@
                         //         }
                         //     });
                         // },
-                        preConfirm: () => {
+
+                        preConfirm: async() => {
                             const title = document.getElementById('event-title').value;
                             const reason = document.getElementById('visit-reason').value;
                             const goals = document.getElementById('visit-goals').value;
                             const branch = document.getElementById('branch-select').value;
                             const visitTime = document.getElementById('visit-time').value;
                             const attendants = document.getElementById('attendants').value;
+
                             // const selectedEmployees = $('#employee-select').val(); // returns an array of selected employee IDs
                             // let selectedEmployees = $('#employee-select').val() || [];
                             // disabledEmployees.forEach(id => {
@@ -663,6 +669,18 @@
                             // });
 
                             // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime || !selectedEmployees.length) {
+
+                            // Call Livewire method
+
+                            const visitDate = info.startStr; // YYYY-MM-DD
+
+                            // Correct way to call Livewire method from JS
+                            const exists = await checkDuplicate(branch, visitDate);
+
+                            if (exists) {
+                                Swal.showValidationMessage('يوجد بالفعل سجل في نفس التاريخ والفرع');
+                                return false;
+                            }
                             if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
                                 Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
                                 return false;
@@ -682,7 +700,8 @@
                                 // employees: selectedEmployees,
                                 start: startDateTime,
                                 end: info.endStr,
-                                extra_services: extraServices
+                                extra_services: extraServices,
+                                requester: @json(Auth::user()->name)
                             };
 
                         }
@@ -698,7 +717,8 @@
                                 branch: result.value.branch,
                                 // employees: result.value.employees,
                                 attendants: result.value.attendants,
-                                extra_services: result.value.extra_services
+                                extra_services: result.value.extra_services,
+                                requester: @json(Auth::user()->name)
 
                             });
                         }
@@ -1551,6 +1571,7 @@
             }
 
             function formatVisit(visit) {
+
                 const authUserId ={{auth()->user()->id}};
                 const branchName = branchMap[visit.branch] || 'فرع غير معروف';
 

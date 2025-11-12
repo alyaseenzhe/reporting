@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attribute\On;
 use Livewire\WithPagination;
+use Dcblogdev\MsGraph\Facades\MsGraph;
 
 class VisitCalendar extends Component
 {
@@ -137,14 +138,21 @@ class VisitCalendar extends Component
 //        dd($employees[$data['branch']]?? []);
 
 
+        $start = Carbon::parse($data['start'])->format('Y-m-d H:i:s');
+        $end = Carbon::parse($data['end'])->format('Y-m-d H:i:s');
+        $extra_services = json_encode($data['extra_services']);
+
         $visit_data = Visit::create([
             'title' => $data['title'],
             'requester_id' => Auth::id(),
-            'start' => Carbon::parse($data['start'])->format('Y-m-d H:i:s'),
-            'end' => Carbon::parse($data['end'])->format('Y-m-d H:i:s'),
+//            'start' => Carbon::parse($data['start'])->format('Y-m-d H:i:s'),
+//            'end' => Carbon::parse($data['end'])->format('Y-m-d H:i:s'),
+            'start' => $start,
+            'end' => $end,
             'reason' => $data['reason'],
             'goals' => $data['goals'],
-            'extra_services' => json_encode($data['extra_services']),
+//            'extra_services' => json_encode($data['extra_services']),
+            'extra_services' => $extra_services,
             'branch' => $data['branch'],
             'attendants' => $data['attendants'],
 //            'recipient_id' => $recipient->id,
@@ -168,6 +176,7 @@ class VisitCalendar extends Component
 
             DB::table('visit_emps')->insert($records);
 
+
             $this->loadVisits();
 
             $this->emit("visitsLoaded", $this->visits);
@@ -182,6 +191,7 @@ class VisitCalendar extends Component
 */
 //            $this->wati();
             $this->visitMail($this->oneVisit($visit_data->id), $branch_manger, 'add');
+
         }
     }
 //
@@ -261,6 +271,14 @@ class VisitCalendar extends Component
 //
 //    }
 
+
+    public function checkDuplicate($branch, $date)
+    {
+        return \App\Models\Visit::where('branch', $branch)
+            ->whereDate('start', $date)
+            ->exists();
+    }
+
     public function approveVisit($visit_record)
     {
 
@@ -278,7 +296,9 @@ class VisitCalendar extends Component
         $this->emit("visitsLoaded", $this->visits);
 
 
+        $this->createCalendarEvent($visit);
         $this->visitMail($visit, $visit->emps(), 'approve');
+
     }
 
     public function rejectVisit($visit_record)
@@ -401,5 +421,7 @@ class VisitCalendar extends Component
         curl_close($curl);
         echo $response;
     }
+
+
 
 }
