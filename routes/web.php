@@ -102,7 +102,7 @@ Route::middleware([
 
 
 
-Route::get('/msgraph/connect', \App\Http\Livewire\MsGraphConnect::class)->name('msgraph.connect');
+
 Route::get('/msgraph/callback', [\App\Http\Livewire\ShowVisit::class, 'callback'])->name('msgraph.callback');
 
 
