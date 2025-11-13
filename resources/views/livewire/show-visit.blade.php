@@ -1240,7 +1240,7 @@
 
   <div class="edit-form-group">
     <label for="edit-branch">مكان الزيارة</label>
-    <select id="edit-branch">
+    <select id="edit-branch" disabled >
       <option value="" disabled>اختر المكان</option>
       ${Object.entries(branchMap).map(([key, name]) =>
                             `<option value="${key}" ${visit.branch === key ? 'selected' : ''}>${name}</option>`

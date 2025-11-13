@@ -30,7 +30,8 @@ class VisitCalendar extends Component
 
     protected $listeners = ['addVisit' => 'addVisit', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit', 'approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit'];
 
-    public function mount() {
+    public function mount()
+    {
         $this->loadVisits();
         $this->loadEmps();
         $this->approve();
@@ -39,7 +40,8 @@ class VisitCalendar extends Component
 //        dd($this->visits);
     }
 
-    public function loadVisits() {
+    public function loadVisits()
+    {
 
 //        $this->visits = Visit::select(
 //            'visits.id',
@@ -66,7 +68,7 @@ class VisitCalendar extends Component
 //            ->get()
 //            ->toArray();
 
-        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status' ,'!=', '4')->get();
+        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
 
         $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
         ->whereHas('emps', function ($q) {
@@ -85,9 +87,10 @@ class VisitCalendar extends Component
 
     }
 
-    public function loadEmps() {
+    public function loadEmps()
+    {
         $this->emps = User::where('sales_dept_code', '!=', '')
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('group', 7)
                     ->orWhere('group', 8);
             })
@@ -100,7 +103,7 @@ class VisitCalendar extends Component
                     'id' => $e->id,
                     'name' => $e->name,
                     'group' => $e->group,
-                    'type' => $e->group == 7? "employee" : "manager",
+                    'type' => $e->group == 7 ? "employee" : "manager",
                 ])->values(); // ensures zero-based index
             });
 
@@ -112,7 +115,8 @@ class VisitCalendar extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function addVisit($data) {
+    public function addVisit($data)
+    {
 //        dd($data);
 ////        dd($data['start']);
 //        $recipient = User::where('sales_dept_code', $data['branch'])
@@ -122,18 +126,18 @@ class VisitCalendar extends Component
 //        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
 
         $employees = [
-            '0101'=> ['49','50','51'], //alahsaa branch
-            '0102' => ['28','33'], // jeddah
-            '0103' => ['20','54', '52'], //riyadh
-            '0104'=> ['55'], // wadi adwasir
-            '0105' => ['34','27','41'], //jouf
-            '0106' => ['58','29'], //dammam
-            '0107'=> ['36', '35'],   //kharj
-            '0108' => ['40','60','26'], //najran
-            '0109' => ['61','62'],   //hail
-            '0110' => ['30','63','44'], //tabouk
-            '0111' => ['57','22','86'], //qaseem
-            '0112' => ['47','46'], //sajer
+            '0101' => ['49', '50', '51'], //alahsaa branch
+            '0102' => ['28', '33'], // jeddah
+            '0103' => ['20', '54', '52'], //riyadh
+            '0104' => ['55'], // wadi adwasir
+            '0105' => ['34', '27', '41'], //jouf
+            '0106' => ['58', '29'], //dammam
+            '0107' => ['36', '35'],   //kharj
+            '0108' => ['40', '60', '26'], //najran
+            '0109' => ['61', '62'],   //hail
+            '0110' => ['30', '63', '44'], //tabouk
+            '0111' => ['57', '22', '86'], //qaseem
+            '0112' => ['47', '46'], //sajer
         ];
 //        dd($employees[$data['branch']]?? []);
 
@@ -162,8 +166,7 @@ class VisitCalendar extends Component
         if ($visit_data) {
 //            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
             $records = collect($employees[$visit_data->branch])
-                ->flatMap(fn($user_ids) =>
-                collect($user_ids)->map(fn($id) => [
+                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
                     'visit_id' => $visit_data->id,
                     'type' => 'recipient',
                     'user_id' => $id,
@@ -171,7 +174,7 @@ class VisitCalendar extends Component
                 )
                 ->values()
                 ->toArray();
-            $requester_record = ['visit_id' => $visit_data->id, 'type' => 'requester', 'user_id' => Auth::id() ];
+            $requester_record = ['visit_id' => $visit_data->id, 'type' => 'requester', 'user_id' => Auth::id()];
             array_push($records, $requester_record);
 
             DB::table('visit_emps')->insert($records);
@@ -182,15 +185,18 @@ class VisitCalendar extends Component
             $this->emit("visitsLoaded", $this->visits);
 
             $branch_manger = $this->branchMangerByVisitId($visit_data->id);
-/*
-            $wati = new \App\Services\WatiService();
-            $d = $wati->sendTemplateMessages('visit_add_it', [
-                ['phone_number' => '966567133644', 'parameters' => ['Basil']],
-            ]);
-            dd($d);
-*/
+            /*
+                        $wati = new \App\Services\WatiService();
+                        $d = $wati->sendTemplateMessages('visit_add_it', [
+                            ['phone_number' => '966567133644', 'parameters' => ['Basil']],
+                        ]);
+                        dd($d);
+            */
 //            $this->wati();
+
+
             $this->visitMail($this->oneVisit($visit_data->id), $branch_manger, 'add');
+
 
         }
     }
@@ -279,52 +285,53 @@ class VisitCalendar extends Component
             ->exists();
     }
 
-    public function approveVisit($visit_record)
+//    public function approveVisit($visit_record)
+//    {
+//
+//        $visit = Visit::findOrFail($visit_record['id']);
+//        if (!$this->can_approve($visit_record['id'])) {
+//            abort(403);
+//        }
+//
+//        $visit->status = '1';
+//        $visit->status_notice = $visit_record["status_notice"];
+//        $visit->save();
+//
+//        $this->loadVisits();
+//
+//        $this->emit("visitsLoaded", $this->visits);
+//
+//
+//
+//        $this->visitMail($visit, $visit->emps(), 'approve');
+//
+//    }
+
+//    public function rejectVisit($visit_record)
+//    {
+//
+//
+//        $visit = Visit::findOrFail($visit_record['id']);
+//
+//        if (!$this->can_approve($visit_record['id'])) {
+//            abort(403);
+//        }
+//
+//        $visit->status = '2';
+//        $visit->status_notice = $visit_record["status_notice"];
+//
+//        if ($visit->save()) {
+//            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
+//            $this->visitMail($visit, $emails, 'reject');
+//        }
+//
+//        $this->loadVisits();
+//
+//        $this->emit("visitsLoaded", $this->visits);
+//    }
+
+    public function visitMail($visit_record, $branch_manger, $type)
     {
-
-        $visit = Visit::findOrFail($visit_record['id']);
-        if (!$this->can_approve($visit_record['id'])) {
-            abort(403);
-        }
-
-        $visit->status = '1';
-        $visit->status_notice = $visit_record["status_notice"];
-        $visit->save();
-
-        $this->loadVisits();
-
-        $this->emit("visitsLoaded", $this->visits);
-
-
-        $this->createCalendarEvent($visit);
-        $this->visitMail($visit, $visit->emps(), 'approve');
-
-    }
-
-    public function rejectVisit($visit_record)
-    {
-
-
-        $visit = Visit::findOrFail($visit_record['id']);
-
-        if (!$this->can_approve($visit_record['id'])) {
-            abort(403);
-        }
-
-        $visit->status = '2';
-        $visit->status_notice = $visit_record["status_notice"];
-
-        if($visit->save()) {
-            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
-            $this->visitMail($visit, $emails, 'reject');
-        }
-
-        $this->loadVisits();
-
-        $this->emit("visitsLoaded", $this->visits);
-    }
-
-    public function visitMail($visit_record, $branch_manger, $type) {
 //        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
 //            ->where('users.group', '8') // branch manager
 //            ->where('visit_emps.visit_id', $visit_record->id)
@@ -336,9 +343,9 @@ class VisitCalendar extends Component
         $emails = config('emails');
 
         $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
-      //dd($visit_record->branch);
+        //dd($visit_record->branch);
 
-        if (empty(   $branchEmail)) {
+        if (empty($branchEmail)) {
             return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
         }
 
@@ -350,17 +357,19 @@ class VisitCalendar extends Component
 
 
         // the email must be this $branch_manger->email
-        Mail::to([$branchEmail,$recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
+        Mail::to([$branchEmail, $recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
     }
 
-    public function oneVisit($id) {
+    public function oneVisit($id)
+    {
 
         $record = Visit::find($id);
 
         return $record;
     }
 
-    public function branchMangerByVisitId($visitId) {
+    public function branchMangerByVisitId($visitId)
+    {
         $branch_manger = VisitEmp::join('users', 'visit_emps.user_id', '=', 'users.id')
             ->where('users.group', 8) // or ->where('users.`group`', 8) if error occurs
             ->where('visit_emps.visit_id', $visitId)
@@ -370,7 +379,8 @@ class VisitCalendar extends Component
         return $branch_manger;
     }
 
-    public function can_approve($visit_id) {
+    public function can_approve($visit_id)
+    {
 
         $x = Visit::where('visits.id', $visit_id)
             ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
@@ -386,12 +396,14 @@ class VisitCalendar extends Component
 
     }
 
-     public function approve(){
-         $this->can_approve = auth()->user()->group == 8 || 7;
-         return $this->can_approve;
-     }
+    public function approve()
+    {
+        $this->can_approve = auth()->user()->group == 8 || 7;
+        return $this->can_approve;
+    }
 
-    public function wati() {
+    public function wati()
+    {
 
 
         $curl = curl_init();
@@ -422,6 +434,181 @@ class VisitCalendar extends Component
         echo $response;
     }
 
+    public function connect()
+    {
+        $tenantId = config('msgraph.urlAuthorize');
+
+        $query = http_build_query([
+            'client_id' => config('msgraph.clientId'),
+            'response_type' => 'code',
+            'redirect_uri' => config('services.microsoft.redirect'),
+            'response_mode' => 'query',
+            'scope' => 'openid profile offline_access user.read calendars.readwrite',
+            'state' => csrf_token(),
+        ]);
+
+
+        return redirect()->away($tenantId.'?' . $query);
+//        return redirect()->away('https://login.microsoftonline.com/common/oauth2/v2.0/authorize?' . $query);
+    }
+
+    public function callback()
+    {
+        $tenantId = config('msgraph.urlAccessToken');
+        $code = request('code');
+
+        if (!$code) {
+            return "Authorization code not found.";
+        }
+//        dd($tenantId);
+
+        // Exchange code for access token
+//        $response = Http::asForm()->post('https://login.microsoftonline.com/common/oauth2/v2.0/token', [
+        $response = Http::asForm()->post($tenantId, [
+            'client_id' => config('msgraph.clientId'),
+            'client_secret' => config('msgraph.clientSecret'),
+            'redirect_uri' => config('msgraph.redirectUri'),
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+
+        ]);
+
+
+        $token = $response->json();
+
+        // Save to session or database
+        session(['ms_access_token' => $token['access_token'] ?? null]);
+
+
+        $accessToken = $token['access_token'] ?? null;
+
+        if (!$accessToken) {
+            return response()->json([
+                'error' => 'No access token received',
+                'details' => $token,
+            ], 400);
+        }
+        // Save token for future use
+        session(['ms_access_token' => $accessToken]);
+
+        $accessToken = session('ms_access_token');
+
+        dd($accessToken);
+        if (!$accessToken) {
+            return ['error' => 'No access token. Connect Microsoft account first.'];
+        }
+
+        // Example employees list from your DB
+        $employees = [
+            ['name' => 'Ali Ahmed', 'email' => 'ali@alyaseenagri.com'],
+            ['name' => 'Sara Abdullah', 'email' => 'sara@alyaseenagri.com'],
+        ];
+
+
+        $employees = [];
+
+        foreach($visit->emps as $emp){
+            $employees = $emp->user;
+
+        }
+        dd($employees);
+        // Convert to attendees array
+        $attendees = collect($employees)->map(fn($emp) => [
+            'emailAddress' => [
+                'address' => $emp['email'],
+                'name' => $emp['name'],
+            ],
+            'type' => 'required',
+        ])->values()->toArray();
+
+        // Create event
+        $response = Http::withToken($accessToken)->post(
+            'https://graph.microsoft.com/v1.0/me/events',
+            [
+                'subject' => "Visit with {$visit->requester()->name}",
+                'body' => [
+                    'contentType' => 'HTML',
+                    'content' => "Visit scheduled with {$visit->requester()->name}."
+                ],
+                'start' => [
+                    'dateTime' => $visit->start > toDateTimeString(),
+                    'timeZone' => 'Asia/Riyadh',
+                ],
+                'end' => [
+                    'dateTime' => $visit->end->toDateTimeString(),
+                    'timeZone' => 'Asia/Riyadh',
+                ],
+                'location' => [
+                    'displayName' => $visit->branch ?? 'Company Office',
+                ],
+                'attendees' => $attendees,
+            ]
+        );
+
+        return $response->json();
+    }
+
+        //     return redirect()->route('dashboard')->with('success', 'Microsoft Calendar Connected!');
+
+    public function createCalendarEvent($visit)
+    {
+
+        $accessToken = session('payload');
+
+        dd($accessToken);
+        if (!$accessToken) {
+            return ['error' => 'No access token. Connect Microsoft account first.'];
+        }
+
+        // Example employees list from your DB
+        $employees = [
+            ['name' => 'Ali Ahmed', 'email' => 'ali@alyaseenagri.com'],
+            ['name' => 'Sara Abdullah', 'email' => 'sara@alyaseenagri.com'],
+        ];
+
+
+        $employees = [];
+
+        foreach($visit->emps as $emp){
+            $employees = $emp->user;
+
+        }
+          dd($employees);
+        // Convert to attendees array
+        $attendees = collect($employees)->map(fn($emp) => [
+            'emailAddress' => [
+                'address' => $emp['email'],
+                'name' => $emp['name'],
+            ],
+            'type' => 'required',
+        ])->values()->toArray();
+
+        // Create event
+        $response = Http::withToken($accessToken)->post(
+            'https://graph.microsoft.com/v1.0/me/events',
+            [
+                'subject' => "Visit with {$visit->requester()->name}",
+                'body' => [
+                    'contentType' => 'HTML',
+                    'content' => "Visit scheduled with {$visit->requester()->name}."
+                ],
+                'start' => [
+                    'dateTime' => $visit->start > toDateTimeString(),
+                    'timeZone' => 'Asia/Riyadh',
+                ],
+                'end' => [
+                    'dateTime' => $visit->end->toDateTimeString(),
+                    'timeZone' => 'Asia/Riyadh',
+                ],
+                'location' => [
+                    'displayName' => $visit->branch ?? 'Company Office',
+                ],
+                'attendees' => $attendees,
+            ]
+        );
+
+        return $response->json();
+    }
 
 
 }

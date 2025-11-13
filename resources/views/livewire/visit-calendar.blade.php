@@ -497,7 +497,7 @@
 
   <!-- أهداف الزيارة -->
   <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-goals" style="min-width: 120px;">التحضيرات المطلوبه من الفرع<span class="mx-1 text-red-500">*</span></label>
+    <label for="visit-goals" style="min-width: 120px;">التحضيرات المطلوبه من الفرع</label>
     <input id="visit-goals" class="swal2-input form-input w-full">
 
 <!--style="flex: 1; height: 150px; resize: none;-->
@@ -681,7 +681,8 @@
                                 Swal.showValidationMessage('يوجد بالفعل سجل في نفس التاريخ والفرع');
                                 return false;
                             }
-                            if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
+                            // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
+                            if (!title.trim() || !reason.trim()|| !branch || !visitTime ) {
                                 Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
                                 return false;
                             }

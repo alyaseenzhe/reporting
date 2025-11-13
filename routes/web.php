@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Dcblogdev\MsGraph\Facades\MsGraph;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -97,3 +99,10 @@ Route::middleware([
 
     Route::get('/settings', \App\Http\Livewire\ListSettings::class)->name('list.settings');
 });
+
+
+
+Route::get('/msgraph/connect', \App\Http\Livewire\MsGraphConnect::class)->name('msgraph.connect');
+Route::get('/msgraph/callback', [\App\Http\Livewire\ShowVisit::class, 'callback'])->name('msgraph.callback');
+
+
