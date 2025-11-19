@@ -156,7 +156,7 @@ class ShowVisit extends Component
          $visit->approved_by = auth()->user()->id;
 
         if($visit->save()) {
-            $this->connect();
+           $this->connect();
 
             $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
             $this->visitMail($visit, $emails, 'approve');
@@ -214,20 +214,21 @@ class ShowVisit extends Component
             $visit->goals = $event['goals'];
             $visit->branch =  $event['branch'];
             $visit->attendants =  $event['attendants'];
+            $visit->status = 0;
 //            $visit->recipient_id =  $recipient->id;
 
 //            $visit->save();
 
             if ($visit->save()) {
 
-//                VisitEmp::where('visit_id', $event['id'])->delete();
+                VisitEmp::where('visit_id', $event['id'])->delete();
 //
-//                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
                 $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
-//                array_push($records, $requester_record);
-                array_push( $requester_record);
+                array_push($records, $requester_record);
+//                array_push( $requester_record);
 
-//                DB::table('visit_emps')->insert($records);
+                DB::table('visit_emps')->insert($records);
 
                 session()->flash('success', 'تم تحديث الزيارة بنجاح');
               //  $branch_manger = $this->branchMangerByVisitId($visit->id);
@@ -428,13 +429,15 @@ class ShowVisit extends Component
         return $this->reviews_done;
     }
 
-    public function visitMail($visit_record, $branch_manger, $type) {
-        $emails = config('emails');
+    public function visitMail($visit_record, $branch_manger, $type)
+    {
+        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
+            ->where('visit_emps.visit_id', $visit_record->id)
+            ->select('users.email', 'users.name','users.id')
 
-        $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
-        //dd($visit_record->branch);
+            ->pluck('users.email')->toArray();
 
-        if (empty(   $branchEmail)) {
+        if (empty($res_email)) {
             return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
         }
 
@@ -444,9 +447,9 @@ class ShowVisit extends Component
             ->unique()
             ->first();
 
+        $allEmails = array_merge($res_email, [$recipientEmail]);
 
-        // the email must be this $branch_manger->email
-        Mail::to([$branchEmail,$recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
+        Mail::to($allEmails)->queue(new VisitCreated($visit_record, null, $type));
     }
 
     public function oneVisit($id) {

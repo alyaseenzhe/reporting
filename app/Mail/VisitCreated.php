@@ -63,6 +63,9 @@ class VisitCreated extends Mailable
         elseif ($this->type == 'reminder') {
             $subject_txt = "تذكير بالزيارة";
         }
+        elseif ($this->type == 'AcceptReminder') {
+            $subject_txt = "تذكير بقبول الزيارة";
+        }
 
         return $this->subject($subject_txt)
             ->view('mails.visit-created')

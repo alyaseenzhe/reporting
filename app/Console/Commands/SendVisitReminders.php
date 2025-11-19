@@ -52,13 +52,15 @@ class SendVisitReminders extends Command
 //            $startDate = \Carbon\Carbon::parse($visit->start);
             $daysAgo = Setting::first()->reminder_delay_days ?? 2; // أو أي رقم افتراضي
             $visitStart = \Carbon\Carbon::parse($visit->start);
+            $visitCreated = \Carbon\Carbon::parse($visit->created_at);
 
             $targetDayStart = $visitStart->copy()->subDays( $daysAgo)->startOfDay();
             $targetDayEnd   = $visitStart->copy()->subDays( $daysAgo)->endOfDay();
-//            $targetDayStart = $startDate->subDays($daysAgo)->startOfDay();
-//            $targetDayEnd   = $startDate->subDays($daysAgo)->endOfDay();
+
+            $cutoffTime = $visitCreated->addHours(48);
+
             \Log::info($targetDayStart.' -> '.$targetDayEnd);
-            if (now()->between($targetDayStart, $targetDayEnd)) {
+            if ($visit->status == 1 && now()->between($targetDayStart, $targetDayEnd)) {
                 \Log::info("✅ Sending email for visit ID {$visit->id} ({$visit->start})");
 
                 foreach ($visit->emps as $employee) {
@@ -68,6 +70,18 @@ class SendVisitReminders extends Command
                 }
             } else {
                 \Log::info("⏩ Skipped visit ID {$visit->id}, not in reminder window.");
+            }
+
+            if($visit->status == 0 && $visit->created_at == $cutoffTime){
+                \Log::info("✅ Sending email to Accept reminder for visit ID {$visit->id} ({$visit->start})");
+                foreach ($visit->emps as $employee) {
+                    Mail::to($employee->user->email)
+                        ->queue(new VisitCreated($visit, null, 'AcceptReminder'));
+            }
+
+            }
+            else {
+                \Log::info("⏩ Skipped visit ID {$visit->id}, not in AcceptReminder window.{$cutoffTime}");
             }
         }
 

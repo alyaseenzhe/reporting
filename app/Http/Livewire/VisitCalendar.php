@@ -24,6 +24,11 @@ class VisitCalendar extends Component
 
     public $can_approve;
     public $showAllVisits;
+    public $branch;
+    public $status;
+    public $start;
+    public $end;
+    public $activePanel = 'calendar';
 
 //    protected $wati;
 
@@ -162,16 +167,16 @@ class VisitCalendar extends Component
         ]);
 
         if ($visit_data) {
-//            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
-            $records = collect($employees[$visit_data->branch])
-                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
-                    'visit_id' => $visit_data->id,
-                    'type' => 'recipient',
-                    'user_id' => $id,
-                ])
-                )
-                ->values()
-                ->toArray();
+            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+//            $records = collect($employees[$visit_data->branch])
+//                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
+//                    'visit_id' => $visit_data->id,
+//                    'type' => 'recipient',
+//                    'user_id' => $id,
+//                ])
+//                )
+//                ->values()
+//                ->toArray();
             $requester_record = ['visit_id' => $visit_data->id, 'type' => 'requester', 'user_id' => Auth::id()];
             array_push($records, $requester_record);
 
@@ -280,6 +285,7 @@ class VisitCalendar extends Component
     {
         return \App\Models\Visit::where('branch', $branch)
             ->whereDate('start', $date)
+            ->whereNotIn('status', ['2', '4'])
             ->exists();
     }
 
@@ -330,20 +336,23 @@ class VisitCalendar extends Component
 
     public function visitMail($visit_record, $branch_manger, $type)
     {
-//        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
+        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
 //            ->where('users.group', '8') // branch manager
-//            ->where('visit_emps.visit_id', $visit_record->id)
-//            ->select('users.email', 'users.name')
-//            ->first();
-//        dd($this->branchMangerByVisitId($visit_record->id));
-//        dd($res_email);
+            ->where('visit_emps.visit_id', $visit_record->id)
+            ->select('users.email', 'users.name','users.id')
+          //  ->first();
+        ->pluck('users.email')->toArray();
+       // dd($this->branchMangerByVisitId($visit_record->id));
 
-        $emails = config('emails');
 
-        $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
-        //dd($visit_record->branch);
+      //  $emails = config('emails');
+      //  dd($emails);
 
-        if (empty($branchEmail)) {
+     //   $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
+
+
+//        if (empty($branchEmail)) {
+        if (empty($res_email)) {
             return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
         }
 
@@ -353,9 +362,11 @@ class VisitCalendar extends Component
             ->unique()
             ->first();
 
+        $allEmails = array_merge($res_email, [$recipientEmail]);
 
         // the email must be this $branch_manger->email
-        Mail::to([$branchEmail, $recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
+//        Mail::to([$branchEmail, $recipientEmail])->queue(new VisitCreated($visit_record, null, $type));
+        Mail::to($allEmails)->queue(new VisitCreated($visit_record, null, $type));
     }
 
     public function oneVisit($id)
@@ -431,7 +442,41 @@ class VisitCalendar extends Component
         curl_close($curl);
         echo $response;
     }
+    public function search(/*$event, $branch, $interests*/) {
+        $this->visits = Visit::orderBy('created_at', 'DESC')->get();
 
+        $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
+//        $this->validate();
+
+        $this->visits = Visit::
+
+        where("branch", "LIKE", $this->branch)
+            ->where("status","LIKE",  $this->status)
+            ->whereBetween('start', [$this->start, $this->end])
+//            ->where('start', "LIKE",$this->start)
+//            ->where('end', "LIKE",$this->end)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        $this->showAllVisits =Visit::
+
+        where("branch", "LIKE", $this->branch)
+            ->where("status","LIKE",  $this->status)
+            ->where('start', "LIKE",$this->start)
+            ->where('end', "LIKE",$this->end)
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        $this->activePanel = 'list';
+        $this->dispatchBrowserEvent('activePanel');
+//        dd($this->contacts);
+//            ->paginate(20);
+        //  dd($this->contacts);
+
+
+//        $this->emit('finished');
+
+    }
 
 
 }

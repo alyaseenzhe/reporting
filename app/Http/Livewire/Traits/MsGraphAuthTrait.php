@@ -30,7 +30,7 @@ trait MsGraphAuthTrait
 
     public function callback()
     {
-        $visit = Visit::findOrFail($this->visit_id);
+//        $visit = Visit::findOrFail($this->visit_id);
         $tenantId = config('msgraph.urlAccessToken');
         $code = request('code');
 
