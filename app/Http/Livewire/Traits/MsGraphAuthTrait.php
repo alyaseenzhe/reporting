@@ -9,9 +9,22 @@ use App\Models\Visit;
 use Carbon\Carbon;
 trait MsGraphAuthTrait
 {
+    public $visit_id;
+    public $visit;
 
-    public function connect()
+
+    public function mount()
     {
+        $this->visit_id = request()->get('state');  // <<< IMPORTANT
+    }
+
+
+    public function connect($id)
+    {
+        $this->visit_id = $id;
+
+//        dd($this->visit_id);
+//        $this->visit_id = request('visit_id');
         $tenantId = config('msgraph.urlAuthorize');
 
         $query = http_build_query([
@@ -20,7 +33,8 @@ trait MsGraphAuthTrait
             'redirect_uri' => config('services.microsoft.redirect'),
             'response_mode' => 'query',
             'scope' => 'openid profile offline_access user.read calendars.readwrite',
-            'state' => csrf_token(),
+            'state' =>  $this->visit_id,
+//            'state' => csrf_token(),
         ]);
 
 
@@ -30,7 +44,33 @@ trait MsGraphAuthTrait
 
     public function callback()
     {
-//        $visit = Visit::findOrFail($this->visit_id);
+        $this->branches =[
+            "0101"=> "فرع الاحساء",
+            "0102"=> "فرع جدة",
+            "0103"=> "فرع الرياض",
+            "0104"=> "فرع وادي الدواسر",
+            "0105"=> "فرع الجوف",
+            "0106"=> "فرع الدمام",
+            "0107"=> "فرع الخرج",
+            "0108"=> "فرع نجران",
+            "0109"=> "فرع حائل",
+            "0110"=> "فرع تبوك",
+            "0111"=> "فرع القصيم",
+            "0112"=> "فرع ساجر",
+            "0201"=> "مزرعة الدالوة",
+            "0202"=> "مزرعة الفضول",
+            "0203"=> "مزرعة الدلم"
+        ];
+
+//        dd(request()->get('state'));
+        // Get visit_id directly from the URL
+        $this->visit_id = request()->get('state');
+
+        if (!$this->visit_id) {
+            return "No visit id received in state.";
+        }
+        $this->visit = Visit::findOrFail($this->visit_id);
+//        dd($visit);
         $tenantId = config('msgraph.urlAccessToken');
         $code = request('code');
 
@@ -69,26 +109,50 @@ trait MsGraphAuthTrait
         session(['ms_access_token' => $accessToken]);
 
 
+        $start = Carbon::parse($this->visit->start)
+            ->setTimezone('Asia/Riyadh')
+            ->format('Y-m-d\TH:i:s');
 
+        $end = Carbon::parse($this->visit->end ?? $this->visit->start)
+            ->setTimezone('Asia/Riyadh')
+            ->format('Y-m-d\TH:i:s');
+
+        $visitUrl = url("/show-visit/{$this->visit->id}");
         // 2️⃣ Create test event in Outlook calendar
         $eventResponse = Http::withToken($accessToken)->post('https://graph.microsoft.com/v1.0/me/events', [
-            'subject' => 'title',
+            'subject' => $this->visit->title,
             'body' => [
                 'contentType' => 'HTML',
-                'content' => 'reason',
+                'content' => '
+                <p>مرحبا</p>
+                <p>الرجاء الدخول على لعرض تفاصيل الزيارة</p>
+                <a href="' . $visitUrl . '"
+                   style="
+                       display:inline-block;
+                       padding:10px 20px;
+                       background-color:#0078D4;
+                       color:white;
+                       text-decoration:none;
+                       border-radius:5px;
+                       font-weight:bold;
+                   ">
+                   عرض الزيارة
+                </a>
+                <p>شكرا لكم!</p>
+            ',
             ],
             'start' => [
-                'dateTime' => now()->addHour()->toIso8601String(),
-//                'dateTime' => Carbon::parse($visit->start)->toIso8601String(),
+//                'dateTime' => now()->addHour()->toIso8601String(),
+                'dateTime' => $start,
                 'timeZone' => 'Asia/Riyadh',
             ],
             'end' => [
-                'dateTime' => now()->addHours(2)->toIso8601String(),
-//                'dateTime' => Carbon::parse($visit->end)->toIso8601String(),
+//                'dateTime' => now()->addHours(2)->toIso8601String(),
+                'dateTime' => $end,
                 'timeZone' => 'Asia/Riyadh',
             ],
             'location' => [
-                'displayName' => 'Office',
+                'displayName' => $this->branches[$this->visit->branch],
             ],
 //                'attendees' => $attendees,
         ]);

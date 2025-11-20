@@ -2,7 +2,7 @@
     عرض الزيارة
 @stop
 
-
+<input type="hidden" name="visit_id" value="{{$record->id}}">
     <div class="mb-5">
         <nav class="flex justify-between" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -47,7 +47,24 @@
             </ol>
 
 
-            @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)
+
+
+<div class="flex gap-4">
+                    @if($can_close_visit)
+                        <div wire:ignore class=" text-center  mx-4 flex sm:flex-row flex-col gap-4 justify-end">
+                            <div>
+                                <button id="close-btn"
+                                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
+                        <span class="mr-2 font-bold">
+                            <span>إتمام الزيارة</span>
+                        </span>
+                                </button>
+                            </div>
+                        </div>
+            @endif
+
+
+            @if(($record->status == 0 || $record->status == 1) && $record->is_requester() && $record->is_deleted == 0)
                 <div class="flex flex-row gap-4 justify-center">
                     <div class="flex flex-row gap-4 justify-center">
                         <div>
@@ -68,22 +85,7 @@
                         </div>
                     </div>
                     @endif
-
-
-
-                    @if($can_close_visit)
-                        <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
-                            <div>
-                                <button id="close-btn"
-                                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
-                        <span class="mr-2 font-bold">
-                            <span>إتمام الزيارة</span>
-                        </span>
-                                </button>
-                            </div>
-                        </div>
-            @endif
-
+                </div>
                     @if($can_recipient_approve)
                         <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
                             <div>
@@ -273,12 +275,12 @@
                     <label class="block font-bold mb-6 text-xs">المرافقون</label>
                     <div style="color: #5222e1; white-space: pre-wrap;">{{$record->attendants}}</div>
                 </div>
-{{--                <div class="w-full">--}}
-{{--                    <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>--}}
-{{--                    @foreach($record->emps_recipients as $req)--}}
-{{--                        <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>--}}
-{{--                    @endforeach--}}
-{{--                </div>--}}
+                <div class="w-full">
+                    <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>
+                    @foreach($record->emps_recipients as $req)
+                        <span style="color: #5222e1">{{ $req->user->name }}@if (!$loop->last), @endif</span>
+                    @endforeach
+                </div>
             </div>
 
             <div class="w-full flex sm:flex-row flex-col gap-4 mb-6" style="background-color: #f5f5f5; padding: 20px;">
@@ -355,31 +357,38 @@
 
                                     <!-- Name + Status -->
                                     {{ $req_record->user->name }}
-{{--                                    @php--}}
-{{--                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';--}}
-{{--                                        $isMyReview = $req_record->user_id == auth()->id(); // adjust auth if needed--}}
-{{--                                        $allReviewsDone = $this->reviews_done();--}}
-{{--                                    @endphp--}}
+                                    @php
+//                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';
+                                        $isrRequesterReview = $record->requester_reviews && $record->requester_reviews != '';
+                                        $isrRecipientReview = $record->recipient_reviews && $record->recipient_reviews != '';
+                                        $isMyReview = $req_record->user_id == auth()->id();  // adjust auth if needed
 
-                                    @if(!$isReviewWritten)
+//                                        $allReviewsDone = $this->reviews_done();
+                                    @endphp
+
+{{--                                    @if(!$isReviewWritten  )--}}
+                                    @if(!$isrRequesterReview   )
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
 {{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
 {{--                                    @elseif(!$allReviewsDone)--}}
+{{--                                    @elseif(!($isrRecipientReview && $isrRequesterReview))--}}
 {{--                                        <span style="color: #287c0c;">(تم التقييم)</span>--}}
                                     @else
-                                        (
-                                        <span class="text-yellow-500 ml-1">&#9733;</span>
-                                        <span style="color: #a40e3b;">
-                                            {{ number_format(floatval($reviews['totalRating']) / (count($reviews['answers']) - 1), 1) }}
-                                        </span>
-                                        )
+                                        <span style="color: #287c0c;">(تم التقييم)</span>
+{{--                                        (--}}
+{{--                                        <span class="text-yellow-500 ml-1">&#9733;</span>--}}
+{{--                                        <span style="color: #a40e3b;">--}}
+{{--                                            {{ number_format(floatval($reviews['totalRating']) / (count($reviews['answers']) - 1), 1) }}--}}
+{{--                                        </span>--}}
+{{--                                        )--}}
                                     @endif
 
                                 </div>
                             </h2>
 
 {{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
-                            @if($isReviewWritten )
+{{--                            @if($isReviewWritten  )--}}
+                            @if($isrRequesterReview  )
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
                                     @foreach($reviews['answers'] as $answer)
                                         <div class="mb-4">
@@ -432,24 +441,28 @@
                                     <!-- Name + Status -->
                                     {{ $branches[$record->branch]}}
 
-                                    @if(!$isReviewWritten)
+{{--                                    @if(!$isReviewWritten )--}}
+                                    @if(!$isrRecipientReview )
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
 {{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
-                                    @elseif(!$allReviewsDone)
-                                        <span style="color: #287c0c;">(تم التقييم)</span>
+{{--                                    @elseif(!$allReviewsDone)--}}
+{{--                                        <span style="color: #287c0c;">(تم التقييم)</span>--}}
                                     @else
-                                        (
-                                        <span class="text-yellow-500 ml-1">&#9733;</span>
-                                        <span style="color: #a40e3b;">
-                                            {{ number_format(floatval($parsedReview['totalRating']) / (count($parsedReview['answers']) - 1), 1) }}
-                                        </span>
-                                        )
+                                        <span style="color: #287c0c;">(تم التقييم)</span>
+{{--                                        (--}}
+{{--                                        <span class="text-yellow-500 ml-1">&#9733;</span>--}}
+{{--                                        <span style="color: #a40e3b;">--}}
+{{--                                            {{ number_format(floatval($parsedReview['totalRating']) / (count($parsedReview['answers']) - 1), 1) }}--}}
+{{--                                        </span>--}}
+{{--                                        )--}}
                                     @endif
                                 </div>
                             </h2>
 
 {{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
-                            @if($isReviewWritten)
+{{--                            @if($isReviewWritten)--}}
+{{--                            @dd($parsedReviewRecipient)--}}
+                            @if($isrRecipientReview)
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
                                     @foreach($parsedReviewRecipient['answers'] as $answer)
                                         <div class="mb-4">
@@ -756,13 +769,19 @@
         {{--        ratings --}}
         function showArabicReviewWithNotes() {
             const questions = [
-                {text: 'خطة الزيارة الموضوعة من قبل الفرع', id: 'plan', type: 'rating'},
-                {text: 'تقسيم العملاء حسب الأهمية', id: 'clients_priority', type: 'rating'},
-                {text: 'معرفة الزملاء بأصناف الشركة والمنافسين', id: 'team_knowledge', type: 'rating'},
-                {text: 'متابعة التجارب ومدى اهتمام الفريق', id: 'followups', type: 'rating'},
-                {text: 'تواصل الفريق مع العملاء', id: 'communication', type: 'rating'},
-                {text: 'إدخال عملاء جدد والتوسع الرأسي', id: 'new_clients', type: 'rating'},
-                {text: 'تنفيذ التوصيات السابقة للزيارة', id: 'recommendations', type: 'rating'},
+                // {text: 'خطة الزيارة الموضوعة من قبل الفرع', id: 'plan', type: 'rating'},
+                // {text: 'تقسيم العملاء حسب الأهمية', id: 'clients_priority', type: 'rating'},
+                // {text: 'معرفة الزملاء بأصناف الشركة والمنافسين', id: 'team_knowledge', type: 'rating'},
+                // {text: 'متابعة التجارب ومدى اهتمام الفريق', id: 'followups', type: 'rating'},
+                // {text: 'تواصل الفريق مع العملاء', id: 'communication', type: 'rating'},
+                // {text: 'إدخال عملاء جدد والتوسع الرأسي', id: 'new_clients', type: 'rating'},
+                // {text: 'تنفيذ التوصيات السابقة للزيارة', id: 'recommendations', type: 'rating'},
+                // {text: 'ملاحظات', id: 'notes', type: 'textarea'}
+
+                {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
+                {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
+                {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
+                {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},
                 {text: 'ملاحظات', id: 'notes', type: 'textarea'}
             ];
 
@@ -1235,7 +1254,7 @@
 
   <div class="edit-form-group" style="grid-column: span 2;">
     <label for="edit-goals">التحضيرات المطلوبه من الفرع</label>
-    <input id="edit-goals">${visit.goals || ''}</input>
+    <input id="edit-goals" value="${visit.goals || ''}">
   </div>
 
   <div class="edit-form-group">
@@ -1248,10 +1267,10 @@
     </select>
   </div>
 
-<!--  <div class="edit-form-group">-->
-<!--    <label for="edit-employees">الموظفين</label>-->
-<!--    <select id="edit-employees" multiple></select>-->
-<!--  </div>-->
+  <div class="edit-form-group">
+    <label for="edit-employees">الموظفين</label>
+    <select id="edit-employees" multiple></select>
+  </div>
 
   <div class="edit-form-group">
     <label for="edit-visit-time">وقت الزيارة</label>
@@ -1281,64 +1300,65 @@
                         confirmButtonText: 'تحديث',
                         cancelButtonText: 'عودة',
                         reverseButtons: true,
-                        // didOpen: () => {
-                        //     const branchSelect = document.getElementById('edit-branch');
-                        //     const employeeSelect = document.getElementById('edit-employees');
-                        //
-                        //     $(employeeSelect).select2({
-                        //         dir: "rtl",
-                        //         dropdownCssClass: "select-font-size",
-                        //         dropdownParent: document.querySelector('.swal2-popup'),
-                        //         placeholder: "اختر الموظفين"
-                        //     });
-                        //
-                        //     const populateEmployees = (branchId, selected = []) => {
-                        //         const employees = employeesByBranch[branchId] || [];
-                        //         $(employeeSelect).empty();
-                        //         disabledEmployees = []; // Reset
-                        //
-                        //         employees.forEach(emp => {
-                        //             const isGroup8 = emp.group == 8;
-                        //             const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
-                        //
-                        //             const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
-                        //
-                        //             if (isGroup8) {
-                        //                 option.disabled = true;
-                        //                 disabledEmployees.push(emp.id.toString());
-                        //             }
-                        //
-                        //             $(employeeSelect).append(option);
-                        //         });
-                        //
-                        //         $(employeeSelect).trigger('change');
-                        //     };
-                        //
-                        //
-                        //     const initialBranchId = branchSelect.value;
-                        //     // const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());
-                        //     const selectedEmpIds = (x_recipients || []).map(emp => emp.user_id.toString());
-                        //
-                        //     console.log('======= employees =======')
-                        //     // console.log(info.event.extendedProps.employees);
-                        //     // console.log(info.event);
-                        //     console.log(x_recipients);
-                        //
-                        //     populateEmployees(initialBranchId, selectedEmpIds);
-                        //
-                        //     branchSelect.addEventListener('change', () => {
-                        //         const newBranchId = branchSelect.value;
-                        //         populateEmployees(newBranchId);
-                        //     });
-                        //
-                        //     $(employeeSelect).on('select2:unselecting', function (e) {
-                        //         const id = e.params.args.data.id;
-                        //         const option = $(this).find(`option[value="${id}"]`);
-                        //         if (option.prop('disabled')) {
-                        //             e.preventDefault();
-                        //         }
-                        //     });
-                        // },
+                        didOpen: () => {
+                            const branchSelect = document.getElementById('edit-branch');
+                            const employeeSelect = document.getElementById('edit-employees');
+
+                            $(employeeSelect).select2({
+                                dir: "rtl",
+                                dropdownCssClass: "select-font-size",
+                                dropdownParent: document.querySelector('.swal2-popup'),
+                                placeholder: "اختر الموظفين"
+                            });
+
+                            const populateEmployees = (branchId, selected = []) => {
+                                const employees = employeesByBranch[branchId] || [];
+                                $(employeeSelect).empty();
+                                disabledEmployees = []; // Reset
+
+                                employees.forEach(emp => {
+                                    const isGroup8 = emp.group == 8;
+                                    const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
+
+                                    // const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
+                                    const option = new Option(emp.name, emp.id);
+
+                                    // if (isGroup8) {
+                                    //     option.disabled = true;
+                                    //     disabledEmployees.push(emp.id.toString());
+                                    // }
+
+                                    $(employeeSelect).append(option);
+                                });
+
+                                $(employeeSelect).trigger('change');
+                            };
+
+
+                            const initialBranchId = branchSelect.value;
+                            // const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());
+                            const selectedEmpIds = (x_recipients || []).map(emp => emp.user_id.toString());
+
+                            console.log('======= employees =======')
+                            // console.log(info.event.extendedProps.employees);
+                            // console.log(info.event);
+                            console.log(x_recipients);
+
+                            populateEmployees(initialBranchId, selectedEmpIds);
+
+                            branchSelect.addEventListener('change', () => {
+                                const newBranchId = branchSelect.value;
+                                populateEmployees(newBranchId);
+                            });
+
+                            $(employeeSelect).on('select2:unselecting', function (e) {
+                                const id = e.params.args.data.id;
+                                const option = $(this).find(`option[value="${id}"]`);
+                                if (option.prop('disabled')) {
+                                    e.preventDefault();
+                                }
+                            });
+                        },
                         preConfirm: () => {
                             const title = document.getElementById('edit-title').value;
                             const reason = document.getElementById('edit-reason').value;
@@ -1348,7 +1368,7 @@
                             const attendants = document.getElementById('attendants').value;
                             const start = document.getElementById('start').value;
                             const end = document.getElementById('end').value;
-                            // const selectedEmployees = $('#edit-employees').val();
+                            const selectedEmployees = $('#edit-employees').val();
                             // let selectedEmployees = $('#edit-employees').val() || [];
                             // disabledEmployees.forEach(id => {
                             //     if (!selectedEmployees.includes(id)) {
@@ -1361,9 +1381,9 @@
                                 !reason.trim() ||
                                 // !goals.trim() ||
                                 !branch ||
-                                !visitTime
-                                // !selectedEmployees ||
-                                // selectedEmployees.length === 0
+                                !visitTime ||
+                                !selectedEmployees ||
+                                selectedEmployees.length === 0
                             ) {
                                 Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');
                                 return false;
@@ -1380,7 +1400,7 @@
                                 reason,
                                 goals,
                                 branch,
-                                // employees: selectedEmployees,
+                                 employees: selectedEmployees,
                                 start,
                                 //  start: startDateTime,
                                 // end: visit.end,
@@ -1409,7 +1429,7 @@
                                 reason: result.value.reason,
                                 goals: result.value.goals,
                                 branch: result.value.branch,
-                                // employees: result.value.employees,
+                                 employees: result.value.employees,
                                 start: result.value.start,
                                 end: result.value.end,
                                 attendants: result.value.attendants

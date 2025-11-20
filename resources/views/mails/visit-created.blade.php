@@ -66,6 +66,15 @@
             أهلاً،<br>
             للتذكير موعد الزيارة قرب في {{$visit->banch }} يوم {{$visit->start->translatedFormat('l j F Y')}} 🔔
         </p>
+
+
+    @elseif($type == 'AcceptReminder')
+
+        <h2 style="text-align: center; color: #007C91; margin-top: 10px;">🔔 إشعار تذكير </h2>
+        <p style="color: #007C91; font-size: 16px; margin: 20px 0; background-color: #e6f7fb; padding: 15px; border-radius: 10px;">
+            أهلاً،<br>
+           اشعار تذكير بقبول أو رفض الزيارة 🔔
+        </p>
     @endif
 
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">

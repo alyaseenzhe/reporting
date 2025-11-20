@@ -72,7 +72,7 @@ class SendVisitReminders extends Command
                 \Log::info("⏩ Skipped visit ID {$visit->id}, not in reminder window.");
             }
 
-            if($visit->status == 0 && $visit->created_at == $cutoffTime){
+            if($visit->status == 0 && $visit->created_at >= $cutoffTime){
                 \Log::info("✅ Sending email to Accept reminder for visit ID {$visit->id} ({$visit->start})");
                 foreach ($visit->emps as $employee) {
                     Mail::to($employee->user->email)

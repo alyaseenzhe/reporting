@@ -31,6 +31,7 @@ class ShowVisit extends Component
     public  $parsedReview;
     public  $reviews; //
     public  $branches;
+    public $parsedReviewRecipient;
 
 
     protected $listeners = ['approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit', 'closeVisit' => 'closeVisit', 'review' => 'review', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit'];
@@ -69,9 +70,13 @@ class ShowVisit extends Component
             $this->isReviewWritten = $this->record->requester_reviews && $this->record->recipient_reviews;
 //          $this->isMyReview = $rec_record->user_id == auth()->id();
             $this->allReviewsDone = $this->reviews_done();
-            $this->parsedReview = $this->isReviewWritten ? json_decode($this->record->requester_reviews , true) : null  ;
-            $this->parsedReviewRecipient = $this->isReviewWritten ? json_decode($this->record->recipient_reviews , true) : null  ;
+//            $this->parsedReview = $this->isReviewWritten ? json_decode($this->record->requester_reviews , true) : null  ;
+//            $this->parsedReviewRecipient = $this->isReviewWritten ? json_decode($this->record->recipient_reviews , true) : null  ;
 
+            $this->parsedReview = json_decode($this->record->requester_reviews , true)   ;
+            $this->parsedReviewRecipient = json_decode($this->record->recipient_reviews , true)  ;
+
+//            dd($this->parsedReviewRecipient);
 
             //todo should find out why this condition was exist
 //            if ($this->record->is_requester() && $this->record->is_recipient() && Auth::user()->role != 'a') {
@@ -156,7 +161,7 @@ class ShowVisit extends Component
          $visit->approved_by = auth()->user()->id;
 
         if($visit->save()) {
-           $this->connect();
+           $this->connect($visit->id);
 
             $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
             $this->visitMail($visit, $emails, 'approve');
