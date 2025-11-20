@@ -1318,10 +1318,11 @@
 
                                 employees.forEach(emp => {
                                     const isGroup8 = emp.group == 8;
-                                    const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
+                                    const shouldBeSelected = selected.includes(emp.id.toString()) ;h // SELECT if previously selected OR group 8
+                                    // const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
 
-                                    // const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
-                                    const option = new Option(emp.name, emp.id);
+                                    const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);
+                                    // const option = new Option(emp.name, emp.id);
 
                                     // if (isGroup8) {
                                     //     option.disabled = true;

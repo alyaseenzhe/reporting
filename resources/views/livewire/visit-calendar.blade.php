@@ -883,7 +883,8 @@
                                     }
 
 
-                                    const startDateTime = combineDateAndTime(visitDate, visitTime);
+                                    // const startDateTime = combineDateAndTime(visitDate, visitTime);
+                                    const startDateTime = combineDateAndTime(visitDate);
 
                                     return {
                                         title,
@@ -1799,6 +1800,7 @@
 
                 const authUserId ={{auth()->user()->id}};
                 const branchName = branchMap[visit.branch] || 'فرع غير معروف';
+                const requester = visit.requester?.name || visit.title
 
                 let backgroundColor;
                 let textColor = '#000000';
@@ -1835,7 +1837,8 @@
                     borderColor: 'transparent',
                     // url: eventUrl,
                     // url: `/show-visit/${visit.id}`,
-                    title: `${visit.requester?.name}  - ${branchName}` || 'لايوجد',
+                    // title: `${visit.requester?.name}  - ${branchName}` || 'لايوجد',
+                    title: `${requester}  - ${branchName}` || 'لايوجد',
                     allDay: true,
 
                 };
