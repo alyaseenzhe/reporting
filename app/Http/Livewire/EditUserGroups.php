@@ -19,6 +19,7 @@ class EditUserGroups extends Component
     public $edit_special_product;
     public $calculate_all_product_target;
     public $report_type = [];
+    public $visits = [];
 
     protected $rules = [
         'name' => 'required',
@@ -42,6 +43,7 @@ class EditUserGroups extends Component
             $this->calculate_all_product_target = $this->record->calculate_all_product_target ? $this->record->calculate_all_product_target : 0;
             $this->choose_special_product = $this->record->choose_special_product;
             $this->edit_special_product = $this->record->edit_special_product;
+            $this->visits = json_decode($this->record->visits);
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذه المجموعة غير موجودة');
@@ -73,6 +75,7 @@ class EditUserGroups extends Component
             $record->calculate_all_product_target = $this->calculate_all_product_target;
             $record->choose_special_product = $this->choose_special_product;
             $record->edit_special_product = $this->edit_special_product;
+            $record->visits = json_encode($this->visits);
 
 
             if($record->save()) {
