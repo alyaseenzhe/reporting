@@ -16,6 +16,7 @@ class CreateUserGroup extends Component
     public $edit_special_product = 0;
 
     public $report_type = [];
+    public $visits = [];
 
     protected $rules = [
         'name' => 'required',
@@ -25,25 +26,12 @@ class CreateUserGroup extends Component
         'name.required' => 'حقل عنوان المجموعة مطلوب',
     ];
 
-    /**
-     * Renders the view for creating a new user group.
-     *
-     * This function is the standard Livewire render method. It specifies
-     * which view file to use and which layout to apply for the component.
-     */
     public function render()
     {
         return view('livewire.create-user-group')
             ->layout('layouts.dashboard');
     }
 
-    /**
-     * Creates a new user group after validating the form data.
-     *
-     * This method validates the input fields, creates a new UserGroup
-     * record in the database, and handles the outcome with a session
-     * flash message and a redirect to the list of groups.
-     */
     public function create() {
 
 //        dd($this->calculate_all_product_target);
@@ -58,6 +46,7 @@ class CreateUserGroup extends Component
             'calculate_all_product_target' => $this->calculate_all_product_target,
             'choose_special_product' => $this->choose_special_product,
             'edit_special_product' => $this->edit_special_product,
+            'visits' => json_encode($this->report_type),
         ]);
 
         if($record) {

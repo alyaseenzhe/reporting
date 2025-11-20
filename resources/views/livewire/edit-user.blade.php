@@ -1,79 +1,116 @@
 @section('title')
-    تعديل بيانات مستخدم
+    تعديل مجموعة
 @stop
 
 <div>
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="w-full">
-                <label class="block font-bold mb-2">الرقم الوظيفي
-                    <span class="text-red-500">*</span>
-                </label>
-                <input type="text" wire:model="emp_code" class="form-input w-full @error('emp_code') border-red-300 @enderror">
-                @error('emp_code')
-                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
-            </div>
-            <div class="w-full">
-                <label class="block font-bold mb-2">نوع المستخدم
-                    <span class="text-red-500">*</span>
-                </label>
-                <select name="role" wire:model="role"
-                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        style="@error('role') border: solid 1px #fda4af; @enderror">
-                    <option value="e">مهندسين فروع</option>
-                    <option value="m">مدراء مبيعات</option>
-                    <option value="u">الإدارة العليا</option>
-                    <option value="a">IT</option>
-                </select>
-            </div>
-
-        </div>
-    </div>
-    <div class="mb-6">
-        <div class="flex flex-col sm:flex-row gap-4">
-            <div class="w-full">
-                <label class="block font-bold mb-2">الاسم
+                <label class="block font-bold mb-2">عنوان المجموعة
                     <span class="text-red-500">*</span>
                 </label>
                 <input type="text" wire:model="name" class="form-input w-full @error('name') border-red-300 @enderror">
                 @error('name')
                 <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
-            <div class="w-full">
-                <label class="block font-bold mb-2">البريد الإلكتروني
-                    <span class="text-red-500">*</span>
-                </label>
-                <input type="email" wire:model="email" class="form-input w-full @error('email') border-red-300 @enderror">
-                @error('email')
-                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
-            </div>
-        </div>
-    </div>
-    <div class="mb-6">
-        <div class="flex flex-col sm:flex-row gap-4">
-            <div class="w-full">
-                <label class="block font-bold mb-2">كلمة المرور
-                    <span class="text-red-500">*</span>
-                </label>
-                <input type="password" wire:model="password" class="form-input w-full @error('password') border-red-300 @enderror">
-                @error('password')
-                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
-            </div>
+
+            {{--            <h1 class="mt-4 bold text-2xl mb-6">نوع التقرير</h1>--}}
         </div>
     </div>
     <div class="mb-10">
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
             <div class="w-full">
-                <label class="block font-bold mb-2">الصلاحية</label>
-                <select id="group_id" name="group_id" wire:model="group_id"
-                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        style="@error('item_id') border: solid 1px #fda4af; @enderror">
-                    <option value="-1">الرجاء اختيار الصلاحية</option>
-                    @foreach($groups as $group)
-                        <option value="{{ $group->id }}">{{ $group->name }}</option>
-                    @endforeach
-                </select>
-                @error('group_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+                <label class="block font-bold mb-5">نوع التقرير</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="commission-report" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير العمولة</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.aging" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الفواتير المعلقة</label>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.sales-profit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">مبيعات، هامش/موظف</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.sales-collections" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التحصيل والمبيعات</label>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.postponed-by-customers" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">المستحقات بالموظف</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.customer-cash-statement" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">كشف حساب عميل نقدي</label>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.my-product-target" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">مستهدف الأصناف (الاضافة والمتابعة)</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.my-product-target-only" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">متابعة المستهدف فقط</label>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.purchase-recommendation" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">توصية الشراء</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.distribution-calc" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حاسبة التوزيع</label>
+                    </div>
+                </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.weekly-report" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التقرير الإسبوعي</label>
+                    </div>
+
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.daily-reports" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">التقرير اليومي</label>
+                    </div>
+                </div>
+
+                <label class="block font-bold mt-6 mb-4">تقارير ساب</label>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="report-21" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">كشف حساب عميل</label>
+                    </div>
+
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="report-11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير عمليات الأصناف</label>
+                    </div>
+                </div>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="report-25" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير حركة عميل</label>
+                    </div>
+
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="report-42" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير تحليل الفرع</label>
+                    </div>
+                </div>
+
+                @error('report_type')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
     </div>
@@ -81,87 +118,146 @@
     <div class="mb-10">
         <div class="flex flex-col sm:flex-row gap-4 w-full">
             <div class="w-full">
-                <label class="block font-bold mb-5">حالة التفعيل</label>
+                <label class="block font-bold mb-5">التكلفة</label>
 
                 <div class="flex flex-row">
                     <div class="flex items-center mb-4 w-full">
-                        <input checked wire:model="is_active" type="radio" name="is_active" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">مفعل</label>
+                        <input checked wire:model="cost" type="radio" name="cost" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">لا</label>
                     </div>
                     <div class="flex items-center mb-4 w-full">
-                        <input wire:model="is_active" type="radio" name="is_active" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">غير مفعل</label>
+                        <input wire:model="cost" type="radio" name="cost" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نعم</label>
                     </div>
                 </div>
 
-                @error('is_active')
+                @error('cost')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية القراءة</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input checked wire:model="read_type" type="radio" name="read_type" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">بيانات المستخدم نفسه فقط</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="read_type" type="radio" name="read_type" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">بيانات الفرع التابعة للمستخدم</label>
+                    </div>
+                </div>
+
+                @error('cost')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية مستهدف الأصناف</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم قراءة مستهدف الأصناف للفروع التابعة له</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم اضافة\تعديل مستهدف الأصناف لنفسه فقط</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="2" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم اضافة\تعديل مستهدف الأصناف لجميع موظفين الفروع التابع لهم</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="write_product_target" type="radio" name="write_product_target" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم التعديل فقط لمستهدف الأصناف لجميع موظفين الفروع التابع لهم</label>
+                    </div>
+                </div>
+
+                @error('write_product_target')
                 <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
     </div>
 
-    <hr style="color: #cbd5e1;border: 2px solid;">
-    <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
-    <div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية توزيع نسب مستهدف الأصناف</label>
 
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاحساء</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جدة</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الرياض</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">وادي الدواسر</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الجوف</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدمام</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الخرج</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نجران</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حائل</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تبوك</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">القصيم</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ساجر</label>
-        </div>
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="calculate_all_product_target" type="radio" name="calculate_all_product_target" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">لا يستطيع المستخدم توزيع نسب مستهدف الأصناف على جميع موظفي فرعه</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="calculate_all_product_target" type="radio" name="calculate_all_product_target" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم توزيع نسب مستهدف الأصناف على جميع موظفي فرعه</label>
+                    </div>
+                </div>
 
-        @error('branches')
-        <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+                @error('calculate_all_product_target')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية تحديد الاصناف الخاصة</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="choose_special_product" type="radio" name="choose_special_product" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">لا يستطيع المستخدم تحديد الصنف الخاص</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="choose_special_product" type="radio" name="choose_special_product" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم تحديد الصنف الخاص</label>
+                    </div>
+                </div>
+
+                @error('choose_special_product')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحية إضافة/تحديث مستهدفات الاصناف الخاصة</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="edit_special_product" type="radio" name="edit_special_product" value="0" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">لا يستطيع المستخدم إضافة/تحديث الصنف الخاص</label>
+                    </div>
+                    <div class="flex items-center mb-4 w-full">
+                        <input wire:model="edit_special_product" type="radio" name="edit_special_product" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">يستطيع المستخدم إضافة/تحديث الصنف الخاص</label>
+                    </div>
+                </div>
+
+                @error('edit_special_product')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
     </div>
 
     <div class="mt-8 text-center">
         <button wire:click.prevent="update" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
                 <path
-                    d="M11.7.3c-.4-.4-1-.4-1.4 0l-10 10c-.2.2-.3.4-.3.7v4c0 .6.4 1 1 1h4c.3 0 .5-.1.7-.3l10-10c.4-.4.4-1 0-1.4l-4-4zM4.6 14H2v-2.6l6-6L10.6 8l-6 6zM12 6.6L9.4 4 11 2.4 13.6 5 12 6.6z"></path>
+                    d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"></path>
             </svg>
             <span class="mr-2 font-bold" wire:loading.remove wire:target="update">تحديث</span>
             <span class="mr-2 font-bold" wire:loading wire:target="update">الرجاء الانتظار..</span>
