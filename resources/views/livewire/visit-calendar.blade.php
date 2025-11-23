@@ -1,3 +1,5 @@
+
+
 <div     x-data="{ panel: @entangle('activePanel') }"
          x-on:togglePanel.window="panel = $event.detail.panel"
          class="w-full">
@@ -63,7 +65,6 @@
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             >
                                 <option value="-1">الرجاء الاختيار</option>
-                                <option value="sales_manager">مدير مبيعات</option>
                                 <option value="0101">الأحساء</option>
                                 <option value="0102">جدة</option>
                                 <option value="0103">الرياض</option>
@@ -86,7 +87,7 @@
                             <select wire:model.lazy="status" name="status" id="status"
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 <option value="-1">الرجاء الاختيار</option>
-                                {{--                                <option value="0">تحت الإجراء</option>--}}
+                                <option value="0">تحت الإجراء</option>
                                 <option value="1">مقبوله</option>
                                 <option value="2">مرفوضة</option>
                                 <option value="3">مغلقة</option>
@@ -171,18 +172,19 @@
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
                                     </td>
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div>
-                                            @php $visit_type = $visit['emps_requester'][0]['user_id'] == \Illuminate\Support\Facades\Auth::id() ? "outgoing" : "ingoing"  @endphp
-                                            <div class="text-center text-gray-800 text-sm">
-                                                @if($visit_type == "outgoing")
-                                                    صادرة
-                                                @else
-                                                    واردة
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
+{{--                                    <td class="border p-2 whitespace-nowrap">--}}
+{{--                                        <div>--}}
+{{--                                            @dd($visit['emps_requester'] )--}}
+{{--                                            @php $visit_type = $visit['emps_requester'][0]['user_id'] == \Illuminate\Support\Facades\Auth::id() ? "outgoing" : "ingoing"  @endphp--}}
+{{--                                            <div class="text-center text-gray-800 text-sm">--}}
+{{--                                                @if($visit_type == "outgoing")--}}
+{{--                                                    صادرة--}}
+{{--                                                @else--}}
+{{--                                                    واردة--}}
+{{--                                                @endif--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                    </td>--}}
                                     <td class="border p-2 whitespace-nowrap">
                                         <div>
                                             <div class="text-center text-gray-800 text-sm">{{ $visit["title"] }}</div>
@@ -568,7 +570,9 @@
                         info.el.style.color = '#000';
                     }
                 },
-                // select : function (info) {
+
+
+                select : function (info) {
                 //     console.log(info);
                 //     var title = prompt('Enter Event Name:');
                 //     console.log(title);
@@ -577,7 +581,10 @@
                 //         Livewire.emit('addVisit', {title: title, start: info.startStr, end: info.endStr});
                 //     }
                 // },
-                select: function (info) {
+                // dateClick: function (info) {
+                    if (!canOpenModal) {
+                        return; // User is not allowed, do nothing
+                    }
 
                     let disabledEmployees = [];
 
@@ -1866,5 +1873,10 @@
 
         });
 
+
+        let canOpenModal = @json(
+        (Auth::user()->user_group->visits && in_array('create-visit', json_decode(Auth::user()->user_group->visits)))
+        || Auth::user()->role == 'a'
+    );
     </script>
 @stop

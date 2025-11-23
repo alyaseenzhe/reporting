@@ -125,7 +125,7 @@ trait MsGraphAuthTrait
                 'contentType' => 'HTML',
                 'content' => '
                 <p>مرحبا</p>
-                <p>الرجاء الدخول على لعرض تفاصيل الزيارة</p>
+                <p>الرجاء الدخول لعرض تفاصيل الزيارة</p>
                 <a href="' . $visitUrl . '"
                    style="
                        display:inline-block;
@@ -165,12 +165,12 @@ trait MsGraphAuthTrait
         }
 //             return redirect('visit-calendar')->with('success', 'تمت الموافقة بنجاح');
 
-        return response()->json([
-            'message' => 'Successfully connected and created test event!',
-            'event' => $eventResponse->json(),
-        ]);
+//        return response()->json([
+//            'message' => 'Successfully connected and created test event!',
+//            'event' => $eventResponse->json(),
+//        ]);
 
-        //     return redirect()->route('dashboard')->with('success', 'Microsoft Calendar Connected!');
+        return redirect('visit-calendar')->with('success', 'تمت الموافقة بنجاح وتم إضافة الموعد إلى التقويم.');
     }
 
     public function msGraphToken()

@@ -4,7 +4,7 @@
 
 <input type="hidden" name="visit_id" value="{{$record->id}}">
     <div class="mb-5">
-        <nav class="flex justify-between" aria-label="Breadcrumb">
+        <nav class="sm:flex justify-between" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
                     <a href="{{ route('dashboard') }}"
@@ -49,7 +49,7 @@
 
 
 
-<div class="flex gap-4">
+<div class="flex gap-4 my-4">
                     @if($can_close_visit)
                         <div wire:ignore class=" text-center  mx-4 flex sm:flex-row flex-col gap-4 justify-end">
                             <div>
@@ -87,7 +87,10 @@
                     @endif
                 </div>
                     @if($can_recipient_approve)
+
                         <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
+                            <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمدير الفرع</p>
+                            @if ((Auth::user()->user_group && in_array('list.daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
                             <div>
                                 <button id="approve-btn"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -96,6 +99,8 @@
                     </span>
                                 </button>
                             </div>
+                            @endif
+                                @if ((Auth::user()->user_group && in_array('list.daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
                             <div>
                                 <button id="reject-btn"
                                         style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
@@ -104,6 +109,7 @@
                     </span>
                                 </button>
                             </div>
+                                @endif
                         </div>
             @endif
         </nav>
@@ -1318,7 +1324,7 @@
 
                                 employees.forEach(emp => {
                                     const isGroup8 = emp.group == 8;
-                                    const shouldBeSelected = selected.includes(emp.id.toString()) ;h // SELECT if previously selected OR group 8
+                                    const shouldBeSelected = selected.includes(emp.id.toString()) ; // SELECT if previously selected OR group 8
                                     // const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8
 
                                     const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);

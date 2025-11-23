@@ -253,6 +253,49 @@
         </div>
     </div>
 
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحيات الزيارات</label>
+
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="visits" wire:model="visits" type="checkbox" value="create-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">انشاء الزيارة</label>
+                    </div>
+{{--                    <div class="flex items-center mb-4 w-full">--}}
+{{--                        <input name="visits" wire:model="visits" type="checkbox" value="edit-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تعديل الزيارة</label>--}}
+{{--                    </div>--}}
+                </div>
+{{--                <div class="flex flex-row">--}}
+{{--                    <div class="flex items-center mb-4 w-full">--}}
+{{--                        <input name="visits" wire:model="visits" type="checkbox" value="accept-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الموافقة على الزيارة</label>--}}
+{{--                    </div>--}}
+{{--                    <div class="flex items-center mb-4 w-full">--}}
+{{--                        <input name="visits" wire:model="visits" type="checkbox" value="reject-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رفض الزيارة</label>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="flex flex-row">--}}
+{{--                    <div class="flex items-center mb-4 w-full">--}}
+{{--                        <input name="visits" wire:model="visits" type="checkbox" value="close-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إتمام الزيارة</label>--}}
+{{--                    </div>--}}
+{{--                    <div class="flex items-center mb-4 w-full">--}}
+{{--                        <input name="visits" wire:model="visits" type="checkbox" value="cancel-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+{{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إلغاء الزيارة</label>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+
+
+                @error('visits')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
+
     <div class="mt-8 text-center">
         <button wire:click.prevent="update" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">

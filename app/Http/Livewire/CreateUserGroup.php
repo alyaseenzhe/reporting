@@ -46,7 +46,7 @@ class CreateUserGroup extends Component
             'calculate_all_product_target' => $this->calculate_all_product_target,
             'choose_special_product' => $this->choose_special_product,
             'edit_special_product' => $this->edit_special_product,
-            'visits' => json_encode($this->report_type),
+            'visits' => json_encode($this->visits),
         ]);
 
         if($record) {

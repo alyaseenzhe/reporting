@@ -76,6 +76,8 @@ class VisitCalendar extends Component
         $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
 
         $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
+     ->with('requester')
+       ->with('emps')
         ->whereHas('emps', function ($q) {
             $q->where('user_id', Auth::id());
         })
@@ -448,22 +450,33 @@ class VisitCalendar extends Component
         $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
 //        $this->validate();
 
-        $this->visits = Visit::
+        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user'])
 
-        where("branch", "LIKE", $this->branch)
+        ->where("branch", "LIKE", $this->branch)
+//            ->when($this->status !== '-1', function ($q) {
+//                $q->where("status", $this->status);
+//            })
             ->where("status","LIKE",  $this->status)
+//            ->when($this->start && $this->end, function ($q) {
+//                $q->whereBetween('start', [$this->start, $this->end]);
+//            })
             ->whereBetween('start', [$this->start, $this->end])
 //            ->where('start', "LIKE",$this->start)
 //            ->where('end', "LIKE",$this->end)
             ->orderBy('created_at', 'DESC')
             ->get();
 
-        $this->showAllVisits =Visit::
 
-        where("branch", "LIKE", $this->branch)
-            ->where("status","LIKE",  $this->status)
-            ->where('start', "LIKE",$this->start)
-            ->where('end', "LIKE",$this->end)
+        $this->showAllVisits =Visit::with(['emps_requester.user', 'emps_recipients.user'])
+
+        ->where("branch", "LIKE", $this->branch)
+            ->when($this->status !== '', function ($q) {
+                $q->where("status", $this->status);
+            })
+//            ->when($this->start && $this->end, function ($q) {
+//                $q->whereBetween('start', [$this->start, $this->end]);
+//            })
+            ->whereBetween('start', [$this->start, $this->end])
             ->orderBy('created_at', 'DESC')
             ->get();
 
