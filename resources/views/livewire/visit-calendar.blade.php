@@ -587,6 +587,7 @@
                 //     url: '/show-visit/88' // 👈 your route link here
                 // }],
                 eventDidMount: function (info) {
+
                     const status = info.event.extendedProps.status;
                     let textColor = '#000000';
 
@@ -608,6 +609,7 @@
 
 
                 select : function (info) {
+
                 //     console.log(info);
                 //     var title = prompt('Enter Event Name:');
                 //     console.log(title);
@@ -617,7 +619,10 @@
                 //     }
                 // },
                 // dateClick: function (info) {
-                //     document.getElementById('selected_date').value = info.dateStr;
+
+
+                    let selectedDate = info.startStr; // 👉 selected date
+                    let selectedEnd = info.endStr;
                     if (!canOpenModal) {
                         return; // User is not allowed, do nothing
                     }
@@ -682,14 +687,13 @@
       <label for="employee-select" style="min-width: 120px;text-align:right;">ابلاغ الموظفين</label>
       <select id="employee-select" class=" form-input w-full" multiple style="flex: 1; "></select>
     </div>
-   <div class=" w-full" >
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
      <label style="min-width: 120px;">تاريخ البداية</label>
-     <input class="form-input" type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
-     <input type="text" id="start" name="date" class="form-control" readonly>
+ <input type="date" id="start" value="${selectedDate}" class="form-input w-full" >
    </div>
-   <div class="edit-form-group w-full" >
+     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
      <label style="min-width: 120px;">تاريخ النهاية</label>
-     <input type="date" id="end" >
+ <input type="date"  id="end" class="form-input w-full">
    </div>
 
     <!-- وقت الزيارة -->
@@ -945,8 +949,10 @@
                                         goals,
                                         branch,
                                         attendants,
-                                        start: startDateTime,
-                                        end: info.endStr,
+                                        // start: startDateTime,
+                                        start,
+                                        // end: info.endStr,
+                                        end,
                                         extra_services: extraServices,
                                         requester: @json(Auth::user()->name)
 
@@ -972,8 +978,10 @@
                                     branch,
                                     attendants,
                                     employees: selectedEmployees,
-                                    start: startDateTime,
-                                    end: info.endStr,
+                                    // start: startDateTime,
+                                    start,
+                                    // end: info.endStr,
+                                    end,
                                     extra_services: extraServices,
                                     requester: @json(Auth::user()->name)
                                 };
@@ -987,7 +995,8 @@
                             Livewire.emit('addVisit', {
                                 title: result.value.title,
                                 start: result.value.start,
-                                end: info.endStr,
+                                // end: info.endStr,
+                                end:  result.value.end,
                                 reason: result.value.reason,
                                 goals: result.value.goals,
                                 branch: result.value.branch,
