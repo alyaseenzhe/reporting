@@ -39,6 +39,31 @@
             <div id="branch-container" class="mb-6 mt-6">
                 <div style="background-color:#f0f8ff" class="p-5 flex flex-col gap-4">
                     <div class="w-full flex flex-col sm:flex-row gap-4">
+
+{{--                        @php--}}
+{{--                            $uniqueRequesters = collect($visits)--}}
+{{--                                ->flatMap(function ($visit) {--}}
+{{--                                    return $visit['emps_requester'];--}}
+{{--                                })--}}
+{{--                                ->unique(fn($r) => $r['user']['id']);--}}
+{{--                        @endphp--}}
+                       <div>
+                           <label class="block font-bold mb-2">اسم الزائر
+
+                           </label>
+
+                           <select class="form-select" wire:model.lazy="user">
+{{--                               @foreach($visits as $visit)--}}
+                               <option value="">الرجاء الاختيار</option>
+                               @foreach($uniqueRequesters as $requester)
+                                   <option value="{{$requester['user']['id']}}">{{$requester['user']['name']}}</option>
+                               @endforeach
+{{--
+@endforeach--}}
+                           </select>
+                       </div>
+
+
                         <div class="w-full">
                             <label class="block font-bold mb-2">التاريخ من
 
@@ -90,7 +115,7 @@
                                 <option value="0">تحت الإجراء</option>
                                 <option value="1">مقبوله</option>
                                 <option value="2">مرفوضة</option>
-                                <option value="3">مغلقة</option>
+                                <option value="3">منجزة</option>
                                 <option value="4">ملغية</option>
 
 
@@ -140,8 +165,12 @@
                                 <th class="border p-2 whitespace-nowrap">
                                     <div class="text-sm">#</div>
                                 </th>
+{{--                                <th class="border p-2 whitespace-nowrap">--}}
+{{--                                    <div class="text-sm">النوع</div>--}}
+{{--                                </th>--}}
+
                                 <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">النوع</div>
+                                    <div class="text-sm">الزائر</div>
                                 </th>
                                 <th class="border p-2 whitespace-nowrap">
                                     <div class="text-sm">العنوان</div>
@@ -167,10 +196,16 @@
                             </tr>
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100">
+
                             @forelse($visits as $visit)
                                 <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @endif">
+
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
+                                    </td>
+
+                                    <td class="border p-2 whitespace-nowrap">
+                                        <div class="text-center text-gray-800 text-sm">{{ $visit['emps_requester'][0]['user']['name'] }}</div>
                                     </td>
 {{--                                    <td class="border p-2 whitespace-nowrap">--}}
 {{--                                        <div>--}}
@@ -257,7 +292,7 @@
                                             @elseif($visit["status"] == 2)
                                                 مرفوضة
                                             @elseif($visit["status"] == 3)
-                                                مغلقة
+                                               منجزة
                                             @elseif($visit["status"] == 4)
                                                 ملغية
                                             @endif
@@ -582,6 +617,7 @@
                 //     }
                 // },
                 // dateClick: function (info) {
+                //     document.getElementById('selected_date').value = info.dateStr;
                     if (!canOpenModal) {
                         return; // User is not allowed, do nothing
                     }
@@ -646,7 +682,15 @@
       <label for="employee-select" style="min-width: 120px;text-align:right;">ابلاغ الموظفين</label>
       <select id="employee-select" class=" form-input w-full" multiple style="flex: 1; "></select>
     </div>
-
+   <div class=" w-full" >
+     <label style="min-width: 120px;">تاريخ البداية</label>
+     <input class="form-input" type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
+     <input type="text" id="start" name="date" class="form-control" readonly>
+   </div>
+   <div class="edit-form-group w-full" >
+     <label style="min-width: 120px;">تاريخ النهاية</label>
+     <input type="date" id="end" >
+   </div>
 
     <!-- وقت الزيارة -->
     <!-- وقت الزيارة -->
@@ -854,6 +898,8 @@
                             const branch = document.getElementById('branch-select').value;
                             const visitTime = document.getElementById('visit-time').value;
                             const attendants = document.getElementById('attendants').value;
+                            const start = document.getElementById('start').value;
+                            const end = document.getElementById('end').value;
 
                             // const selectedEmployees = $('#employee-select').val(); // returns an array of selected employee IDs
                             let selectedEmployees = $('#employee-select').val() || [];
@@ -959,6 +1005,7 @@
 
                 },
                 eventClick: function(info) {
+                    // document.getElementById('start').value = info.dateStr;
                     info.jsEvent.preventDefault(); // prevent default link behavior
 
                     const visit = info.event.extendedProps;

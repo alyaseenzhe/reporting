@@ -301,67 +301,67 @@ class ShowVisit extends Component
     public function review($data) {
 
 
-        $visit = Visit::find($this->visit_id);
-
-        $is_requester = $visit->where('requester_id', Auth::id())->count();
-//        dd($is_recipient);
-
-            if( $is_requester && $visit->requester_reviews == Null) {
-                $visit->requester_reviews = json_encode($data);
-
-
-            }
-
-            elseif($visit->recipient_reviews == Null){
-                $visit->recipient_reviews = json_encode($data);
-
-            }
-                if($visit->save())
-                {
+//
+//        $visit = Visit::find($this->visit_id);
+//
+//        $is_requester = $visit->where('requester_id', Auth::id())->count();
+////        dd($is_recipient);
+//
+//            if( $is_requester && $visit->requester_reviews == Null) {
+//                $visit->requester_reviews = json_encode($data);
+//
+//
+//            }
+//
+//            elseif($visit->recipient_reviews == Null){
+//                $visit->recipient_reviews = json_encode($data);
+//
+//            }
+//                if($visit->save())
+//                {
 
 //            }
 
-//        $visit = VisitEmp::where('visit_id', $this->visit_id)
-//            ->where('user_id', Auth::id())
-//            ->where(function($query) {
-//                $query->whereNull('reviews')
-//                    ->orWhere('reviews', '');
-//            })
-//            ->first();
-//
-//        if ($visit) {
-//
-//            $editRecord = VisitEmp::findOrFail($visit->id);
-//
-//            $editRecord->reviews = json_encode($data);
-//
-//            if ($visit->recipient_reviews ->save()) {
-//
-//                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
-//                    ->where(function($query) {
-//                        $query->whereNull('reviews')
-//                            ->orWhere('reviews', '');
-//                    })
-//                    ->count();
-//
-//                if ($checkReviews == 0) {
-//                    // send email and whatsapp to tell user that the rating has been finished by all the recipients
-////                    dd("تم الانتهاء من جميع التعليقات");
-//
-////                    $this->visitMail($visit, null, 'reviews-done');
-//                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
-//
-//                }
+        $visit = VisitEmp::where('visit_id', $this->visit_id)
+            ->where('user_id', Auth::id())
+            ->where(function($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->first();
 
+        if ($visit) {
+            $editRecord = VisitEmp::findOrFail($visit->id);
+
+            $editRecord->reviews = json_encode($data);
+
+//            if ($visit->recipient_reviews->save()) {
+
+                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
+                    ->where(function ($query) {
+                        $query->whereNull('reviews')
+                            ->orWhere('reviews', '');
+                    })
+                    ->count();
+
+                if ($checkReviews == 0) {
+                    // send email and whatsapp to tell user that the rating has been finished by all the recipients
+//                    dd("تم الانتهاء من جميع التعليقات");
+
+//                    $this->visitMail($visit, null, 'reviews-done');
+                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+
+                }
+            if($editRecord->save())
+                {
                 session()->flash('success', 'تم تقييم الزيارة');
                 return redirect()->route('show.visit', ['id' => $this->visit_id]);
 
-            }
-            else {
+            } else {
                 session()->flash('error-message', 'حدث خطأ ما عند تقييم الزيارة');
                 return redirect()->route('show.visit', ['id' => $this->visit_id]);
             }
-
+        }
 
     }
 
@@ -393,32 +393,32 @@ class ShowVisit extends Component
 
     public function can_rate() {
 
-        return  $this->can_rate = Visit::where('visits.id', $this->visit_id)
-            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
-            ->where('visit_emps.user_id', Auth::id())
-            ->where('visits.status', '3')
-            ->where('visits.is_deleted', '0')
-            ->where(function ($query) {
-                $query->where(function ($q) {
-                    $q->where('visit_emps.type', 'requester')
-                        ->whereNull('requester_reviews');
-                })
-                    ->orWhere(function ($q) {
-                        $q->where('visit_emps.type', 'recipient')
-                            ->whereNull('recipient_reviews');
-                    });
-            })
-            ->exists();
-//        return $this->can_rate = Visit::where('visits.id', $this->visit_id)
+//        return  $this->can_rate = Visit::where('visits.id', $this->visit_id)
 //            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
 //            ->where('visit_emps.user_id', Auth::id())
 //            ->where('visits.status', '3')
 //            ->where('visits.is_deleted', '0')
-//            ->where(function($query) {
-//                $query->whereNull('reviews')
-//                    ->orWhere('reviews', '');
+//            ->where(function ($query) {
+//                $query->where(function ($q) {
+//                    $q->where('visit_emps.type', 'requester')
+//                        ->whereNull('requester_reviews');
+//                })
+//                    ->orWhere(function ($q) {
+//                        $q->where('visit_emps.type', 'recipient')
+//                            ->whereNull('recipient_reviews');
+//                    });
 //            })
 //            ->exists();
+        return $this->can_rate = Visit::where('visits.id', $this->visit_id)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->where('visit_emps.user_id', Auth::id())
+            ->where('visits.status', '3')
+            ->where('visits.is_deleted', '0')
+            ->where(function($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->exists();
     }
 
     public function reviews_done() {

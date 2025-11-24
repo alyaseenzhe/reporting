@@ -56,7 +56,7 @@
                                 <button id="close-btn"
                                         style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold">
-                            <span>إتمام الزيارة</span>
+                            <span>إنجاز الزيارة</span>
                         </span>
                                 </button>
                             </div>
@@ -89,7 +89,7 @@
                     @if($can_recipient_approve)
 
                         <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
-                            <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمدير الفرع</p>
+                            <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمشرف المنطقة</p>
                             @if ((Auth::user()->user_group && in_array('list.daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
                             <div>
                                 <button id="approve-btn"
@@ -169,7 +169,7 @@
                 @elseif($record->status == 2)
                     مرفوضة
                 @elseif($record->status == 3)
-                    مغلقة
+                    منجزة
                 @elseif($record->status == 4)
                     ملغية
                 @endif
@@ -347,9 +347,9 @@
                 <!-- Column 1 -->
                 <div class="space-y-4">
                     @foreach($record->emps_requester as $req_record)
-{{--                        @php--}}
-{{--                            $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection--}}
-{{--                        @endphp--}}
+                        @php
+                            $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection
+                        @endphp
                         <div class="border rounded-xl shadow p-4">
                             <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
                                 <div class="flex items-center gap-2">
@@ -364,7 +364,7 @@
                                     <!-- Name + Status -->
                                     {{ $req_record->user->name }}
                                     @php
-//                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';
+                                        $isReviewWritten = $req_record->reviews && $req_record->reviews != '';
                                         $isrRequesterReview = $record->requester_reviews && $record->requester_reviews != '';
                                         $isrRecipientReview = $record->recipient_reviews && $record->recipient_reviews != '';
                                         $isMyReview = $req_record->user_id == auth()->id();  // adjust auth if needed
@@ -372,8 +372,8 @@
 //                                        $allReviewsDone = $this->reviews_done();
                                     @endphp
 
-{{--                                    @if(!$isReviewWritten  )--}}
-                                    @if(!$isrRequesterReview   )
+                                    @if(!$isReviewWritten  )
+{{--                                    @if(!$isrRequesterReview   )--}}
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
 {{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
 {{--                                    @elseif(!$allReviewsDone)--}}
@@ -381,20 +381,21 @@
 {{--                                        <span style="color: #287c0c;">(تم التقييم)</span>--}}
                                     @else
                                         <span style="color: #287c0c;">(تم التقييم)</span>
-{{--                                        (--}}
-{{--                                        <span class="text-yellow-500 ml-1">&#9733;</span>--}}
-{{--                                        <span style="color: #a40e3b;">--}}
-{{--                                            {{ number_format(floatval($reviews['totalRating']) / (count($reviews['answers']) - 1), 1) }}--}}
-{{--                                        </span>--}}
-{{--                                        )--}}
+                                        (
+                                        <span class="text-yellow-500 ml-1">&#9733;</span>
+                                        <span style="color: #a40e3b;">
+                                            {{ number_format(floatval($reviews['totalRating']) / (count($reviews['answers']) - 1), 1) }}
+                                        </span>
+                                        )
                                     @endif
 
                                 </div>
                             </h2>
 
 {{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
-{{--                            @if($isReviewWritten  )--}}
-                            @if($isrRequesterReview  )
+                            @if($isReviewWritten  )
+{{--                            @if($isrRequesterReview  )--}}
+
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
                                     @foreach($reviews['answers'] as $answer)
                                         <div class="mb-4">
@@ -422,16 +423,16 @@
 
                 <!-- Column 2 -->
                 <div class="space-y-4">
-{{--                    @foreach($record->emps_recipients as $rec_record)--}}
-{{--                        @php--}}
-{{--                            $reviews = collect(json_decode($rec_record->reviews, true)); // decode to collection--}}
-{{--                        @endphp--}}
-{{--                        @php--}}
-{{--                            $isReviewWritten = $rec_record->reviews && $rec_record->reviews != '';--}}
-{{--                            $isMyReview = $rec_record->user_id == auth()->id();--}}
-{{--                            $allReviewsDone = $this->reviews_done();--}}
-{{--                            $parsedReview = $isReviewWritten ? json_decode($rec_record->reviews, true) : null;--}}
-{{--                        @endphp--}}
+                    @foreach($record->emps_recipients as $rec_record)
+                        @php
+                            $reviews = collect(json_decode($rec_record->reviews, true)); // decode to collection
+                        @endphp
+                        @php
+                            $isReviewWritten = $rec_record->reviews && $rec_record->reviews != '';
+                            $isMyReview = $rec_record->user_id == auth()->id();
+                            $allReviewsDone = $this->reviews_done();
+                            $parsedReview = $isReviewWritten ? json_decode($rec_record->reviews, true) : null;
+                        @endphp
 
                         <div class="border rounded-xl shadow p-4">
                             <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
@@ -445,32 +446,34 @@
                                     </svg>
 
                                     <!-- Name + Status -->
-                                    {{ $branches[$record->branch]}}
-
-{{--                                    @if(!$isReviewWritten )--}}
-                                    @if(!$isrRecipientReview )
+{{--                                    {{ $branches[$record->branch]}}--}}
+                                   {{$rec_record->user->name}}
+                                    @if(!$isReviewWritten )
+{{--                                    @if(!$isrRecipientReview )--}}
                                         <span style="color: #a40e3b;">(تحت الإجراء)</span>
 {{--                                    @elseif(!$isMyReview && !$allReviewsDone)--}}
 {{--                                    @elseif(!$allReviewsDone)--}}
 {{--                                        <span style="color: #287c0c;">(تم التقييم)</span>--}}
                                     @else
                                         <span style="color: #287c0c;">(تم التقييم)</span>
-{{--                                        (--}}
-{{--                                        <span class="text-yellow-500 ml-1">&#9733;</span>--}}
-{{--                                        <span style="color: #a40e3b;">--}}
-{{--                                            {{ number_format(floatval($parsedReview['totalRating']) / (count($parsedReview['answers']) - 1), 1) }}--}}
-{{--                                        </span>--}}
-{{--                                        )--}}
+                                        (
+                                        <span class="text-yellow-500 ml-1">&#9733;</span>
+                                        <span style="color: #a40e3b;">
+                                            {{ number_format(floatval($parsedReview['totalRating']) / (count($parsedReview['answers']) - 1), 1) }}
+                                        </span>
+                                        )
                                     @endif
                                 </div>
                             </h2>
 
 {{--                            @if($isReviewWritten && ($isMyReview || $allReviewsDone))--}}
-{{--                            @if($isReviewWritten)--}}
+                            @if($isReviewWritten)
 {{--                            @dd($parsedReviewRecipient)--}}
-                            @if($isrRecipientReview)
+{{--                            @dd($rec_record)--}}
+{{--                            @if($isrRecipientReview)--}}
                                 <div class="collapse-content mt-9 text-gray-600 hidden">
-                                    @foreach($parsedReviewRecipient['answers'] as $answer)
+{{--                                    @foreach($parsedReviewRecipient['answers'] as $answer)--}}
+                                    @foreach($parsedReview['answers'] as $answer)
                                         <div class="mb-4">
                                             <label class="font-semibold">{{ $answer['text'] }}</label><br>
 
@@ -490,7 +493,7 @@
                             @endif
                         </div>
 
-{{--                    @endforeach--}}
+                    @endforeach
                 </div>
             </div>
             @endif
@@ -634,7 +637,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('reviewComponent', () => ({
                 questions: [
-                    {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
+                    {text: 'جودة التحضير للزيارة', id: 'preparation-quality', type: 'rating'},
                     {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
                     {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
                     {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},
@@ -784,7 +787,7 @@
                 // {text: 'تنفيذ التوصيات السابقة للزيارة', id: 'recommendations', type: 'rating'},
                 // {text: 'ملاحظات', id: 'notes', type: 'textarea'}
 
-                {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
+                {text: 'جودة التحضير للزيارة', id: 'preparation-quality', type: 'rating'},
                 {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
                 {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
                 {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},
@@ -1156,7 +1159,7 @@
                 document.getElementById('close-btn').addEventListener('click', () => {
 
                     Swal.fire({
-                        title: 'إتمام الزيارة',
+                        title: 'إنجاز الزيارة',
                         text: 'هل تم الانتهاء من عمل الزيارة؟',
                         showCancelButton: true,
                         confirmButtonText: 'نعم',
