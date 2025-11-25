@@ -1251,6 +1251,7 @@
 </style>
 
 <div class="edit-form">
+<!--  <div class="edit-form-group" style="grid-column: span 2;">-->
   <div class="edit-form-group" style="grid-column: span 2;">
     <label for="edit-title" >عنوان الزيارة</label>
     <input type="text" id="edit-title" value="${visit.title || ''}">
@@ -1266,7 +1267,7 @@
     <input id="edit-goals" value="${visit.goals || ''}">
   </div>
 
-  <div class="edit-form-group">
+  <div class="edit-form-group"  style="grid-column: span 2;">
     <label for="edit-branch">مكان الزيارة</label>
     <select id="edit-branch" disabled >
       <option value="" disabled>اختر المكان</option>
@@ -1276,13 +1277,18 @@
     </select>
   </div>
 
-  <div class="edit-form-group">
+  <div class="edit-form-group" style="grid-column: span 2;">
     <label for="edit-employees">الموظفين</label>
     <select id="edit-employees" multiple></select>
   </div>
 
-  <div class="edit-form-group">
-    <label for="edit-visit-time">وقت الزيارة</label>
+
+   <div class="edit-form-group" >
+     <label style="">تاريخ البداية</label>
+     <input type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
+   </div>
+     <div class="edit-form-group">
+    <label for="edit-visit-time w-full">وقت الزيارة</label>
     <select id="edit-visit-time">
       <option value="" disabled>اختر الوقت</option>
       ${timeOptions.map(time =>
@@ -1290,11 +1296,7 @@
                         ).join('')}
     </select>
   </div>
-   <div class="edit-form-group w-full" >
-     <label style="min-width: 120px;">تاريخ البداية</label>
-     <input type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
-   </div>
-   <div class="edit-form-group w-full" >
+   <div class="edit-form-group" >
      <label style="min-width: 120px;">تاريخ النهاية</label>
      <input type="date" id="end" value="${visit.end ? new Date(visit.end).toISOString().split('T')[0] : ''}"  >
    </div>

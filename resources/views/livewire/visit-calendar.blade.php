@@ -703,38 +703,47 @@
   <select id="visit-time" class=" form-select w-full" style="flex: 1; ">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
-    <option value="08:00 AM">08:00 AM</option>
-    <option value="08:30 AM">08:30 AM</option>
-    <option value="09:00 AM">09:00 AM</option>
-    <option value="09:30 AM">09:30 AM</option>
-    <option value="10:00 AM">10:00 AM</option>
-    <option value="10:30 AM">10:30 AM</option>
-    <option value="11:00 AM">11:00 AM</option>
-    <option value="11:30 AM">11:30 AM</option>
-    <option value="12:00 PM">12:00 PM</option>
-    <option value="12:30 PM">12:30 PM</option>
-    <option value="01:00 PM">01:00 PM</option>
-    <option value="01:30 PM">01:30 PM</option>
-    <option value="02:00 PM">02:00 PM</option>
-    <option value="02:30 PM">02:30 PM</option>
-    <option value="03:00 PM">03:00 PM</option>
-    <option value="03:30 PM">03:30 PM</option>
-    <option value="04:00 PM">04:00 PM</option>
-    <option value="04:30 PM">04:30 PM</option>
-    <option value="05:00 PM">05:00 PM</option>
-    <option value="05:30 PM">05:30 PM</option>
-    <option value="06:00 PM">06:00 PM</option>
-    <option value="06:30 PM">06:30 PM</option>
-    <option value="07:00 PM">07:00 PM</option>
-    <option value="07:30 PM">07:30 PM</option>
-    <option value="08:00 PM">08:00 PM</option>
-    <option value="08:30 PM">08:30 PM</option>
-    <option value="09:00 PM">09:00 PM</option>
-    <option value="09:30 PM">09:30 PM</option>
-    <option value="10:00 PM">10:00 PM</option>
+ ${timeOptions.map(t => `<option value="${t}">${t}</option>`).join('')}
+<!--    <option value="08:00 AM">08:00 AM</option>-->
+<!--    <option value="08:30 AM">08:30 AM</option>-->
+<!--    <option value="09:00 AM">09:00 AM</option>-->
+<!--    <option value="09:30 AM">09:30 AM</option>-->
+<!--    <option value="10:00 AM">10:00 AM</option>-->
+<!--    <option value="10:30 AM">10:30 AM</option>-->
+<!--    <option value="11:00 AM">11:00 AM</option>-->
+<!--    <option value="11:30 AM">11:30 AM</option>-->
+<!--    <option value="12:00 PM">12:00 PM</option>-->
+<!--    <option value="12:30 PM">12:30 PM</option>-->
+<!--    <option value="01:00 PM">01:00 PM</option>-->
+<!--    <option value="01:30 PM">01:30 PM</option>-->
+<!--    <option value="02:00 PM">02:00 PM</option>-->
+<!--    <option value="02:30 PM">02:30 PM</option>-->
+<!--    <option value="03:00 PM">03:00 PM</option>-->
+<!--    <option value="03:30 PM">03:30 PM</option>-->
+<!--    <option value="04:00 PM">04:00 PM</option>-->
+<!--    <option value="04:30 PM">04:30 PM</option>-->
+<!--    <option value="05:00 PM">05:00 PM</option>-->
+<!--    <option value="05:30 PM">05:30 PM</option>-->
+<!--    <option value="06:00 PM">06:00 PM</option>-->
+<!--    <option value="06:30 PM">06:30 PM</option>-->
+<!--    <option value="07:00 PM">07:00 PM</option>-->
+<!--    <option value="07:30 PM">07:30 PM</option>-->
+<!--    <option value="08:00 PM">08:00 PM</option>-->
+<!--    <option value="08:30 PM">08:30 PM</option>-->
+<!--    <option value="09:00 PM">09:00 PM</option>-->
+<!--    <option value="09:30 PM">09:30 PM</option>-->
+<!--    <option value="10:00 PM">10:00 PM</option>-->
   </select>
 </div>
 
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+  <label for="end-time" style="min-width: 120px; text-align:right;">وقت الإنتهاء من الزيارة<span class="mx-1 text-red-500">*</span></label>
+  <select id="end-time" class=" form-select w-full" style="flex: 1; ">
+    <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
+    <!-- Time options below -->
+ ${timeOptions.map(t => `<option value="${t}">${t}</option>`).join('')}
+</select>
+</div>
 <!-- المرافقون -->
 <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
   <label style="min-width: 120px;text-align:right;">المرافقون</label>
@@ -840,6 +849,8 @@
                             });
 
 
+
+
                             branchSelect.addEventListener('change', () => {
                                 const selectedBranchId = branchSelect.value;
                                 const employees = employeesByBranch[selectedBranchId] || [];
@@ -850,12 +861,12 @@
                                 $(employeeSelect).empty();
 
                                 // Add "All" option
-                                const allOption = new Option("الكل", "all", false, false);
+                                const allOption = new Option("الكل", "all", true, true);
                                 $(employeeSelect).append(allOption);
 
                                 employees.forEach(emp => {
                                     const isGroup8 = emp.group == 8;
-                                    const option = new Option(emp.name, emp.id, isGroup8, isGroup8);
+                                    const option = new Option(emp.name, emp.id );
                                     // const option2 = new Option(emp.name, emp.id, isGroup8, isGroup8);
                                     // if (isGroup8) {
                                     //     // option.disabled = true;
@@ -872,9 +883,14 @@
                                         $(employeeSelect).find('option:not(:disabled)').each(function() {
                                             allIds.push(this.value);
                                         });
-                                        $(employeeSelect).val(allIds).trigger('change');
+                                        // $(employeeSelect).val(allIds).trigger('change');
 
                                         // Hide "All" option
+                                        //     $(employeeSelect).find('option[value="all"]').remove();
+                                        //     $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                        $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                    }
+                                    else{
                                         $(employeeSelect).find('option[value="all"]').remove();
                                         $(employeeSelect).trigger('change.select2'); // Refresh Select2
                                     }
@@ -885,6 +901,7 @@
                             });
 
                             $(employeeSelect).on('select2:unselecting', function (e) {
+
                                 const id = e.params.args.data.id;
 
                                 // Check if the option is disabled (group 8)
@@ -901,6 +918,7 @@
                             const goals = document.getElementById('visit-goals').value;
                             const branch = document.getElementById('branch-select').value;
                             const visitTime = document.getElementById('visit-time').value;
+                            const endTime = document.getElementById('end-time').value;
                             const attendants = document.getElementById('attendants').value;
                             const start = document.getElementById('start').value;
                             const end = document.getElementById('end').value;
@@ -941,7 +959,8 @@
 
 
                                     // const startDateTime = combineDateAndTime(visitDate, visitTime);
-                                    const startDateTime = combineDateAndTime(visitDate);
+                                    const startDateTime = combineDateAndTime(start, visitTime);
+                                    const endDateTime = combineDateAndTime(end, endTime);
 
                                     return {
                                         title,
@@ -949,10 +968,10 @@
                                         goals,
                                         branch,
                                         attendants,
-                                        // start: startDateTime,
-                                        start,
+                                         start: startDateTime,
+                                        // start,
                                         // end: info.endStr,
-                                        end,
+                                        end: endDateTime,
                                         extra_services: extraServices,
                                         requester: @json(Auth::user()->name)
 
@@ -966,7 +985,9 @@
                                     return false;
                                 }
 
-                                const startDateTime = combineDateAndTime(info.startStr, visitTime);
+                                // const startDateTime = combineDateAndTime(info.startStr, visitTime);
+                                const startDateTime = combineDateAndTime(start, visitTime);
+                                const endDateTime = combineDateAndTime(end, endTime);
 
                                 const extraServices = Array.from(document.querySelectorAll('input[name="extra-services"]:checked'))
                                     .map(cb => cb.value);
@@ -978,10 +999,10 @@
                                     branch,
                                     attendants,
                                     employees: selectedEmployees,
-                                    // start: startDateTime,
-                                    start,
-                                    // end: info.endStr,
-                                    end,
+                                     start: startDateTime,
+                                    // start,
+                                     end: endDateTime,
+                                   // end,
                                     extra_services: extraServices,
                                     requester: @json(Auth::user()->name)
                                 };
