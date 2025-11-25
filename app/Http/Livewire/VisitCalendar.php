@@ -55,7 +55,12 @@ class VisitCalendar extends Component
 
     public function loadVisits()
     {
-
+        $user = Auth::user();
+        $canViewAll = (
+            ($user->user_group->visits
+                && in_array('view-all-visits', json_decode($user->user_group->visits)))
+            || $user->role == 'a'
+        );
 
 //        $this->visits = Visit::select(
 //            'visits.id',
@@ -84,23 +89,28 @@ class VisitCalendar extends Component
 
         $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
 
-        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
-     ->with('requester')
-       ->with('emps')
-        ->whereHas('emps', function ($q) {
-            $q->where('user_id', Auth::id());
-        })
+            $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
+            ->with('requester')
+                ->with('emps')
+            ->when(!$canViewAll, function ($query) use ($user) {
+                // Limit to only visits that belong to this user
+                $query->whereHas('emps', fn($q) => $q->where('user_id', $user->id));
+            })
+//                ->whereHas('emps', function ($q) {
+//                    $q->where('user_id', Auth::id());
+//                })
 //            ->where('is_deleted', 0)
-            ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
-            ->orderBy('start', 'desc')
-            ->get([
-                'id', 'title', 'requester_id', 'start', 'end',
-                'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
-                'status', 'is_deleted'
-            ])
-            ->toArray(); // Now it's an array of visits
+                ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
+                ->orderBy('start', 'desc')
+                ->get([
+                    'id', 'title', 'requester_id', 'start', 'end',
+                    'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
+                    'status', 'is_deleted'
+                ])
+                ->toArray(); // Now it's an array of visits
 
 
+//        dd($this->visits);
     }
 
     public function loadEmps()
@@ -178,16 +188,20 @@ class VisitCalendar extends Component
         ]);
 
         if ($visit_data) {
-            $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
-//            $records = collect($employees[$visit_data->branch])
-//                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
-//                    'visit_id' => $visit_data->id,
-//                    'type' => 'recipient',
-//                    'user_id' => $id,
-//                ])
-//                )
-//                ->values()
-//                ->toArray();
+            if($data['employees'][0] == 'all'){
+                            $records = collect($employees[$visit_data->branch])
+                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
+                    'visit_id' => $visit_data->id,
+                    'type' => 'recipient',
+                    'user_id' => $id,
+                ])
+                )
+                ->values()
+                ->toArray();
+            }
+            else {
+                $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id])->toArray();
+            }
             $requester_record = ['visit_id' => $visit_data->id, 'type' => 'requester', 'user_id' => Auth::id()];
             array_push($records, $requester_record);
 

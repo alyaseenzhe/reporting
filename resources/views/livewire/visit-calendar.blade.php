@@ -69,7 +69,7 @@
 
                             </label>
                             <div>
-                            <input class="form-input" type="date" wire:model.lazy="start"/>
+                            <input class="form-input w-full" type="date" wire:model.lazy="start"/>
 
                             </div>
                         </div>
@@ -78,7 +78,7 @@
 
                             </label>
                             <div>
-                            <input class="form-input" type="date" wire:model.lazy="end"/>
+                            <input class="form-input w-full" type="date" wire:model.lazy="end"/>
 
                             </div>
                         </div>
@@ -634,20 +634,20 @@
                         html: `
                   <div style="direction: rtl; max-width: 100%; width: 100%;">
   <!-- عنوان الزيارة -->
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="event-title" style="min-width: 120px;text-align:right;">موضوع الزيارة<span class="mx-1 text-red-500">*</span></label>
-    <input type="text" id="event-title" class=" form-input w-full" style="flex: 1;">
+  <div style=" align-items: center; gap: 10px; margin-bottom: 10px;">
+    <label for="event-title" style="min-width: 120px;text-align:right;" class="text-sm font-bold">موضوع الزيارة<span class="mx-1 text-red-500">*</span></label>
+    <input type="text" id="event-title" class=" form-input w-full" style="flex: 1;" value="${visit.title || ''}">
   </div>
 
   <!-- سبب الزيارة -->
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-reason" style="min-width: 120px;text-align:right;">سبب الزيارة<span class="mx-1 text-red-500">*</span></label>
+  <div style="align-items: center; gap: 10px; margin-bottom: 10px;">
+    <label for="visit-reason" style="min-width: 120px;text-align:right;" class="text-sm font-bold">سبب الزيارة<span class="mx-1 text-red-500">*</span></label>
     <input type="text" id="visit-reason" class=" form-input w-full" style="flex: 1;">
   </div>
 
   <!-- أهداف الزيارة -->
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="visit-goals" style="min-width: 120px;text-align:right;">التحضيرات المطلوبة</label>
+  <div style="align-items: center; gap: 10px; margin-bottom: 10px;">
+    <label for="visit-goals" style="min-width: 120px;text-align:right;" class="text-sm font-bold">التحضيرات المطلوبة</label>
     <input id="visit-goals" class=" form-input w-full text-right">
 
 <!--style="flex: 1; height: 150px; resize: none;-->
@@ -661,8 +661,8 @@
   </div>
 
   <!-- مكان الزيارة -->
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-    <label for="branch-select" style="min-width: 120px;text-align:right;">مكان الزيارة<span class="mx-1 text-red-500">*</span></label>
+  <div style="align-items: center; gap: 10px; margin-bottom: 10px;">
+    <label for="branch-select" style="min-width: 120px;text-align:right;" class="text-sm font-bold">مكان الزيارة<span class="mx-1 text-red-500">*</span></label>
     <select id="branch-select" class=" form-select w-full" style="flex: 1; ">
       <option value="" disabled selected>اختر المكان</option>
       <option value="0101">فرع الاحساء</option>
@@ -684,23 +684,22 @@
   </div>
 
     <!-- الموظفين -->
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-      <label for="employee-select" style="min-width: 120px;text-align:right;">ابلاغ الموظفين</label>
+    <div style=" align-items: center; gap: 10px; margin-bottom: 10px;">
+      <label for="employee-select" style="min-width: 120px;text-align:right;" class="text-sm font-bold">ابلاغ الموظفين</label>
       <select id="employee-select" class=" form-input w-full" multiple style="flex: 1; "></select>
     </div>
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-     <label style="min-width: 120px;">تاريخ البداية</label>
+
+<div >
+<div class="flex w-full gap-2">
+    <div class="w-full" style=" align-items: center; gap: 10px; margin-bottom: 10px;">
+     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ البداية</label>
+
  <input type="date" id="start" value="${selectedDate}" class="form-input w-full" >
    </div>
-     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-     <label style="min-width: 120px;">تاريخ النهاية</label>
- <input type="date"  id="end" class="form-input w-full">
-   </div>
-
     <!-- وقت الزيارة -->
     <!-- وقت الزيارة -->
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-  <label for="visit-time" style="min-width: 120px; text-align:right;">وقت الزيارة<span class="mx-1 text-red-500">*</span></label>
+<div style="align-items: center; gap: 10px; margin-bottom: 10px;">
+  <label class="text-sm font-bold" for="visit-time" style="min-width: 120px; text-align:right;">وقت الزيارة<span class="mx-1 text-red-500">*</span></label>
   <select id="visit-time" class=" form-select w-full" style="flex: 1; ">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
@@ -736,18 +735,28 @@
 <!--    <option value="10:00 PM">10:00 PM</option>-->
   </select>
 </div>
+</div>
+<div class="flex gap-2">
+     <div class="w-full" style="align-items: center; gap: 10px; margin-bottom: 10px;">
+     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية</label>
+ <input type="date"  id="end" class="form-input w-full">
+   </div>
 
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-  <label for="end-time" style="min-width: 120px; text-align:right;">وقت الإنتهاء من الزيارة<span class="mx-1 text-red-500">*</span></label>
+
+
+<div style=" align-items: center; gap: 10px; margin-bottom: 10px;">
+  <label class="text-sm font-bold" for="end-time" style="min-width: 120px; text-align:right;">وقت الإنتهاء<span class="mx-1 text-red-500">*</span></label>
   <select id="end-time" class=" form-select w-full" style="flex: 1; ">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
  ${timeOptions.map(t => `<option value="${t}">${t}</option>`).join('')}
 </select>
 </div>
+</div>
+</div>
 <!-- المرافقون -->
-<div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
-  <label style="min-width: 120px;text-align:right;">المرافقون</label>
+<div style=" align-items: flex-start; gap: 10px; margin-bottom: 10px;">
+  <label class="text-sm font-bold"  style="min-width: 120px;text-align:right;">المرافقون</label>
 <input type="text" id="attendants" class=" form-input w-full" style="flex: 1;">
 <!--  <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">-->
 <!--    <label><input class="form-checkbox" type="checkbox" name="extra-services" value="hotel"> حجز فندق</label>-->
@@ -768,72 +777,6 @@
                         customClass: {
                             popup: 'responsive-modal'
                         },
-
-
-                        // didOpen: () => {
-                        //     const branchSelect = document.getElementById('branch-select');
-                        //     const employeeSelect = document.getElementById('employee-select');
-                        //
-                        //     let disabledEmployees = [];
-                        //
-                        //     // Initialize Select2 on employeeSelect
-                        //     $(employeeSelect).select2({
-                        //         dir: "rtl",
-                        //         dropdownCssClass: "select-font-size form-select",
-                        //         class: "form-input",
-                        //         dropdownParent: document.querySelector('.swal2-popup'),
-                        //         placeholder: "اختر الموظفين"
-                        //     });
-                        //
-                        //     // Populate employees for a branch
-                        //     function populateEmployees(branchId) {
-                        //         const employees = employeesByBranch[branchId] || [];
-                        //         disabledEmployees = [];
-                        //
-                        //         // Clear previous options
-                        //         $(employeeSelect).empty();
-                        //
-                        //         employees.forEach(emp => {
-                        //             const isGroup8 = emp.group == 8;
-                        //             const option = new Option(emp.name, emp.id, false, false);
-                        //             if (isGroup8) {
-                        //                 option.disabled = true;
-                        //                 disabledEmployees.push(emp.id.toString());
-                        //             }
-                        //             $(employeeSelect).append(option);
-                        //         });
-                        //
-                        //         // Refresh Select2 UI
-                        //         $(employeeSelect).trigger('change');
-                        //     }
-                        //
-                        //     // Handle branch change
-                        //     branchSelect.addEventListener('change', () => {
-                        //         populateEmployees(branchSelect.value);
-                        //     });
-                        //
-                        //     // Prevent unselecting disabled employees
-                        //     $(employeeSelect).on('select2:unselecting', function (e) {
-                        //         const id = e.params.args.data.id;
-                        //         if (disabledEmployees.includes(id.toString())) {
-                        //             e.preventDefault(); // prevent unselect
-                        //         }
-                        //     });
-                        //     // Handle selecting "All"
-                        //     $(employeeSelect).on('select2:select', function(e) {
-                        //         if (e.params.data.id === "all") {
-                        //             const allIds = [];
-                        //             $(employeeSelect).find('option:not(:disabled)').each(function() {
-                        //                 allIds.push(this.value);
-                        //             });
-                        //             $(employeeSelect).val(allIds).trigger('change');
-                        //         }
-                        //     });
-                        //     // Initialize first branch
-                        //     if (branchSelect.value) {
-                        //         populateEmployees(branchSelect.value);
-                        //     }
-                        // },
 
 
                         didOpen: () => {

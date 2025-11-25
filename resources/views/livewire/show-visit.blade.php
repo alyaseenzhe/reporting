@@ -294,6 +294,7 @@
                     <label class="block font-bold mb-6 text-xs">تاريخ بداية الزيارة</label>
                     <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->start)->format('Y-m-d')}}</div>
                 </div>
+
                 <div class="w-full">
                     <label class="block font-bold mb-6 text-xs">تاريخ نهاية الزيارة</label>
                     <div
@@ -304,6 +305,13 @@
                     <label class="block font-bold mb-6 text-xs">وقت الزيارة</label>
                     <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->start)->format('h:i A') }}</div>
                 </div>
+
+                    <div class="w-full">
+                        <label class="block font-bold mb-6 text-xs">وقت الانتهاء</label>
+                        <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->format('h:i A') }}</div>
+                    </div>
+                </div>
+
             </div>
 
 
@@ -748,6 +756,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
+
         const branchMap = {
             "0101": "فرع الاحساء",
             "0102": "فرع جدة",
@@ -1024,6 +1033,7 @@
             const status = {!! $record->status !!};
 
             const visit = {!! json_encode($record) !!};
+            console.log(formatTime(visit.start));
 
             console.log('rec: ' + isRecipient);
             console.log('owner:' + isOwner);
@@ -1250,26 +1260,26 @@
   }
 </style>
 
-<div class="edit-form">
+<div dir="rtl" class="text-center">
 <!--  <div class="edit-form-group" style="grid-column: span 2;">-->
-  <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-title" >عنوان الزيارة</label>
-    <input type="text" id="edit-title" value="${visit.title || ''}">
+  <div class="text-center">
+    <label for="edit-title" style="min-width: 120px;text-align:right;" class="text-sm font-bold" >عنوان الزيارة</label>
+    <input type="text" id="edit-title" class="form-input w-full" value="${visit.title || ''}">
   </div>
 
-  <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-reason">سبب الزيارة</label>
-    <input type="text" id="edit-reason" value="${visit.reason || ''}">
+  <div class="text-center">
+    <label for="edit-reason"  class="text-sm font-bold">سبب الزيارة</label>
+    <input class="form-input w-full" type="text" id="edit-reason" value="${visit.reason || ''}">
   </div>
 
-  <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-goals">التحضيرات المطلوبه من الفرع</label>
-    <input id="edit-goals" value="${visit.goals || ''}">
+  <div  class="text-center" >
+    <label for="edit-goals" class="text-sm font-bold">التحضيرات المطلوبه من الفرع</label>
+    <input class="form-input w-full" id="edit-goals" value="${visit.goals || ''}">
   </div>
 
-  <div class="edit-form-group"  style="grid-column: span 2;">
-    <label for="edit-branch">مكان الزيارة</label>
-    <select id="edit-branch" disabled >
+  <div class="text-center">
+    <label for="edit-branch" class="text-sm font-bold">مكان الزيارة</label>
+    <select class="form-select w-full" id="edit-branch" disabled >
       <option value="" disabled>اختر المكان</option>
       ${Object.entries(branchMap).map(([key, name]) =>
                             `<option value="${key}" ${visit.branch === key ? 'selected' : ''}>${name}</option>`
@@ -1277,33 +1287,51 @@
     </select>
   </div>
 
-  <div class="edit-form-group" style="grid-column: span 2;">
-    <label for="edit-employees">الموظفين</label>
-    <select id="edit-employees" multiple></select>
+  <div class="text-center my-2">
+    <label for="edit-employees" class="text-sm font-bold">الموظفين</label>
+    <select class="form-select w-full" id="edit-employees" multiple></select>
   </div>
 
 
-   <div class="edit-form-group" >
-     <label style="">تاريخ البداية</label>
-     <input type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
+<div class="flex w-full gap-2">
+   <div class="text-center" >
+     <label class="text-sm font-bold" style="">تاريخ البداية</label>
+     <input class="form-input w-full" type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >
    </div>
-     <div class="edit-form-group">
-    <label for="edit-visit-time w-full">وقت الزيارة</label>
-    <select id="edit-visit-time">
+     <div class="text-center">
+    <label class="text-sm font-bold" for="edit-visit-time w-full">وقت الزيارة</label>
+    <select class="form-select w-full" id="edit-visit-time">
       <option value="" disabled>اختر الوقت</option>
       ${timeOptions.map(time =>
-                            `<option value="${time}" ${formatTime(visit.start) === time ? 'selected' : ''}>${time}</option>`
+                            `<option value="${time}" ${formatTime(visit.start) == time ? 'selected' : ''}>${time}</option>`
                         ).join('')}
     </select>
+
+</div>
   </div>
-   <div class="edit-form-group" >
-     <label style="min-width: 120px;">تاريخ النهاية</label>
-     <input type="date" id="end" value="${visit.end ? new Date(visit.end).toISOString().split('T')[0] : ''}"  >
+<div class="flex w-full gap-2">
+   <div class="text-center" >
+     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية</label>
+     <input class="form-input w-full" type="date" id="end" value="${visit.end ? new Date(visit.end).toISOString().split('T')[0] : ''}"  >
    </div>
-   <div class="edit-form-group w-full" style="grid-column: span 2;">
-     <label style="min-width: 120px;">المرافقون</label>
-     <input type="text" id="attendants" value="${visit.attendants || ''}" >
+
+     <div class="text-center">
+    <label class="text-sm font-bold" for="edit-ene-time w-full">وقت الانتهاء</label>
+    <select class="form-select w-full" id="edit-end-time">
+      <option value="" disabled>اختر الوقت</option>
+
+      ${timeOptions.map(time =>
+                            `<option value="${time}" ${formatTime(visit.end) === time ? 'selected' : ''}>${time}</option>`
+                        ).join('')}
+    </select>
+
+</div>
+</div>
+   <div class="text-center w-full" style="grid-column: span 2;">
+     <label class="text-sm font-bold" style="min-width: 120px;">المرافقون</label>
+     <input class="form-input w-full" type="text" id="attendants" value="${visit.attendants || ''}" >
    </div>
+
 </div>
 `,
                         focusConfirm: false,
@@ -1377,6 +1405,7 @@
                             const goals = document.getElementById('edit-goals').value;
                             const branch = document.getElementById('edit-branch').value;
                             const visitTime = document.getElementById('edit-visit-time').value;
+                            const endTime = document.getElementById('edit-end-time').value;
                             const attendants = document.getElementById('attendants').value;
                             const start = document.getElementById('start').value;
                             const end = document.getElementById('end').value;
@@ -1403,9 +1432,11 @@
 
                              // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
                              beginningDate = visit.start;
+                            endingDate =visit.end;
                             // const formatted = beginningDate.toLocaleDateString('en-GB');
 
                             const startDateTime = combineDateAndTime( beginningDate.split(' ')[0], visitTime);
+                            const endDateTime = combineDateAndTime( endingDate.split(' ')[0], endTime);
 
                             return {
                                 title,
@@ -1413,10 +1444,10 @@
                                 goals,
                                 branch,
                                  employees: selectedEmployees,
-                                start,
-                                //  start: startDateTime,
+                                // start,
+                                 start: startDateTime,
                                 // end: visit.end,
-                                end,
+                                end: endDateTime,
                                 attendants: visit.attendants
                                 // end: info.event.endStr
                             };
@@ -1566,6 +1597,7 @@
         function formatTime(dateObj) {
             if (!dateObj) return '';
             return new Date(dateObj).toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Riyadh',
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: true
