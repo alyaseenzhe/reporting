@@ -197,6 +197,7 @@
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100">
 
+
                             @forelse($visits as $visit)
                                 <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @endif">
 
@@ -205,7 +206,7 @@
                                     </td>
 
                                     <td class="border p-2 whitespace-nowrap">
-                                        <div class="text-center text-gray-800 text-sm">{{ $visit['emps_requester'][0]['user']['name'] }}</div>
+                                        <div class="text-center text-gray-800 text-sm">{{ $visit['emps_requester'][0]['user']['name']?? null }}</div>
                                     </td>
 {{--                                    <td class="border p-2 whitespace-nowrap">--}}
 {{--                                        <div>--}}
