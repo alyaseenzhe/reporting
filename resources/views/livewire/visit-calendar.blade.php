@@ -1,6 +1,6 @@
 
 
-<div     x-data="{ panel: @entangle('activePanel') }"
+<div     x-data="{ panel: @entangle('activePanel')}"
          x-on:togglePanel.window="panel = $event.detail.panel"
          class="w-full">
 {{--    Tabs --}}
@@ -9,13 +9,38 @@
 
         <div class="flex border-b border-gray-200 mb-5">
 
-            <button @click="panel = 'calendar'"  id="calendarTab" class="flex-1 px-4 py-2 text-center text-blue-600 border-b-2 border-blue-600 font-medium flex items-center justify-center gap-2">
+{{--            <button @click="panel = 'calendar'"  id="calendarTab" class="flex-1 px-4 py-2 text-center text-blue-600 border-b-2 border-blue-600 font-medium flex items-center justify-center gap-2">--}}
+{{--                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">--}}
+{{--                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />--}}
+{{--                </svg>--}}
+{{--                وضع التقويم--}}
+{{--            </button>--}}
+{{--            <button  @click="panel = 'list'"  id="listTab" class="flex-1 px-4 py-2 text-center text-gray-600 hover:text-blue-600 font-medium flex items-center justify-center gap-2">--}}
+{{--                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">--}}
+{{--                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 6h18M3 14h18M3 18h18" />--}}
+{{--                </svg>--}}
+{{--                وضع الجدول--}}
+{{--            </button>--}}
+
+
+
+
+
+            <button @click="panel = 'calendar'"
+                    :class="panel === 'calendar'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600'"
+                    class="flex-1 px-4 py-2 text-center  font-medium flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 وضع التقويم
             </button>
-            <button  @click="panel = 'list'"  id="listTab" class="flex-1 px-4 py-2 text-center text-gray-600 hover:text-blue-600 font-medium flex items-center justify-center gap-2">
+            <button  @click="panel = 'list'"
+                     :class="panel === 'list'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600'"
+                     class="flex-1 px-4 py-2 text-center text-gray-600 hover:text-blue-600 font-medium flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 6h18M3 14h18M3 18h18" />
                 </svg>
@@ -32,10 +57,10 @@
 
         <!-- Tab Panels -->
 
-        <div id="calendarPanel" class="w-full"  x-show="panel === 'calendar'">
+        <div  class="w-full"  x-show="panel === 'calendar'">
             <div wire:ignore id='calendar'></div>
         </div>
-        <div id="listPanel" x-show="panel === 'list'" class="p-4 hidden">
+        <div  x-show="panel === 'list'" class="p-4 ">
             <div id="branch-container" class="mb-6 mt-6">
                 <div style="background-color:#f0f8ff" class="p-5 flex flex-col gap-4">
                     <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -1882,17 +1907,17 @@
                 };
             }
 
-            const calendarTab = document.getElementById('calendarTab');
-            const listTab = document.getElementById('listTab');
-            const calendarPanel = document.getElementById('calendarPanel');
-            const listPanel = document.getElementById('listPanel');
-
-            calendarTab.addEventListener('click', () => {
-                calendarTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-                listTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
-                calendarPanel.classList.remove('hidden');
-                listPanel.classList.add('hidden');
-            });
+            // const calendarTab = document.getElementById('calendarTab');
+            // const listTab = document.getElementById('listTab');
+            // const calendarPanel = document.getElementById('calendarPanel');
+            // const listPanel = document.getElementById('listPanel');
+            //
+            // calendarTab.addEventListener('click', () => {
+            //     calendarTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            //     listTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            //     calendarPanel.classList.remove('hidden');
+            //     listPanel.classList.add('hidden');
+            // });
 
             listTab.addEventListener('click', () => {
                 listTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
@@ -1909,5 +1934,6 @@
         (Auth::user()->user_group->visits && in_array('create-visit', json_decode(Auth::user()->user_group->visits)))
         || Auth::user()->role == 'a'
     );
+
     </script>
 @stop
