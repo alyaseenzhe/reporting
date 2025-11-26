@@ -152,7 +152,7 @@ class VisitCalendar extends Component
 //        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
 
         $employees = [
-            '0101' => ['49', '50', '51'], //alahsaa branch
+            '0101' => ['49', '50', '51','48'], //alahsaa branch
             '0102' => ['28', '33'], // jeddah
             '0103' => ['20', '54', '52'], //riyadh
             '0104' => ['55'], // wadi adwasir

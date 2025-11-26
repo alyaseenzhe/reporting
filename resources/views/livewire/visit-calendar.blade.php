@@ -933,6 +933,12 @@
                                     return false;
                                 }
 
+                                if (start > end) {
+                                    Swal.showValidationMessage('يجب أن يكون تاريخ النهاية بعد تاريخ البداية');
+                                    return false;
+                                }
+
+
                                 // const startDateTime = combineDateAndTime(info.startStr, visitTime);
                                 const startDateTime = combineDateAndTime(start, visitTime);
                                 const endDateTime = combineDateAndTime(end, endTime);

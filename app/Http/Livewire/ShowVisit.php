@@ -201,7 +201,7 @@ class ShowVisit extends Component
     }
 
     public function updateVisit($event) {
-//        dd($event);
+
 
         $visit = Visit::find($event['id']);
 
@@ -210,7 +210,6 @@ class ShowVisit extends Component
 //            $recipient = User::where('sales_dept_code', $event['branch'])
 //                ->where('group', 8) // branch manger group
 //                ->select('id')->first();
-
             $visit->title = $event['title'];
             $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
             $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
@@ -222,7 +221,7 @@ class ShowVisit extends Component
             $visit->status = 0;
 //            $visit->recipient_id =  $recipient->id;
 
-//            $visit->save();
+            $visit->save();
 
             if ($visit->save()) {
 
@@ -352,6 +351,9 @@ class ShowVisit extends Component
                     $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
 
                 }
+
+            $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+
             if($editRecord->save())
                 {
                 session()->flash('success', 'تم تقييم الزيارة');
