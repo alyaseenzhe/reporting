@@ -112,6 +112,35 @@
                                 @endif
                         </div>
             @endif
+
+
+                            @if($can_rate)
+                                @if($record->is_requester())
+                                    <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
+                                        <div>
+                                            <button id="req-rate-btn"
+                                                    style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold">
+                        <span>تقييم</span>
+                    </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if($record->is_recipient())
+                                    <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
+                                        <div>
+                                            <button id="rec-rate-btn"
+                                                    style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
+                <span class="mr-2 font-bold">
+                    <span>تقييم</span>
+                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+            @endif
+            @endif
         </nav>
     </div>
 
@@ -547,33 +576,6 @@
 {{--        </div>--}}
 {{--    @endif--}}
 
-    @if($can_rate)
-        @if($record->is_requester())
-            <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
-                <div>
-                    <button id="req-rate-btn"
-                            style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold">
-                        <span>تقييم</span>
-                    </span>
-                    </button>
-                </div>
-            </div>
-        @endif
-
-        @if($record->is_recipient())
-            <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">
-                <div>
-                    <button id="rec-rate-btn"
-                            style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
-                <span class="mr-2 font-bold">
-                    <span>تقييم</span>
-                </span>
-                    </button>
-                </div>
-            </div>
-        @endif
-    @endif
 
 </div>
 
@@ -1431,8 +1433,10 @@
                             }
 
                              // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);
-                             beginningDate = visit.start;
-                            endingDate =visit.end;
+                            //  beginningDate = visit.start;
+                            // endingDate =visit.end;
+                             beginningDate = start;
+                            endingDate =end;
                             // const formatted = beginningDate.toLocaleDateString('en-GB');
 
                             const startDateTime = combineDateAndTime( beginningDate.split(' ')[0], visitTime);

@@ -810,7 +810,7 @@
 
                                 employees.forEach(emp => {
                                     const isGroup8 = emp.group == 8;
-                                    const option = new Option(emp.name, emp.id );
+                                    const option = new Option(emp.name, emp.id);
                                     // const option2 = new Option(emp.name, emp.id, isGroup8, isGroup8);
                                     // if (isGroup8) {
                                     //     // option.disabled = true;
@@ -837,11 +837,15 @@
                                     else{
                                         $(employeeSelect).find('option[value="all"]').remove();
                                         $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                        // $(employeeSelect).append(allOption);
+
                                     }
                                 });
 
                                 // Trigger change to refresh Select2 UI
                                 $(employeeSelect).trigger('change');
+
+
                             });
 
                             $(employeeSelect).on('select2:unselecting', function (e) {
@@ -888,7 +892,7 @@
                                 const confirmDuplicate = await Swal.fire({
                                     icon: 'warning',
                                     title: 'تنبيه',
-                                    text: 'يوجد زيارة بنفس التاريخ الفرع',
+                                    text: 'يوجد زيارة بنفس التاريخ والفرع',
                                     showCancelButton: true,
                                     confirmButtonText: 'نعم، متابعة',
                                     cancelButtonText: 'إلغاء',
