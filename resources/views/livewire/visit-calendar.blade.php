@@ -819,6 +819,41 @@
 
 
 
+                            branchSelect.addEventListener('change', () => {
+                                const selectedBranchId = branchSelect.value;
+                                const employees = employeesByBranch[selectedBranchId] || [];
+
+                                // Reset Select2
+                                $(employeeSelect).off('select2:select');
+                                $(employeeSelect).empty();
+
+                                // Add "All" option (always present)
+                                const allOption = new Option("الكل", "all", false, false);
+                                $(employeeSelect).append(allOption);
+
+                                // Add employee options
+                                employees.forEach(emp => {
+                                    const option = new Option(emp.name, emp.id, false, false);
+                                    $(employeeSelect).append(option);
+                                });
+
+                                $(employeeSelect).trigger('change.select2');
+
+                                // Handle selection
+                                $(employeeSelect).on('select2:select', function(e) {
+                                    const selectedId = e.params.data.id;
+
+                                    if (selectedId === "all") {
+                                        // Clear all employees and select only "all"
+                                        $(employeeSelect).val(["all"]).trigger('change.select2');
+                                    } else {
+                                        // If user selects any employee, remove "all" from selection but keep in dropdown
+                                        let currentSelected = $(employeeSelect).val().filter(id => id !== "all");
+                                        $(employeeSelect).val(currentSelected).trigger('change.select2');
+                                    }
+                                });
+                            });
+
 
                             branchSelect.addEventListener('change', () => {
                                 const selectedBranchId = branchSelect.value;
@@ -845,27 +880,81 @@
                                 });
 
                                 // Handle selecting "All"
-                                $(employeeSelect).on('select2:select', function(e) {
-                                    if (e.params.data.id === "all") {
-                                        // Select all non-disabled employees
-                                        const allIds = [];
-                                        $(employeeSelect).find('option:not(:disabled)').each(function() {
-                                            allIds.push(this.value);
-                                        });
-                                        // $(employeeSelect).val(allIds).trigger('change');
+                                // branchSelect.addEventListener('change', () => {
+                                //     const selectedBranchId = branchSelect.value;
+                                //     const employees = employeesByBranch[selectedBranchId] || [];
+                                //
+                                //     // Reset
+                                //     $(employeeSelect).off('select2:select'); // Prevent duplicate listeners
+                                //     $(employeeSelect).empty();
+                                //
+                                //     // Add "All" option (keep it, do not remove it)
+                                //     const allOption = new Option("الكل", "all", false, false);
+                                //     $(employeeSelect).append(allOption);
+                                //
+                                //     // Add employees
+                                //     employees.forEach(emp => {
+                                //         const option = new Option(emp.name, emp.id, false, false);
+                                //         $(employeeSelect).append(option);
+                                //     });
+                                //
+                                //     $(employeeSelect).trigger('change.select2');
+                                //
+                                //     // When selecting an option
+                                //     $(employeeSelect).on('select2:select', function(e) {
+                                //         const selectedId = e.params.data.id;
+                                //
+                                //         if (selectedId === "all") {
+                                //             // Select ALL employees + keep "all"
+                                //             const allIds = employees.map(emp => emp.id.toString());
+                                //             allIds.unshift("all"); // keep "all" selected also
+                                //
+                                //             $(employeeSelect).val(allIds).trigger('change');
+                                //
+                                //             // Hide all employee options except "all"
+                                //             $(employeeSelect).find('option').each(function() {
+                                //                 if (this.value !== "all") {
+                                //                     $(this).hide();
+                                //                 }
+                                //             });
+                                //
+                                //             $(employeeSelect).trigger('change.select2');
+                                //         }
+                                //         else {
+                                //             // If selecting an employee:
+                                //             // Show all options again
+                                //             $(employeeSelect).find('option').show();
+                                //
+                                //             // Keep "all" visible always
+                                //             // But make sure it is NOT selected
+                                //             const currentSelected = $(employeeSelect).val().filter(id => id !== "all");
+                                //             $(employeeSelect).val(currentSelected).trigger('change.select2');
+                                //         }
+                                //     });
+                                // });
 
-                                        // Hide "All" option
-                                        //     $(employeeSelect).find('option[value="all"]').remove();
-                                        //     $(employeeSelect).trigger('change.select2'); // Refresh Select2
-                                        $(employeeSelect).trigger('change.select2'); // Refresh Select2
-                                    }
-                                    else{
-                                        $(employeeSelect).find('option[value="all"]').remove();
-                                        $(employeeSelect).trigger('change.select2'); // Refresh Select2
-                                        // $(employeeSelect).append(allOption);
-
-                                    }
-                                });
+                                // $(employeeSelect).on('select2:select', function(e) {
+                                //     if (e.params.data.id === "all") {
+                                //         // Select all non-disabled employees
+                                //         const allIds = [];
+                                //         $(employeeSelect).find('option:not(:disabled)').each(function() {
+                                //             allIds.push(this.value);
+                                //         });
+                                //         allIds.unshift("all");
+                                //         // $(employeeSelect).val(allIds).trigger('change');
+                                //
+                                //         // Hide "All" option
+                                //         //     $(employeeSelect).find('option[value="all"]').remove();
+                                //         //     $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                //         $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                //     }
+                                //     else{
+                                //         $(employeeSelect).find('option[value="all"]').remove();
+                                //         $(employeeSelect).trigger('change.select2'); // Refresh Select2
+                                //         // $(employeeSelect).append(allOption);
+                                //
+                                //     }
+                                // });
 
                                 // Trigger change to refresh Select2 UI
                                 $(employeeSelect).trigger('change');
