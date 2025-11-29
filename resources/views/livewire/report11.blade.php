@@ -464,7 +464,8 @@
                         <option value="bySpeciality">بالمميز</option>
                         <option value="byMarketingType">بالاقسام</option>
                         <option value="byVendor">بالمورد</option>
-                        {{--                        <option value="byCustomer">بالعميل</option>--}}
+                        <option value="byCustomer">بالعميل</option>
+                        <option value="byEmployee">بالموظف</option>
                     </select>
                 </div>
                 <div class="mt-8 text-center w-full">
@@ -497,11 +498,11 @@
                                 <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>
                                 <span class="text-xs">)</span>
                             </div>
-{{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
+                            {{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
 
 
 
-{{--                            </div>--}}
+                            {{--                            </div>--}}
                         </div>
                 </div>
             @endif
@@ -664,7 +665,7 @@
                 @if($report_type == 'byItem')
                     @php $item_total = 0; $cost_total = 0; $gross_total = 0; @endphp
                     @foreach($group_results as $record)
-                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                        <tr wire:key="rec-{{ now() }}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{$record["OldCode"]}}
                             </td>
@@ -716,7 +717,7 @@
                         @foreach($outer_record as $record)
                             @if($record["OldCode"] != $item_code)
                                     <?php $item_code = $record["OldCode"]; ?>
-                                <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                                <tr wire:key="rec-{{ now() }}" style="background-color: #faebd7; font-weight: bold; color: red;">
                                     <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         {{$record["OldCode"]}}
                                     </td>
@@ -730,7 +731,7 @@
                                     </td>
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+                            <tr wire:key="rec-{{ now() }}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     @if($record["mrkt_type"] == "fan - asmedah 1")
                                         ادارة فنية - الاسمدة م1
@@ -845,7 +846,7 @@
 
                             {{-- Output subtotals for the previous group --}}
                             @if($currentGroup !== null)
-                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         مجموع جزئي
                                     </td>
@@ -1089,7 +1090,7 @@
 
                             {{-- Output subtotals for the previous group --}}
                             @if($currentGroup !== null)
-                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         مجموع جزئي
                                     </td>
@@ -1377,7 +1378,7 @@
 
                             {{-- Output subtotals for the previous group --}}
                             @if($currentGroup !== null)
-                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
+                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         مجموع جزئي
                                     </td>
@@ -2228,8 +2229,12 @@
                     @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
 
                     @foreach($group_results as $outer_record)
+                        @php
+                            $item_group_itemCode_code = null;
+                            $item_group_code = null;
+                        @endphp
                         @foreach($outer_record as $record)
-                            @dd($record)
+
                             @if($currentGroup != $record["BusinessPartnerCode"])
 
                                 {{-- Output subtotals for the previous group --}}
@@ -2347,21 +2352,21 @@
                                 <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
+                                        {{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][4])}}
                                     </td>
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
+                                        {{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][3])}}
                                     </td>
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}
+                                        {{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][0], 2)}}
                                     </td>
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $totalSalesByItem[$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["OldCode"]][0]/$totalSalesByItem[$record["OldCode"]][3], 2) : 0 }}
+                                        {{ $totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][0]/$totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][3], 2) : 0 }}
                                     </td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>
-                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>
+                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][1], 2)}}</td>
+                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][2], 2)}}</td>
+                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][2]/$totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][0])*100, 2)}}</td>
                                     @endif
                                 </tr>
                             @endif
