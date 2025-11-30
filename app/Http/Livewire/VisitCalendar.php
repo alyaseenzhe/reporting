@@ -169,7 +169,7 @@ class VisitCalendar extends Component
 
 
         $start = Carbon::parse($data['start'])->format('Y-m-d H:i:s');
-        $end = Carbon::parse($data['end'])->format('Y-m-d H:i:s');
+        $end = (Carbon::parse($data['end']?? null))->format('Y-m-d H:i:s');
         $extra_services = json_encode($data['extra_services']);
 
         $visit_data = Visit::create([
@@ -467,31 +467,43 @@ class VisitCalendar extends Component
         curl_close($curl);
         echo $response;
     }
-    public function search(/*$event, $branch, $interests*/) {
+    public function search() {
 
         $this->visits = Visit::orderBy('created_at', 'DESC')->get();
 
+//        $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
         $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
 //        $this->validate();
 
-        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user'])
+//        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user'])
 
-            ->whereHas('emps_requester.user', function ($q) {
+        $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])
+            ->orderBy('created_at', 'DESC');
+
+
+        if($this->user !== 'all') {
+
+            $query->whereHas('emps_requester.user', function ($q) {
                 $q->where('id', 'LIKE', $this->user);
-            })
-        ->where("branch", "LIKE", $this->branch)
-//            ->when($this->status !== '-1', function ($q) {
-//                $q->where("status", $this->status);
-//            })
-            ->where("status","LIKE",  $this->status)
-            ->when($this->start && $this->end, function ($q) {
-                $q->whereBetween('start', [$this->start, $this->end]);
-            })
-//            ->whereBetween('start', [$this->start, $this->end])
-//            ->where('start', "LIKE",$this->start)
-//            ->where('end', "LIKE",$this->end)
-            ->orderBy('created_at', 'DESC')
-            ->get();
+            });
+                }
+        if($this->branch !== 'all') {
+            $query->where("branch", "LIKE", $this->branch);
+
+                }
+
+        if($this->status !== 'all') {
+            $query->where("status", "LIKE", $this->status);
+                }
+        // Filter by date range if both start and end exist
+        if ($this->start && $this->end) {
+            $query->whereBetween('start', [$this->start, $this->end]);
+        }
+
+        // Execute query
+        $this->visits = $query->get();
+
+
 
 
         $this->showAllVisits =Visit::with(['emps_requester.user', 'emps_recipients.user'])
@@ -500,18 +512,14 @@ class VisitCalendar extends Component
             ->when($this->status !== '', function ($q) {
                 $q->where("status", $this->status);
             })
-//            ->when($this->start && $this->end, function ($q) {
-//                $q->whereBetween('start', [$this->start, $this->end]);
-//            })
+
             ->whereBetween('start', [$this->start, $this->end])
             ->orderBy('created_at', 'DESC')
             ->get();
 
         $this->activePanel = 'list';
         $this->dispatchBrowserEvent('activePanel');
-//        dd($this->contacts);
-//            ->paginate(20);
-        //  dd($this->contacts);
+
 
 
 //        $this->emit('finished');

@@ -34,7 +34,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                وضع التقويم
+                 التقويم
             </button>
             <button  @click="panel = 'list'"
                      :class="panel === 'list'
@@ -44,7 +44,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 6h18M3 14h18M3 18h18" />
                 </svg>
-                وضع الجدول
+              بحث
             </button>
 
 
@@ -79,7 +79,7 @@
 
                            <select class="form-select" wire:model.lazy="user">
 {{--                               @foreach($visits as $visit)--}}
-                               <option value="">الرجاء الاختيار</option>
+                               <option value="all">الكل</option>
                                @foreach($uniqueRequesters as $requester)
                                    <option value="{{$requester['user']['id']}}">{{$requester['user']['name']}}</option>
                                @endforeach
@@ -90,7 +90,7 @@
 
 
                         <div class="w-full">
-                            <label class="block font-bold mb-2">التاريخ من
+                            <label class="block font-bold mb-2">التاريخ بداية الزيارة من
 
                             </label>
                             <div>
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div class="w-full">
-                            <label class="block font-bold mb-2">التاريخ الى
+                            <label class="block font-bold mb-2">التاريخ بداية الزيارة الى
 
                             </label>
                             <div>
@@ -114,7 +114,7 @@
                             <select wire:model="branch" name="branch" id="branch"
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             >
-                                <option value="-1">الرجاء الاختيار</option>
+                                <option value="all">الكل</option>
                                 <option value="0101">الأحساء</option>
                                 <option value="0102">جدة</option>
                                 <option value="0103">الرياض</option>
@@ -136,7 +136,7 @@
                             </label>
                             <select wire:model.lazy="status" name="status" id="status"
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                <option value="-1">الرجاء الاختيار</option>
+                                <option value="all">الكل</option>
                                 <option value="0">تحت الإجراء</option>
                                 <option value="1">مقبوله</option>
                                 <option value="2">مرفوضة</option>
@@ -301,12 +301,15 @@
 {{--                                    </td>--}}
                                     <td class="border p-2 whitespace-nowrap">
                                         <div>
-                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"])->format('Y-m-d')}} - {{ \Carbon\Carbon::parse($visit["end"])->addDays(-1)->format('Y-m-d') }}</div>
+
+                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('Y-m-d')}} - {{ \Carbon\Carbon::parse($visit["end"])->addDays(-1)->format('Y-m-d') }}</div>
                                         </div>
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
                                         <div>
-                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"])->format('h:i A') }}</div>
+
+                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('h:i A') }}</div>
+
                                         </div>
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
@@ -764,13 +767,13 @@
 <div class="flex gap-2">
      <div class="w-full" style="align-items: center; gap: 10px; margin-bottom: 10px;">
      <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية</label>
- <input type="date"  id="end" class="form-input w-full">
+ <input type="date"  id="end" value="${selectedDate}" class="form-input w-full">
    </div>
 
 
 
 <div style=" align-items: center; gap: 10px; margin-bottom: 10px;">
-  <label class="text-sm font-bold" for="end-time" style="min-width: 120px; text-align:right;">وقت الإنتهاء<span class="mx-1 text-red-500">*</span></label>
+  <label class="text-sm font-bold" for="end-time" style="min-width: 120px; text-align:right;">وقت الإنتهاء</label>
   <select id="end-time" class=" form-select w-full" style="flex: 1; ">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
@@ -1922,10 +1925,14 @@
             });
 
             function combineDateAndTime(dateStr, timeStr) {
+
                 const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
                 const [time, modifier] = timeStr.split(" ");
                 let [hours, minutes] = time.split(":").map(Number);
-
+                if (!timeStr) {
+                    const pad = n => String(n).padStart(2, '0');
+                    return `${year}-${pad(month)}-${pad(day)}T23:00:00`;
+                }
                 if (modifier === "PM" && hours !== 12) hours += 12;
                 if (modifier === "AM" && hours === 12) hours = 0;
 
