@@ -81,7 +81,7 @@
 {{--                               @foreach($visits as $visit)--}}
                                <option value="all">الكل</option>
                                @foreach($uniqueRequesters as $requester)
-                                   <option value="{{$requester['user']['id']}}">{{$requester['user']['name']}}</option>
+                                   <option value="{{$requester['user']['id']}}" >{{$requester['user']['name']}}</option>
                                @endforeach
 {{--
 @endforeach--}}
@@ -727,7 +727,7 @@
     <!-- وقت الزيارة -->
     <!-- وقت الزيارة -->
 <div style="align-items: center; gap: 10px; margin-bottom: 10px;">
-  <label class="text-sm font-bold" for="visit-time" style="min-width: 120px; text-align:right;">وقت الزيارة<span class="mx-1 text-red-500">*</span></label>
+  <label class="text-sm font-bold" for="visit-time" style="min-width: 120px; text-align:right;">وقت الزيارة</label>
   <select id="visit-time" class=" form-select w-full" style="flex: 1; ">
     <option value="" disabled selected dir="rtl" style="text-align: right;">اختر الوقت</option>
     <!-- Time options below -->
@@ -1025,7 +1025,7 @@
 
                                     // const startDateTime = combineDateAndTime(visitDate, visitTime);
                                     const startDateTime = combineDateAndTime(start, visitTime);
-                                    const endDateTime = combineDateAndTime(end, endTime);
+                                    const endDateTime = combineDateAndTime(end, endTime, isEnd = true);
 
                                     return {
                                         title,
@@ -1045,7 +1045,7 @@
                                 })
                             }
                                 // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
-                                if (!title.trim() || !reason.trim() || !branch || !visitTime) {
+                                if (!title.trim() || !reason.trim() || !branch) {
                                     Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
                                     return false;
                                 }
@@ -1058,7 +1058,7 @@
 
                                 // const startDateTime = combineDateAndTime(info.startStr, visitTime);
                                 const startDateTime = combineDateAndTime(start, visitTime);
-                                const endDateTime = combineDateAndTime(end, endTime);
+                                const endDateTime = combineDateAndTime(end, endTime, isEnd= true);
 
                                 const extraServices = Array.from(document.querySelectorAll('input[name="extra-services"]:checked'))
                                     .map(cb => cb.value);
@@ -1924,14 +1924,18 @@
 
             });
 
-            function combineDateAndTime(dateStr, timeStr) {
+            function combineDateAndTime(dateStr, timeStr, isEnd= false) {
 
                 const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);
                 const [time, modifier] = timeStr.split(" ");
                 let [hours, minutes] = time.split(":").map(Number);
+
+                // If timeStr is missing
                 if (!timeStr) {
                     const pad = n => String(n).padStart(2, '0');
-                    return `${year}-${pad(month)}-${pad(day)}T23:00:00`;
+                    return isEnd
+                        ? `${year}-${pad(month)}-${pad(day)}T23:59:59`  // End of day
+                        : `${year}-${pad(month)}-${pad(day)}T00:00:00`; // Start of day
                 }
                 if (modifier === "PM" && hours !== 12) hours += 12;
                 if (modifier === "AM" && hours === 12) hours = 0;

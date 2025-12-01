@@ -32,6 +32,7 @@ class VisitCalendar extends Component
     public $uniqueRequesters;
     public $activePanel = 'calendar';
 
+
 //    protected $wati;
 
 
@@ -48,6 +49,16 @@ class VisitCalendar extends Component
             })
             ->unique(fn($r) => $r['user']['id']);
 
+
+        // If the logged-in user is one of the requesters → select them
+        $authId = auth()->user()->id;
+
+        // Check if the authenticated user exists in the requester list
+        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId)) {
+            $this->user = $authId;
+        } else {
+            $this->user = 'all';   // fallback
+        }
 
 //        dd($this->visits->emps_requester);
 //        dd($this->visits);
