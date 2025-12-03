@@ -54,7 +54,9 @@ class VisitCalendar extends Component
         $authId = auth()->user()->id;
 
         // Check if the authenticated user exists in the requester list
-        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId)) {
+        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId) && !(Auth::user()->user_group->visits
+                && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits)) || Auth::user()->role == 'a') ) {
+
             $this->user = $authId;
         } else {
             $this->user = 'all';   // fallback
@@ -489,6 +491,9 @@ class VisitCalendar extends Component
 //        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user'])
 
         $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])
+            ->whereHas('emps_requester', function ($q) {
+                $q->where('user_id', auth()->id());
+            })
             ->orderBy('created_at', 'DESC');
 
 

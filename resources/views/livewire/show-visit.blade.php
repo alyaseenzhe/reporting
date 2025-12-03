@@ -90,7 +90,6 @@
 
                         <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
                             <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمشرف المنطقة</p>
-                            @if ((Auth::user()->user_group && in_array('list.daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
                             <div>
                                 <button id="approve-btn"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
@@ -99,8 +98,7 @@
                     </span>
                                 </button>
                             </div>
-                            @endif
-                                @if ((Auth::user()->user_group && in_array('list.daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+
                             <div>
                                 <button id="reject-btn"
                                         style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
@@ -109,7 +107,6 @@
                     </span>
                                 </button>
                             </div>
-                                @endif
                         </div>
             @endif
 

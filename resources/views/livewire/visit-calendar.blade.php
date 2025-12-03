@@ -713,14 +713,14 @@
 
     <!-- الموظفين -->
     <div style=" align-items: center; gap: 10px; margin-bottom: 10px;">
-      <label for="employee-select" style="min-width: 120px;text-align:right;" class="text-sm font-bold">ابلاغ الموظفين</label>
+      <label for="employee-select" style="min-width: 120px;text-align:right;" class="text-sm font-bold">ابلاغ الموظفين<span class="mx-1 text-red-500">*</span></label>
       <select id="employee-select" class=" form-input w-full" multiple style="flex: 1; "></select>
     </div>
 
 <div >
 <div class="flex w-full gap-2">
     <div class="w-full" style=" align-items: center; gap: 10px; margin-bottom: 10px;">
-     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ البداية</label>
+     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ البداية<span class="mx-1 text-red-500">*</span></label>
 
  <input type="date" id="start" value="${selectedDate}" class="form-input w-full" >
    </div>
@@ -766,7 +766,7 @@
 </div>
 <div class="flex gap-2">
      <div class="w-full" style="align-items: center; gap: 10px; margin-bottom: 10px;">
-     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية</label>
+     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية<span class="mx-1 text-red-500">*</span></label>
  <input type="date"  id="end" value="${selectedDate}" class="form-input w-full">
    </div>
 
@@ -1934,7 +1934,7 @@
                 if (!timeStr) {
                     const pad = n => String(n).padStart(2, '0');
                     return isEnd
-                        ? `${year}-${pad(month)}-${pad(day)}T23:59:59`  // End of day
+                        ? `${year}-${pad(month)}-${pad(day)}T00:00:00`  // End of day
                         : `${year}-${pad(month)}-${pad(day)}T00:00:00`; // Start of day
                 }
                 if (modifier === "PM" && hours !== 12) hours += 12;
