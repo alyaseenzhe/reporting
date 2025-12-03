@@ -327,50 +327,7 @@ class VisitCalendar extends Component
             ->exists();
     }
 
-//    public function approveVisit($visit_record)
-//    {
-//
-//        $visit = Visit::findOrFail($visit_record['id']);
-//        if (!$this->can_approve($visit_record['id'])) {
-//            abort(403);
-//        }
-//
-//        $visit->status = '1';
-//        $visit->status_notice = $visit_record["status_notice"];
-//        $visit->save();
-//
-//        $this->loadVisits();
-//
-//        $this->emit("visitsLoaded", $this->visits);
-//
-//
-//
-//        $this->visitMail($visit, $visit->emps(), 'approve');
-//
-//    }
 
-//    public function rejectVisit($visit_record)
-//    {
-//
-//
-//        $visit = Visit::findOrFail($visit_record['id']);
-//
-//        if (!$this->can_approve($visit_record['id'])) {
-//            abort(403);
-//        }
-//
-//        $visit->status = '2';
-//        $visit->status_notice = $visit_record["status_notice"];
-//
-//        if ($visit->save()) {
-//            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
-//            $this->visitMail($visit, $emails, 'reject');
-//        }
-//
-//        $this->loadVisits();
-//
-//        $this->emit("visitsLoaded", $this->visits);
-//    }
 
     public function visitMail($visit_record, $branch_manger, $type)
     {

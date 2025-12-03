@@ -89,27 +89,5 @@ class SendVisitReminders extends Command
 
 
 
-//        \Log::info('VisitsSendReminders command started');
-//
-//        $visits = Visit::all();
-//
-//        foreach ($visits as $visit) {
-//        // Get number of days from column
-//        $daysAgo = $visit->days_before_email; // or whatever your column name is
-//
-//        // Compare with current date
-//   //     $targetDate = $visit->start->subDays($daysAgo)->startOfDay();
-////        $visits = Visit::whereDate('start', now()->subWeek())->get();
-////        $visits = Visit::whereBetween('start', [now()->subDays($daysAgo)->startOfDay();, now()->subWeek()->endOfDay()])->get();
-////            if (now()->isSameDay(7)) {
-//            if (now()->between($visit->start->subDays(7)->startOfDay(),$visit->start->subDays(7)->endOfDay())) {
-//                \Log::info('Condition is true: ' . $visit->start->subDays(7)->startOfDay());
-//            foreach ($visit->emps as $employee) {
-//                \Log::info('Sending email to: ' . $employee->user->email);
-//                Mail::to($employee->user->email)->queue(new VisitCreated($visit, NULL, 'add'));
-//            }
-//            }
-//        }
-//        \Log::info('VisitsSendReminders command finished');
     }
 }

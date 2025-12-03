@@ -163,12 +163,7 @@ trait MsGraphAuthTrait
                 'details' => $eventResponse->json(),
             ], 400);
         }
-//             return redirect('visit-calendar')->with('success', 'تمت الموافقة بنجاح');
 
-//        return response()->json([
-//            'message' => 'Successfully connected and created test event!',
-//            'event' => $eventResponse->json(),
-//        ]);
 
         return redirect('visit-calendar')->with('success', 'تمت الموافقة بنجاح وتم إضافة الموعد إلى التقويم.');
     }

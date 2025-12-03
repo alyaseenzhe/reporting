@@ -241,58 +241,7 @@
 
         </div>
 
-{{--        <div class="flex flex-col gap-4">--}}
-{{--            <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">--}}
 
-
-{{--                <div class="w-full">--}}
-
-{{--                    <label class="block font-bold mb-6 text-xs">موضوع الزيارة</label>--}}
-{{--                    <div style="color: #5222e1">{{$record->title}}</div>--}}
-{{--                </div>--}}
-{{--                <div class="w-full">--}}
-{{--                    <label class="block font-bold mb-6 text-xs">مكان الزيارة</label>--}}
-{{--                    <div style="color: #5222e1">--}}
-{{--                        {{$branches[$record->branch]}}--}}
-
-{{--                        @if($record->branch == "0101")--}}
-{{--                            فرع الاحساء--}}
-{{--                        @elseif($record->branch == "0102")--}}
-{{--                            فرع جدة--}}
-{{--                        @elseif($record->branch == "0103")--}}
-{{--                            فرع الرياض--}}
-{{--                        @elseif($record->branch == "0104")--}}
-{{--                            فرع وادي الدواسر--}}
-{{--                        @elseif($record->branch == "0105")--}}
-{{--                            فرع الجوف--}}
-{{--                        @elseif($record->branch == "0106")--}}
-{{--                            فرع الدمام--}}
-{{--                        @elseif($record->branch == "0107")--}}
-{{--                            فرع الخرج--}}
-{{--                        @elseif($record->branch == "0108")--}}
-{{--                            فرع نجران--}}
-{{--                        @elseif($record->branch == "0109")--}}
-{{--                            فرع حائل--}}
-{{--                        @elseif($record->branch == "0110")--}}
-{{--                            فرع تبوك--}}
-{{--                        @elseif($record->branch == "0111")--}}
-{{--                            فرع القصيم--}}
-{{--                        @elseif($record->branch == "0112")--}}
-{{--                            فرع ساجر--}}
-{{--                        @elseif($record->branch == "0201")--}}
-{{--                            مزرعة الدالوة--}}
-{{--                        @elseif($record->branch == "0202")--}}
-{{--                            مزرعة الفضول--}}
-{{--                        @elseif($record->branch == "0203")--}}
-{{--                            مزرعة الدلم--}}
-{{--                        @endif--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="w-full">--}}
-{{--                    <label class="block font-bold mb-6 text-xs">سبب الزيارة</label>--}}
-{{--                    <div style="color: #5222e1">{{$record->reason}}</div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
 
             <div class="w-full flex sm:flex-row flex-col gap-4" style="background-color: #f5f5f5; padding: 20px;">
                 <div class="w-full">
@@ -536,42 +485,6 @@
     </div>
 
 
-{{--    @if($record->status == 0 && $record->is_requester() && $record->is_deleted == 0)--}}
-{{--        <div class="flex flex-row gap-4 justify-center">--}}
-{{--        <div class="flex flex-row gap-4 justify-center">--}}
-{{--            <div>--}}
-{{--                <button id="edit-btn"--}}
-{{--                        style="background-color: #5b53b5;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>تعديل</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--            <div>--}}
-{{--                <button id="delete-btn"--}}
-{{--                        style="background-color: #dc3741;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold">--}}
-{{--                        <span>الغاء الزيارة</span>--}}
-{{--                    </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    @endif--}}
-
-
-
-{{--    @if($can_close_visit)--}}
-{{--        <div wire:ignore class="mt-8 text-center w-full flex sm:flex-row flex-col gap-4 justify-center">--}}
-{{--            <div>--}}
-{{--                <button id="close-btn"--}}
-{{--                        style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">--}}
-{{--                        <span class="mr-2 font-bold">--}}
-{{--                            <span>إتمام الزيارة</span>--}}
-{{--                        </span>--}}
-{{--                </button>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    @endif--}}
 
 
 </div>
@@ -786,14 +699,7 @@
         {{--        ratings --}}
         function showArabicReviewWithNotes() {
             const questions = [
-                // {text: 'خطة الزيارة الموضوعة من قبل الفرع', id: 'plan', type: 'rating'},
-                // {text: 'تقسيم العملاء حسب الأهمية', id: 'clients_priority', type: 'rating'},
-                // {text: 'معرفة الزملاء بأصناف الشركة والمنافسين', id: 'team_knowledge', type: 'rating'},
-                // {text: 'متابعة التجارب ومدى اهتمام الفريق', id: 'followups', type: 'rating'},
-                // {text: 'تواصل الفريق مع العملاء', id: 'communication', type: 'rating'},
-                // {text: 'إدخال عملاء جدد والتوسع الرأسي', id: 'new_clients', type: 'rating'},
-                // {text: 'تنفيذ التوصيات السابقة للزيارة', id: 'recommendations', type: 'rating'},
-                // {text: 'ملاحظات', id: 'notes', type: 'textarea'}
+
 
                 {text: 'جودة التحضير للزيارة', id: 'preparation-quality', type: 'rating'},
                 {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
