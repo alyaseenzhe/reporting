@@ -117,7 +117,8 @@ class VisitCalendar extends Component
                 ->orderBy('start', 'desc')
                 ->get([
                     'id', 'title', 'requester_id', 'start', 'end',
-                    'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
+//                    'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
+                    'reason', 'goals', 'branch', 'recipient_id',
                     'status', 'is_deleted'
                 ])
                 ->toArray(); // Now it's an array of visits
@@ -183,7 +184,7 @@ class VisitCalendar extends Component
 
         $start = Carbon::parse($data['start'])->format('Y-m-d H:i:s');
         $end = (Carbon::parse($data['end']?? null))->format('Y-m-d H:i:s');
-        $extra_services = json_encode($data['extra_services']);
+//        $extra_services = json_encode($data['extra_services']);
 
         $visit_data = Visit::create([
             'title' => $data['title'],
@@ -193,7 +194,7 @@ class VisitCalendar extends Component
             'end' => $end,
             'reason' => $data['reason'],
             'goals' => $data['goals'],
-            'extra_services' => $extra_services,
+//            'extra_services' => $extra_services,
             'branch' => $data['branch'],
             'attendants' => $data['attendants'],
 //            'recipient_id' => $recipient->id,
