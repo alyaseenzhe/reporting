@@ -3,6 +3,7 @@
 
 namespace App\Http\Livewire\Traits;
 
+use App\Models\VisitEmp;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use App\Models\Visit;
@@ -22,6 +23,7 @@ trait MsGraphAuthTrait
     public function connect($id)
     {
         $this->visit_id = $id;
+
 
 //        dd($this->visit_id);
 //        $this->visit_id = request('visit_id');
@@ -44,6 +46,9 @@ trait MsGraphAuthTrait
 
     public function callback()
     {
+
+
+
         $this->branches =[
             "0101"=> "فرع الاحساء",
             "0102"=> "فرع جدة",
@@ -70,7 +75,35 @@ trait MsGraphAuthTrait
             return "No visit id received in state.";
         }
         $this->visit = Visit::findOrFail($this->visit_id);
-//        dd($visit);
+
+        $res_email = VisitEmp::join('users', 'visit_emps.user_id', 'users.id')
+//            ->where('users.group', '8') // branch manager
+            ->where('visit_emps.visit_id', $this->visit->id)
+            ->select('users.email', 'users.name','users.id')
+            ->pluck('users.email')->toArray();
+
+        if (empty($res_email)) {
+            return back()->with('error', 'لم يتم العثور على إيميلات مناسبة');
+        }
+
+        $recipientEmail = $this->visit->emps
+            ->where('type', 'requester')
+            ->pluck('user.email')
+            ->unique()
+            ->first();
+
+        $allEmails = array_merge($res_email, [$recipientEmail]);
+
+        $attendees = array_map(function ($email) {
+            return [
+                "emailAddress" => [
+                    "address" => $email,
+                    "name" => $email
+                ],
+                "type" => "required"
+            ];
+        }, $allEmails);
+
         $tenantId = config('msgraph.urlAccessToken');
         $code = request('code');
 
@@ -154,7 +187,7 @@ trait MsGraphAuthTrait
             'location' => [
                 'displayName' => $this->branches[$this->visit->branch],
             ],
-//                'attendees' => $attendees,
+                'attendees' => $attendees,
         ]);
 
         if ($eventResponse->failed()) {
