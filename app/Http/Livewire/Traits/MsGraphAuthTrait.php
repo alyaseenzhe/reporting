@@ -98,7 +98,7 @@ trait MsGraphAuthTrait
             return [
                 "emailAddress" => [
                     "address" => $email,
-                    "name" => $email
+                    "name" => $this->visit->requester->name?? $email
                 ],
                 "type" => "required"
             ];
@@ -153,7 +153,7 @@ trait MsGraphAuthTrait
         $visitUrl = url("/show-visit/{$this->visit->id}");
         // 2️⃣ Create test event in Outlook calendar
         $eventResponse = Http::withToken($accessToken)->post('https://graph.microsoft.com/v1.0/me/events', [
-            'subject' => $this->visit->title,
+            'subject' =>  $this->visit->requester->name?? $this->visit->title,
             'body' => [
                 'contentType' => 'HTML',
                 'content' => '
@@ -187,7 +187,7 @@ trait MsGraphAuthTrait
             'location' => [
                 'displayName' => $this->branches[$this->visit->branch],
             ],
-                'attendees' => $attendees,
+            'attendees' => $attendees,
         ]);
 
         if ($eventResponse->failed()) {

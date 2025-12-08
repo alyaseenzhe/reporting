@@ -102,9 +102,13 @@ class VisitCalendar extends Component
 
         $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
 
-            $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user']) // or any other relationship
-            ->with('requester')
-                ->with('emps')
+            $this->visits = Visit::with(  [ 'requester',
+                'emps',
+                'emps_recipients.user',
+                'emps_requester.user', ])
+//                ['emps_requester.user', 'emps_recipients.user']) // or any other relationship
+//            ->with('requester')
+//                ->with('emps')
             ->when(!$canViewAll, function ($query) use ($user) {
                 // Limit to only visits that belong to this user
                 $query->whereHas('emps', fn($q) => $q->where('user_id', $user->id));
@@ -442,18 +446,23 @@ class VisitCalendar extends Component
 
         $this->visits = Visit::orderBy('created_at', 'DESC')->get();
 
-//        $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
-        $this->showAllVisits = Visit::orderBy('created_at', 'DESC')->get();
-//        $this->validate();
 
-//        $this->visits = Visit::with(['emps_requester.user', 'emps_recipients.user'])
+        $query = Visit::with(['emps_requester.user', 'emps_recipients.user']);
 
-        $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])
-            ->whereHas('emps_requester', function ($q) {
-                $q->where('user_id', auth()->id());
-            })
-            ->orderBy('created_at', 'DESC');
+            if (auth()->check()) {
+                $query->when(
+                    VisitEmp::where('user_id', auth()->id())
+                        ->where('type', 'requester') // adjust if you have type column
+                        ->exists(),
+                    function ($q) {
+                        $q->whereHas('emps_requester', fn($sub) => $sub->where('user_id', auth()->id())
+                        );
+                    }
+                )
 
+
+                    ->orderBy('created_at', 'DESC');
+            }
 
         if($this->user !== 'all') {
 
@@ -478,18 +487,7 @@ class VisitCalendar extends Component
         $this->visits = $query->get();
 
 
-
-
-        $this->showAllVisits =Visit::with(['emps_requester.user', 'emps_recipients.user'])
-
-        ->where("branch", "LIKE", $this->branch)
-            ->when($this->status !== '', function ($q) {
-                $q->where("status", $this->status);
-            })
-
-            ->whereBetween('start', [$this->start, $this->end])
-            ->orderBy('created_at', 'DESC')
-            ->get();
+//
 
         $this->activePanel = 'list';
         $this->dispatchBrowserEvent('activePanel');

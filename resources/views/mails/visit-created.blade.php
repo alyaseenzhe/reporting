@@ -7,6 +7,35 @@
 
 </head>
 <body style="direction: rtl;">
+<span class="preheader" style="color: transparent; display: none !important; height: 0; width: 0; opacity: 0; overflow: hidden; visibility: hidden;">
+
+            <span class="grid-label ">👤 الزائر</span>
+            @foreach($visit->emps_requester as $req)
+                <div class="grid-value  ">{{ $req->user->name }}</div>
+            @endforeach
+
+                <span class="grid-label">🗺️ مكان الزيارة</span>
+            <div class="grid-value">
+                @switch($visit->branch)
+                    @case("0101") فرع الاحساء @break
+                    @case("0102") فرع جدة @break
+                    @case("0103") فرع الرياض @break
+                    @case("0104") فرع وادي الدواسر @break
+                    @case("0105") فرع الجوف @break
+                    @case("0106") فرع الدمام @break
+                    @case("0107") فرع الخرج @break
+                    @case("0108") فرع نجران @break
+                    @case("0109") فرع حائل @break
+                    @case("0110") فرع تبوك @break
+                    @case("0111") فرع القصيم @break
+                    @case("0112") فرع ساجر @break
+                    @case("0201") مزرعة الدالوة @break
+                    @case("0202") مزرعة الفضول @break
+                    @case("0203") مزرعة الدلم @break
+                @endswitch
+            </div>
+
+</span>
 <style>
     .grid-section {
         display: grid;
@@ -104,7 +133,32 @@
         </p>
     @endif
 
+    @if($type == 'approve')
+        <div style="height:15px;"></div>
 
+        <div class="grid-section" style="background-color:#ecffd5;">
+            <div class="grid-item">
+                <span class="grid-label">ملاحظات إضافية على الموافقة</span>
+                <div class="grid-value" style="color:#3b6200;">
+                    {{ $visit->status_notice ?: 'لا يوجد' }}
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($type == 'reject')
+        <div style="height:15px;"></div>
+
+        <div class="grid-section" style="background-color:#ffbcd2;">
+            <div class="grid-item">
+                <span class="grid-label">اسباب الرفض</span>
+                <div class="grid-value" style="color:#62182e;">
+                    {{ $visit->status_notice ?: 'لا يوجد' }}
+                </div>
+            </div>
+        </div>
+    @endif
+    <div style="height:15px;"></div>
     <div class="grid-section">
         <div class="grid-item">
             <span class="grid-label">📍 موضوع الزيارة</span>
@@ -143,10 +197,10 @@
     <div style="height:15px;"></div>
 
     <div class="grid-section">
-        <div class="grid-item">
-            <span class="grid-label">👤 الزائر</span>
+        <div class="grid-item"  >
+            <span class="grid-label ">👤 الزائر</span>
             @foreach($visit->emps_requester as $req)
-                <div class="grid-value">{{ $req->user->name }}</div>
+                <div class="grid-value  ">{{ $req->user->name }}</div>
             @endforeach
         </div>
 
@@ -181,31 +235,7 @@
         </div>
 
     </div>
-    @if($type == 'approve')
-        <div style="height:15px;"></div>
 
-        <div class="grid-section" style="background-color:#ecffd5;">
-            <div class="grid-item">
-                <span class="grid-label">ملاحظات إضافية على الموافقة</span>
-                <div class="grid-value" style="color:#3b6200;">
-                    {{ $visit->status_notice ?: 'لا يوجد' }}
-                </div>
-            </div>
-        </div>
-    @endif
-
-    @if($type == 'reject')
-        <div style="height:15px;"></div>
-
-        <div class="grid-section" style="background-color:#ffbcd2;">
-            <div class="grid-item">
-                <span class="grid-label">اسباب الرفض</span>
-                <div class="grid-value" style="color:#62182e;">
-                    {{ $visit->status_notice ?: 'لا يوجد' }}
-                </div>
-            </div>
-        </div>
-    @endif
     <div style="text-align:center; padding:20px;">
         <a href="{{ route('show.visit', ['id' => $visit->id]) }}"
            style="background-color:#5222e1; color:#fff; padding:14px 28px;

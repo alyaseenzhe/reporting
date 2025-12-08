@@ -186,12 +186,14 @@
             <label class="block font-bold mb-6 text-xs">
                 حالة الزيارة
             </label>
+
             <div
                 style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @else color: #701345; @endif ">
                 @if($record->status == 0)
                     تحت الإجراء
                 @elseif($record->status == 1)
-                    مقبولة
+                    مقبولة<br>
+                    تمت الموافقة على طلب الزيارة من قبل {{ App\Models\User::find($record->approved_by)->name }}
                 @elseif($record->status == 2)
                     مرفوضة
                 @elseif($record->status == 3)
