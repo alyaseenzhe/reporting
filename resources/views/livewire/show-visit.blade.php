@@ -1357,7 +1357,7 @@
                                  start: startDateTime,
                                 // end: visit.end,
                                 end: endDateTime,
-                                attendants: visit.attendants
+                                attendants: attendants
                                 // end: info.event.endStr
                             };
                         }

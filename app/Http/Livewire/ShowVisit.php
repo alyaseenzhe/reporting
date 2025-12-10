@@ -201,10 +201,11 @@ class ShowVisit extends Component
     }
 
     public function updateVisit($event) {
-
-
+//
         $visit = Visit::find($event['id']);
-
+        if(isset($visit->ms_event_id)){
+            $this->deleteEvent($visit->ms_event_id, $visit->id);
+        }
         if ($visit) {
 
 //            $recipient = User::where('sales_dept_code', $event['branch'])
@@ -265,6 +266,9 @@ class ShowVisit extends Component
 
             session()->flash('success', 'تم الغاء الزيارة بنجاح');
 
+            if(isset($visit->ms_event_id)){
+                $this->deleteEvent($visit->ms_event_id, $visit->id);
+            }
 //            $branch_manger = $this->branchMangerByVisitId($visit->id);
             return redirect()->route('visit-calendar');
         } else {

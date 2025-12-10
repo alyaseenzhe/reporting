@@ -1,6 +1,7 @@
 
 
-<div     x-data="{ panel: @entangle('activePanel')}"
+<div   wire:init="$set('activePanel', 'calendar')"
+       x-data="{ panel: @entangle('activePanel')}"
          x-on:togglePanel.window="panel = $event.detail.panel"
          class="w-full">
 {{--    Tabs --}}
@@ -823,7 +824,7 @@
                     // Replace this with your actual logic
                     const isAllowed = visit.emps.some(emp => emp.user_id === authUserId); // for example, something you send from backend
                      console.log(visit)
-                    if (isAllowed) {
+                    if (isAllowed || canViewAll) {
                         // ✅ Go to the URL
                         window.location.href = `/show-visit/${info.event.id}`;
                     } else {
@@ -940,20 +941,24 @@
             }
 
 
-
-            listTab.addEventListener('click', () => {
-                listTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-                calendarTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
-                listPanel.classList.remove('hidden');
-                calendarPanel.classList.add('hidden');
-            });
+            //
+            // listTab.addEventListener('click', () => {
+            //     listTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            //     calendarTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            //     listPanel.classList.remove('hidden');
+            //     calendarPanel.classList.add('hidden');
+            // });
 
 
         });
 
 
         let canOpenModal = @json(
-        (Auth::user()->user_group->visits && in_array('create-visit', json_decode(Auth::user()->user_group->visits)))
+        (Auth::user()->user_group->visits && in_array('create-visit', json_decode(Auth::user()->user_group->visits, true)))
+        || Auth::user()->role == 'a'
+    );
+        let canViewAll = @json(
+        (Auth::user()->user_group->visits && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits, true)))
         || Auth::user()->role == 'a'
     );
 

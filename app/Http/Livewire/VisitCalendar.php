@@ -66,12 +66,15 @@ class VisitCalendar extends Component
 //        dd($this->visits);
     }
 
-    public function loadVisits()
+    public function loadVisits($ExcludeCanceledVisit = Null)
     {
+        $this->activePanel = 'calendar';
+        $this->dispatchBrowserEvent('activePanel');
         $user = Auth::user();
         $canViewAll = (
             ($user->user_group->visits
                 && in_array('view-all-visits', json_decode($user->user_group->visits)))
+//                && $user->user->g)
             || $user->role == 'a'
         );
 
@@ -102,7 +105,8 @@ class VisitCalendar extends Component
 
         $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
 
-            $this->visits = Visit::with(  [ 'requester',
+//            $this->visits = Visit::with(  [ 'requester',
+            $query = Visit::with(  [ 'requester',
                 'emps',
                 'emps_recipients.user',
                 'emps_requester.user', ])
@@ -117,16 +121,26 @@ class VisitCalendar extends Component
 //                    $q->where('user_id', Auth::id());
 //                })
 //            ->where('is_deleted', 0)
+
+
                 ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
-                ->orderBy('start', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->get([
                     'id', 'title', 'requester_id', 'start', 'end',
 //                    'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
                     'reason', 'goals', 'branch', 'recipient_id',
                     'status', 'is_deleted'
-                ])
-                ->toArray(); // Now it's an array of visits
+                ]);
+//->lazy()
+//                ->toArray(); // Now it's an array of visits
+//
+//        if($this->activePanel == 'calendar'){
+//
+//            $query = $query->where('status' != '4');
+//            dd($query);
+//        }
 
+            $this->visits = $query->lazy()->toArray();
 
 //        dd($this->visits);
     }
@@ -225,8 +239,9 @@ class VisitCalendar extends Component
 
             DB::table('visit_emps')->insert($records);
 
-
+            $this->activePanel ='calendar';
             $this->loadVisits();
+
 
             $this->emit("visitsLoaded", $this->visits);
 
@@ -246,82 +261,6 @@ class VisitCalendar extends Component
 
         }
     }
-//
-//    public function updateVisit($event) {
-////        dd($event);
-//
-//        $visit = Visit::find($event['id']);
-//
-//        if ($visit) {
-//
-//            $recipient = User::where('sales_dept_code', $event['branch'])
-//                ->where('group', 8) // branch manger group
-//                ->select('id')->first();
-//
-//            $visit->title = $event['title'];
-//            $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
-////            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
-//            $visit->reason =  $event['reason'];
-//            $visit->goals = $event['goals'];
-//            $visit->extra_services = json_encode($event['extra_services']);
-////            $visit->branch =  $event['branch']; // no need to change the branch
-//
-////            $visit->recipient_id =  $recipient->id;
-//
-////            $visit->save();
-//
-//            if ($visit->save()) {
-//
-//                VisitEmp::where('visit_id', $event['id'])->delete();
-//
-//                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
-//                $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
-//                array_push($records, $requester_record);
-//
-//                DB::table('visit_emps')->insert($records);
-//
-//                $this->loadVisits();
-//
-//                $this->emit("visitsLoaded", $this->visits);
-//            }
-//        }
-//
-////        $this->loadVisits();
-////
-////        $this->emit("visitsLoaded", $this->visits);
-//    }
-//
-//    public function deleteVisit($event) {
-//
-//        $visit = Visit::find($event['id']);
-//
-//        if ($visit) {
-//            $visit->delete_reason =  $event['delete_reason'];
-//            $visit->is_deleted =  1;
-////            $visit->status = 4;
-//
-//            $visit->save();
-//            // Emit event to refresh FullCalendar events
-//            $this->loadVisits();
-//
-//            $this->emit("visitsLoaded", $this->visits);
-//
-//            if ($visit->status == 1) {
-//                $this->visitMail($visit, $visit->emps(), 'delete');
-//            }
-//            else if($visit->status == 0) {
-//
-//                $branch_manger = $this->branchMangerByVisitId($visit->id);
-//                $this->visitMail($this->oneVisit($visit->id), $branch_manger, 'delete');
-//            }
-//
-//        } else {
-//            // Optional: handle the case if event not found
-//            session()->flash('error', 'Visit not found.');
-//        }
-//
-//
-//    }
 
 
     public function checkDuplicate($branch, $date)
@@ -444,12 +383,13 @@ class VisitCalendar extends Component
     }
     public function search() {
 
+        $user = auth()->user();
         $this->visits = Visit::orderBy('created_at', 'DESC')->get();
 
 
         $query = Visit::with(['emps_requester.user', 'emps_recipients.user']);
 
-            if (auth()->check()) {
+            if (auth()->check()){
                 $query->when(
                     VisitEmp::where('user_id', auth()->id())
                         ->where('type', 'requester') // adjust if you have type column

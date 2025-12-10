@@ -7,6 +7,7 @@ use App\Models\VisitEmp;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use App\Models\Visit;
+use App\Models\MsToken;
 use Carbon\Carbon;
 trait MsGraphAuthTrait
 {
@@ -140,7 +141,7 @@ trait MsGraphAuthTrait
         }
         // Save token for future use
         session(['ms_access_token' => $accessToken]);
-
+        Session::save();
 
         $start = Carbon::parse($this->visit->start)
             ->setTimezone('Asia/Riyadh')
@@ -153,7 +154,7 @@ trait MsGraphAuthTrait
         $visitUrl = url("/show-visit/{$this->visit->id}");
         // 2️⃣ Create test event in Outlook calendar
         $eventResponse = Http::withToken($accessToken)->post('https://graph.microsoft.com/v1.0/me/events', [
-            'subject' =>  $this->visit->requester->name?? $this->visit->title,
+            'subject' =>  $this->visit->requester->name?? $this->visit->title ?? "موعد زيارة جديد",
             'body' => [
                 'contentType' => 'HTML',
                 'content' => '
@@ -185,10 +186,26 @@ trait MsGraphAuthTrait
                 'timeZone' => 'Asia/Riyadh',
             ],
             'location' => [
-                'displayName' => $this->branches[$this->visit->branch],
+                'displayName' => $this->branches[$this->visit->branch] ?? "1010",
             ],
             'attendees' => $attendees,
-        ]);
+//        'attendees' => [
+//            [
+//                "emailAddress" => [
+//                    "address" => "alnasser_zahraa@hotmail.com.com",
+//                    "name" => "Zahra"
+//                ],
+//                "type" => "required"
+//            ],
+//            [
+//                "emailAddress" => [
+//                    "address" => "zahra@alyaseenagri.com",
+//                    "name" => "Manager Name"
+//                ],
+//                "type" => "optional"
+//            ]
+//        ]
+            ]);
 
         if ($eventResponse->failed()) {
             return response()->json([
@@ -198,11 +215,39 @@ trait MsGraphAuthTrait
         }
 
 
+        $eventData = $eventResponse->json();
+        $this->visit->update([
+            'ms_event_id' => $eventData['id'] ?? null,
+        ]);
+
+        MsToken::create( [
+            'access_token' => $accessToken,
+            'visit_id' => $this->visit_id,
+        ]);
         return redirect('visit-calendar')->with('success', 'تمت الموافقة بنجاح وتم إضافة الموعد إلى التقويم.');
     }
 
     public function msGraphToken()
     {
         return session('ms_access_token');
+    }
+
+    public function deleteEvent($event, $visitId){
+        $token = MsToken::where('visit_id', $visitId)->value('access_token');
+//        $token = session('ms_access_token');
+//        dd($token);
+
+        if (!$token) {
+            logger()->error('MS Delete Failed: Token missing');
+            return;
+        }
+//        if ($this->visit->ms_event_id) {
+
+        if ($event) {
+            Http::withToken($token)->delete(
+                "https://graph.microsoft.com/v1.0/me/events/{$event}"
+            );
+        }
+
     }
 }
