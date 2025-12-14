@@ -188,23 +188,23 @@ trait MsGraphAuthTrait
             'location' => [
                 'displayName' => $this->branches[$this->visit->branch] ?? "1010",
             ],
-            'attendees' => $attendees,
-//        'attendees' => [
-//            [
-//                "emailAddress" => [
-//                    "address" => "alnasser_zahraa@hotmail.com.com",
-//                    "name" => "Zahra"
-//                ],
-//                "type" => "required"
-//            ],
-//            [
-//                "emailAddress" => [
-//                    "address" => "zahra@alyaseenagri.com",
-//                    "name" => "Manager Name"
-//                ],
-//                "type" => "optional"
-//            ]
-//        ]
+//            'attendees' => $attendees,
+        'attendees' => [
+            [
+                "emailAddress" => [
+                    "address" => "alnasser_zahraa@hotmail.com.com",
+                    "name" => "Zahra"
+                ],
+                "type" => "required"
+            ],
+            [
+                "emailAddress" => [
+                    "address" => "zahra@alyaseenagri.com",
+                    "name" => "Manager Name"
+                ],
+                "type" => "optional"
+            ]
+        ]
             ]);
 
         if ($eventResponse->failed()) {

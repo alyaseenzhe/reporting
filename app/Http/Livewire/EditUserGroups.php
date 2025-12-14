@@ -43,7 +43,8 @@ class EditUserGroups extends Component
             $this->calculate_all_product_target = $this->record->calculate_all_product_target ? $this->record->calculate_all_product_target : 0;
             $this->choose_special_product = $this->record->choose_special_product;
             $this->edit_special_product = $this->record->edit_special_product;
-            $this->visits = json_decode($this->record->visits);
+            $this->visits = json_decode($this->record->visits, true) ?? [];
+
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذه المجموعة غير موجودة');

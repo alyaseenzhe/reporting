@@ -125,7 +125,8 @@
                                 <option value="0">تحت الإجراء</option>
                                 <option value="1">مقبوله</option>
                                 <option value="2">مرفوضة</option>
-                                <option value="3">منجزة</option>
+                                <option value="3">التقارير تحت الإجراء</option>
+                                <option value="5">التقارير تامة</option>
                                 <option value="4">ملغية</option>
 
 
@@ -190,7 +191,7 @@
 
 
                             @forelse($visits as $visit)
-                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @endif">
+                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
 
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
@@ -277,9 +278,11 @@
                                             @elseif($visit["status"] == 2)
                                                 مرفوضة
                                             @elseif($visit["status"] == 3)
-                                               منجزة
+                                              التقارير تحت الإجراء
                                             @elseif($visit["status"] == 4)
                                                 ملغية
+                                            @elseif($visit["status"] == 5)
+                                                التقارير تامة
                                             @endif
                                         </div>
                                     </td>
@@ -444,6 +447,9 @@
                         info.el.style.color = '#000';
                     } else if (status === '3') {
                         info.el.style.backgroundColor = '#dadada'; // grey-ish
+                        info.el.style.color = '#000';
+                    } else if (status === '5') {
+                        info.el.style.backgroundColor = '#b9f0ea';
                         info.el.style.color = '#000';
                     }
                 },
@@ -921,6 +927,9 @@
                         break;
                     case '2':
                         backgroundColor = '#fecaca';
+                        break;
+                    case '5':
+                        backgroundColor = '#b9f0ea'
                         break;
                     default:
                         backgroundColor = '#e5e7eb';

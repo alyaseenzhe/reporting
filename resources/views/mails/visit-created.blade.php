@@ -15,25 +15,7 @@
             @endforeach
 
                 <span class="grid-label">🗺️ مكان الزيارة</span>
-            <div class="grid-value">
-                @switch($visit->branch)
-                    @case("0101") فرع الاحساء @break
-                    @case("0102") فرع جدة @break
-                    @case("0103") فرع الرياض @break
-                    @case("0104") فرع وادي الدواسر @break
-                    @case("0105") فرع الجوف @break
-                    @case("0106") فرع الدمام @break
-                    @case("0107") فرع الخرج @break
-                    @case("0108") فرع نجران @break
-                    @case("0109") فرع حائل @break
-                    @case("0110") فرع تبوك @break
-                    @case("0111") فرع القصيم @break
-                    @case("0112") فرع ساجر @break
-                    @case("0201") مزرعة الدالوة @break
-                    @case("0202") مزرعة الفضول @break
-                    @case("0203") مزرعة الدلم @break
-                @endswitch
-            </div>
+            <div class="grid-value">{{__($visit->branch)}}</div>
 
 </span>
 <style>
@@ -167,25 +149,7 @@
 
         <div class="grid-item">
             <span class="grid-label">🗺️ مكان الزيارة</span>
-            <div class="grid-value">
-                @switch($visit->branch)
-                    @case("0101") فرع الاحساء @break
-                    @case("0102") فرع جدة @break
-                    @case("0103") فرع الرياض @break
-                    @case("0104") فرع وادي الدواسر @break
-                    @case("0105") فرع الجوف @break
-                    @case("0106") فرع الدمام @break
-                    @case("0107") فرع الخرج @break
-                    @case("0108") فرع نجران @break
-                    @case("0109") فرع حائل @break
-                    @case("0110") فرع تبوك @break
-                    @case("0111") فرع القصيم @break
-                    @case("0112") فرع ساجر @break
-                    @case("0201") مزرعة الدالوة @break
-                    @case("0202") مزرعة الفضول @break
-                    @case("0203") مزرعة الدلم @break
-                @endswitch
-            </div>
+            <div class="grid-value">{{__($visit->branch)}}</div>
         </div>
 
         <div class="grid-item">

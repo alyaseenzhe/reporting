@@ -290,13 +290,13 @@ class ShowVisit extends Component
 
         if($visit->save()) {
 
-            session()->flash('success', 'تم إغلاق الزيارة');
+            session()->flash('success', 'تم إنجاز الزيارة');
             $this->visitMail($visit, null, 'review');
 
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
         else {
-            session()->flash('error-message', 'حدث خطأ ما عند إغلاق الزيارة');
+            session()->flash('error-message', 'حدث خطأ ما عند إنجاز الزيارة');
             return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
     }
@@ -305,7 +305,7 @@ class ShowVisit extends Component
 
 
 //
-//        $visit = Visit::find($this->visit_id);
+        $visit = Visit::find($this->visit_id);
 //
 //        $is_requester = $visit->where('requester_id', Auth::id())->count();
 ////        dd($is_recipient);
@@ -325,7 +325,7 @@ class ShowVisit extends Component
 
 //            }
 
-        $visit = VisitEmp::where('visit_id', $this->visit_id)
+        $visitEmps = VisitEmp::where('visit_id', $this->visit_id)
             ->where('user_id', Auth::id())
             ->where(function($query) {
                 $query->whereNull('reviews')
@@ -333,33 +333,37 @@ class ShowVisit extends Component
             })
             ->first();
 
-        if ($visit) {
-            $editRecord = VisitEmp::findOrFail($visit->id);
-
+        if ($visitEmps) {
+            $editRecord = VisitEmp::findOrFail($visitEmps->id);
+//            dd($editRecord->user()->first()->name);
             $editRecord->reviews = json_encode($data);
 
 //            if ($visit->recipient_reviews->save()) {
-
+            if($editRecord->save())
+            {
                 $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
                     ->where(function ($query) {
                         $query->whereNull('reviews')
                             ->orWhere('reviews', '');
                     })
                     ->count();
+//                dd($checkReviews);
 
                 if ($checkReviews == 0) {
+                    $visit->update([
+                        'status'=> '5'
+                    ]);
                     // send email and whatsapp to tell user that the rating has been finished by all the recipients
 //                    dd("تم الانتهاء من جميع التعليقات");
 
 //                    $this->visitMail($visit, null, 'reviews-done');
-                    $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+                    $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
 
                 }
 
-            $this->visitMail($this->oneVisit($this->visit_id), null, 'reviews-done');
+            $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
 
-            if($editRecord->save())
-                {
+
                 session()->flash('success', 'تم تقييم الزيارة');
                 return redirect()->route('show.visit', ['id' => $this->visit_id]);
 

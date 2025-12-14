@@ -1,7 +1,6 @@
 @section('title')
     عرض الزيارة
 @stop
-
 <input type="hidden" name="visit_id" value="{{$record->id}}">
     <div class="mb-5">
         <nav class="sm:flex justify-between" aria-label="Breadcrumb">
@@ -181,14 +180,14 @@
     </div>
 
     <div class="w-full flex sm:flex-row flex-col gap-4"
-         style="@if($record->status ==0) background-color: #dceeff; /*#fffddc;*/ @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @elseif($record->status == 4) background-color: #ffd7b5; @endif border: dashed 1px black; padding: 20px;">
+         style="@if($record->status ==0) background-color: #dceeff; /*#fffddc;*/ @elseif($record->status == 1) background-color: #edffe9; @elseif($record->status == 2) background-color: #fff0f8; @elseif($record->status == 4) background-color: #ffd7b5; @elseif($record->status == 5) background-color: #b9f0ea; @endif border: dashed 1px black; padding: 20px;">
         <div class="w-full">
             <label class="block font-bold mb-6 text-xs">
                 حالة الزيارة
             </label>
 
             <div
-                style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @else color: #701345; @endif ">
+                style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @elseif($record->status ==5) color: #022622; @else color: #701345; @endif ">
                 @if($record->status == 0)
                     تحت الإجراء
                 @elseif($record->status == 1)
@@ -197,10 +196,14 @@
                 @elseif($record->status == 2)
                     مرفوضة
                 @elseif($record->status == 3)
-                    منجزة
+                    التقارير تحت الاجراء
+
                 @elseif($record->status == 4)
                     ملغية
+                @elseif($record->status == 5)
+                    التقارير تامة
                 @endif
+
             </div>
         </div>
         <div class="w-full">
@@ -327,7 +330,7 @@
 
 
             {{--             collapsable--}}
-            @if($record->status == 3)
+            @if($record->status == 3 || $record->status == 5)
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Column 1 -->
                 <div class="space-y-4">

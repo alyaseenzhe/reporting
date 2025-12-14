@@ -58,6 +58,9 @@ class VisitCreated extends Mailable
         elseif ($this->type == 'reviews-done') {
             $subject_txt = "التقييم جاهز! يمكنك الآن الإطلاع على تقييم الزيارة";
         }
+//        elseif ($this->type == 'reviews-done') {
+//            $subject_txt = $this->branch_manger_name;
+//        }
 
 
         elseif ($this->type == 'reminder') {
@@ -67,7 +70,8 @@ class VisitCreated extends Mailable
             $subject_txt = "تذكير بقبول الزيارة";
         }
 
-        return $this->subject($subject_txt)
+        $title = $subject_txt.' الزائر '.$this->visit->requester()->first()->name.' '.__($this->visit->branch);
+        return $this->subject($title)
             ->view('mails.visit-created')
             ->with(['visit' => $this->visit, 'branch_manger_name' => $this->branch_manger_name, 'type' => $this->type]);
     }
