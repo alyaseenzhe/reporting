@@ -20,9 +20,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         // $schedule->command('inspire')->hourly();
-        $schedule->command('command:sayhi')->everyTwoMinutes();
+//        $schedule->command('command:sayhi')->everyTwoMinutes();
 //        $schedule->job(new SendMarketingSummaryEmail())->weeklyOn(5, '9:00')->timezone("Asia/Riyadh");
-        $schedule->command('marketing:summary')->weeklyOn(5, '9:00')->timezone("Asia/Riyadh");
+//        $schedule->command('marketing:summary')->weeklyOn(5, '9:00')->timezone("Asia/Riyadh");
 //        $schedule->command('marketing:summary')->everyTenMinutes()->timezone("Asia/Riyadh");
         $schedule->command('visits:send-reminders')->daily();
         $schedule->command('visits:rate-reminders')->cron('0 0 */2 * *');

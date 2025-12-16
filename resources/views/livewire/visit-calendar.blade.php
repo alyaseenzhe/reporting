@@ -40,6 +40,42 @@
 
         </div>
 
+        <div class="w-full bg-white border border-gray-200 rounded-xl p-4 mb-6
+            flex flex-wrap items-center gap-4 shadow-sm">
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-3 h-3 rounded-full " style="background-color: rgb(220, 238, 255); "></span>
+                <span>تحت الإجراء</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-3 h-3 rounded-full " style="background-color: rgb(209, 250, 229);"></span>
+                <span>مقبولة</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm " >
+                <span class="w-3 h-3 rounded-full bg-gray-400" style="background-color:  rgb(254, 202, 202);"></span>
+                <span>مرفوضة</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-3 h-3 rounded-full" style="background-color: rgb(218, 218, 218);"></span>
+                <span>التقارير تحت الإجراء</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-3 h-3 rounded-full " style="background-color: rgb(185, 240, 234);"></span>
+                <span>التقارير تامة</span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-700">
+                <span class="w-3 h-3 rounded-full" style="background-color: #ffd7b5;"></span>
+                <span>ملغية</span>
+            </div>
+
+        </div>
+
+
         <!-- Tab Panels -->
 
         <div  class="w-full"  x-show="panel === 'calendar'">
@@ -57,12 +93,12 @@
 {{--                                })--}}
 {{--                                ->unique(fn($r) => $r['user']['id']);--}}
 {{--                        @endphp--}}
-                       <div>
+                       <div class="w-full">
                            <label class="block font-bold mb-2">اسم الزائر
 
                            </label>
 
-                           <select class="form-select" wire:model.lazy="user">
+                           <select class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500  shadow-sm sm:text-sm border-gray-300 rounded-md" wire:model.lazy="user">
 {{--                               @foreach($visits as $visit)--}}
                                <option value="all">الكل</option>
                                @foreach($uniqueRequesters as $requester)
@@ -714,14 +750,12 @@
                             // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime || !selectedEmployees.length) {
 
                             // Call Livewire method
-
                             const visitDate = info.startStr; // YYYY-MM-DD
 
-                            // Correct way to call Livewire method from JS
                             const exists = await checkDuplicate(branch, visitDate);
 
                             if (exists) {
-                                const confirmDuplicate = await Swal.fire({
+                                const result = await Swal.fire({
                                     icon: 'warning',
                                     title: 'تنبيه',
                                     text: 'يوجد زيارة بنفس التاريخ والفرع',
@@ -729,36 +763,75 @@
                                     confirmButtonText: 'نعم، متابعة',
                                     cancelButtonText: 'إلغاء',
                                     reverseButtons: true
-                                }).then((data) => {
+                                });
 
-                                    // User clicked CANCEL → stop submission
-                                    if (!data.confirmDuplicate) {
-                                        return false;
-
-                                    }
-
-
-                                    // const startDateTime = combineDateAndTime(visitDate, visitTime);
-                                    const startDateTime = combineDateAndTime(start, visitTime);
-                                    const endDateTime = combineDateAndTime(end, endTime, isEnd = true);
-
-                                    return {
-                                        title,
-                                        reason,
-                                        goals,
-                                        branch,
-                                        attendants,
-                                         start: startDateTime,
-                                        // start,
-                                        // end: info.endStr,
-                                        end: endDateTime,
-                                        extra_services: extraServices,
-                                        requester: @json(Auth::user()->name)
-
-                                    }
-                                    // ⚠️ DO NOT return false → allow submission
-                                })
+                                // المستخدم ضغط إلغاء
+                                if (!result.isConfirmed) {
+                                    return null; // ⛔ مهم جدًا
+                                }
                             }
+
+// 👇 التنفيذ يستمر فقط إذا وافق أو لا يوجد duplicate
+{{--                            const startDateTime = combineDateAndTime(start, visitTime);--}}
+{{--                            const endDateTime = combineDateAndTime(end, endTime, true);--}}
+
+{{--                            return {--}}
+{{--                                title,--}}
+{{--                                reason,--}}
+{{--                                goals,--}}
+{{--                                branch,--}}
+{{--                                attendants,--}}
+{{--                                start: startDateTime,--}}
+{{--                                end: endDateTime,--}}
+{{--                                extra_services: extraServices,--}}
+{{--                                requester: @json(Auth::user()->name)--}}
+{{--                            };--}}
+
+                            {{--const visitDate = info.startStr; // YYYY-MM-DD--}}
+
+                            {{--// Correct way to call Livewire method from JS--}}
+                            {{--const exists = await checkDuplicate(branch, visitDate);--}}
+
+                            {{--if (exists) {--}}
+                            {{--    const confirmDuplicate = await Swal.fire({--}}
+                            {{--        icon: 'warning',--}}
+                            {{--        title: 'تنبيه',--}}
+                            {{--        text: 'يوجد زيارة بنفس التاريخ والفرع',--}}
+                            {{--        showCancelButton: true,--}}
+                            {{--        confirmButtonText: 'نعم، متابعة',--}}
+                            {{--        cancelButtonText: 'إلغاء',--}}
+                            {{--        reverseButtons: true--}}
+                            {{--    // });--}}
+                            {{--    }).then((data) => {--}}
+                            {{--        // data.isConfirmed--}}
+                            {{--        // User clicked CANCEL → stop submission--}}
+                            {{--        if (!confirmDuplicate.isConfirmed) {--}}
+                            {{--            return false;--}}
+
+                            {{--        }--}}
+
+
+                            {{--        // const startDateTime = combineDateAndTime(visitDate, visitTime);--}}
+                            {{--        const startDateTime = combineDateAndTime(start, visitTime);--}}
+                            {{--        const endDateTime = combineDateAndTime(end, endTime, isEnd = true);--}}
+
+                            {{--        return {--}}
+                            {{--            title,--}}
+                            {{--            reason,--}}
+                            {{--            goals,--}}
+                            {{--            branch,--}}
+                            {{--            attendants,--}}
+                            {{--             start: startDateTime,--}}
+                            {{--            // start,--}}
+                            {{--            // end: info.endStr,--}}
+                            {{--            end: endDateTime,--}}
+                            {{--            extra_services: extraServices,--}}
+                            {{--            requester: @json(Auth::user()->name)--}}
+
+                            {{--        }--}}
+                            {{--        // ⚠️ DO NOT return false → allow submission--}}
+                            {{--    })--}}
+                            {{--}--}}
                                 // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
                                 if (!title.trim() || !reason.trim() || !branch) {
                                     Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
