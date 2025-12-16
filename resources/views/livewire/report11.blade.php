@@ -510,6 +510,7 @@
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
+
                     @if($report_type == 'byItem')
                         <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">كود الصنف</div>
@@ -552,7 +553,9 @@
                             <div class="text-sm">متوسط السعر</div>
                         </th>
                     @endif
-                    @if($report_type == 'byDepartment' || $report_type == 'byItemGroup' || $report_type == 'bySpeciality' || $report_type == 'byMarketingType' || $report_type == 'byVendor')
+                    @if($report_type == 'byDepartment' || $report_type == 'byItemGroup' || $report_type == 'bySpeciality' || $report_type == 'byMarketingType' || $report_type == 'byVendor' || $report_type == 'byEmployee')
+
+
                         {{--                        <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                         {{--                            <div class="text-sm">قسم</div>--}}
                         {{--                        </th>--}}
@@ -662,6 +665,8 @@
                 {{--                    </tr>--}}
                 {{--                    @php $counter++ @endphp--}}
                 {{--                @endforeach--}}
+
+
                 @if($report_type == 'byItem')
                     @php $item_total = 0; $cost_total = 0; $gross_total = 0; @endphp
                     @foreach($group_results as $record)
@@ -1947,6 +1952,7 @@
 
                     {{--                    @foreach($group_results as $outer_record)--}}
                     @foreach($group_results as $record)
+
                         @if($currentGroup != $record["VendorName"])
 
                             {{-- Output subtotals for the previous group --}}
@@ -2551,7 +2557,7 @@
                         @endif
                     </tr>
                     </tfoot>
-                @elseif($report_type == 'byDepartment' || $report_type == 'byItemGroup' || $report_type == 'bySpeciality' || $report_type == 'byMarketingType' || $report_type == 'byVendor' || $report_type == 'byCustomer')
+                @elseif($report_type == 'byDepartment' || $report_type == 'byItemGroup' || $report_type == 'bySpeciality' || $report_type == 'byMarketingType' || $report_type == 'byVendor' || $report_type == 'byCustomer' || $report_type == 'byEmployee')
                     <tfoot>
                     <tr style="border-top: 2px solid black; background-color: #abdcf8; font-weight: bold">
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -2577,8 +2583,12 @@
                     </tr>
                     </tfoot>
                 @endif
+                @elseif($report_type == 'byEmployee')
+                    <p>test</p>
+
+                @else
             </table>
-            @else
+
                 <div class="w-full p-6" style="background-color: #fff0f5; border: 1px solid #9f4764; color: #9f4764; text-align: center; font-weight: bold;">
                     <svg class="w-20" style="margin: auto; margin-bottom: 20px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#f9dcc4;}.cls-2{fill:#fff2e9;}.cls-3{fill:#edbe9d;}.cls-4{fill:#577590;}</style></defs><path class="cls-1" d="M23.5,2h-12a.47.47,0,0,0-.35.15l-5,5A.47.47,0,0,0,6,7.5v20A2.5,2.5,0,0,0,8.5,30h15A2.5,2.5,0,0,0,26,27.5V4.5A2.5,2.5,0,0,0,23.5,2Z"/><path class="cls-2" d="M15,2h7a1,1,0,0,1,0,2H15a1,1,0,0,1,0-2Z"/><path class="cls-2" d="M6,13.5v-2a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Z"/><path class="cls-2" d="M6,24.5v-8a1,1,0,0,1,2,0v8a1,1,0,0,1-2,0Z"/><path class="cls-3" d="M24,20v4a4,4,0,0,1-4,4H11a1,1,0,0,0-1,1h0a1,1,0,0,0,1,1H23.5A2.5,2.5,0,0,0,26,27.5V20a1,1,0,0,0-1-1h0A1,1,0,0,0,24,20Z"/><path class="cls-3" d="M11.69,2a.47.47,0,0,0-.54.11l-5,5A.47.47,0,0,0,6,7.69.5.5,0,0,0,6.5,8h3A2.5,2.5,0,0,0,12,5.5v-3A.5.5,0,0,0,11.69,2Z"/><path class="cls-4" d="M21.5,11.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,16.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,21.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/></svg>
                     <span class="mt-4">لا يوجد نتائج للعرض</span>
