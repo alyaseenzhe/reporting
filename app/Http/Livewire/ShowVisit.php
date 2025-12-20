@@ -166,6 +166,7 @@ class ShowVisit extends Component
             $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
             $this->visitMail($visit, $emails, 'approve');
 
+
             session()->flash('success', 'تمت الموافقة على الزيارة');
 //            return redirect()->route('show.visit', ['id' => $this->visit_id]);
         }
@@ -290,6 +291,11 @@ class ShowVisit extends Component
 
         if($visit->save()) {
 
+//            dd($visit->ms_event_id);
+            if(isset($visit->ms_event_id)){
+                $this->deleteEvent($visit->ms_event_id, $visit->id);
+            }
+
             session()->flash('success', 'تم إنجاز الزيارة');
             $this->visitMail($visit, null, 'review');
 
@@ -333,6 +339,8 @@ class ShowVisit extends Component
             })
             ->first();
 
+
+
         if ($visitEmps) {
             $editRecord = VisitEmp::findOrFail($visitEmps->id);
 //            dd($editRecord->user()->first()->name);
@@ -341,27 +349,55 @@ class ShowVisit extends Component
 //            if ($visit->recipient_reviews->save()) {
             if($editRecord->save())
             {
-                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
-                    ->where(function ($query) {
-                        $query->whereNull('reviews')
-                            ->orWhere('reviews', '');
-                    })
-                    ->count();
-//                dd($checkReviews);
+                $requester_emails = $visit->emps_requester->pluck('user.email');
 
-                if ($checkReviews == 0) {
-                    $visit->update([
-                        'status'=> '5'
-                    ]);
+                $recipent_emails = $visit->emps_recipients->pluck('user.email');;
+
+
+
+                if($editRecord->type == 'recipient') {
+
+                    Mail::to($requester_emails)->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+
+                }elseif($editRecord->type == 'requester'){
+
+                    Mail::to($recipent_emails)->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+
+                }
+                $hasRecipientReview = $visit->emps_recipients()
+                    ->whereNotNull('reviews')
+                    ->exists();
+
+                $hasRequesterReview = $visit->emps_requester()
+                    ->whereNotNull('reviews')
+                    ->exists();
+
+                if ( $hasRecipientReview && $hasRequesterReview) {
+                    $visit->update(['status' => 5]);
+                }
+
+//                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
+//                    ->where(function ($query) {
+//                        $query->whereNull('reviews')
+//                            ->orWhere('reviews', '');
+//                    })
+//                    ->count();
+////                dd($checkReviews);
+//
+//                if ($checkReviews == 0) {
+//                    $visit->update([
+//                        'status'=> '5'
+//                    ]);
+
                     // send email and whatsapp to tell user that the rating has been finished by all the recipients
 //                    dd("تم الانتهاء من جميع التعليقات");
 
 //                    $this->visitMail($visit, null, 'reviews-done');
-                    $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
+//                    $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
 
-                }
+//                }
 
-            $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
+//            $this->visitMail($this->oneVisit($this->visit_id), $editRecord->user()->first()->name, 'reviews-done');
 
 
                 session()->flash('success', 'تم تقييم الزيارة');

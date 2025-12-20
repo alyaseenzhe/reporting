@@ -115,6 +115,34 @@
         </p>
     @endif
 
+    <div class="w-full flex sm:flex-row flex-col gap-4"
+         style="@if($visit->status ==0) background-color: #dceeff; /*#fffddc;*/ @elseif($visit->status == 1) background-color: #edffe9; @elseif($visit->status == 2) background-color: #fff0f8; @elseif($visit->status == 4) background-color: #ffd7b5; @elseif($visit->status == 5) background-color: #b9f0ea; @endif border: dashed 1px black; padding: 20px;">
+        <div class="w-full">
+            <label class="block font-bold mb-6 text-xs">
+                حالة الزيارة
+            </label>
+
+            <div
+                style="@if($visit->status ==0) color: #03045E; /*#7d781a;*/  @elseif($visit->status == 1) color: #418f30; @elseif($visit->status == 2) color: #701345; @elseif($visit->status ==5) color: #022622; @else color: #701345; @endif ">
+                @if($visit->status == 0)
+                    تحت الموافقة
+                @elseif($visit->status == 1)
+                    مقبولة<br>
+                    تمت الموافقة على طلب الزيارة من قبل {{ App\Models\User::find($visit->approved_by)->name }}
+                @elseif($visit->status == 2)
+                    مرفوضة
+                @elseif($visit->status == 3)
+                    التقارير تحت الاجراء
+
+                @elseif($visit->status == 4)
+                    ملغية
+                @elseif($visit->status == 5)
+                    التقارير تامة
+                @endif
+
+            </div>
+        </div>
+    </div>
     @if($type == 'approve')
         <div style="height:15px;"></div>
 

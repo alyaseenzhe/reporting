@@ -45,7 +45,7 @@
 
             <div class="flex items-center gap-2 text-sm text-gray-700">
                 <span class="w-3 h-3 rounded-full " style="background-color: rgb(220, 238, 255); "></span>
-                <span>تحت الإجراء</span>
+                <span>تحت الموافقة</span>
             </div>
 
             <div class="flex items-center gap-2 text-sm text-gray-700">
@@ -135,7 +135,9 @@
                             <select wire:model="branch" name="branch" id="branch"
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             >
+
                                 <option value="all">الكل</option>
+
                                 <option value="0101">الأحساء</option>
                                 <option value="0102">جدة</option>
                                 <option value="0103">الرياض</option>
@@ -158,7 +160,7 @@
                             <select wire:model.lazy="status" name="status" id="status"
                                     class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 <option value="all">الكل</option>
-                                <option value="0">تحت الإجراء</option>
+                                <option value="0">تحت الموافقة</option>
                                 <option value="1">مقبوله</option>
                                 <option value="2">مرفوضة</option>
                                 <option value="3">التقارير تحت الإجراء</option>
@@ -308,7 +310,7 @@
                                     <td class="border p-2 whitespace-nowrap">
                                         <div class="text-center text-gray-800 text-sm">
                                             @if($visit["status"] == 0)
-                                                تحت الإجراء
+                                                تحت الموافقة
                                             @elseif($visit["status"] == 1)
                                                 مقبولة
                                             @elseif($visit["status"] == 2)
@@ -451,6 +453,7 @@
 
             @else
             visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string
+            {{--visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string--}}
 
             @endif
 
@@ -459,6 +462,7 @@
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
+                firstDay: 6, // Saturday
                 selectable: true,
                  events: visits.map(formatVisit),
                 // events:            [ {
@@ -754,23 +758,6 @@
 
                             const exists = await checkDuplicate(branch, visitDate);
 
-                            if (exists) {
-                                const result = await Swal.fire({
-                                    icon: 'warning',
-                                    title: 'تنبيه',
-                                    text: 'يوجد زيارة بنفس التاريخ والفرع',
-                                    showCancelButton: true,
-                                    confirmButtonText: 'نعم، متابعة',
-                                    cancelButtonText: 'إلغاء',
-                                    reverseButtons: true
-                                });
-
-                                // المستخدم ضغط إلغاء
-                                if (!result.isConfirmed) {
-                                    return null; // ⛔ مهم جدًا
-                                }
-                            }
-
 // 👇 التنفيذ يستمر فقط إذا وافق أو لا يوجد duplicate
 {{--                            const startDateTime = combineDateAndTime(start, visitTime);--}}
 {{--                            const endDateTime = combineDateAndTime(end, endTime, true);--}}
@@ -833,7 +820,7 @@
                             {{--    })--}}
                             {{--}--}}
                                 // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
-                                if (!title.trim() || !reason.trim() || !branch) {
+                                if (!title.trim() || !reason.trim() || !branch   || !selectedEmployees.length) {
                                     Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
                                     return false;
                                 }
@@ -844,7 +831,25 @@
                                 }
 
 
-                                // const startDateTime = combineDateAndTime(info.startStr, visitTime);
+
+                            if (exists) {
+                                const result = await Swal.fire({
+                                    icon: 'warning',
+                                    title: 'تنبيه',
+                                    text: 'يوجد زيارة بنفس التاريخ والفرع',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'نعم، متابعة',
+                                    cancelButtonText: 'إلغاء',
+                                    reverseButtons: true
+                                });
+
+                                // المستخدم ضغط إلغاء
+                                if (!result.isConfirmed) {
+                                    return null; // ⛔ مهم جدًا
+                                }
+                            }
+
+                            // const startDateTime = combineDateAndTime(info.startStr, visitTime);
                                 const startDateTime = combineDateAndTime(start, visitTime);
                                 const endDateTime = combineDateAndTime(end, endTime, isEnd= true);
 

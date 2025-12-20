@@ -103,7 +103,7 @@ class VisitCalendar extends Component
 //            ->get()
 //            ->toArray();
 
-        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '!=', '4')->get();
+        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '0')->orWhere('status', '1')->get();
 
 //            $this->visits = Visit::with(  [ 'requester',
             $query = Visit::with(  [ 'requester',

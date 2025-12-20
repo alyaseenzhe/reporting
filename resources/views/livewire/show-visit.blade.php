@@ -63,7 +63,7 @@
             @endif
 
 
-            @if(($record->status == 0 || $record->status == 1) && $record->is_requester() && $record->is_deleted == 0)
+            @if(($record->status == 0 || $record->status == 1 || $record->status == 2) && $record->is_requester() && $record->is_deleted == 0)
                 <div class="flex flex-row gap-4 justify-center">
                     <div class="flex flex-row gap-4 justify-center">
                         <div>
@@ -189,7 +189,7 @@
             <div
                 style="@if($record->status ==0) color: #03045E; /*#7d781a;*/  @elseif($record->status == 1) color: #418f30; @elseif($record->status == 2) color: #701345; @elseif($record->status ==5) color: #022622; @else color: #701345; @endif ">
                 @if($record->status == 0)
-                    تحت الإجراء
+                    تحت الموافقة
                 @elseif($record->status == 1)
                     مقبولة<br>
                     تمت الموافقة على طلب الزيارة من قبل {{ App\Models\User::find($record->approved_by)->name }}
@@ -815,7 +815,7 @@
 
         function showRecipientReviewWithNotes() {
             const questions = [
-                {text: 'جودة التحضير للزراعة', id: 'preparation-quality', type: 'rating'},
+                {text: 'جودة التحضير  للزيارة', id: 'preparation-quality', type: 'rating'},
                 {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
                 {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},
                 // {text: 'مستوى الدعم الفني المقدم', id: 'technical_support', type: 'rating'},
