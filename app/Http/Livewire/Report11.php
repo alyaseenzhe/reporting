@@ -562,6 +562,95 @@ class Report11 extends Component
                 $this->totalSalesByItem = $groupedByPartnerAndItem->toArray();
 //                dd($this->totalSalesByItem);
             }
+            else if ($this->report_type == "byEmployee") { // bug
+                $groupedByBP = $merged_results->groupBy(function ($item) {
+                    return gettype($item) === 'object' ? $item->SlpCode : $item['SlpCode'];
+                });
+
+                $this->group_results = $groupedByBP->map(function ($itemsGroup) {
+                    // Now group by OldCode within each BusinessPartnerCode
+                    $groupedByItem = $itemsGroup->groupBy(function ($item) {
+                        return gettype($item) === 'object' ? $item->OldCode : $item['OldCode'];
+                    });
+
+                    // Process each item group
+                    return $groupedByItem->map(function ($row) {
+                        $first = $row->first();
+                        $isObject = gettype($first) === 'object';
+
+                        return [
+                            'OldCode' => $isObject ? $first->OldCode : $first['OldCode'],
+                            'ItemName' => $isObject ? $first->ItemName : $first['ItemName'],
+                            'SalUnitMsr' => $isObject ? $first->SalUnitMsr : $first['SalUnitMsr'],
+                            'Speciality' => $isObject ? $first->Speciality : $first['Speciality'],
+                            'VendorName' => $isObject ? $first->VendorName : $first['VendorName'],
+                            'Department' => $isObject ? $first->Department : $first['Department'],
+                            'mrkt_type' => $isObject ? $first->mrkt_type : $first['mrkt_type'],
+                            'ItemGroup' => $isObject ? ($first->group_item ?? $first->ItemGroup) : ($first['group_item'] ?? $first['ItemGroup']),
+                            'BusinessPartnerCode' => $isObject ? $first->BusinessPartnerCode : $first['BusinessPartnerCode'],
+                            'BusinessPartnerName' => $isObject ? $first->BusinessPartnerName : $first['BusinessPartnerName'],
+                            'EmployeeCode' => $isObject ? $first->EmployeeCode : $first['SlpCode'],
+                            'EmployeeName' => $isObject ? $first->EmployeeName : $first['SlpName'],
+                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0
+                                ? $row->sum('TotalSalesAmount') / $row->sum('TotalQuantitySold') : 0,
+                            'Cost' => $row->sum('Cost'),
+                            'GrossProfit' => $row->sum('GrossProfit'),
+                            'GrossProfitPer' => $row->sum('Cost') != 0
+                                ? (($row->sum('GrossProfit') / $row->sum('Cost')) * 100) : 0,
+                            'TransCount' => $row->sum('TransCount'),
+                        ];
+                    });
+                });
+
+// Flattening not needed here since you want nested result
+// You now have:
+// [
+//   BusinessPartnerCode1 => [
+//       OldCode1 => [item info...],
+//       OldCode2 => [item info...],
+//       ...
+//   ],
+//   BusinessPartnerCode2 => [...],
+//   ...
+// ]
+
+// If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
+                $this->group_results = $this->group_results->map(function ($items) {
+                    return $items->values(); // Convert inner maps to arrays
+                });
+
+//                dd($this->group_results);
+                // Step: Flatten all items across partners to group by OldCode
+                $flattenedItems = $this->group_results->flatMap(function ($items) {
+                    return $items;
+                });
+
+
+
+                // Step 1: Group by BusinessPartnerCode, then by OldCode
+
+
+                $groupedByEmployeeAndItem = $flattenedItems
+                    ->groupBy('EmployeeCode')
+                    ->map(function ($itemsGroup) {
+                        return $itemsGroup->groupBy('OldCode')
+                            ->map(function ($itemGroup) {
+                                return [
+                                    $itemGroup->sum('TotalSalesAmount'),
+                                    $itemGroup->sum('Cost'),
+                                    $itemGroup->sum('GrossProfit'),
+                                    $itemGroup->sum('TotalQuantitySold'),
+                                    $itemGroup->sum('TransCount'),
+                                ];
+                            });
+                    });
+
+// Step 2: Convert to array if needed
+                $this->totalSalesByItem = $groupedByEmployeeAndItem->toArray();
+//                dd($this->totalSalesByItem);
+            }
             else if ($this->report_type == "byCustomerX") { // bug
                 $groups = $merged_results->groupBy(['BusinessPartnerCode', function ($item) {
 //                    dd(gettype($item));
@@ -1400,48 +1489,7 @@ ORDER BY "ItemCode"';
 
                 }
                 else if ($this->report_type == "byDepartment") {
-//                    $sql = 'SELECT * FROM (
-//SELECT
-//    T0."ItemCode" AS "ItemCode",
-//    T1."ItemName" AS "ItemName",
-//    SUM(T0."Quantity") AS "TotalQuantitySold",
-//    SUM(T0."LineTotal") AS "TotalSalesAmount",
-//    AVG(T0."Price") AS "AverageUnitPrice",
-//    COUNT(DISTINCT T0."DocEntry") AS "NumberOfInvoices",
-//    SUM(T0."GrssProfit") as "GrossProfit",
-//    SUM(T0."GPTtlBasPr") as "Cost",
-//    (SUM(T0."GrssProfit")/ SUM(T0."GPTtlBasPr"))*100 as "GrossProfitPer",
-//    T2."BPLName" AS "Branch",
-//    T2."TaxIdNum" AS "Department",
-//    CASE
-//		WHEN T1."QryGroup1" = \'Y\' THEN \'0\'
-//		WHEN T1."QryGroup2" = \'Y\' THEN \'1\'
-//		WHEN T1."QryGroup3" = \'Y\' THEN \'2\'
-//		ELSE \'\'
-//	END AS "Speciality",
-//	T1."SalUnitMsr",
-//	T1."U_UDF1" as "OldCode",
-//	T4."CardCode" AS "VendorCode",
-//    T4."CardName" AS "VendorName"
-//FROM
-//    AL_YASEEN_AGRI_PLIVE.INV1 T0
-//JOIN
-//    AL_YASEEN_AGRI_PLIVE.OITM T1 ON T0."ItemCode" = T1."ItemCode"
-//JOIN
-//    AL_YASEEN_AGRI_PLIVE.OINV T3 ON T0."DocEntry" = T3."DocEntry"
-//JOIN
-//    AL_YASEEN_AGRI_PLIVE.OBPL T2 ON T3."BPLId" = T2."BPLId"
-//JOIN
-//	AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T1."CardCode" = T4."CardCode"
-//WHERE
-//    T3."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-//	AND T2."BPLId" IN ('. implode(', ', $sap_depts).')
-//	AND T0."ItemCode" IN ('. implode(', ', $this->sap_codes).')
-//GROUP BY
-//	T0."ItemCode", T1."ItemName", T2."BPLName", T2."TaxIdNum", T1."QryGroup1", T1."QryGroup2", T1."QryGroup3", T1."SalUnitMsr", T1."U_UDF1", T4."CardCode", T4."CardName"
-//ORDER BY
-//    "TotalSalesAmount" DESC
-//    ) as tbl1';
+//
 
                     $sql = 'SELECT
 	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
@@ -2230,233 +2278,7 @@ GROUP BY
 ORDER BY
     "SlpCode", "BusinessPartnerCode", "ItemCode2"';
 
-//                    $sql = 'SELECT
-//	"SlpCode", -- Added
-//	"Memo", -- Added
-//    "SlpName", -- Added
-//    "BranchName" AS "Branch",
-//    "BranchCode",
-//    "BranchRegistrationNumber" AS "Department",
-//    "BusinessPartnerName",
-//    "BusinessPartnerCode",
-//    "ItemCode2" AS "ItemCode",
-//    "ItemDescription" AS "ItemName",
-//    "ItemGroup",
-//    SUM("TransCount") AS "TransCount",
-//    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
-//    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
-//    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
-//    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
-//    SUM("GrossProfitLC") AS "GrossProfit",
-//    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") AS "Cost",
-//    (SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100 AS "GrossProfitPer",
-//    "Speciality",
-//    "SalUnitMsr",
-//    "OldCode",
-//    "VendorCode",
-//    "VendorName",
-//    "mrkt_type",
-//    "IsInventoryItem"
-//FROM (
-//    SELECT
-//        T1.*,
-//        TS."SlpCode",
-//        TS."SlpName", -- Added
-//        TS."Memo",    -- Added
-//        T2."SalUnitMsr",
-//        CASE
-//            WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
-//            WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
-//            WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
-//            ELSE \'\'
-//        END AS "Speciality",
-//        CASE WHEN T2."U_UDF1" IS NULL THEN T1."ItemCode2" ELSE T2."U_UDF1" END AS "OldCode",
-//        T2."CardCode" AS "VendorCode",
-//        T1."DefaultPreferredVendor" AS "VendorName",
-//        CASE
-//            WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-//            WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-//            WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-//            WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-//            WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-//            WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-//            WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-//            WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-//            WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
-//            ELSE \'general\'
-//        END AS "mrkt_type",
-//        T2."InvntItem" AS "IsInventoryItem"
-//    FROM (
-//        SELECT
-//            "BranchName", "BranchCode", "BranchRegistrationNumber",
-//            "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName", "BusinessPartnerName", "BusinessPartnerCode",
-//            "CancellationStatus", "DocumentDate",
-//            "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//            "ItemGroup", "DefaultPreferredVendor", "ItemCode" AS "ItemCode2", "ItemDescription",
-//            "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-//            CASE
-//                WHEN "DocumentTypeCode" = 13 THEN 1
-//                WHEN "DocumentTypeCode" = 14 THEN -1
-//                ELSE 0
-//            END AS "TransCount",
-//            SUM("GrossProfitSC") AS "GrossProfitSC",
-//            SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-//            SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-//            SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-//            SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-//        FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-//        WHERE "DocumentDate" >= \''.$start_date.'\'  AND "DocumentDate" <= \''.$end_date.'\'
-//            AND "DocumentTypeCode" != \'17\'
-//            AND "DocumentTypeCode" != \'15\'';
-//                    if ($customer_type != 'customer_all') {
-//                        $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
-//                    }
-//                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
-//AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
-//    GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//            "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName", "BusinessPartnerName", "BusinessPartnerCode",
-//            "CancellationStatus", "DocumentDate",
-//            "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//            "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//            "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//    ) T1
-//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//    RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T1."ItemCode2" = T2."ItemCode"
-//   ON T1."ItemCode2" = T2."ItemCode"
-//     WHERE T2."ItemCode" IN (' . implode(', ', $this->sap_codes) . ')     ) AS FinalData
-//     WHERE "BranchName" IS NOT NULL';
-//
-//                    if ($emps_type != 'employees_all') {
-//                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
-//                    }
-//                    $sql .=')
-//
-//
-//GROUP BY
-//    "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartnerName", "BusinessPartnerCode", "ItemCode2",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//    "SalUnitMsr",
-//    "OldCode",
-//    "VendorCode",
-//    "VendorName",
-//    "mrkt_type",
-//    "IsInventoryItem",
-//    "SlpCode",
-//    "SlpName", -- Added
-//    "Memo"     -- Added
-//ORDER BY
-//    "SlpCode", "BusinessPartnerCode", "ItemCode2"';
-//            --AND TS."Memo" = \'10036\'
-//    ) AS FinalData
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//) T1
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-//ON T1."ItemCode2" = T2."ItemCode"
-//WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
-//                    if ($emps_type != 'employees_all') {
-//                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
-//                    }
-//                    $sql .=')
-//WHERE "BranchName" IS NOT NULL
-//
-//GROUP BY "BusinessPartnerName", "BusinessPartnerCode", "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//---
-//"mrkt_type",
-//"IsInventoryItem"
-//---
-//
-//ORDER BY "BusinessPartnerCode", "VendorCode","ItemCode"';
 
-//            AND "ItemCode" IN (\'13010028\')
-//        GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//            "BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName", "BusinessPartnerName", "BusinessPartnerCode",
-//            "CancellationStatus", "DocumentDate",
-//            "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//            "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//            "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//    ) T1
-//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//    RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T1."ItemCode2" = T2."ItemCode"
-//    WHERE T2."ItemCode" IN (   \'16040189\')
-//            --AND TS."Memo" = \'10036\'
-//    ) AS FinalData
-//WHERE
-//    "BranchName" IS NOT NULL
-//GROUP BY
-//    "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartnerName", "BusinessPartnerCode", "ItemCode2",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//    "SalUnitMsr",
-//    "OldCode",
-//    "VendorCode",
-//    "VendorName",
-//    "mrkt_type",
-//    "IsInventoryItem",
-//    "SlpCode",
-//    "SlpName", -- Added
-//    "Memo"     -- Added
-//ORDER BY
-//    "SlpCode", "BusinessPartnerCode", "ItemCode2"';
-//
-//                    if ($customer_type != 'customer_all') {
-//                        $sql .= ' AND "BusinessPartnerCode" = \''.$customer_type.'\'';
-//                    }
-//                    $sql .= ' AND "BranchCode" IN ('. implode(', ', $sap_depts).')
-//AND "ItemCode" IN ('. implode(', ', $this->sap_codes).')
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//) T1
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-//ON T1."ItemCode2" = T2."ItemCode"
-//WHERE T2."ItemCode" IN ('. implode(', ', $this->sap_codes).')';
-//                    if ($emps_type != 'employees_all') {
-//                        $sql .= ' AND TS."Memo" = \''.$emps_type.'\'';
-//                    }
-//                    $sql .=')
-//WHERE "BranchName" IS NOT NULL
-//
-//GROUP BY "BusinessPartnerName", "BusinessPartnerCode", "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//---
-//"mrkt_type",
-//"IsInventoryItem"
-//---
-//
-//ORDER BY "BusinessPartnerCode", "VendorCode","ItemCode"';
-////                    dd($sql);
                 }
 
 //                dd($sql);
