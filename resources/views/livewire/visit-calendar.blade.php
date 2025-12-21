@@ -128,7 +128,6 @@
 
                             </div>
                         </div>
-
                         <div class="w-full">
                             <label class="block font-bold mb-2">الفرع
                             </label>
@@ -449,7 +448,8 @@
 
             const visit = '';
             @if(auth()->user()->group == 7)
-            visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string
+            {{--visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string--}}
+            visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string
 
             @else
             visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string
@@ -758,68 +758,7 @@
 
                             const exists = await checkDuplicate(branch, visitDate);
 
-// 👇 التنفيذ يستمر فقط إذا وافق أو لا يوجد duplicate
-{{--                            const startDateTime = combineDateAndTime(start, visitTime);--}}
-{{--                            const endDateTime = combineDateAndTime(end, endTime, true);--}}
 
-{{--                            return {--}}
-{{--                                title,--}}
-{{--                                reason,--}}
-{{--                                goals,--}}
-{{--                                branch,--}}
-{{--                                attendants,--}}
-{{--                                start: startDateTime,--}}
-{{--                                end: endDateTime,--}}
-{{--                                extra_services: extraServices,--}}
-{{--                                requester: @json(Auth::user()->name)--}}
-{{--                            };--}}
-
-                            {{--const visitDate = info.startStr; // YYYY-MM-DD--}}
-
-                            {{--// Correct way to call Livewire method from JS--}}
-                            {{--const exists = await checkDuplicate(branch, visitDate);--}}
-
-                            {{--if (exists) {--}}
-                            {{--    const confirmDuplicate = await Swal.fire({--}}
-                            {{--        icon: 'warning',--}}
-                            {{--        title: 'تنبيه',--}}
-                            {{--        text: 'يوجد زيارة بنفس التاريخ والفرع',--}}
-                            {{--        showCancelButton: true,--}}
-                            {{--        confirmButtonText: 'نعم، متابعة',--}}
-                            {{--        cancelButtonText: 'إلغاء',--}}
-                            {{--        reverseButtons: true--}}
-                            {{--    // });--}}
-                            {{--    }).then((data) => {--}}
-                            {{--        // data.isConfirmed--}}
-                            {{--        // User clicked CANCEL → stop submission--}}
-                            {{--        if (!confirmDuplicate.isConfirmed) {--}}
-                            {{--            return false;--}}
-
-                            {{--        }--}}
-
-
-                            {{--        // const startDateTime = combineDateAndTime(visitDate, visitTime);--}}
-                            {{--        const startDateTime = combineDateAndTime(start, visitTime);--}}
-                            {{--        const endDateTime = combineDateAndTime(end, endTime, isEnd = true);--}}
-
-                            {{--        return {--}}
-                            {{--            title,--}}
-                            {{--            reason,--}}
-                            {{--            goals,--}}
-                            {{--            branch,--}}
-                            {{--            attendants,--}}
-                            {{--             start: startDateTime,--}}
-                            {{--            // start,--}}
-                            {{--            // end: info.endStr,--}}
-                            {{--            end: endDateTime,--}}
-                            {{--            extra_services: extraServices,--}}
-                            {{--            requester: @json(Auth::user()->name)--}}
-
-                            {{--        }--}}
-                            {{--        // ⚠️ DO NOT return false → allow submission--}}
-                            {{--    })--}}
-                            {{--}--}}
-                                // if (!title.trim() || !reason.trim() || !goals.trim() || !branch || !visitTime ) {
                                 if (!title.trim() || !reason.trim() || !branch   || !selectedEmployees.length) {
                                     Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
                                     return false;

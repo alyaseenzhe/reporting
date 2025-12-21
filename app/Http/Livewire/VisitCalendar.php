@@ -31,6 +31,8 @@ class VisitCalendar extends Component
     public $user;
     public $uniqueRequesters;
     public $activePanel = 'calendar';
+    public $calendarVisit;
+    public $canViewAll;
 
 
 //    protected $wati;
@@ -48,7 +50,13 @@ class VisitCalendar extends Component
                 return $visit['emps_requester'];
             })
             ->unique(fn($r) => $r['user']['id']);
-
+        $user = Auth::user();
+        $this->canViewAll = (
+            ($user->user_group->visits
+                && in_array('view-all-visits', json_decode($user->user_group->visits)))
+//                && $user->user->g)
+            || $user->role == 'a'
+        );
 
         // If the logged-in user is one of the requesters → select them
         $authId = auth()->user()->id;
@@ -71,39 +79,29 @@ class VisitCalendar extends Component
         $this->activePanel = 'calendar';
         $this->dispatchBrowserEvent('activePanel');
         $user = Auth::user();
-        $canViewAll = (
-            ($user->user_group->visits
-                && in_array('view-all-visits', json_decode($user->user_group->visits)))
-//                && $user->user->g)
-            || $user->role == 'a'
-        );
+//        $canViewAll = (
+//            ($user->user_group->visits
+//                && in_array('view-all-visits', json_decode($user->user_group->visits)))
+////                && $user->user->g)
+//            || $user->role == 'a'
+//        );
 
-//        $this->visits = Visit::select(
-//            'visits.id',
-//            'visits.title',
-//            'visits.requester_id',
-//            'visits.start',
-//            'visits.end',
-//            'visits.reason',
-//            'visits.goals',
-//            'visits.branch',
-//            'visits.recipient_id',
-//            'visits.status',
-//            'visits.is_deleted',
-////            'requester.name as requester_name',
-////            'recipient.name as recipient_name'
-//        )
-//            ->leftJoin('visit_emps', 'visits.id', '=', 'visit_emps.visit_id')
-////            ->leftJoin('users as requester', 'visits.requester_id', '=', 'requester.id')
-////            ->leftJoin('users as recipient', 'visits.recipient_id', '=', 'recipient.id')
-//            ->where('visits.is_deleted', 0)
-//            ->where('visit_emps.user_id', Auth::id())
-//            ->orderByRaw('CASE WHEN visits.status = 3 THEN 1 ELSE 0 END') // put status 3 at bottom
-//            ->orderBy('visits.start', 'asc') // soonest start date first
-//            ->get()
-//            ->toArray();
 
         $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '0')->orWhere('status', '1')->get();
+        $this->calendarVisit = Visit::with([
+            'requester',
+            'emps',
+            'emps_recipients.user',
+            'emps_requester.user',
+        ])
+            ->where(function ($q) {
+                $q->where('status', 0)
+                    ->orWhere('status', 1);
+            })
+            ->when(!$this->canViewAll, function ($query) use ($user) {
+                $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
+            })
+            ->get();
 
 //            $this->visits = Visit::with(  [ 'requester',
             $query = Visit::with(  [ 'requester',
@@ -113,7 +111,7 @@ class VisitCalendar extends Component
 //                ['emps_requester.user', 'emps_recipients.user']) // or any other relationship
 //            ->with('requester')
 //                ->with('emps')
-            ->when(!$canViewAll, function ($query) use ($user) {
+            ->when(!$this->canViewAll, function ($query) use ($user) {
                 // Limit to only visits that belong to this user
                 $query->whereHas('emps', fn($q) => $q->where('user_id', $user->id));
             })
@@ -141,6 +139,7 @@ class VisitCalendar extends Component
 //        }
 
             $this->visits = $query->lazy()->toArray();
+
 
 //        dd($this->visits);
     }
@@ -387,7 +386,9 @@ class VisitCalendar extends Component
         $this->visits = Visit::orderBy('created_at', 'DESC')->get();
 
 
-        $query = Visit::with(['emps_requester.user', 'emps_recipients.user']);
+        $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])->when(!$this->canViewAll, function ($query) use ($user) {
+            $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
+        });
 
             if (auth()->check()){
                 $query->when(
