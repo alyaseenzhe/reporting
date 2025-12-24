@@ -36,7 +36,13 @@ class Report11 extends Component
 
     protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report', 'change-group-type' => 'changeGroupType'];
 
+    public array $groupedResults = [];
+    public array $tableRows = [];
 
+    public $currentGroup = null, $currentItemName = null,
+            $itemGroup_item_total = 0, $itemGroup_cost_total = 0, $itemGroup_gross_total = 0, $itemGroup_quantity_total = 0, $itemGroup_trans_total = 0,
+            $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0,
+            $itemGroup_itemName_subtotal = 0, $itemGroup_costName_subtotal = 0, $itemGroup_grossName_subtotal = 0;
     public function booted() {
 
 
@@ -59,6 +65,77 @@ class Report11 extends Component
         $this->branches = json_decode($this->query->branches);
 //        dd($this->branches);
 
+//        $this->groupedResults = $this->buildGroups($this->report_type);
+    }
+
+    public function buildGroups(string $report_type)
+    {
+
+        if (empty($this->group_results)) {
+            $this->tableRows = [];
+            return;
+        }
+        $rows = $this->group_results;
+
+
+        // Decide which field to group by based on report type
+        $groupField = match($report_type) {
+            'byItemGroup'   => 'ItemGroup"',
+            'bySpeciality'  => 'Speciality',
+            'byVendor'      => 'VendorName',
+            'byCustomer'      => 'VendorCustomer',
+            'byEmployee'      => 'VendEmployee',
+            default         => null,
+        };
+
+        $tableRows = [];
+        $currentGroup = null;
+        $subtotals = [
+            'item' => 0,
+            'cost' => 0,
+            'gross' => 0,
+            'quantity' => 0,
+            'trans' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            // New group
+            if ($groupField && $currentGroup !== $row[$groupField]) {
+                if ($currentGroup !== null) {
+                    $this->tableRows[] = [
+                        'type' => 'group_subtotal',
+                        'group_name' => $currentGroup,
+                        'totals' => $subtotals,
+                    ];
+                }
+                $currentGroup = $row[$groupField];
+                $subtotals = array_map(fn($v) => 0, $subtotals);
+            }
+
+            // Push record row
+            $tableRows[] = [
+                'type' => 'record',
+                'data' => $row,
+            ];
+
+            // Accumulate totals
+            $subtotals['item']     += $row['TotalSalesAmount'];
+            $subtotals['cost']     += $row['Cost'];
+            $subtotals['gross']    += $row['GrossProfit'];
+            $subtotals['quantity'] += $row['TotalQuantitySold'];
+            $subtotals['trans']    += $row['TransCount'];
+        }
+
+        // Push last group subtotal
+        if ($currentGroup !== null && $groupField) {
+            $tableRows[] = [
+                'type' => 'group_subtotal',
+                'group_name' => $currentGroup,
+                'totals' => $subtotals,
+            ];
+        }
+
+        return $tableRows;
     }
 
     public function render()
@@ -67,7 +144,7 @@ class Report11 extends Component
         $this->vendors();
         $this->customers();
 
-        return view('livewire.report11')
+        return view('livewire.report11.report11')
             ->layout('layouts.dashboard');
     }
 
@@ -153,30 +230,8 @@ class Report11 extends Component
                 $this->group_results = $groups->map(function ($outer_row) {
 //                    dd($row);
                     return $outer_row->map(function ($row) {
-//                        $x =[
-////                'OldCode' => $row->first()['OldCode'],
-//                            'OldCode' => count($this->scribes_results) > 0 ? $row->first()->OldCode : $row->first()['OldCode'],
-//                            'ItemName' => count($this->scribes_results) > 0 ? $row->first()->ItemName : $row->first()['ItemName'],
-//                            'SalUnitMsr' => count($this->scribes_results) > 0 ? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
-//                            'Speciality' => count($this->scribes_results) > 0 ? $row->first()->Speciality : $row->first()['Speciality'],
-//                            'VendorName' => count($this->scribes_results) > 0 ? $row->first()->VendorName : $row->first()['VendorCode'],
-//                            'Department' => count($this->scribes_results) > 0 ? $row->first()->Department : $row->first()['Department'],
-//                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
-//                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-//                            'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
-////                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
-//                            'Cost' => $row->sum('Cost'),
-//                            'GrossProfit' => $row->sum('GrossProfit'),
-//                            'GrossProfitPer' => ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
-////                'GrossProfitPer' => $row->sum('GrossProfitPer'),
-//                        ];
-//                        dd($x);
-//                        dd($row->first()->OldCode);
-//                        dd(count($this->scribes_results));
-//                        dd($row->first()->OldCode);
-//                        dd(count($this->scribes_results) > 0 ? $row->first()->OldCode : $row->first()['OldCode']);
+
                         return [
-//                'OldCode' => $row->first()['OldCode'],
 
                             'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
 //                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
@@ -198,23 +253,7 @@ class Report11 extends Component
                         ];
                     });
 
-//                    return [
-////                'OldCode' => $row->first()['OldCode'],
-//                        'OldCode' => count($this->scribes_results) > 0 ? $row->first()->OldCode : $row->first()['OldCode'],
-//                        'ItemName' => count($this->scribes_results) > 0 ? $row->first()->ItemName : $row->first()['ItemName'],
-//                        'SalUnitMsr' => count($this->scribes_results) > 0 ? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
-//                        'Speciality' => count($this->scribes_results) > 0 ? $row->first()->Speciality : $row->first()['Speciality'],
-//                        'VendorName' => count($this->scribes_results) > 0 ? $row->first()->VendorName : $row->first()['VendorCode'],
-//                        'Department' => count($this->scribes_results) > 0 ? $row->first()->Department : $row->first()['Department'],
-//                        'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
-//                        'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-//                        'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
-////                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
-//                        'Cost' => $row->sum('Cost'),
-//                        'GrossProfit' => $row->sum('GrossProfit'),
-//                        'GrossProfitPer' => ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
-////                'GrossProfitPer' => $row->sum('GrossProfitPer'),
-//                    ];
+
                 })->sortBy(['OldCode', 'Department']);
             }
             else if ($this->report_type == "byDepartment") {
@@ -505,19 +544,7 @@ class Report11 extends Component
                     });
                 });
 
-// Flattening not needed here since you want nested result
-// You now have:
-// [
-//   BusinessPartnerCode1 => [
-//       OldCode1 => [item info...],
-//       OldCode2 => [item info...],
-//       ...
-//   ],
-//   BusinessPartnerCode2 => [...],
-//   ...
-// ]
 
-// If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
                 $this->group_results = $this->group_results->map(function ($items) {
                     return $items->values(); // Convert inner maps to arrays
                 });
@@ -528,21 +555,6 @@ class Report11 extends Component
                     return $items;
                 });
 
-//// Group by OldCode
-//                $groupedByItemName = $flattenedItems->groupBy('OldCode');
-//
-//// Summarize totals by item code
-//                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-//                    return [
-//                        $group->sum('TotalSalesAmount'),
-//                        $group->sum('Cost'),
-//                        $group->sum('GrossProfit'),
-//                        $group->sum('TotalQuantitySold'),
-//                        $group->sum('TransCount'),
-//                    ];
-//                })->toArray();
-
-                // Step 1: Group by BusinessPartnerCode, then by OldCode
                 $groupedByPartnerAndItem = $flattenedItems
                     ->groupBy('BusinessPartnerCode')
                     ->map(function ($itemsGroup) {
@@ -1407,7 +1419,7 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
     "ItemGroup",
     SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
-    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    SUM("NetSalesAmountLC") AS "TotalSalesAmount" ,
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
     COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
     SUM("GrossProfitLC") as "GrossProfit",
