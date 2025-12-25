@@ -62,7 +62,7 @@
         <h2 style="text-align: center; color: #5222e1; margin-top: 10px;">📩 إشعار بتعديل الزيارة</h2>
             <p style="color: #1c7430; font-size: 16px; margin: 20px 0; background-color: #f0f0ff; padding: 15px; border-radius: 10px;">
                 اهلاً،<br>
-                تم إلغاء تعديل وتفاصيلها كما يلي 😊
+                تم تعديل الزيارة وتفاصيلها كما يلي 😊
             </p>
 
 

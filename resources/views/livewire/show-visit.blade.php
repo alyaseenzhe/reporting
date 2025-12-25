@@ -195,6 +195,7 @@
                     تمت الموافقة على طلب الزيارة من قبل {{ App\Models\User::find($record->approved_by)->name }}
                 @elseif($record->status == 2)
                     مرفوضة
+                    تم الرفض على طلب الزيارة من قبل {{ App\Models\User::find($record->approved_by)->name }}
                 @elseif($record->status == 3)
                     التقارير تحت الاجراء
 

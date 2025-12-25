@@ -18,7 +18,7 @@ class EditUser extends Component
     public $password;
     public $branches = [];
     public $group_id;
-
+    public $sales_dept_code;
     public $record;
 
 
@@ -32,6 +32,7 @@ class EditUser extends Component
         'branches.required' => 'يجب اختيار فرع واحد على الأقل',
         'branches.array' => 'يجب اختيار فرع واحد على الأقل',
         'branches.min' => 'يجب اختيار فرع واحد على الأقل',
+        'sales_dept_code'=> 'حقل المكان مطلوب'
     ];
 
     /**
@@ -56,6 +57,7 @@ class EditUser extends Component
             $this->group_id = $this->record->group;
             $this->is_active = $this->record->is_active;
             $this->branches = json_decode($this->record->branches);
+            $this->sales_dept_code = $this->record->sales_dept_code;
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذا المستخدم غير موجود');
@@ -107,6 +109,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -116,6 +119,8 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
+
                         ]);
                     }
 
@@ -126,6 +131,7 @@ class EditUser extends Component
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
+                    $record->sales_dept_code = $this->sales_dept_code;
 
                 }
                 elseif ($this->role == "a") {
@@ -137,6 +143,8 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
+
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -146,6 +154,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                     }
 
@@ -157,7 +166,7 @@ class EditUser extends Component
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
-                }
+                }   $record->sales_dept_code = $this->sales_dept_code;
             }
             else {
                 if ($this->role == "u") {
@@ -168,6 +177,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -177,6 +187,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                     }
 
@@ -187,6 +198,7 @@ class EditUser extends Component
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
+                    $record->sales_dept_code = $this->sales_dept_code;
 
                 } elseif ($this->role == "a") {
                     if (!empty($this->password)) {
@@ -196,6 +208,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -205,6 +218,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'sales_dept_code'=>'nullable'
                         ]);
                     }
 
@@ -215,6 +229,8 @@ class EditUser extends Component
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
+                    $record->sales_dept_code = $this->sales_dept_code;
+
                 }
             }
 

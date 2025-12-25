@@ -74,6 +74,19 @@ class VisitCalendar extends Component
 //        dd($this->visits);
     }
 
+    public function booted() {
+
+
+        if (Auth::user()->is_active == '0'){
+            return redirect()->route('non-active-user');
+        }
+
+        if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a'){
+            return;
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
     public function loadVisits($ExcludeCanceledVisit = Null)
     {
         $this->activePanel = 'calendar';
@@ -179,23 +192,35 @@ class VisitCalendar extends Component
 //        $recipient = User::where('sales_dept_code', $data['branch'])
 //            ->where('group', 8) // branch manger group
 //            ->select('id')->first();
+
 //        $employees = User::where('group', 8)->orWhere('group', 4)
 //        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
+        $employees = User::where('sales_dept_code', $data['branch'])
+            ->where('group', 8)->orWhere('group', 7)
+        ->pluck('id','name')->toArray();
+        $employees = User::where('sales_dept_code', $data['branch'])
+            ->where(function ($q) {
+                $q->where('group', 8)
+                    ->orWhere('group', 7);
+            })
+            ->pluck('id', 'name')
+            ->toArray();
 
-        $employees = [
-            '0101' => ['49', '50', '51','48'], //alahsaa branch
-            '0102' => ['28', '33'], // jeddah
-            '0103' => ['20', '54', '52'], //riyadh
-            '0104' => ['55'], // wadi adwasir
-            '0105' => ['34', '27', '41'], //jouf
-            '0106' => ['58', '29'], //dammam
-            '0107' => ['36', '35'],   //kharj
-            '0108' => ['40', '60', '26'], //najran
-            '0109' => ['61', '62'],   //hail
-            '0110' => ['30', '63', '44'], //tabouk
-            '0111' => ['57', '22', '86'], //qaseem
-            '0112' => ['47', '46'], //sajer
-        ];
+        //
+//        $employees = [
+//            '0101' => ['49', '50', '51','48'], //alahsaa branch
+//            '0102' => ['28', '33'], // jeddah
+//            '0103' => ['20', '54', '52'], //riyadh
+//            '0104' => ['55'], // wadi adwasir
+//            '0105' => ['34', '27', '41'], //jouf
+//            '0106' => ['58', '29'], //dammam
+//            '0107' => ['36', '35'],   //kharj
+//            '0108' => ['40', '60', '26'], //najran
+//            '0109' => ['61', '62'],   //hail
+//            '0110' => ['30', '63', '44'], //tabouk
+//            '0111' => ['57', '22', '86'], //qaseem
+//            '0112' => ['47', '46'], //sajer
+//        ];
 //        dd($employees[$data['branch']]?? []);
 
 
@@ -220,7 +245,8 @@ class VisitCalendar extends Component
 
         if ($visit_data) {
             if($data['employees'][0] == 'all'){
-                            $records = collect($employees[$visit_data->branch])
+//                            $records = collect($employees[$visit_data->branch])
+                            $records = collect($employees)
                 ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
                     'visit_id' => $visit_data->id,
                     'type' => 'recipient',
@@ -266,7 +292,7 @@ class VisitCalendar extends Component
     {
         return \App\Models\Visit::where('branch', $branch)
             ->whereDate('start', $date)
-            ->whereNotIn('status', ['2', '4'])
+            ->whereIn('status', ['0', '1'])
             ->exists();
     }
 
