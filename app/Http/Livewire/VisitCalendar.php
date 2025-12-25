@@ -170,7 +170,7 @@ class VisitCalendar extends Component
             ->groupBy('sales_dept_code')
             ->map(function ($employees) {
                 return $employees->map(fn($e) => [
-                    'id' => $e->id,git
+                    'id' => $e->id,
                     'name' => $e->name,
                     'group' => $e->group,
                     'type' => $e->group == 7 ? "employee" : "manager",
