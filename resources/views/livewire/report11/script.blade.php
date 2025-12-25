@@ -1010,6 +1010,20 @@
 
         }
 
+        function summary(type) {
+
+            if (type.checked) {
+                $('.summary').addClass('hidden');
+                // $('.' + type.value).removeClass('hide');
+                // console.log(type.val() + ' not ticked');
+            }
+            else {
+                console.log(type.value + ' ticked');
+                // $('.' + type.value).addClass('hide');
+                $('.summary').removeClass('hidden');
+            }
+        }
+
         function hideColumn(type) {
 
             if (type.checked) {

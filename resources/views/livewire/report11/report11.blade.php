@@ -336,8 +336,9 @@
             @if(count($group_results) > 0)
 
                 <div style="background-color: #f5f5f5;" class="mb-2 p-2">
+                    <div class="flex flex-col sm:flex-row gap-6 w-full">
+
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                        <div class="flex flex-col sm:flex-row gap-2 w-full">
                             <div><label class="font-bold mb-5 text-sm">خيارات اظهار الأعمدة الخاصة</label></div>
                             <div>
                                 <span class="text-xs">(</span>
@@ -350,11 +351,29 @@
 
 
                             {{--                            </div>--}}
-                        </div>
-                </div>
+{{--                        </div>--}}
             @endif
 
-            <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
+
+{{--                <div style="background-color: #f5f5f5;" class="mb-2 p-2">--}}
+{{--                        <div class="flex flex-col sm:flex-row gap-2 w-full">--}}
+                            <div ><label class="font-bold mb-5 text-sm">الملخص</label></div>
+                            <div>
+{{--                                <span class="text-xs">(</span>--}}
+                                <input id="summary" type="checkbox" value="summary" onchange="summary(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+{{--                                <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>--}}
+{{--                                <span class="text-xs">)</span>--}}
+                            </div>
+                            {{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
+
+
+
+                            {{--                            </div>--}}
+{{--                        </div>--}}
+                </div>
+                </div>
+
+            <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center" >
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black;">
 
@@ -773,7 +792,7 @@
     @if($record["OldCode"] != $item_group_itemCode_code)
             <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-        <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+        <tr onclick="show_hide({{$record["OldCode"]}})"  class="summary" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
             <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
             <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                 <div class="flex flex-row justify-between">
@@ -841,7 +860,7 @@
             {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
             {{--                                        @endif--}}
         </tr>
-        <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+        <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
             {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
             <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                 {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
@@ -862,7 +881,7 @@
             @endif
         </tr>
     @endif
-    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+    <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
 
         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1029,7 +1048,7 @@
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
                                 <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
@@ -1097,7 +1116,7 @@
                                 {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
                                 {{--                                        @endif--}}
                             </tr>
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                     {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
@@ -1118,7 +1137,7 @@
                                 @endif
                             </tr>
                         @endif
-                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1224,7 +1243,7 @@
                         @if($record["mrkt_type"] != $item_group_code)
                                 <?php $item_group_code = $record["mrkt_type"]; ?>
 
-                            <tr style="background-color: #faebd7; font-weight: bold; color: red;">
+                            <tr  style="background-color: #faebd7; font-weight: bold; color: red;">
                                 {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                 {{--                                        {{$record["OldCode"]}}--}}
                                 {{--                                    </td>--}}
@@ -1260,7 +1279,7 @@
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
                                 <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
@@ -1306,7 +1325,7 @@
                                 {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
                                 {{--                                        @endif--}}
                             </tr>
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                     {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
@@ -1327,7 +1346,7 @@
                                 @endif
                             </tr>
                         @endif
-                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
@@ -1450,7 +1469,7 @@
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
                                 <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row justify-between">
@@ -1516,7 +1535,7 @@
                                 {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
                                 {{--                                        @endif--}}
                             </tr>
-                            <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                            <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                 {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                     {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
@@ -1537,7 +1556,7 @@
                                 @endif
                             </tr>
                         @endif
-                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             {{__($record["Department"])}}
@@ -1670,7 +1689,7 @@
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
                                     <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row justify-between">
@@ -1736,7 +1755,7 @@
                                     {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
                                     {{--                                        @endif--}}
                                 </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                         {{number_format($totalSalesByItem[$record["BusinessPartnerCode"]][$record["OldCode"]][4])}}
@@ -1757,7 +1776,7 @@
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                        {{__($record["Department"])}}
@@ -1910,7 +1929,7 @@
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
                                     <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row justify-between">
@@ -1976,7 +1995,7 @@
                                     {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
                                     {{--                                        @endif--}}
                                 </tr>
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                         {{number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][4])?? 0}}
@@ -1997,7 +2016,7 @@
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} hide">
+                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{__($record["Department"])}}
