@@ -75,6 +75,26 @@
                 </select>
                 @error('group_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
             </div>
+            <div class="w-full">
+                <label class="block font-bold mb-2">المكان</label>
+                <select wire:model="sales_dept_code"
+                    class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
+
+                    <option value=''>الرجاء اختيار المكان</option>  //alahsaa branch
+                    <option value='0101'>{{__('0101')}}</option>  //alahsaa branch
+                    <option value='0102' >{{__('0102')}}</option> // jeddah
+                    <option value='0103' >{{__('0103')}}</option> //riyadh
+                    <option value='0104' >{{__('0104')}}</option> // wadi adwasir
+                    <option value='0105' >{{__('0105')}}</option> //jouf
+                    <option value='0106' >{{__('0106')}}</option> //dammam
+                    <option value='0107' >{{__('0107')}}</option>   //kharj
+                    <option value='0108' >{{__('0108')}}</option> //najran
+                    <option value='0109' >{{__('0109')}}</option>  //hail
+                    <option value='0110' >{{__('0110')}}</option> //tabouk
+                    <option value='0111' >{{__('0111')}}</option> //qaseem
+                    <option value='0112' >{{__('0112')}}</option> //sajer
+                </select>
+            </div>
         </div>
     </div>
 
@@ -100,26 +120,10 @@
         </div>
     </div>
 
-    <hr style="color: #cbd5e1;border: 2px solid;">
+{{--    <hr style="color: #cbd5e1;border: 2px solid;">--}}
 
-    <h1 class="mt-4 bold text-2xl mb-6">المكان</h1>
-    <div class="my-6">
-        <select wire:model="sales_dept_code"  class="form-select">
-            <option value=''></option>  //alahsaa branch
-            <option value='0101'>{{__('0101')}}</option>  //alahsaa branch
-            <option value='0102' >{{__('0102')}}</option> // jeddah
-            <option value='0103' >{{__('0103')}}</option> //riyadh
-            <option value='0104' >{{__('0104')}}</option> // wadi adwasir
-            <option value='0105' >{{__('0105')}}</option> //jouf
-            <option value='0106' >{{__('0106')}}</option> //dammam
-            <option value='0107' >{{__('0107')}}</option>   //kharj
-            <option value='0108' >{{__('0108')}}</option> //najran
-            <option value='0109' >{{__('0109')}}</option>  //hail
-            <option value='0110' >{{__('0110')}}</option> //tabouk
-            <option value='0111' >{{__('0111')}}</option> //qaseem
-            <option value='0112' >{{__('0112')}}</option> //sajer
-        </select>
-    </div>
+{{--    <h1 class="mt-4 bold text-2xl mb-6">المكان</h1>--}}
+
     <hr style="color: #cbd5e1;border: 2px solid;">
     <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
     <div>

@@ -170,7 +170,7 @@ class VisitCalendar extends Component
             ->groupBy('sales_dept_code')
             ->map(function ($employees) {
                 return $employees->map(fn($e) => [
-                    'id' => $e->id,
+                    'id' => $e->id,git
                     'name' => $e->name,
                     'group' => $e->group,
                     'type' => $e->group == 7 ? "employee" : "manager",
@@ -195,9 +195,9 @@ class VisitCalendar extends Component
 
 //        $employees = User::where('group', 8)->orWhere('group', 4)
 //        ->whereJsonContains('branches', $data['branch'])->pluck('id','name')->toArray();
-        $employees = User::where('sales_dept_code', $data['branch'])
-            ->where('group', 8)->orWhere('group', 7)
-        ->pluck('id','name')->toArray();
+//        $employees = User::where('sales_dept_code', $data['branch'])
+//            ->where('group', 8)->orWhere('group', 7)
+//        ->pluck('id','name')->toArray();
         $employees = User::where('sales_dept_code', $data['branch'])
             ->where(function ($q) {
                 $q->where('group', 8)
