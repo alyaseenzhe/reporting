@@ -1009,7 +1009,7 @@
 
 
         }
-
+        // this functions returns the subtotals of each grouping and hides extra details
         function summary(type) {
 
             if (type.checked) {

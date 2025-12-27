@@ -13,9 +13,25 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    protected $commands = [
+        \App\Console\Commands\SendVisitReminders::class,
+    ];
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        // $schedule->command('inspire')->hourly();
+        //todo check later
+        // $schedule->command('command:sayhi')->everyTwoMinutes();
+//        $schedule->job(new SendMarketingSummaryEmail())->weeklyOn(5, '9:00')->timezone("Asia/Riyadh");
+        //todo check later
+        //   $schedule->command('marketing:summary')->weeklyOn(5, '9:00')->timezone("Asia/Riyadh");
+//        $schedule->command('marketing:summary')->everyTenMinutes()->timezone("Asia/Riyadh");
+        $schedule->command('visits:send-reminders')->dailyAt('9:00');
+        //$schedule->command('visits:rate-reminders')->cron('0 0 */2 * *');
+        // $schedule->command('visits:send-reminders')->everyTwoMinutes();
+        $schedule->command('visits:rate-reminders')->everyTwoMinutes();
+//        $schedule->command('send:daily-report')->weeklyOn(5, '1:00')->timezone("Asia/Riyadh");
+        $schedule->command('send:daily-report')->everyMinute();
     }
 
     /**
