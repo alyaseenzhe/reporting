@@ -34,7 +34,7 @@ class Report11 extends Component
     public $warehouse_id = ["0001" => '1', "0101" => '3', "0103" => '7', "0102" => '10', "0104" => '13', "0105" => '4', "0106" => '6', "0107" => '5', "0108" => '12', "0109" => '11', "0110" => '9', "0111" => '8', "0112" => '505', '0201' => '15', '0202' =>  '16', '0203' => '17'];
     //publioc $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' =>'5', '0104' =>'6', '0105' =>'7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' =>  '16', '0203' => '17'];
 
-    protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report', 'change-group-type' => 'changeGroupType'];
+    protected $listeners = ['item-category' => 'item_category', 'create-report' => 'create_report', 'change-group-type' => 'changeGroupType','setCatType'];
 
     public array $groupedResults = [];
     public array $tableRows = [];
@@ -43,10 +43,52 @@ class Report11 extends Component
             $itemGroup_item_total = 0, $itemGroup_cost_total = 0, $itemGroup_gross_total = 0, $itemGroup_quantity_total = 0, $itemGroup_trans_total = 0,
             $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0,
             $itemGroup_itemName_subtotal = 0, $itemGroup_costName_subtotal = 0, $itemGroup_grossName_subtotal = 0;
-    public function booted() {
+
+    public $orderByTotalSales = 'DESC';
+
+    public $sortBy = "GroupTotalSales";
+    public $sortDir = 'ASC';
+    public $toggleDirection = false;
+
+//    public function updatedSortBy()
+//    {
+//        // When user selects a new column → reset to ASC
+//        $this->sortDir = 'asc';
+//    }
+//
+//    public function updatedToggleDirection()
+//    {
+//        // Flip direction when checkbox changes
+//        $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+//
+//        // Reset checkbox so next click toggles again
+//        $this->toggleDirection = false;
+//    }
+
+
+
+//    protected $listeners = ['setCatType'];
+
+
+
+
+//    public function sortBy($field)
+//    {
+//        if ($this->sortBy === $field) {
+//            $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
+//        } else {
+//            $this->sortBy = $field;
+//            $this->sortDir = 'asc';
+//        }
+//    }
+
+
+
+            public function booted() {
 
 
         if (Auth::user()->is_active == '0'){
+
             return redirect()->route('non-active-user');
         }
 
@@ -66,6 +108,8 @@ class Report11 extends Component
 //        dd($this->branches);
 
 //        $this->groupedResults = $this->buildGroups($this->report_type);
+
+
     }
 
     public function buildGroups(string $report_type)
@@ -216,7 +260,13 @@ class Report11 extends Component
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                     ];
                 });
+//
+//                $this->group_results = $this->group_results
+//                    ->sortBy('totalSales')
+//                    ->values(); // reset keys
             }
+
+
             else if ($this->report_type == "byDepartmentX") {
                 $groups = $merged_results->groupBy(['OldCode', function ($item) {
 //                    dd(gettype($item));
@@ -254,7 +304,8 @@ class Report11 extends Component
                     });
 
 
-                })->sortBy(['OldCode', 'Department']);
+                });
+//                ->sortBy(['OldCode', 'Department']);
             }
             else if ($this->report_type == "byDepartment") {
                 $groups = $merged_results->groupBy(['OldCode', function ($item) {
@@ -291,16 +342,19 @@ class Report11 extends Component
                         ];
                     });
 
-                })->sortBy(['OldCode', 'Department']);
+                });
+//                ->sortBy(['OldCode', 'Department']);
 
                 // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['OldCode', 'Department']);
+                $flattened = collect($this->group_results)->flatMap->values();
+//                ->sortBy(['OldCode', 'Department']);
                 $this->group_results = $flattened;
                 // Step 2: Group by OldCode
                 $groupedByItemName = $flattened->groupBy('OldCode');
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
+                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'),
+                        $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
             }
             else if ($this->report_type == "byItemGroup") {
@@ -345,7 +399,8 @@ class Report11 extends Component
                 })->sortBy(['OldCode', 'Department']);
 
                 // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['ItemGroup','mrkt_type', 'Speciality', 'OldCode', 'Department']);
+                $flattened = collect($this->group_results)->flatMap->values();
+//                    ->sortBy(['ItemGroup','mrkt_type', 'Speciality', 'OldCode', 'Department']);
                 $this->group_results = $flattened;
                 // Step 2: Group by OldCode
                 $groupedByItemName = $flattened->groupBy('OldCode');
@@ -393,7 +448,8 @@ class Report11 extends Component
                 })->sortBy(['OldCode', 'Department']);
 
                 // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['Speciality', 'OldCode', 'Department']);
+                $flattened = collect($this->group_results)->flatMap->values();
+//                ->sortBy(['Speciality', 'OldCode', 'Department']);
                 $this->group_results = $flattened;
 
                 // Step 2: Group by OldCode
@@ -445,7 +501,8 @@ class Report11 extends Component
 
 
                 // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['mrkt_type', 'Speciality', 'OldCode', 'Department']);
+                $flattened = collect($this->group_results)->flatMap->values();
+//                    ->sortBy(['mrkt_type', 'Speciality', 'OldCode', 'Department']);
                 $this->group_results = $flattened;
 
                 // Step 2: Group by OldCode
@@ -456,6 +513,7 @@ class Report11 extends Component
                 })->toArray();
             }
             else if ($this->report_type == "byVendor") { // bug
+
                 $groups = $merged_results->groupBy(['OldCode', function ($item) {
 //                    dd(gettype($item));
                     return gettype($item) == "object"? $item->Department : $item['Department'];
@@ -465,36 +523,39 @@ class Report11 extends Component
 //
 
                 $this->group_results = $groups->map(function ($outer_row) {
-
                     return $outer_row->map(function ($row) {
 
                         return [
 
-                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+                            'OldCode' => gettype($row->first()) == "object" ? $row->first()->OldCode : $row->first()['OldCode'],
 //                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
-                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
-                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
-                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
-                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
-                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+                            'ItemName' => gettype($row->first()) == "object" ? $row->first()->ItemName : $row->first()['ItemName'],
+                            'SalUnitMsr' => gettype($row->first()) == "object" ? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+                            'Speciality' => gettype($row->first()) == "object" ? $row->first()->Speciality : $row->first()['Speciality'],
+                            'VendorName' => gettype($row->first()) == "object" ? $row->first()->VendorName : $row->first()['VendorName'],
+                            'Department' => gettype($row->first()) == "object" ? $row->first()->Department : $row->first()['Department'],
                             'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
                             'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0 ? $row->sum('TotalSalesAmount') / $row->sum('TotalQuantitySold') : 0,
 //                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
                             'Cost' => $row->sum('Cost'),
                             'GrossProfit' => $row->sum('GrossProfit'),
-                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
-                            'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
-                            'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+                            'GrossProfitPer' => $row->sum('Cost') != 0 ? (($row->sum('GrossProfit') / $row->sum('Cost')) * 100) : 0,
+                            'mrkt_type' => gettype($row->first()) == "object" ? $row->first()->mrkt_type : $row->first()['mrkt_type'],
+                            'ItemGroup' => gettype($row->first()) == "object" ? $row->first()->group_item : $row->first()['ItemGroup'],
                             'TransCount' => $row->sum('TransCount'),
+                            'GroupTotalSales'=> $row->sum('GroupTotalSales')
 //                'GrossProfitPer' => $row->sum('GrossProfitPer'),
                         ];
                     });
-
-                })->sortBy(['OldCode', 'Department']);
+                });
+//                    ->sortBy('GroupTotalSales');
+//                })->sortBy(['OldCode', 'Department']);
 
                 // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['VendorName', 'Speciality', 'OldCode', 'Department']);
+//                $flattened = collect($this->group_results)->flatMap->values()->sortBy(['VendorName', 'Speciality', 'OldCode', 'Department']);
+                $flattened = collect($this->group_results)->flatMap->values();
+//                    ->sortBy(['GroupTotalSales']);
                 $this->group_results = $flattened;
 
                 // Step 2: Group by OldCode
@@ -502,8 +563,13 @@ class Report11 extends Component
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
-                })->toArray();
+                })
+//                    ->sortBy('GroupTotalSales')
+                    ->toArray();
+
             }
+
+
             else if ($this->report_type == "byCustomer") { // bug
                 $groupedByBP = $merged_results->groupBy(function ($item) {
                     return gettype($item) === 'object' ? $item->BusinessPartnerCode : $item['BusinessPartnerCode'];
@@ -570,11 +636,15 @@ class Report11 extends Component
                             });
                     });
 
+                $this->group_results = $this->group_results
+                    ->sortBy(['totalSales','GroupGrossProfit'])
+                    ->values(); // reset keys
 // Step 2: Convert to array if needed
                 $this->totalSalesByItem = $groupedByPartnerAndItem->toArray();
 //                dd($this->totalSalesByItem);
             }
             else if ($this->report_type == "byEmployee") { // bug
+
                 $groupedByBP = $merged_results->groupBy(function ($item) {
                     return gettype($item) === 'object' ? $item->SlpCode : $item['SlpCode'];
                 });
@@ -584,6 +654,7 @@ class Report11 extends Component
                     $groupedByItem = $itemsGroup->groupBy(function ($item) {
                         return gettype($item) === 'object' ? $item->OldCode : $item['OldCode'];
                     });
+                    //dd($this->group_results);
 
                     // Process each item group
                     return $groupedByItem->map(function ($row) {
@@ -612,8 +683,21 @@ class Report11 extends Component
                             'GrossProfitPer' => $row->sum('Cost') != 0
                                 ? (($row->sum('GrossProfit') / $row->sum('Cost')) * 100) : 0,
                             'TransCount' => $row->sum('TransCount'),
+                            'EmployeeTotalSales' => $row->sum('EmployeeTotalSales'),
+//                            'items' => $items,
+
+                            'subtotal' => [
+                                'sales' => $row->sum('TotalSalesAmount'),
+                                'quantity' => $row->sum('TotalQuantitySold'),
+                                'cost' => $row->sum('Cost'),
+                                'gross' => $row->sum('GrossProfit'),
+                                'trans' => $row->sum('TransCount'),
+                            ],
+
+
                         ];
                     });
+
                 });
 
 // Flattening not needed here since you want nested result
@@ -629,6 +713,16 @@ class Report11 extends Component
 // ]
 
 // If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
+
+//                  Sort employees by total sales descending
+                $this->group_results = $this->group_results
+                    ->sortBy('totalSales')
+                    ->values(); // reset keys
+//
+//                $this->group_results = $this->group_results
+//                    ->sortBy('totalSales')
+//                    ->values(); // reset keys
+
                 $this->group_results = $this->group_results->map(function ($items) {
                     return $items->values(); // Convert inner maps to arrays
                 });
@@ -646,6 +740,7 @@ class Report11 extends Component
 
                 $groupedByEmployeeAndItem = $flattenedItems
                     ->groupBy('EmployeeCode')
+//                    ->sortBy("EmployeeTotalSales")
                     ->map(function ($itemsGroup) {
                         return $itemsGroup->groupBy('OldCode')
                             ->map(function ($itemGroup) {
@@ -661,68 +756,73 @@ class Report11 extends Component
 
 // Step 2: Convert to array if needed
                 $this->totalSalesByItem = $groupedByEmployeeAndItem->toArray();
+//                dd($this->group_results);
+
 //                dd($this->totalSalesByItem);
             }
-            else if ($this->report_type == "byCustomerX") { // bug
-                $groups = $merged_results->groupBy(['BusinessPartnerCode', function ($item) {
-//                    dd(gettype($item));
-                    return gettype($item) == "object"? $item->Department : $item['BusinessPartnerCode'];
-//                    return $item['OldCode'];
-                }], true)->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
-
-//                dd($groups);
+//            else if ($this->report_type == "byCustomerX") { // bug
+//                $groups = $merged_results->groupBy(['BusinessPartnerCode', function ($item) {
+////                    dd(gettype($item));
+//                    return gettype($item) == "object"? $item->Department : $item['BusinessPartnerCode'];
+////                    return $item['OldCode'];
+//                }], true)->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
 //
-
-                $this->group_results = $groups->map(function ($outer_row, $key) {
-
-                    return $outer_row->map(function ($row) {
-
-                        return [
-                            'BusinessPartnerCode' => $row->first()['BusinessPartnerCode'],
-                            'BusinessPartnerName' => $row->first()['BusinessPartnerName'],
-                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
-//                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
-                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
-                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
-                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
-                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
-                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
-//                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
-//                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-//                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
-////                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
-//                            'Cost' => $row->sum('Cost'),
-//                            'GrossProfit' => $row->sum('GrossProfit'),
-//                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
-                            'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
-                            'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
-                            'TransCount' => $row->sum('TransCount'),
-//                'GrossProfitPer' => $row->sum('GrossProfitPer'),
-                        ];
-                    });
-
-                })->sortBy(['BusinessPartnerCode', 'Department']);
-//                dd($this->group_results);
-                $this->group_results = $this->group_results->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
-
-                // Step 1: Flatten all sub-collections into a single collection
-                $flattened = collect($this->group_results)->flatMap->values();
-
-//                dd($flattened->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']));
-                $flattened = $flattened->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
-                // Step 2: Group by OldCode
-                $groupedByItemName = $flattened->groupBy(['BusinessPartnerCode']);
-                dd($groupedByItemName);
-                // Step 3: Calculate total sales amount for each group
-                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
-                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
-                })->toArray();
-
-//                dd($this->totalSalesByItem);
-//                dd($this->group_results);
-            }
+////                dd($groups);
+////
+//
+//                $this->group_results = $groups->map(function ($outer_row, $key) {
+//
+//                    return $outer_row->map(function ($row) {
+//
+//                        return [
+//                            'BusinessPartnerCode' => $row->first()['BusinessPartnerCode'],
+//                            'BusinessPartnerName' => $row->first()['BusinessPartnerName'],
+//                            'OldCode' => gettype($row->first()) == "object"? $row->first()->OldCode : $row->first()['OldCode'],
+////                            'OldCode' => (count($this->scribes_results) > 0) ? $row->first()->OldCode : $row->first()['OldCode'],
+//                            'ItemName' => gettype($row->first()) == "object"? $row->first()->ItemName : $row->first()['ItemName'],
+//                            'SalUnitMsr' => gettype($row->first()) == "object"? $row->first()->SalUnitMsr : $row->first()['SalUnitMsr'],
+//                            'Speciality' => gettype($row->first()) == "object"? $row->first()->Speciality : $row->first()['Speciality'],
+//                            'VendorName' => gettype($row->first()) == "object"? $row->first()->VendorName : $row->first()['VendorName'],
+//                            'Department' => gettype($row->first()) == "object"? $row->first()->Department : $row->first()['Department'],
+////                            'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
+////                            'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
+////                            'AverageUnitPrice' => $row->sum('TotalQuantitySold') != 0? $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold') : 0,
+//////                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
+////                            'Cost' => $row->sum('Cost'),
+////                            'GrossProfit' => $row->sum('GrossProfit'),
+////                            'GrossProfitPer' => $row->sum('Cost') != 0? (($row->sum('GrossProfit')/$row->sum('Cost'))*100) : 0,
+//                            'mrkt_type' => gettype($row->first()) == "object"? $row->first()->mrkt_type : $row->first()['mrkt_type'],
+//                            'ItemGroup' => gettype($row->first()) == "object"? $row->first()->group_item : $row->first()['ItemGroup'],
+//                            'TransCount' => $row->sum('TransCount'),
+////                'GrossProfitPer' => $row->sum('GrossProfitPer'),
+//                        ];
+//                    });
+//
+//                })->sortBy(['BusinessPartnerCode', 'Department']);
+////                dd($this->group_results);
+//                $this->group_results = $this->group_results->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
+//
+//                // Step 1: Flatten all sub-collections into a single collection
+//                $flattened = collect($this->group_results)->flatMap->values();
+//
+////                dd($flattened->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']));
+//                $flattened = $flattened->sortBy(['BusinessPartnerCode', 'BusinessPartnerName', 'OldCode', 'Department']);
+//                // Step 2: Group by OldCode
+//                $groupedByItemName = $flattened->groupBy(['BusinessPartnerCode']);
+////                dd($groupedByItemName);
+//                // Step 3: Calculate total sales amount for each group
+//                $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
+//                    return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
+//                })->toArray();
+//
+////                dd($this->totalSalesByItem);
+////                dd($this->group_results);
+////
+//
+//            }
 
         }
+
 
         $this->show_msg = true;
         $this->emit('finished');
@@ -1318,6 +1418,12 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 
     public function sapQuery($start_date, $end_date, $departments, $customer_type, $emps_type) {
 
+        $sortBy = $this->sortBy;
+//            ? $this->sortBy
+//            : 'EmployeeTotalSales';
+
+        $direction = $this->sortDir;
+
         if (count($this->sap_codes) > 0) {
             $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' =>'5', '0104' =>'6', '0105' =>'7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' =>  '16', '0203' => '17'];
             $sap_depts = [];
@@ -1429,7 +1535,12 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 	"SalUnitMsr",
 "OldCode",
 "VendorCode",
-"VendorName"
+"VendorName",
+          SUM(SUM("NetSalesAmountLC"))
+        OVER (PARTITION BY "ItemCode") AS "GroupTotalSales",
+             SUM(SUM("GrossProfitLC"))
+        OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit"
+
 FROM (
 
 SELECT *, CASE
@@ -1497,7 +1608,10 @@ GROUP BY "ItemCode",
 "VendorCode",
 "VendorName"
 
-ORDER BY "ItemCode"';
+--ORDER BY "ItemCode"';
+
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "ItemCode"';
+
 
                 }
                 else if ($this->report_type == "byDepartment") {
@@ -1522,7 +1636,14 @@ ORDER BY "ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+
+SUM(SUM("NetSalesAmountLC"))
+OVER (PARTITION BY "ItemCode") AS "GroupTotalSales",
+
+SUM(SUM("GrossProfitLC"))
+OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit"
+
 FROM (
 
 SELECT *, CASE
@@ -1605,10 +1726,16 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "ItemCode"';
+//order By "TotalSalesAmount"';
+
+//--ORDER BY "ItemCode"';
+
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+
+//                    dd($sql);
+
                 }
                 else if ($this->report_type == "byItemGroup") {
 
@@ -1631,7 +1758,13 @@ ORDER BY "ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+
+SUM(SUM("NetSalesAmountLC"))
+OVER (PARTITION BY "ItemGroup") AS "GroupTotalSales",
+
+SUM(SUM("GrossProfitLC"))
+OVER (PARTITION BY "ItemGroup") AS "GroupGrossProfit"
 FROM (
 
 SELECT *, CASE
@@ -1716,10 +1849,12 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "ItemGroup","ItemCode"';
+
+//ORDER BY "ItemGroup","ItemCode"';
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+
 //                    dd($sql);
                 }
                 else if ($this->report_type == "bySpeciality") {
@@ -1743,7 +1878,13 @@ ORDER BY "ItemGroup","ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+SUM(SUM("NetSalesAmountLC"))
+OVER (PARTITION BY  "Speciality") AS "GroupTotalSales",
+
+SUM(SUM("GrossProfitLC"))
+OVER (PARTITION BY  "Speciality") AS "GroupGrossProfit"
+
 FROM (
 
 SELECT *, CASE
@@ -1826,10 +1967,12 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "Speciality","ItemCode"';
+
+//ORDER BY "Speciality","ItemCode"';
+
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
 //                    dd($sql);
                 }
                 else if ($this->report_type == "byMarketingType") {
@@ -1853,7 +1996,15 @@ ORDER BY "Speciality","ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+
+    SUM(SUM("NetSalesAmountLC"))
+  --  OVER (PARTITION BY "ItemGroup", "mrkt_type") AS "GroupTotalSales",
+    OVER (PARTITION BY  "mrkt_type") AS "GroupTotalSales",
+
+    SUM(SUM("GrossProfitLC"))
+    OVER (PARTITION BY  "mrkt_type") AS "GroupGrossProfit"
+
 FROM (
 
 SELECT *, CASE
@@ -1936,11 +2087,14 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "mrkt_type","ItemCode"';
+
+//ORDER BY "mrkt_type","ItemCode"';
 //                    dd($sql);
+
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+
                 }
                 else if ($this->report_type == "byVendor") {
 
@@ -1963,7 +2117,11 @@ ORDER BY "mrkt_type","ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+          SUM(SUM("NetSalesAmountLC"))
+        OVER (PARTITION BY "VendorCode") AS "GroupTotalSales",
+             SUM(SUM("GrossProfitLC"))
+        OVER (PARTITION BY "VendorCode") AS "GroupGrossProfit"
 FROM (
 
 SELECT *, CASE
@@ -2047,10 +2205,13 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "VendorCode","ItemCode"';
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+
+//---
+//
+//ORDER BY "VendorCode","ItemCode"';
 //                    dd($sql);
                 }
                 else if ($this->report_type == "byCustomer") {
@@ -2075,7 +2236,11 @@ ORDER BY "VendorCode","ItemCode"';
 "VendorCode",
 "VendorName",
 "mrkt_type",
-"IsInventoryItem"
+"IsInventoryItem",
+          SUM(SUM("NetSalesAmountLC"))
+        OVER (PARTITION BY "BusinessPartnerCode") AS "GroupTotalSales",
+             SUM(SUM("GrossProfitLC"))
+        OVER (PARTITION BY "BusinessPartnerCode") AS "GroupGrossProfit"
 FROM (
 
 SELECT *, CASE
@@ -2159,10 +2324,12 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
 "VendorName",
 ---
 "mrkt_type",
-"IsInventoryItem"
----
+"IsInventoryItem"';
 
-ORDER BY "BusinessPartnerCode","ItemCode"';
+
+//ORDER BY "BusinessPartnerCode","ItemCode"';
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+
 //                    dd($sql);
                 }
                 else if ($this->report_type == "byEmployee") {
@@ -2193,7 +2360,15 @@ ORDER BY "BusinessPartnerCode","ItemCode"';
     "VendorCode",
     "VendorName",
     "mrkt_type",
-    "IsInventoryItem"
+    "IsInventoryItem",
+          SUM(SUM("NetSalesAmountLC"))
+        OVER (PARTITION BY "SlpCode") AS "GroupTotalSales",
+             SUM(SUM("GrossProfitLC"))
+        OVER (PARTITION BY "SlpCode") AS "GroupGrossProfit",
+
+         SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+        OVER (PARTITION BY "SlpCode") AS "GroupGrossProfitPer"
+
 FROM (
     SELECT
         T1.*,
@@ -2286,10 +2461,30 @@ GROUP BY
     "IsInventoryItem",
     "SlpCode",
     "SlpName", -- Added
-    "Memo"     -- Added
-ORDER BY
-    "SlpCode", "BusinessPartnerCode", "ItemCode2"';
-
+    "Memo"';
+// ORDER BY
+// "EmployeeTotalSales" \''.$this->orderByTotalSales.'\'
+// --"SlpCode",
+//    ,"ItemCode2" ';
+//
+//         if($this->sortDir == 'DESC') {
+//             $sql .=' ORDER BY
+//              --\''.$this->sortBy.'\' DESC,
+//                    "EmployeeTotalSales" DESC,
+//                   --"EmployeeGrossProfit" DESC,
+//                  --"GroupGrossProfitPer" DESC,
+//                        "ItemCode2"';
+//                             }
+//
+//             else{
+//              $sql .=' ORDER BY
+//            --  \''.$this->sortBy.'\' ASC,
+//                     "EmployeeTotalSales" ASC,
+//                       -- "EmployeeGrossProfit" ASC,
+//                       --"GroupGrossProfitPer" ASC,
+//                        "ItemCode2"';
+//                 }
+                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "ItemCode2"';
 
                 }
 

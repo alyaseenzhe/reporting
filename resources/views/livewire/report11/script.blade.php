@@ -3,6 +3,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
 
         var groups_all = {
@@ -221,6 +222,7 @@
 
 
             ///////////////////////////
+
             var div = document.getElementById("branch-container");
             var btn = document.getElementsByClassName("collapsible");
             div.style.display = "none";
@@ -418,6 +420,8 @@
                     // $('#filteration-row2').addClass('hide');
                     $('#filteration-row3').addClass('hide');
                     $('#grouping').addClass('hide');
+                    $('#sortBy').addClass('hide');
+                    $('#sortDir').addClass('hide');
                     $('#product-code-row').removeClass('hide');
                     $('#submit-row').removeClass('hide');
                     $('#product_code').select2({
@@ -430,6 +434,8 @@
                     // $('#filteration-row2').removeClass('hide');
                     $('#filteration-row3').removeClass('hide');
                     $('#grouping').removeClass('hide');
+                    $('#sortBy').removeClass('hide');
+                    $('#sortDir').removeClass('hide');
                     $('#product-code-row').addClass('hide');
                     $('#submit-row').addClass('hide');
 

@@ -149,9 +149,9 @@
                 </div>
             </div>
         </div>
-        <div id="filteration-row3" style="padding-left: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
+        <div id="filteration-row3" style="padding-left: 20px" class="w-full flex flex-col gap-4 mt-3 hide" wire:ignore>
             <div class="w-full flex flex-col sm:flex-row gap-4">
-                <div id="cat_container" class="w-full">
+                <div id="cat_container" class="w-full" wire:ignore>
                     <label class="block font-bold mb-2">نوع المواد
                         <span class="text-red-500">*</span>
                     </label>
@@ -164,7 +164,7 @@
                     </div>
                     @error('cat_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div id="sp_container" class="w-full">
+                <div id="sp_container" class="w-full" wire:ignore>
                     <label class="block font-bold mb-2">نوع المميز
                         <span class="text-red-500">*</span>
                     </label>
@@ -180,12 +180,12 @@
                     </div>
                     @error('sp_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div id="marketing_type_container" class="w-full">
+                <div id="marketing_type_container" class="w-full" wire:ignore>
                     <label class="block font-bold mb-2">الإدارات والاقسام
                         <span class="text-red-500">*</span>
                     </label>
                     <div wire:ignore>
-                        <select id="marketing_type" name="marketing_type" multiple="multiple"
+                        <select id="marketing_type" name="marketing_type" multiple="multiple" wire:ignore
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('sp_type') border: solid 1px #fda4af; @enderror">
                             <option value="marketing_all" selected>الكل</option>
@@ -202,7 +202,7 @@
                     </div>
                     @error('marketing_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div id="vendor_container" class="w-full">
+                <div id="vendor_container" class="w-full" wire:ignore>
                     <label class="block font-bold mb-2">الموردين
                         <span class="text-red-500">*</span>
                     </label>
@@ -220,7 +220,7 @@
                     <span class="error text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
-                <div id="customer_container" class="w-full">
+                <div id="customer_container" class="w-full" wire:ignore>
                     <label class="block font-bold mb-2">العملاء
                         <span class="text-red-500">*</span>
                     </label>
@@ -258,7 +258,7 @@
                 </div>
             </div>
         </div>
-        <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
+        <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide" wire:ignore>
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div wire:ignore id="product_code_div" class="w-full">
                     <label class="block font-bold mb-2">رقم الصنف
@@ -278,7 +278,7 @@
                 </div>
             </div>
         </div>
-        <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide">
+        <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide" wire:ignore>
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 {{--                <div class="w-full">--}}
                 {{--                    <label class="block font-bold mb-2">خيارات التجميع--}}
@@ -298,6 +298,7 @@
                 {{--                    </div>--}}
                 {{--                    @error('report_type') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
                 {{--                </div>--}}
+
                 <div id="grouping" wire:ignore class="w-full">
                     <label class="block font-bold mb-2">خيارات التجميع (Grouping)
                         {{--                        <span class="text-red-500">*</span>--}}
@@ -314,7 +315,220 @@
                         <option value="byCustomer">بالعميل</option>
                         <option value="byEmployee">بالموظف</option>
                     </select>
+
                 </div>
+
+
+                <div id="sortBy" class="w-full" wire:ignore.self>
+                    <!-- Sales -->
+                    <label class="block font-bold mb-2">الترتيب بالأعمدة (Sorting)
+
+                    </label>
+                    <div class="flex flex-wrap gap-2">
+
+
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="sortBy"
+                                value="GroupTotalSales"
+                                wire:model.defer="sortBy"
+                                class="hidden peer"
+                            >
+
+                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
+        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-200 transition">
+                                اجمالي المبيعات
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="sortBy"
+                                value="GroupGrossProfit"
+                                wire:model.defer="sortBy"
+                                class="hidden peer"
+                            >
+
+                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
+        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-200 transition">
+                               الهامش
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="sortBy"
+                                value="GroupGrossProfitPer"
+                                wire:model.defer="sortBy"
+                                class="hidden peer"
+                            >
+
+                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
+        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-200 transition">
+                               النسبة
+                            </div>
+                        </label>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div id="sortDir" class="w-full" wire:ignore.self>
+                    <!-- Sales -->
+                    <label class="block font-bold mb-2">نوع الترتيب</label>
+
+                    <div class="flex flex-wrap gap-2">
+{{--                        <div class="flex gap-2">--}}
+                            <!-- ASC -->
+                            <label class="cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="sortDir"
+                                    value="ASC"
+                                    wire:model.defer="sortDir"
+                                    class="hidden peer"
+                                >
+                                <div class="px-2 py-1 text-sm rounded border bg-gray-100
+            peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600
+            hover:bg-gray-200 transition flex items-center gap-1">
+                                    ASC ▲
+                                </div>
+                            </label>
+
+                            <!-- DESC -->
+
+
+                            <label class="cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="sortDir"
+                                    value="desc"
+                                    wire:model.defer="sortDir"
+                                    class="hidden peer"
+                                >
+                                <div class="px-2 py-1 text-sm rounded border bg-gray-100
+            peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
+            hover:bg-gray-200 transition flex items-center gap-1">
+                                    DESC ▼
+                                </div>
+                            </label>
+{{--                        </div>--}}
+                    </div>
+                </div>
+
+                    {{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sortBy" value="EmployeeTotalSales" wire:model.lazy="sortBy" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                hover:bg-gray-200 flex items-center gap-1 transition">--}}
+
+{{--                                اجمالي المبيعات--}}
+
+{{--                                <span>--}}
+{{--                    @if($sortBy === 'EmployeeTotalSales')--}}
+{{--                                        {{ $sortDir === 'asc' ? '▲' : '▼' }}--}}
+{{--                                    @else--}}
+{{--                                        ▲--}}
+{{--                                    @endif--}}
+{{--                </span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                        <!-- Cost -->--}}
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sortBy" value="EmployeeGrossProfit" wire:model.lazy="sortBy" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                hover:bg-gray-200 flex items-center gap-1 transition">--}}
+
+{{--                                الهامش--}}
+
+{{--                                <span>--}}
+{{--                    @if($sortBy === 'EmployeeGrossProfit')--}}
+{{--                                        {{ $sortDir === 'asc' ? '▲' : '▼' }}--}}
+{{--                                    @else--}}
+{{--                                        ▲--}}
+{{--                                    @endif--}}
+{{--                </span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                        <!-- Ratio -->--}}
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sortBy" value="GroupGrossProfitPer" wire:model.lazy="sortBy" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                peer-checked:bg-gray-800 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                hover:bg-gray-200 flex items-center gap-1 transition">--}}
+
+{{--                                النسبة--}}
+
+{{--                                <span>--}}
+{{--                    @if($sortBy === 'GroupGrossProfitPer')--}}
+{{--                                        {{ $sortDir === 'asc' ? '▲' : '▼' }}--}}
+{{--                                    @else--}}
+{{--                                        ▲--}}
+{{--                                    @endif--}}
+{{--                </span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                    </div>--}}
+
+{{--                    <!-- Hidden toggle for ASC/DESC -->--}}
+{{--                    <input type="checkbox" wire:model.lazy="toggleDirection" class="hidden">--}}
+{{--                </div>--}}
+{{--                <div class="w-full" >--}}
+{{--                    <label class="block font-bold mb-2"> ترتيب الأعمدة (Sorting)--}}
+{{--                    </label>--}}
+
+
+{{--                    <div class="flex flex-wrap gap-2">--}}
+
+{{--                        <!-- Sales -->--}}
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sort_option" value="sales" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                    peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                    hover:bg-gray-200 flex items-center gap-1 transition">--}}
+{{--                                اجمالي المبيعات--}}
+{{--                                <span class="text-gray-500 peer-checked:text-white">▲</span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                        <!-- Cost -->--}}
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sort_option" value="cost" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                    peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                    hover:bg-gray-200 flex items-center gap-1 transition">--}}
+{{--                                الهامش--}}
+{{--                                <span class="text-gray-500 peer-checked:text-white">▲</span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                        <!-- Ratio -->--}}
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input type="radio" name="sort_option" value="ratio" class="hidden peer">--}}
+{{--                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--                    peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600--}}
+{{--                    hover:bg-gray-200 flex items-center gap-1 transition">--}}
+{{--                                النسبة--}}
+{{--                                <span class="text-gray-500 peer-checked:text-white">▲</span>--}}
+{{--                            </div>--}}
+{{--                        </label>--}}
+
+{{--                    </div>--}}
+{{--                </div>--}}
+
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
@@ -332,7 +546,7 @@
     </div>
 
     @if($show_msg)
-        <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-4" wire:ignore>
+        <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-4">
             @if(count($group_results) > 0)
 
                 <div style="background-color: #f5f5f5;" class="mb-2 p-2">
@@ -355,26 +569,20 @@
             @endif
 
 
-{{--                <div style="background-color: #f5f5f5;" class="mb-2 p-2">--}}
-{{--                        <div class="flex flex-col sm:flex-row gap-2 w-full">--}}
                             <div ><label class="font-bold mb-5 text-sm">الملخص</label></div>
                             <div>
 {{--                                <span class="text-xs">(</span>--}}
                                 <input id="summary" type="checkbox" value="summary" onchange="summary(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-{{--                                <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>--}}
-{{--                                <span class="text-xs">)</span>--}}
+
                             </div>
-                            {{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
 
 
 
-                            {{--                            </div>--}}
-{{--                        </div>--}}
                 </div>
                 </div>
 
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center" >
-                <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
+                <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm" >
                 <tr style="border: 2px solid black;">
 
                     @if($report_type == 'byItem')
@@ -398,6 +606,7 @@
                         </th>
                         <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">صافي المبيعات</div>
+
                         </th>
                         <th style="border-left: 2px solid black;" class="w-full border p-2 whitespace-nowrap">
                             <div class="text-sm">متوسط السعر</div>
@@ -413,7 +622,9 @@
                             <div class="text-sm">كمية</div>
                         </th>
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                            <div class="text-sm">صافي المبيعات</div>
+                            <div class="text-sm" >صافي المبيعات
+
+                            </div>
                         </th>
                         <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                             <div class="text-sm">متوسط السعر</div>
@@ -452,7 +663,8 @@
                 @if($report_type == 'byItem')
                     @php $item_total = 0; $cost_total = 0; $gross_total = 0; @endphp
                     @foreach($group_results as $record)
-                        <tr wire:key="rec-{{ now() }}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
+{{--                        <tr wire:key="rec-{{ now() }}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">--}}
+                        <tr wire:key="{{$record->id}}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{$record["OldCode"]}}
                             </td>
@@ -1878,7 +2090,7 @@
                             $item_group_itemCode_code = null;
                             $item_group_code = null;
                         @endphp
-                        @foreach($outer_record as $record)
+                        @foreach($outer_record as $key => $record)
 
                             @if($currentGroup != $record["EmployeeCode"])
 
@@ -1981,19 +2193,6 @@
                                             </div>
                                         </div>
 
-                                    {{--                                            مجموع جزئي للصنف--}}
-                                    {{--                                            <span style="color: #3f9dad"> {{ $record["ItemName"] }}</span>--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                            {{number_format($totalSalesByItem[$record["OldCode"]][0], 2)}}--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-                                    {{--                                        </td>--}}
-                                    {{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][1], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["OldCode"]][2], 2)}}</td>--}}
-                                    {{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["OldCode"]][2]/$totalSalesByItem[$record["OldCode"]][0])*100, 2)}}</td>--}}
-                                    {{--                                        @endif--}}
                                 </tr>
                                 <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
@@ -2016,7 +2215,7 @@
                                     @endif
                                 </tr>
                             @endif
-                            <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
+                            <tr wire:key="{{$key}}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
 
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{__($record["Department"])}}
@@ -2085,6 +2284,26 @@
                                 @endif
                             </tr>
                         @endif
+
+
+{{--                        @foreach($employeeSubtotals as $subtotal)--}}
+{{--                            <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                    مجموع جزئي - {{ $subtotal['EmployeeName'] }}--}}
+{{--                                </td>--}}
+{{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransSubtotal']) }}</td>--}}
+{{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['QuantitySubtotal']) }}</td>--}}
+{{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['SalesSubtotal'], 2) }}</td>--}}
+{{--                                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                    {{ $subtotal['QuantitySubtotal'] != 0 ? number_format($subtotal['SalesSubtotal'] / $subtotal['QuantitySubtotal'], 2) : 0 }}--}}
+{{--                                </td>--}}
+{{--                                @if(auth()->user()->user_group->cost == '1' || auth()->user()->role == 'a')--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['CostSubtotal'], 2) }}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossSubtotal'], 2) }}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap cost">{{ $subtotal['SalesSubtotal'] == 0 ? 0 : number_format(($subtotal['GrossSubtotal'] / $subtotal['SalesSubtotal']) * 100, 2) }}</td>--}}
+{{--                                @endif--}}
+{{--                            </tr>--}}
+{{--                            @endforeach--}}
                     @endforeach
 
 
@@ -2170,3 +2389,4 @@
     <span style="text-align: center">تقرير عمليات الأصناف</span>
 @stop
 @include('livewire.report11.script')
+
