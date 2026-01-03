@@ -187,6 +187,7 @@ class ShowVisit extends Component
         $visit->status = '2';
         $visit->status_notice = $visit_record["status_notice"];
 
+        $visit->approved_by = auth()->user()->id;
         if($visit->save()) {
 
             $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();

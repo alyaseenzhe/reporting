@@ -78,10 +78,12 @@
 
         <!-- Tab Panels -->
 
-        <div  class="w-full"  x-show="panel === 'calendar'">
+        <div  class="w-full"  x-show="panel === 'calendar'" x-cloak>
             <div wire:ignore id='calendar'></div>
         </div>
-        <div  x-show="panel === 'list'" class="p-4 ">
+        <div  x-show="panel === 'list'" x-cloak
+
+              class="p-4 ">
             <div id="branch-container" class="mb-6 mt-6">
                 <div style="background-color:#f0f8ff" class="p-5 flex flex-col gap-4">
                     <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -447,15 +449,15 @@
 
 
             const visit = '';
-            @if(auth()->user()->group == 7)
+{{--            @if(auth()->user()->group == 7)--}}
             {{--visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string--}}
             visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string
 
-            @else
-            visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string
-            {{--visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string--}}
+{{--            @else--}}
+{{--            visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string--}}
+{{--            --}}{{--visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string--}}
 
-            @endif
+{{--            @endif--}}
 
             const currentUserId = {{ \Illuminate\Support\Facades\Auth::id()  }};
 

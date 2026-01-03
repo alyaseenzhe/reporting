@@ -100,7 +100,7 @@ class VisitCalendar extends Component
 //        );
 
 
-        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '0')->orWhere('status', '1')->get();
+//        $this->showAllVisits = Visit::with('requester')->with('emps')->where('status', '0')->orWhere('status', '1')->get();
         $this->calendarVisit = Visit::with([
             'requester',
             'emps',
@@ -111,7 +111,7 @@ class VisitCalendar extends Component
                 $q->where('status', 0)
                     ->orWhere('status', 1);
             })
-            ->when(!$this->canViewAll, function ($query) use ($user) {
+            ->when( auth()->user()->group == 7 ||auth()->user()->group == 8||auth()->user()->group == 12, function ($query) use ($user) {
                 $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
             })
             ->get();
@@ -162,7 +162,8 @@ class VisitCalendar extends Component
         $this->emps = User::where('sales_dept_code', '!=', '')
             ->where(function ($query) {
                 $query->where('group', 7)
-                    ->orWhere('group', 8);
+                    ->orWhere('group', 8)
+                    ->orWhere('group', 12);
             })
             ->select('id', 'sales_dept_code', 'name', 'group')
             ->orderBy('sales_dept_code', 'asc')
@@ -201,7 +202,8 @@ class VisitCalendar extends Component
         $employees = User::where('sales_dept_code', $data['branch'])
             ->where(function ($q) {
                 $q->where('group', 8)
-                    ->orWhere('group', 7);
+                    ->orWhere('group', 7)
+                    ->orWhere('group', 12);
             })
             ->pluck('id', 'name')
             ->toArray();
@@ -268,7 +270,7 @@ class VisitCalendar extends Component
             $this->loadVisits();
 
 
-            $this->emit("visitsLoaded", $this->visits);
+            $this->emit("visitsLoaded", $this->calendarVisit);
 
             $branch_manger = $this->branchMangerByVisitId($visit_data->id);
             /*
