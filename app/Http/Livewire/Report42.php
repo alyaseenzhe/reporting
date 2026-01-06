@@ -2754,13 +2754,26 @@ ELSE \'1\'
 END as "BranchCode"
 ,"CardCode", "CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD
 WHERE "QryGroup1" = \'Y\'
-AND "validFor" = \'Y\'
+--AND "validFor" = \'Y\'
 )
 GROUP BY "BranchCode"
 ) distCust_tbl
 ON distCust_tbl."BranchCode" = tbl1."BPLId"
 
 ----- end dist cust num total
+
+---- discount without qty
+LEFT JOIN (
+SELECT T4."BPLId" as "DisBranchId", T4."BPLName" as "DisBranchName", IFNULL(SUM(T5."LineTotal"),0) as "total_disc2"
+    FROM AL_YASEEN_AGRI_PLIVE.ORIN T4
+    INNER JOIN AL_YASEEN_AGRI_PLIVE.RIN1 T5 ON T4."DocEntry" = T5."DocEntry"
+    WHERE
+      T5."NoInvtryMv" = \'Y\'
+      AND T4."DocDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+      GROUP BY T4."BPLId", T4."BPLName"
+) disc_without_qty_tbl
+ON disc_without_qty_tbl."DisBranchId" = tbl1."BPLId"
+---- end of discount without qty
 ';
 
 //            dd($sql);
@@ -2769,7 +2782,7 @@ ON distCust_tbl."BranchCode" = tbl1."BPLId"
             if (!$result)
             {
                 echo "Error while sending SQL statement to the database server.\n";
-                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+                echo "ODBC error code: "  . odbc_error() . ". Message: " . odbc_errormsg();
             }
             else
             {

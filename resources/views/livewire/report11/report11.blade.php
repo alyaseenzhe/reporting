@@ -327,6 +327,40 @@
                     <div class="flex flex-wrap gap-2">
 
 
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input--}}
+{{--                                type="radio"--}}
+{{--                                name="sortBy"--}}
+{{--                                value="code"--}}
+{{--                                wire:model.defer="sortBy"--}}
+{{--                                class="sr-only peer"--}}
+{{--                            >--}}
+
+{{--                            <span class="block px-3 py-1.5 text-sm rounded border bg-gray-100--}}
+{{--        peer-checked:bg-blue-600--}}
+{{--          peer-checked:text-red-600 peer-checked:border-blue-600--}}
+{{--        hover:bg-gray-200 transition">--}}
+{{--                                بالكود--}}
+{{--                            </span>--}}
+{{--                        </label>--}}
+
+                        <label class="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="sortBy"
+                                value="code"
+                                wire:model.defer="sortBy"
+                                class="sr-only peer"
+                            >
+
+                            <span class="block px-3 py-1.5 text-sm rounded border
+        peer-checked:bg-gray-600
+        peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-400 transition">
+        بالكود
+    </span>
+                        </label>
+
                         <label class="cursor-pointer">
                             <input
                                 type="radio"
@@ -336,11 +370,12 @@
                                 class="hidden peer"
                             >
 
-                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
-        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-200 transition">
+                            <span class="block px-3 py-1.5 text-sm rounded border
+        peer-checked:bg-gray-600
+        peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-400 transition">
                                 اجمالي المبيعات
-                            </div>
+                            </span>
                         </label>
 
                         <label class="cursor-pointer">
@@ -352,9 +387,10 @@
                                 class="hidden peer"
                             >
 
-                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
-        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-200 transition">
+                            <div class="block px-3 py-1.5 text-sm rounded border
+        peer-checked:bg-gray-600
+        peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-400 transition">
                                الهامش
                             </div>
                         </label>
@@ -368,11 +404,12 @@
                                 class="hidden peer"
                             >
 
-                            <div class="px-3 py-1.5 text-sm rounded border bg-gray-100
-        peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-200 transition">
+                            <span class="block px-3 py-1.5 text-sm rounded border
+        peer-checked:bg-gray-600
+        peer-checked:text-white peer-checked:border-blue-600
+        hover:bg-gray-400 transition">
                                النسبة
-                            </div>
+                            </span>
                         </label>
 
                     </div>
@@ -397,11 +434,12 @@
                                     wire:model.defer="sortDir"
                                     class="hidden peer"
                                 >
-                                <div class="px-2 py-1 text-sm rounded border bg-gray-100
+                                <span class="px-2 py-1 text-sm
+                                rounded border
             peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600
-            hover:bg-gray-200 transition flex items-center gap-1">
+            hover:bg-gray-400 transition flex items-center gap-1">
                                     ASC ▲
-                                </div>
+                                </span>
                             </label>
 
                             <!-- DESC -->
@@ -415,9 +453,9 @@
                                     wire:model.defer="sortDir"
                                     class="hidden peer"
                                 >
-                                <div class="px-2 py-1 text-sm rounded border bg-gray-100
+                                <div class="px-2 py-1 text-sm rounded border
             peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
-            hover:bg-gray-200 transition flex items-center gap-1">
+            hover:bg-gray-400 transition flex items-center gap-1">
                                     DESC ▼
                                 </div>
                             </label>
@@ -581,7 +619,7 @@
                 </div>
                 </div>
 
-            <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center" >
+            <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center" wire:ignore>
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm" >
                 <tr style="border: 2px solid black;">
 
@@ -821,7 +859,7 @@
                                 <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>({{ $record["OldCode"] }}) - {{$record["ItemName"]}}</div>
-
+                                    </div>
                                 </td>
                             </tr>
                         @endif
@@ -2208,6 +2246,12 @@
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                         {{ $totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][3] != 0? number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][0]/$totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][3], 2) : 0 }}
                                     </td>
+{{--                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][1], 2)??0}}</td>--}}
+{{--                                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][2], 2)?? 0}}</td>--}}
+{{--                                        <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][2]/$totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][0])*100, 2)}}</td>--}}
+{{--                                    @endif--}}
+
                                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                         <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][1], 2)??0}}</td>
                                         <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["EmployeeCode"]][$record["OldCode"]][2], 2)?? 0}}</td>
@@ -2215,7 +2259,8 @@
                                     @endif
                                 </tr>
                             @endif
-                            <tr wire:key="{{$key}}" class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}} summary hide">
+                            <tr wire:key="emp-{{ $record['EmployeeCode'] }}-item-{{ $record['OldCode'] }}-dept-{{ $record['Department'] }}"
+                                class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["OldCode"]}}  summary hide">
 
                                 <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     {{__($record["Department"])}}
@@ -2226,6 +2271,7 @@
                                                                     @php $itemGroup_trans_total = $itemGroup_trans_total + floatval($record['TransCount']); @endphp
                                                                     @php $itemGroup_trans_subtotal = $itemGroup_trans_subtotal + floatval($record['TransCount']); @endphp
                                                                 </td>
+
                                 <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                     {{number_format($record['TotalQuantitySold'])}}
                                     @php $itemGroup_quantity_total = $itemGroup_quantity_total + floatval($record['TotalQuantitySold']); @endphp

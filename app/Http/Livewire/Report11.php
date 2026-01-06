@@ -44,9 +44,10 @@ class Report11 extends Component
             $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0,
             $itemGroup_itemName_subtotal = 0, $itemGroup_costName_subtotal = 0, $itemGroup_grossName_subtotal = 0;
 
-    public $orderByTotalSales = 'DESC';
 
-    public $sortBy = "GroupTotalSales";
+
+//    public $sortBy = "GroupTotalSales";
+    public $sortBy = "code";
     public $sortDir = 'ASC';
     public $toggleDirection = false;
 
@@ -193,6 +194,8 @@ class Report11 extends Component
     }
 
     public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $report_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
+//        $this->reset();
+//        $this->reset(['scribes_results', 'sap_results', 'group_results', 'report_type', 'show_msg']);
 
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
@@ -356,6 +359,7 @@ class Report11 extends Component
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'),
                         $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
+
             }
             else if ($this->report_type == "byItemGroup") {
 //                dd($merged_results);
@@ -637,7 +641,7 @@ class Report11 extends Component
                     });
 
                 $this->group_results = $this->group_results
-                    ->sortBy(['totalSales','GroupGrossProfit'])
+//                    ->sortBy(['totalSales','GroupGrossProfit'])
                     ->values(); // reset keys
 // Step 2: Convert to array if needed
                 $this->totalSalesByItem = $groupedByPartnerAndItem->toArray();
@@ -715,10 +719,10 @@ class Report11 extends Component
 // If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
 
 //                  Sort employees by total sales descending
-                $this->group_results = $this->group_results
-                    ->sortBy('totalSales')
-                    ->values(); // reset keys
-//
+//                $this->group_results = $this->group_results
+//                    ->sortBy('totalSales')
+//                    ->values(); // reset keys
+////
 //                $this->group_results = $this->group_results
 //                    ->sortBy('totalSales')
 //                    ->values(); // reset keys
@@ -1612,6 +1616,8 @@ GROUP BY "ItemCode",
 
                     $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "ItemCode"';
 
+//                    dd($sql);
+
 
                 }
                 else if ($this->report_type == "byDepartment") {
@@ -1628,8 +1634,9 @@ GROUP BY "ItemCode",
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
     COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
     SUM("GrossProfitLC") as "GrossProfit",
-    SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
-    (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+   SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
+ (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
+
      "Speciality",
 	"SalUnitMsr",
 "OldCode",
@@ -1642,7 +1649,21 @@ SUM(SUM("NetSalesAmountLC"))
 OVER (PARTITION BY "ItemCode") AS "GroupTotalSales",
 
 SUM(SUM("GrossProfitLC"))
-OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit"
+OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit",
+
+       --  SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+        --OVER (PARTITION BY "ItemCode") AS "GroupGrossProfitPer"
+
+    (
+    SUM(SUM("GrossProfitLC"))
+    OVER (PARTITION BY "ItemCode")
+    /
+    NULLIF(
+        SUM(SUM("NetSalesAmountLC"))
+        OVER (PARTITION BY "ItemCode"),
+        0
+    )
+) * 100 AS "GroupGrossProfitPer"
 
 FROM (
 
@@ -1730,13 +1751,17 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 
 //order By "TotalSalesAmount"';
 
-//--ORDER BY "ItemCode"';
+                    if($sortBy == 'code'){
+                        $sql .='ORDER BY "ItemCode" ' . $direction . '';
+                    }
+                    else {
 
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
-
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
 //                    dd($sql);
 
                 }
+
                 else if ($this->report_type == "byItemGroup") {
 
                     $sql = 'SELECT
@@ -1764,7 +1789,12 @@ SUM(SUM("NetSalesAmountLC"))
 OVER (PARTITION BY "ItemGroup") AS "GroupTotalSales",
 
 SUM(SUM("GrossProfitLC"))
-OVER (PARTITION BY "ItemGroup") AS "GroupGrossProfit"
+OVER (PARTITION BY "ItemGroup") AS "GroupGrossProfit",
+
+
+         SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+        OVER (PARTITION BY "ItemGroup") AS "GroupGrossProfitPer"
+
 FROM (
 
 SELECT *, CASE
@@ -1851,10 +1881,15 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "mrkt_type",
 "IsInventoryItem"';
 
+                    if($sortBy == 'code'){
+
+                        $sql .='ORDER BY "ItemGroup" ' . $direction . ',"ItemCode" ';
+                    }
 
 //ORDER BY "ItemGroup","ItemCode"';
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
-
+                    else {
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
 //                    dd($sql);
                 }
                 else if ($this->report_type == "bySpeciality") {
@@ -1969,12 +2004,23 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "mrkt_type",
 "IsInventoryItem"';
 
+                    if($sortBy =='code'){
+                        $sql .= 'ORDER BY "Speciality" ' . $direction . ',"ItemCode"';
+
+                    }
 
 //ORDER BY "Speciality","ItemCode"';
+                    else {
 
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
 //                    dd($sql);
+
                 }
+
+
+
+
                 else if ($this->report_type == "byMarketingType") {
 
                     $sql = 'SELECT
@@ -2003,7 +2049,11 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
     OVER (PARTITION BY  "mrkt_type") AS "GroupTotalSales",
 
     SUM(SUM("GrossProfitLC"))
-    OVER (PARTITION BY  "mrkt_type") AS "GroupGrossProfit"
+    OVER (PARTITION BY  "mrkt_type") AS "GroupGrossProfit",
+
+         SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+        OVER (PARTITION BY "mrkt_type") AS "GroupGrossProfitPer"
+
 
 FROM (
 
@@ -2090,11 +2140,16 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "IsInventoryItem"';
 
 
-//ORDER BY "mrkt_type","ItemCode"';
+                    if($sortBy =='code') {
+
+                        $sql .='ORDER BY "mrkt_type","ItemCode"';
+                    }
+                    else {
+
 //                    dd($sql);
 
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
-
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
                 }
                 else if ($this->report_type == "byVendor") {
 
@@ -2121,7 +2176,10 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
           SUM(SUM("NetSalesAmountLC"))
         OVER (PARTITION BY "VendorCode") AS "GroupTotalSales",
              SUM(SUM("GrossProfitLC"))
-        OVER (PARTITION BY "VendorCode") AS "GroupGrossProfit"
+        OVER (PARTITION BY "VendorCode") AS "GroupGrossProfit",
+
+         SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+        OVER (PARTITION BY "VendorCode") AS "GroupGrossProfitPer"
 FROM (
 
 SELECT *, CASE
@@ -2207,7 +2265,14 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "mrkt_type",
 "IsInventoryItem"';
 
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    if($sortBy == 'code'){
+
+                        $sql .='ORDER BY "VendorCode" ' . $direction . ',"ItemCode"';
+                    }
+
+                    else {
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
 
 //---
 //
@@ -2240,7 +2305,10 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
           SUM(SUM("NetSalesAmountLC"))
         OVER (PARTITION BY "BusinessPartnerCode") AS "GroupTotalSales",
              SUM(SUM("GrossProfitLC"))
-        OVER (PARTITION BY "BusinessPartnerCode") AS "GroupGrossProfit"
+        OVER (PARTITION BY "BusinessPartnerCode") AS "GroupGrossProfit",
+
+       SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
+       OVER (PARTITION BY "BusinessPartnerCode") AS "GroupGrossProfitPer"
 FROM (
 
 SELECT *, CASE
@@ -2255,7 +2323,7 @@ SELECT *, CASE
 --
 CASE
 WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
+WHEN T2."QryGroup31" = \'Y\' THEN \'fan - 0mobedat 1\'
 WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
 WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
 WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
@@ -2327,9 +2395,14 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
 "IsInventoryItem"';
 
 
-//ORDER BY "BusinessPartnerCode","ItemCode"';
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    if($sortBy =='code') {
 
+
+                        $sql .= 'ORDER BY "BusinessPartnerCode" ' . $direction . ',"ItemCode"';
+                    }
+                    else {
+                        $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
+                    }
 //                    dd($sql);
                 }
                 else if ($this->report_type == "byEmployee") {
@@ -2348,12 +2421,13 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
     "ItemGroup",
     SUM("TransCount") AS "TransCount",
     SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
-    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
+    SUM("NetSalesAmountLC")  AS "TotalSalesAmount" ,
     AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
     COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
     SUM("GrossProfitLC") AS "GrossProfit",
     SUM("NetSalesAmountLC")-SUM("GrossProfitLC") AS "Cost",
     (SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100 AS "GrossProfitPer",
+
     "Speciality",
     "SalUnitMsr",
     "OldCode",
@@ -2365,6 +2439,9 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
         OVER (PARTITION BY "SlpCode") AS "GroupTotalSales",
              SUM(SUM("GrossProfitLC"))
         OVER (PARTITION BY "SlpCode") AS "GroupGrossProfit",
+
+--SUM("GrossProfitLC") OVER (PARTITION BY "SlpCode")/NULLIF(SUM("NetSalesAmountLC") OVER (PARTITION BY "SlpCode"), 0) * 100 AS "GroupGrossProfitPer"
+
 
          SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
         OVER (PARTITION BY "SlpCode") AS "GroupGrossProfitPer"
@@ -2484,8 +2561,16 @@ GROUP BY
 //                       --"GroupGrossProfitPer" ASC,
 //                        "ItemCode2"';
 //                 }
-                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "ItemCode2"';
 
+               if($sortBy == 'code')
+               {
+                   $sql .=' ORDER BY "SlpCode" ' . $direction . ', "BusinessPartnerCode", "ItemCode2"';
+               }
+
+               else {
+                   $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "ItemCode2"';
+
+               }
                 }
 
 //                dd($sql);

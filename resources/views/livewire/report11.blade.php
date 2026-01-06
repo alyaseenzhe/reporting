@@ -667,10 +667,10 @@
                     @endforeach
                 @elseif($report_type == 'byDepartment')
 
-                    @php $currentGroup = null; $currentItemName = null; @endphp
-                    @php $itemGroup_item_total = 0; $itemGroup_cost_total = 0; $itemGroup_gross_total = 0; $itemGroup_quantity_total = 0; $itemGroup_trans_total = 0; @endphp
-                    @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0; @endphp
-                    @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp
+{{--                    @php $currentGroup = null; $currentItemName = null; @endphp--}}
+{{--                    @php $itemGroup_item_total = 0; $itemGroup_cost_total = 0; $itemGroup_gross_total = 0; $itemGroup_quantity_total = 0; $itemGroup_trans_total = 0; @endphp--}}
+{{--                    @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0; @endphp--}}
+{{--                    @php $itemGroup_itemName_subtotal = 0; $itemGroup_costName_subtotal = 0; $itemGroup_grossName_subtotal = 0; @endphp--}}
 
                     {{--                    @foreach($group_results as $outer_record)--}}
                     @foreach($group_results as $record)
