@@ -1,8 +1,11 @@
+@section('title')
+    7- مبيعات، هامش/موظف
+@stop
 <div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">مبيعات، هامش/موظف</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">مبيعات، هامش/موظف</div>--}}
+{{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-row gap-4">
@@ -113,23 +116,23 @@
                         <div class="text-sm">مبيعات م1</div>
                     </th>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                    <th class="border p-2">
-                        <div class="text-sm">كلفة م1</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-sm">هامش م1</div>
-                    </th>
+                        <th class="border p-2">
+                            <div class="text-sm">كلفة م1</div>
+                        </th>
+                        <th style="border-left: 2px solid black;" class="border p-2">
+                            <div class="text-sm">هامش م1</div>
+                        </th>
                     @endif
                     <th class="border p-2 whitespace-nowrap">
                         <div class="text-sm">مبيعات م2</div>
                     </th>
                     @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                    <th class="border p-2">
-                        <div class="text-sm">كلفة م2</div>
-                    </th>
-                    <th style="border-left: 2px solid black;" class="border p-2">
-                        <div class="text-sm">هامش م2</div>
-                    </th>
+                        <th class="border p-2">
+                            <div class="text-sm">كلفة م2</div>
+                        </th>
+                        <th style="border-left: 2px solid black;" class="border p-2">
+                            <div class="text-sm">هامش م2</div>
+                        </th>
                     @endif
                     <th class="border p-2 whitespace-nowrap">
                         <div class="text-sm">مبيعات م0</div>
@@ -198,10 +201,10 @@
                                         </div>
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
                                 @endif
                                 <td class="border p-2 whitespace-nowrap">
                                     <div>
@@ -215,10 +218,10 @@
                                         </div>
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
                                 @endif
 
                                 <td class="border p-2 whitespace-nowrap">
@@ -252,10 +255,10 @@
                                         </div>
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
                                 @endif
                             </tr>
 
@@ -298,16 +301,16 @@
                                         </div>
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
-                                @endif
-                                    <td class="border p-2 whitespace-nowrap">
                                         <div>
-                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'])) : ""}}</div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl1Value'] - $result2['Spl1Cost'])) : ""}}</div>
                                         </div>
                                     </td>
+                                @endif
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'])) : ""}}</div>
+                                    </div>
+                                </td>
                                 @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                                     <td class="border p-2 whitespace-nowrap">
                                         <div>
@@ -315,10 +318,10 @@
                                         </div>
                                     </td>
                                     <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
                                 @endif
 
                                 <td class="border p-2 whitespace-nowrap">
@@ -351,10 +354,10 @@
                                         </div>
                                     </td>
                                     <td class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
-                                    </div>
-                                </td>
+                                        <div>
+                                            <div class="text-center text-gray-800 text-sm">{{$result2 ? number_format(floatval($result2['Spl0Value'] - $result2['Spl0cost']) + floatval($result2['Spl1Value'] - $result2['Spl1Cost']) + floatval($result2['Spl2Value'] - $result2['Spl2Cost'])) : ""}}</div>
+                                        </div>
+                                    </td>
                                 @endif
                             </tr>
                                 <?php $s0 += ($result2 ? floatval($result2['Spl0Value']) : 0) ?>

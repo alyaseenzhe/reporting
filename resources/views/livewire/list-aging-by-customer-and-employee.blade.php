@@ -1,8 +1,11 @@
+@section('title')
+    6- تعمير العملاء
+@stop
 <div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">التعمير</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">التعمير</div>--}}
+{{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -217,7 +220,7 @@
                             {{--                                <td style="border: 2px solid white;" >{{$emp_id}}</td>--}}
                             <td style="border: 2px solid white;" >{{$emp_name}}</td>
                             <td style="border: 2px solid white;">{{ number_format($credit_line) }}</td>
-{{--                            <td style="border: 2px solid white;">{{ number_format($record["CreditLine"]) }}</td>--}}
+                            {{--                            <td style="border: 2px solid white;">{{ number_format($record["CreditLine"]) }}</td>--}}
                             <td style="border: 2px solid white;">{{ $payment_group }}</td>
                             <td style="border: 2px solid white;">{{ number_format($customer_total, 2) }}</td>
                             <td style="border: 2px solid white;">{{ number_format($total_30, 2) }}</td>
@@ -286,9 +289,9 @@
                         @php $customer_total = 0; $total_30 = 0; $total_60 = 0; $total_90 = 0; $total_120 = 0; $total_above_120 = 0; @endphp
                     @endif
 
-{{--                    @php $num_days = \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date));  @endphp--}}
-{{--                    @php $customer_total += $record["Debit (LC)"]; @endphp--}}
-{{--                    @php $emp_customer_total += $record["Debit (LC)"]; @endphp--}}
+                    {{--                    @php $num_days = \Carbon\Carbon::parse($record["Posting Date"])->diffInDays(\Carbon\Carbon::parse($last_date));  @endphp--}}
+                    {{--                    @php $customer_total += $record["Debit (LC)"]; @endphp--}}
+                    {{--                    @php $emp_customer_total += $record["Debit (LC)"]; @endphp--}}
                     @php $customer_total += $record["Balance Due"]; @endphp
                     @php $emp_customer_total += $record["Balance Due"]; @endphp
 
@@ -298,43 +301,43 @@
                     @php $branch_customer_total += $record["Balance Due"]; @endphp
                     @php $active_branch_customer_total += $record["validFor"] == 'Y'? $record["Balance Due"] : 0; @endphp
 
-{{--                    @if($num_days <= 30)--}}
-                        @php $total_30 += $record["0-30"]; @endphp
-                        @php $emp_total_30 += $record["0-30"]; @endphp
-                        @php $branch_total_30 += $record["0-30"]; @endphp
+                    {{--                    @if($num_days <= 30)--}}
+                    @php $total_30 += $record["0-30"]; @endphp
+                    @php $emp_total_30 += $record["0-30"]; @endphp
+                    @php $branch_total_30 += $record["0-30"]; @endphp
 
-                        @php $active_emp_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
-                        @php $active_branch_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
+                    @php $active_emp_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
+                    @php $active_branch_total_30 += $record["validFor"] == 'Y'? $record["0-30"] : 0; @endphp
 
-{{--                    @elseif($num_days > 30 && $num_days <= 60)--}}
-                        @php $total_60 += $record["31-60"]; @endphp
-                        @php $emp_total_60 += $record["31-60"]; @endphp
-                        @php $branch_total_60 += $record["31-60"]; @endphp
+                    {{--                    @elseif($num_days > 30 && $num_days <= 60)--}}
+                    @php $total_60 += $record["31-60"]; @endphp
+                    @php $emp_total_60 += $record["31-60"]; @endphp
+                    @php $branch_total_60 += $record["31-60"]; @endphp
 
-                        @php $active_emp_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
-                        @php $active_branch_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
-{{--                    @elseif($num_days > 60 && $num_days <= 90)--}}
-                        @php $total_90 += $record["61-90"]; @endphp
-                        @php $emp_total_90 += $record["61-90"]; @endphp
-                        @php $branch_total_90 += $record["61-90"]; @endphp
+                    @php $active_emp_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
+                    @php $active_branch_total_60 += $record["validFor"] == 'Y'? $record["31-60"] : 0; @endphp
+                    {{--                    @elseif($num_days > 60 && $num_days <= 90)--}}
+                    @php $total_90 += $record["61-90"]; @endphp
+                    @php $emp_total_90 += $record["61-90"]; @endphp
+                    @php $branch_total_90 += $record["61-90"]; @endphp
 
-                        @php $active_emp_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
-                        @php $active_branch_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
-{{--                    @elseif($num_days > 90 && $num_days <= 120)--}}
-                        @php $total_120 += $record["91-120"]; @endphp
-                        @php $emp_total_120 += $record["91-120"]; @endphp
-                        @php $branch_total_120 += $record["91-120"]; @endphp
+                    @php $active_emp_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
+                    @php $active_branch_total_90 += $record["validFor"] == 'Y'? $record["61-90"] : 0; @endphp
+                    {{--                    @elseif($num_days > 90 && $num_days <= 120)--}}
+                    @php $total_120 += $record["91-120"]; @endphp
+                    @php $emp_total_120 += $record["91-120"]; @endphp
+                    @php $branch_total_120 += $record["91-120"]; @endphp
 
-                        @php $active_emp_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
-                        @php $active_branch_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
-{{--                    @elseif($num_days > 120)--}}
-                        @php $total_above_120 += $record["121+"]; @endphp
-                        @php $emp_total_above_120 += $record["121+"]; @endphp
-                        @php $branch_total_above_120 += $record["121+"]; @endphp
+                    @php $active_emp_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
+                    @php $active_branch_total_120 += $record["validFor"] == 'Y'? $record["91-120"] : 0; @endphp
+                    {{--                    @elseif($num_days > 120)--}}
+                    @php $total_above_120 += $record["121+"]; @endphp
+                    @php $emp_total_above_120 += $record["121+"]; @endphp
+                    @php $branch_total_above_120 += $record["121+"]; @endphp
 
-                        @php $active_emp_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
-                        @php $active_branch_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
-{{--                    @endif--}}
+                    @php $active_emp_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
+                    @php $active_branch_total_above_120 += $record["validFor"] == 'Y'? $record["121+"] : 0; @endphp
+                    {{--                    @endif--}}
 
 
 

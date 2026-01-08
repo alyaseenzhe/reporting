@@ -1,5 +1,5 @@
 @section('title')
-    تقرير الاقسام التسويقية
+    15- تقرير الاقسام التسويقية
 @stop
 <div>
     <div class="mb-5">
@@ -135,9 +135,9 @@
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                 <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr style="border: 2px solid black; color: black">
-{{--                    <th style="border-left: 2px solid black;" class="whitespace-nowrap">--}}
-{{--                        <div class="text-xs">الفرع</div>--}}
-{{--                    </th>--}}
+                    {{--                    <th style="border-left: 2px solid black;" class="whitespace-nowrap">--}}
+                    {{--                        <div class="text-xs">الفرع</div>--}}
+                    {{--                    </th>--}}
                     <th colspan="2" style="border-left: 2px solid black;" class="whitespace-nowrap">
                         <div class="text-xs">الوصف</div>
                     </th>
@@ -241,30 +241,30 @@
                 </tfoot>
             </table>
         </div>
-    </div>
-    @endif
-    <div  wire:loading wire:target="generateReport" class="w-full">
-        <div class="w-full" style="border: solid 1px grey;">
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-                <rect x="17.5" y="30" width="15" height="40" fill="#e15b64">
-                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="18;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
-                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="64;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
-                </rect>
-                <rect x="42.5" y="30" width="15" height="40" fill="#f8b26a">
-                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
-                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
-                </rect>
-                <rect x="67.5" y="30" width="15" height="40" fill="#abbd81">
-                    <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
-                    <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
-                </rect>
-            </svg>
+</div>
+@endif
+<div  wire:loading wire:target="generateReport" class="w-full">
+    <div class="w-full" style="border: solid 1px grey;">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+            <rect x="17.5" y="30" width="15" height="40" fill="#e15b64">
+                <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="18;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
+                <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="64;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.2s"></animate>
+            </rect>
+            <rect x="42.5" y="30" width="15" height="40" fill="#f8b26a">
+                <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
+                <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1" begin="-0.1s"></animate>
+            </rect>
+            <rect x="67.5" y="30" width="15" height="40" fill="#abbd81">
+                <animate attributeName="y" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="20.999999999999996;30;30" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
+                <animate attributeName="height" repeatCount="indefinite" dur="1s" calcMode="spline" keyTimes="0;0.5;1" values="58.00000000000001;40;40" keySplines="0 0.5 0.5 1;0 0.5 0.5 1"></animate>
+            </rect>
+        </svg>
 
-            <div class="mb-4 bold text-2xl text-center">
-                الرجاء الإنتظار
-            </div>
+        <div class="mb-4 bold text-2xl text-center">
+            الرجاء الإنتظار
         </div>
     </div>
+</div>
 </div>
 
 @section('scripts')

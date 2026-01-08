@@ -49,7 +49,7 @@ class CommissionReport extends Component
         '10074' =>	'area_manager',
         '10078' =>	'area_manager',
         '10058' =>	'mat_dev_manager2',
-        '10088' =>	'area_manager',
+        '10059' =>	'area_manager',
         '10036' =>	'store_manager',
         '10262' =>	'store_manager',
         '10268' =>	'store_manager',
@@ -64,9 +64,9 @@ class CommissionReport extends Component
         '10042' =>	'store_manager',
         '10159' =>	'mat_dev_manager1',
         '10261' =>	'mat_dev_manager1',
-        '10295' =>	'mat_dev_manager2',
+        // '10295' =>	'mat_dev_manager2',
         '10182' =>	'mat_dev_manager1',
-        '10059' =>	'mat_dev_manager1',
+//        '10059' =>	'area_manager',
         '10279' =>	'mat_dev_manager1',
         '10068' =>	'mat_dev_manager1',
         '10190' =>	'mat_dev_manager1',
@@ -76,15 +76,27 @@ class CommissionReport extends Component
         '10266' =>	'mat_dev_manager1',
         '10232' =>	'mat_dev_manager2',
         '10272' =>	'mat_dev_manager2',
-        '10261' =>	'mat_dev_manager2',
+//        '10261' =>	'mat_dev_manager2',
         '10083' =>	'mat_dev_manager2',
         '10300' =>	'mat_dev_manager2',
         '10239' =>	'mat_dev_manager1',
-        '10299' =>	'mat_dev_manager2',
+        '10299' =>	'mat_dev_manager1',
         '10276' =>	'store_manager',
         '10297' =>	'store_manager',
-        '10312' =>	'store_manager',
+//        '10312' =>	'store_manager',
         '10309' =>	'store_manager',
+        '10330' =>	'store_manager',
+        '10328' =>	'store_manager',
+        '10340' =>	'mat_dev_manager2',
+        '10339' =>	'mat_dev_manager2',
+        '10342' =>	'area_manager',
+//        '10348' =>	'store_manager',
+        '10348' =>	'mat_dev_manager2',
+        '10346' =>	'mat_dev_manager2',
+        '10353' =>  'mat_dev_manager2',
+        '10349' => 'mat_dev_manager1',
+        '10347' => 'mat_dev_manager1',
+        ''=>'mat_dev_manager2'
     ];
     public $position_commission = [
         "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
@@ -102,6 +114,7 @@ class CommissionReport extends Component
     public $slp_balance = [];
     public $branch_balance = 0;
     public $profitAndLoss = 0;
+    public $commission_days = 180;
 
     protected $rules = [
         'area_id' => 'required|not_in:-1',
@@ -265,7 +278,7 @@ END as "BranchCode" FROM (
 
 SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
@@ -306,20 +319,47 @@ Group By T1."BPLId", T0."Warehouse"
 
 
             $sql2 = 'SELECT * FROM (
-Select "BranchCode" AS "BPLId","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName", SUM("NetSalesAmountLC") AS "NetSalesAmountLC", SUM("GrossProfitLC") AS "GrossProfitLC"
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-AND "DocumentTypeCode" != \'17\'
-AND "DocumentTypeCode" != \'15\'
-GROUP BY
-"BranchCode","SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
+    SELECT
+        "BranchCode" AS "BPLId",
+        CR."SlpCode" AS "SalesEmployeeCode",
+        OS."SlpName" AS "SalesEmployeeName",
+        SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+        SUM("GrossProfitLC") AS "GrossProfitLC"
+    FROM (
+        SELECT * FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+        WHERE "BusinessPartnerCode" != 0000001
+    ) SA
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD CR ON SA."BusinessPartnerCode" = CR."CardCode"
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON CR."SlpCode" = OS."SlpCode"
+    WHERE SA."DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+        AND SA."DocumentTypeCode" NOT IN (\'15\', \'17\')
+        AND (
+            SELECT TABL0."DocNum"
+            FROM AL_YASEEN_AGRI_PLIVE.ODPI TABL0
+            INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TABL1 ON TABL0."DocEntry" = TABL1."DocEntry"
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TABL2
+                ON TABL2."BaseEntry" = TABL1."DocEntry"
+                AND TABL2."BaseLine" = TABL1."LineNum"
+                AND TABL2."BaseType" = 203
+            LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TABL3
+                ON TABL2."DocEntry" = TABL3."DocEntry"
+            WHERE TABL3."DocNum" = SA."DocumentNumber"
+                AND TABL2."BaseType" = 203
+            GROUP BY TABL0."DocNum"
+        ) IS NULL
+    GROUP BY
+        "BranchCode",
+        CR."SlpCode",
+        OS."SlpName"
 ) tbl1
 
 FULL OUTER JOIN (
 
-SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121+") as "Balance", SUM("121+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
+--SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+") as "Balance", SUM("211+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
+SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121+") as "Balance", SUM("180+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) "121+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
+--SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121-210",0) as "121-210", IFNULL("211+",0) "211+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121-210",0)+IFNULL("211+",0)) as "Balance Due", "OldestInvoice",
+SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) as "121+", IFNULL("180+",0) as "180+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
 CASE
 	WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
 	WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
@@ -336,9 +376,10 @@ CASE
 	ELSE \'0001\'
 END as "BranchCode" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+--SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 AND "days" <= 210 THEN "AgingBalanceDueLC" END) as "121-210", SUM(CASE WHEN "days" >=211 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "211+" FROM (
+SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN /*"days" >=0 AND*/ "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 /*OR "days" < 0*/ THEN "AgingBalanceDueLC" END) as "121+", SUM(CASE WHEN "days" >=181 THEN "AgingBalanceDueLC" END) as "180+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
@@ -348,7 +389,7 @@ GROUP BY "BusinessPartnerCode", "BusinessPartnerName"
 
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON AG."BusinessPartnerCode" = OC."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
-WHERE OC."validFor" = \'Y\'
+--WHERE OC."validFor" = \'Y\'
 
 ORDER BY "BusinessPartnerCode"
 
@@ -356,7 +397,7 @@ ORDER BY "BusinessPartnerCode"
 
 GROUP BY "SlpCode", "OldSlpCode", "SlpName", "BranchCode"
 
-) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeOrBuyerNumber"
+) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeCode"
 
 WHERE "BPLId" = '.$this->area_id.'
 AND "BPLId" IS NOT NULL';
@@ -415,7 +456,7 @@ AND "BPLId" IS NOT NULL';
                 // }
             }
 
-
+dd($sql2);
             $result2 = odbc_exec($conn, $sql2);
             if (!$result2)
             {
@@ -431,9 +472,13 @@ AND "BPLId" IS NOT NULL';
 //                $this->sap_results
                 while ($row = odbc_fetch_array($result2)) {
                     array_push($this->sap_results2, $row);
-                    array_push($this->slp_code, $row["SlpCode"]);
-                }
 
+
+//                    array_push($this->slp_code, $row["SlpCode"]); // issue
+
+                    array_push($this->slp_code, $row["SalesEmployeeCode"]);
+                }
+//dd($this->slp_code);
 //                dd($this->sap_results2);
 
                 $gross_collect = collect($this->sap_results2);

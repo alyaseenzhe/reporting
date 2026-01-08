@@ -1,5 +1,5 @@
 @section('title')
-    حاسبة التوزيع
+    13- حاسبة التوزيع
 @stop
 @section('title-btn')
 
@@ -190,128 +190,128 @@
                                 <div class="text-xs">المحسوب</div>
                             </th>
                         </tr>
+                        @php
+                            $ahsa_total = 0;
+                            $jeddah_total = 0;
+                            $riyadh_total = 0;
+                            $wadi_total = 0;
+                            $jouf_total = 0;
+                            $dammam_total = 0;
+                            $kharaj_total = 0;
+                            $najran_total = 0;
+                            $hail_total = 0;
+                            $tabouk_total = 0;
+                            $qaseem_total = 0;
+                            $sajer_total = 0;
+                            $target_grandtotal = 0;
+                        @endphp
+
+                        @foreach($period as $month_title)
                             @php
-                                $ahsa_total = 0;
-                                $jeddah_total = 0;
-                                $riyadh_total = 0;
-                                $wadi_total = 0;
-                                $jouf_total = 0;
-                                $dammam_total = 0;
-                                $kharaj_total = 0;
-                                $najran_total = 0;
-                                $hail_total = 0;
-                                $tabouk_total = 0;
-                                $qaseem_total = 0;
-                                $sajer_total = 0;
-                                $target_grandtotal = 0;
+                                $month_label = $month_title->format('n') . "-" . $month_title->format('Y');
+                                $ahsa_txt = "target_".$month_label."_3";
+                                $jeddah_txt = "target_".$month_label."_10";
+                                $riyadh_txt = "target_".$month_label."_7";
+                                $wadi_txt = "target_".$month_label."_13";
+                                $jouf_txt = "target_".$month_label."_4";
+                                $dammam_txt = "target_".$month_label."_6";
+                                $kharaj_txt = "target_".$month_label."_5";
+                                $najran_txt = "target_".$month_label."_12";
+                                $hail_txt = "target_".$month_label."_11";
+                                $tabouk_txt = "target_".$month_label."_9";
+                                $qaseem_txt = "target_".$month_label."_8";
+                                $sajer_txt = "target_".$month_label."_505";
+                                $month_total = 0;
+
+                                $ahsa_txt_id = "target_3_".$month_label;
+                                $jeddah_txt_id = "target_10_".$month_label;
+                                $riyadh_txt_id = "target_7_".$month_label;
+                                $wadi_txt_id = "target_13_".$month_label;
+                                $jouf_txt_id = "target_4_".$month_label;
+                                $dammam_txt_id = "target_6_".$month_label;
+                                $kharaj_txt_id = "target_5_".$month_label;
+                                $najran_txt_id = "target_12_".$month_label;
+                                $hail_txt_id = "target_11_".$month_label;
+                                $tabouk_txt_id = "target_9_".$month_label;
+                                $qaseem_txt_id = "target_8_".$month_label;
+                                $sajer_txt_id = "target_505_".$month_label;
                             @endphp
-
-                            @foreach($period as $month_title)
-                                @php
-                                    $month_label = $month_title->format('n') . "-" . $month_title->format('Y');
-                                    $ahsa_txt = "target_".$month_label."_3";
-                                    $jeddah_txt = "target_".$month_label."_10";
-                                    $riyadh_txt = "target_".$month_label."_7";
-                                    $wadi_txt = "target_".$month_label."_13";
-                                    $jouf_txt = "target_".$month_label."_4";
-                                    $dammam_txt = "target_".$month_label."_6";
-                                    $kharaj_txt = "target_".$month_label."_5";
-                                    $najran_txt = "target_".$month_label."_12";
-                                    $hail_txt = "target_".$month_label."_11";
-                                    $tabouk_txt = "target_".$month_label."_9";
-                                    $qaseem_txt = "target_".$month_label."_8";
-                                    $sajer_txt = "target_".$month_label."_505";
-                                    $month_total = 0;
-
-                                    $ahsa_txt_id = "target_3_".$month_label;
-                                    $jeddah_txt_id = "target_10_".$month_label;
-                                    $riyadh_txt_id = "target_7_".$month_label;
-                                    $wadi_txt_id = "target_13_".$month_label;
-                                    $jouf_txt_id = "target_4_".$month_label;
-                                    $dammam_txt_id = "target_6_".$month_label;
-                                    $kharaj_txt_id = "target_5_".$month_label;
-                                    $najran_txt_id = "target_12_".$month_label;
-                                    $hail_txt_id = "target_11_".$month_label;
-                                    $tabouk_txt_id = "target_9_".$month_label;
-                                    $qaseem_txt_id = "target_8_".$month_label;
-                                    $sajer_txt_id = "target_505_".$month_label;
-                                @endphp
-                                <tr>
-                                    <th style="background-color: #8fbc8f; border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div class="text-sm">{{ $month_label }}</div>
-                                    </th>
-                                    <th style="background-color: #89c4898f; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="month_percent_{{$month_label}}" contenteditable="true" class="text-sm">100</div>
-                                    </th>
-                                    <th id="date_div_3_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $ahsa_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$ahsa_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$ahsa_txt); @endphp
-                                        @php $ahsa_total = $ahsa_total + intval($record->$ahsa_txt); @endphp
-                                    </th>
-                                    <th id="date_div_10_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $jeddah_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$jeddah_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$jeddah_txt); @endphp
-                                        @php $jeddah_total = $jeddah_total + intval($record->$jeddah_txt); @endphp
-                                    </th>
-                                    <th id="date_div_7_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $riyadh_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$riyadh_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$riyadh_txt); @endphp
-                                        @php $riyadh_total = $riyadh_total + intval($record->$riyadh_txt); @endphp
-                                    </th>
-                                    <th id="date_div_13_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $wadi_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$wadi_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$wadi_txt); @endphp
-                                        @php $wadi_total = $wadi_total + intval($record->$wadi_txt); @endphp
-                                    </th>
-                                    <th id="date_div_4_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $jouf_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$jouf_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$jouf_txt); @endphp
-                                        @php $jouf_total = $jouf_total + intval($record->$jouf_txt); @endphp
-                                    </th>
-                                    <th id="date_div_6_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $dammam_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$dammam_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$dammam_txt); @endphp
-                                        @php $dammam_total = $dammam_total + intval($record->$dammam_txt); @endphp
-                                    </th>
-                                    <th id="date_div_5_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $kharaj_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$kharaj_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$kharaj_txt); @endphp
-                                        @php $kharaj_total = $kharaj_total + intval($record->$kharaj_txt); @endphp
-                                    </th>
-                                    <th id="date_div_12_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $najran_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$najran_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$najran_txt); @endphp
-                                        @php $najran_total = $najran_total + intval($record->$najran_txt); @endphp
-                                    </th>
-                                    <th id="date_div_11_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $hail_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$hail_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$hail_txt); @endphp
-                                        @php $hail_total = $hail_total + intval($record->$hail_txt); @endphp
-                                    </th>
-                                    <th id="date_div_9_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $tabouk_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$tabouk_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$tabouk_txt); @endphp
-                                        @php $tabouk_total = $tabouk_total + intval($record->$tabouk_txt); @endphp
-                                    </th>
-                                    <th id="date_div_8_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $qaseem_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$qaseem_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$qaseem_txt); @endphp
-                                        @php $qaseem_total = $qaseem_total + intval($record->$qaseem_txt); @endphp
-                                    </th>
-                                    <th id="date_div_505_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
-                                        <div id="{{ $sajer_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$sajer_txt }}</div>
-                                        @php $month_total = $month_total + intval($record->$sajer_txt); @endphp
-                                        @php $sajer_total = $sajer_total + intval($record->$sajer_txt); @endphp
-                                    </th>
-                                    <th style="background-color: #8fbcbc7d; border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div id="total_date_{{ $month_label }}" class="text-sm">{{ $month_total }}</div>
-                                    </th>
-                                    <th style="background-color: #8fbcbc45; border: 2px solid black; z-index: 10" class="border p-2">
-                                        <div id="counted_total_date_{{ $month_label }}" class="text-sm">{{ $month_total }}</div>
-                                    </th>
-                                </tr>
-                                @php $target_grandtotal += intval($month_total); @endphp
-                            @endforeach
+                            <tr>
+                                <th style="background-color: #8fbc8f; border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div class="text-sm">{{ $month_label }}</div>
+                                </th>
+                                <th style="background-color: #89c4898f; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="month_percent_{{$month_label}}" contenteditable="true" class="text-sm">100</div>
+                                </th>
+                                <th id="date_div_3_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $ahsa_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$ahsa_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$ahsa_txt); @endphp
+                                    @php $ahsa_total = $ahsa_total + intval($record->$ahsa_txt); @endphp
+                                </th>
+                                <th id="date_div_10_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $jeddah_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$jeddah_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$jeddah_txt); @endphp
+                                    @php $jeddah_total = $jeddah_total + intval($record->$jeddah_txt); @endphp
+                                </th>
+                                <th id="date_div_7_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $riyadh_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$riyadh_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$riyadh_txt); @endphp
+                                    @php $riyadh_total = $riyadh_total + intval($record->$riyadh_txt); @endphp
+                                </th>
+                                <th id="date_div_13_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $wadi_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$wadi_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$wadi_txt); @endphp
+                                    @php $wadi_total = $wadi_total + intval($record->$wadi_txt); @endphp
+                                </th>
+                                <th id="date_div_4_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $jouf_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$jouf_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$jouf_txt); @endphp
+                                    @php $jouf_total = $jouf_total + intval($record->$jouf_txt); @endphp
+                                </th>
+                                <th id="date_div_6_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $dammam_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$dammam_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$dammam_txt); @endphp
+                                    @php $dammam_total = $dammam_total + intval($record->$dammam_txt); @endphp
+                                </th>
+                                <th id="date_div_5_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $kharaj_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$kharaj_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$kharaj_txt); @endphp
+                                    @php $kharaj_total = $kharaj_total + intval($record->$kharaj_txt); @endphp
+                                </th>
+                                <th id="date_div_12_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $najran_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$najran_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$najran_txt); @endphp
+                                    @php $najran_total = $najran_total + intval($record->$najran_txt); @endphp
+                                </th>
+                                <th id="date_div_11_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $hail_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$hail_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$hail_txt); @endphp
+                                    @php $hail_total = $hail_total + intval($record->$hail_txt); @endphp
+                                </th>
+                                <th id="date_div_9_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $tabouk_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$tabouk_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$tabouk_txt); @endphp
+                                    @php $tabouk_total = $tabouk_total + intval($record->$tabouk_txt); @endphp
+                                </th>
+                                <th id="date_div_8_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $qaseem_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$qaseem_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$qaseem_txt); @endphp
+                                    @php $qaseem_total = $qaseem_total + intval($record->$qaseem_txt); @endphp
+                                </th>
+                                <th id="date_div_505_{{$month_label}}" style="background-color: #63b96338; border: 1px solid black; z-index: 10" class="border p-2">
+                                    <div id="{{ $sajer_txt_id }}" class="text-sm" contenteditable="true">{{ $record->$sajer_txt }}</div>
+                                    @php $month_total = $month_total + intval($record->$sajer_txt); @endphp
+                                    @php $sajer_total = $sajer_total + intval($record->$sajer_txt); @endphp
+                                </th>
+                                <th style="background-color: #8fbcbc7d; border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div id="total_date_{{ $month_label }}" class="text-sm">{{ $month_total }}</div>
+                                </th>
+                                <th style="background-color: #8fbcbc45; border: 2px solid black; z-index: 10" class="border p-2">
+                                    <div id="counted_total_date_{{ $month_label }}" class="text-sm">{{ $month_total }}</div>
+                                </th>
+                            </tr>
+                            @php $target_grandtotal += intval($month_total); @endphp
+                        @endforeach
                         <tr>
                             <th colspan="2" style="background-color: #eeeeee; border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-xs">مجموع المستهدف</div>

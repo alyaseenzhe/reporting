@@ -1,5 +1,5 @@
 @section('title')
-    فواتير عميل
+    10- فواتير عميل
 @stop
 <div>
     <div class="mb-4">
@@ -33,7 +33,7 @@
                     <label class="block font-bold mb-2">تاريخ البداية
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="start_date" type="date" name="start_date" wire:model="start_date"
+                    <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('start_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
@@ -42,26 +42,26 @@
                     <label class="block font-bold mb-2">تاريخ النهاية
                         <span class="text-red-500">*</span>
                     </label>
-                    <input id="end_date" type="date" name="end_date" wire:model="end_date"
+                    <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
                     @error('end_date') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
-{{--                <div wire:ignore class="w-full">--}}
-{{--                    <label class="block font-bold mb-2">رقم العميل--}}
-{{--                        <span class="text-red-500">*</span>--}}
-{{--                    </label>--}}
-{{--                    <input id="customer_code" type="text" name="customer_code" wire:model="customer_code"--}}
-{{--                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
-{{--                           style="@error('item_id') border: solid 1px #fda4af; @enderror">--}}
-{{--                    @error('customer_code') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
-{{--                </div>--}}
+                {{--                <div wire:ignore class="w-full">--}}
+                {{--                    <label class="block font-bold mb-2">رقم العميل--}}
+                {{--                        <span class="text-red-500">*</span>--}}
+                {{--                    </label>--}}
+                {{--                    <input id="customer_code" type="text" name="customer_code" wire:model="customer_code"--}}
+                {{--                           class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+                {{--                           style="@error('item_id') border: solid 1px #fda4af; @enderror">--}}
+                {{--                    @error('customer_code') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror--}}
+                {{--                </div>--}}
                 <div class="w-full">
                     <label class="block font-bold mb-2">رقم العميل
                         <span class="text-red-500">*</span>
                     </label>
                     <div wire:ignore>
-                        <select id="customer_code" name="customer_code" wire:model="customer_code"
+                        <select id="customer_code" name="customer_code"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('customer_type') border: solid 1px #fda4af; @enderror">
                             @foreach($customer_list as $customer)
@@ -98,7 +98,27 @@
                         <div class="text-sm">#</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+
+                        <div class="text-sm">رقم الفاتورة</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">تاريخ الفاتورة</div>
+                    </th>
+                    <th colspan="3" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">قيمة الفاتورة</div>
+                    </th>
+                </tr>
+                <tr style="border: 2px solid black;">
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <div class="text-sm">#</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+
                         <div class="text-sm">اسم الصنف</div>
+                    </th>
+                    <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+
+                        <div class="text-sm">الوحدة</div>
                     </th>
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                         <div class="text-sm">كمية</div>
@@ -116,139 +136,142 @@
                 @foreach($results as $record)
 
                     @if($record['VoucherNo'] != $voucher_no)
-{{--                        <tr>--}}
-{{--                            <td class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['Name']}}--}}
-{{--                            </td>--}}
-{{--                            <td class="border p-2 whitespace-nowrap">--}}
-{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الاحساء--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    جدة--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الرياض--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    وادي الدواسر--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الجوف--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الدمام--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الخرج--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    نجران--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    حائل--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    تبوك--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    القصيم--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
-{{--                                    ساجر--}}
-{{--                                @endif--}}
-{{--                            </td>--}}
-{{--                            <td class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['VoucherNo']}}--}}
-{{--                            </td>--}}
-{{--                            <td class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['VoucherDate']}}--}}
-{{--                            </td>--}}
-{{--                            <td class="border p-2">--}}
-{{--                                {{ number_format($record['Value'], 2) }}--}}
-{{--                                @php $total += floatval($record['Value']); @endphp--}}
-{{--                            </td>--}}
-{{--                            <td class="border p-2">--}}
-{{--                                {{$record['emp_name']}}--}}
-{{--                            </td>--}}
-{{--                        </tr>--}}
+                        {{--                        <tr>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['Name']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الاحساء--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    جدة--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الرياض--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    وادي الدواسر--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الجوف--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الدمام--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    الخرج--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    نجران--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    حائل--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    تبوك--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+                        {{--                                    القصيم--}}
+                        {{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+                        {{--                                    ساجر--}}
+                        {{--                                @endif--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['VoucherNo']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2 whitespace-nowrap">--}}
+                        {{--                                {{$record['VoucherDate']}}--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2">--}}
+                        {{--                                {{ number_format($record['Value'], 2) }}--}}
+                        {{--                                @php $total += floatval($record['Value']); @endphp--}}
+                        {{--                            </td>--}}
+                        {{--                            <td class="border p-2">--}}
+                        {{--                                {{$record['emp_name']}}--}}
+                        {{--                            </td>--}}
+                        {{--                        </tr>--}}
 
-                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>
-{{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div class="flex flex-row justify-between">--}}
-{{--                                    <div>العميل--}}
-{{--                                    </div>--}}
-{{--                                    <div>الفرع--}}
-{{--                                    </div>--}}
-{{--                                    <div>رقم الفاتورة--}}
-{{--                                    </div>--}}
-{{--                                    <div>تاريخ الفاتورة--}}
-{{--                                    </div>--}}
-{{--                                    <div>قيمة الفاتورة--}}
-{{--                                    </div>--}}
-{{--                                    <div>اسم المهندس--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
+                        {{--                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">--}}
+                        {{--                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>--}}
+                        {{--                            --}}{{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div class="flex flex-row justify-between">--}}
+                        {{--                            --}}{{--                                    <div>العميل--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>الفرع--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>رقم الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>تاريخ الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>قيمة الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>اسم المهندس--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                </div>--}}
 
-{{--                            --}}{{--                                            مجموع جزئي للصنف--}}
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>العميل--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>الفرع--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>رقم الفاتورة
-                                </div>
-                            </td>
-                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>تاريخ الفاتورة
-                                </div>
-                            </td>
-                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>قيمة الفاتورة
-                                </div>
-                            </td>
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>اسم المهندس--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-                        </tr>
+                        {{--                            --}}{{--                            --}}{{----}}{{--                                            مجموع جزئي للصنف--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>العميل--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>الفرع--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>رقم الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>تاريخ الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>قيمة الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>اسم المهندس--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                        </tr>--}}
                         <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['Name']}}--}}
-{{--                            </td>--}}
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الاحساء--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    جدة--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الرياض--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    وادي الدواسر--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الجوف--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الدمام--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الخرج--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    نجران--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    حائل--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    تبوك--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    القصيم--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
-{{--                                    ساجر--}}
-{{--                                @endif--}}
-{{--                            </td>--}}
-                            <td colspan="2" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record['Name']}}--}}
+                            {{--                            </td>--}}
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الاحساء--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    جدة--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الرياض--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    وادي الدواسر--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الجوف--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الدمام--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الخرج--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    نجران--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    حائل--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    تبوك--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    القصيم--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+                            {{--                                    ساجر--}}
+                            {{--                                @endif--}}
+                            {{--                            </td>--}}
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                +
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{$record['VoucherNo']}}
                             </td>
                             <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ \Carbon\Carbon::parse($record['VoucherDate'])->format('Y-m-d') }}
                             </td>
-                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            <td colspan="3" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ number_format($record['Value'], 2) }}
                             </td>
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['emp_name']}}--}}
-{{--                            </td>--}}
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record['emp_name']}}--}}
+                            {{--                            </td>--}}
 
                         </tr>
 
@@ -264,6 +287,9 @@
                         </td>
                         <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
                             {{$record['Arabic_Name']}}
+                        </td>
+                        <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
+                            {{$record['Unit']}}
                         </td>
                         <td style="color: #ff8659;" class="border p-2 whitespace-nowrap">
                             {{ number_format($record['qty'])}}
@@ -327,93 +353,96 @@
                         {{--                            </td>--}}
                         {{--                        </tr>--}}
 
-                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>
-                            {{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-                            {{--                                <div class="flex flex-row justify-between">--}}
-                            {{--                                    <div>العميل--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div>الفرع--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div>رقم الفاتورة--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div>تاريخ الفاتورة--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div>قيمة الفاتورة--}}
-                            {{--                                    </div>--}}
-                            {{--                                    <div>اسم المهندس--}}
-                            {{--                                    </div>--}}
-                            {{--                                </div>--}}
+                        {{--                        <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">--}}
+                        {{--                            <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record['VoucherNo'] }}">+</td>--}}
+                        {{--                            --}}{{--                            <td colspan="5" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div class="flex flex-row justify-between">--}}
+                        {{--                            --}}{{--                                    <div>العميل--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>الفرع--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>رقم الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>تاريخ الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>قيمة الفاتورة--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                    <div>اسم المهندس--}}
+                        {{--                            --}}{{--                                    </div>--}}
+                        {{--                            --}}{{--                                </div>--}}
 
-                            {{--                            --}}{{--                                            مجموع جزئي للصنف--}}
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>العميل--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>الفرع--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>رقم الفاتورة
-                                </div>
-                            </td>
-                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>تاريخ الفاتورة
-                                </div>
-                            </td>
-                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                                <div>قيمة الفاتورة
-                                </div>
-                            </td>
-{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                <div>اسم المهندس--}}
-{{--                                </div>--}}
-{{--                            </td>--}}
-                        </tr>
+                        {{--                            --}}{{--                            --}}{{----}}{{--                                            مجموع جزئي للصنف--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>العميل--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>الفرع--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                            <td colspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>رقم الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>تاريخ الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                                <div>قيمة الفاتورة--}}
+                        {{--                                </div>--}}
+                        {{--                            </td>--}}
+                        {{--                            --}}{{--                            <td style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                        {{--                            --}}{{--                                <div>اسم المهندس--}}
+                        {{--                            --}}{{--                                </div>--}}
+                        {{--                            --}}{{--                            </td>--}}
+                        {{--                        </tr>--}}
                         <tr onclick="show_hide('{{$record["VoucherNo"]}}')" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['Name']}}--}}
-{{--                            </td>--}}
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
-{{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الاحساء--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    جدة--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الرياض--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    وادي الدواسر--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الجوف--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الدمام--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    الخرج--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    نجران--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    حائل--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    تبوك--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
-{{--                                    القصيم--}}
-{{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
-{{--                                    ساجر--}}
-{{--                                @endif--}}
-{{--                            </td>--}}
-                            <td colspan="2" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record['Name']}}--}}
+                            {{--                            </td>--}}
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                @if((substr($record['customer_code'], 0, 2) == "01" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-01") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الاحساء--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "02" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-02") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    جدة--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "03" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-03") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الرياض--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "04" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-04") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    وادي الدواسر--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "05" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-05") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الجوف--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "06" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-06") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الدمام--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "07" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-07") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    الخرج--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "08" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-08") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    نجران--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "09" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-09") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    حائل--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "10" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-10") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    تبوك--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "11" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-11") && strlen($record['customer_code'] ) == 9)--}}
+                            {{--                                    القصيم--}}
+                            {{--                                @elseif((substr($record['customer_code'], 0, 2) == "12" && strlen($record['customer_code'] ) == 7) || (substr($record['customer_code'], 0, 4) == "1-12" && strlen($record['customer_code'] ) == 9))--}}
+                            {{--                                    ساجر--}}
+                            {{--                                @endif--}}
+                            {{--                            </td>--}}
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                                +
+                            </td>
+                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{$record['VoucherNo']}}
                             </td>
                             <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ \Carbon\Carbon::parse($record['VoucherDate'])->format('Y-m-d') }}
                             </td>
-                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
+                            <td colspan="3" style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ number_format($record['Value'], 2) }}
                             </td>
-{{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                {{$record['emp_name']}}--}}
-{{--                            </td>--}}
+                            {{--                            <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                            {{--                                {{$record['emp_name']}}--}}
+                            {{--                            </td>--}}
 
                         </tr>
 
@@ -428,6 +457,9 @@
                         </td>
                         <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
                             {{$record['Arabic_Name']}}
+                        </td>
+                        <td style="color: #a22a2a;" class="border p-2 whitespace-nowrap">
+                            {{$record['Unit']}}
                         </td>
                         <td style="color: #ff8659;" class="border p-2 whitespace-nowrap">
                             {{ number_format($record['qty'])}}
@@ -547,257 +579,257 @@
         }
     </script>
 
-{{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
-{{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
-{{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>--}}
+    {{--    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>--}}
+    {{--    <script src="https://cdn.datatables.net/rowgroup/1.3.1/js/dataTables.rowGroup.min.js"></script>--}}
 
-{{--    <script>--}}
+    {{--    <script>--}}
 
-{{--        // $('#tbl2').DataTable().destroy();--}}
-{{--        // $('#tbl2').empty();--}}
-{{--        // a();--}}
-{{--        // Livewire.on('show-container', () => {--}}
-{{--        //--}}
-{{--        //--}}
-{{--        //     // if ( $.fn.dataTable.isDataTable('#tbl2') ) {--}}
-{{--        //     //     $('#tbl2').DataTable( {--}}
-{{--        //     //         destroy: true,--}}
-{{--        //     //         searching: false--}}
-{{--        //     //     } );--}}
-{{--        //     //     // this.dataTable.destroy();--}}
-{{--        //     //     // this.chRef.detectChanges();--}}
-{{--        //     //     // this.dataTable = $("#tbl2").DataTable();--}}
-{{--        //     //     // $('#tbl2').DataTable().destroy();--}}
-{{--        //     //     // $('#tbl2').empty();--}}
-{{--        //     //--}}
-{{--        //     //     // a();--}}
-{{--        //     //     // const table = new DataTable('#tbl2');--}}
-{{--        //     //     // table.draw();--}}
-{{--        //     //     //--}}
-{{--        //     //     // // $('#tbl2').DataTable().clear().destroy();--}}
-{{--        //     //     // a();--}}
-{{--        //     // }--}}
-{{--        //--}}
-{{--        //     a();--}}
-{{--        //--}}
-{{--        //--}}
-{{--        // });--}}
+    {{--        // $('#tbl2').DataTable().destroy();--}}
+    {{--        // $('#tbl2').empty();--}}
+    {{--        // a();--}}
+    {{--        // Livewire.on('show-container', () => {--}}
+    {{--        //--}}
+    {{--        //--}}
+    {{--        //     // if ( $.fn.dataTable.isDataTable('#tbl2') ) {--}}
+    {{--        //     //     $('#tbl2').DataTable( {--}}
+    {{--        //     //         destroy: true,--}}
+    {{--        //     //         searching: false--}}
+    {{--        //     //     } );--}}
+    {{--        //     //     // this.dataTable.destroy();--}}
+    {{--        //     //     // this.chRef.detectChanges();--}}
+    {{--        //     //     // this.dataTable = $("#tbl2").DataTable();--}}
+    {{--        //     //     // $('#tbl2').DataTable().destroy();--}}
+    {{--        //     //     // $('#tbl2').empty();--}}
+    {{--        //     //--}}
+    {{--        //     //     // a();--}}
+    {{--        //     //     // const table = new DataTable('#tbl2');--}}
+    {{--        //     //     // table.draw();--}}
+    {{--        //     //     //--}}
+    {{--        //     //     // // $('#tbl2').DataTable().clear().destroy();--}}
+    {{--        //     //     // a();--}}
+    {{--        //     // }--}}
+    {{--        //--}}
+    {{--        //     a();--}}
+    {{--        //--}}
+    {{--        //--}}
+    {{--        // });--}}
 
-{{--        function a() {--}}
+    {{--        function a() {--}}
 
-{{--            // if ( $.fn.dataTable.isDataTable('#tbl2') ) {--}}
-{{--            //     $('#tbl2').DataTable().destroy();--}}
-{{--            //     $('#tbl2').empty();--}}
-{{--            // }--}}
+    {{--            // if ( $.fn.dataTable.isDataTable('#tbl2') ) {--}}
+    {{--            //     $('#tbl2').DataTable().destroy();--}}
+    {{--            //     $('#tbl2').empty();--}}
+    {{--            // }--}}
 
-{{--            div = document.getElementById("report-btn");--}}
-{{--            // div_title = document.getElementById("report_title");--}}
-{{--            // // area = document.getElementById("area_id");--}}
-{{--            // start_date = document.getElementById("start_date");--}}
-{{--            // end_date = document.getElementById("end_date");--}}
+    {{--            div = document.getElementById("report-btn");--}}
+    {{--            // div_title = document.getElementById("report_title");--}}
+    {{--            // // area = document.getElementById("area_id");--}}
+    {{--            // start_date = document.getElementById("start_date");--}}
+    {{--            // end_date = document.getElementById("end_date");--}}
 
-{{--            // div.classList.remove("hide");--}}
+    {{--            // div.classList.remove("hide");--}}
 
-{{--            // div_title.innerHTML = "تقرير " + area.options[area.selectedIndex].text + "(" + date.value + ")"--}}
+    {{--            // div_title.innerHTML = "تقرير " + area.options[area.selectedIndex].text + "(" + date.value + ")"--}}
 
-{{--            var collapsedGroups = {};--}}
+    {{--            var collapsedGroups = {};--}}
 
-{{--            // tbl.draw();--}}
+    {{--            // tbl.draw();--}}
 
-{{--            $('#tbl2').DataTable(--}}
-{{--                {--}}
-{{--                    initComplete: function () {--}}
-{{--                        this.api()--}}
-{{--                            .columns(2)--}}
-{{--                            .every(function () {--}}
-{{--                                var column = this;--}}
-{{--                                var select = $('<select><option value=""></option></select>')--}}
-{{--                                    .appendTo($(column.header()).empty())--}}
-{{--                                    .on('change', function () {--}}
-{{--                                        var val = $.fn.dataTable.util.escapeRegex($(this).val());--}}
+    {{--            $('#tbl2').DataTable(--}}
+    {{--                {--}}
+    {{--                    initComplete: function () {--}}
+    {{--                        this.api()--}}
+    {{--                            .columns(2)--}}
+    {{--                            .every(function () {--}}
+    {{--                                var column = this;--}}
+    {{--                                var select = $('<select><option value=""></option></select>')--}}
+    {{--                                    .appendTo($(column.header()).empty())--}}
+    {{--                                    .on('change', function () {--}}
+    {{--                                        var val = $.fn.dataTable.util.escapeRegex($(this).val());--}}
 
-{{--                                        column.search(val ? '^' + val + '$' : '', true, false).draw();--}}
-{{--                                    });--}}
+    {{--                                        column.search(val ? '^' + val + '$' : '', true, false).draw();--}}
+    {{--                                    });--}}
 
-{{--                                column--}}
-{{--                                    .data()--}}
-{{--                                    .unique()--}}
-{{--                                    .sort()--}}
-{{--                                    .each(function (d, j) {--}}
-{{--                                        select.append('<option value="' + d + '">' + d + '</option>');--}}
-{{--                                    });--}}
+    {{--                                column--}}
+    {{--                                    .data()--}}
+    {{--                                    .unique()--}}
+    {{--                                    .sort()--}}
+    {{--                                    .each(function (d, j) {--}}
+    {{--                                        select.append('<option value="' + d + '">' + d + '</option>');--}}
+    {{--                                    });--}}
 
-{{--                                $(column.footer()).empty();--}}
+    {{--                                $(column.footer()).empty();--}}
 
-{{--                            });--}}
-{{--                    },--}}
-{{--                    dom: 'lBfrtip',--}}
-{{--                    retrieve: true,--}}
-{{--                    // "bDestroy": true,--}}
-{{--                    "lengthMenu": [ 100, 200, 300, 400 ],--}}
-{{--                    "pageLength": 300,--}}
-{{--                    "language": {--}}
-{{--                        "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",--}}
-{{--                        "sLoadingRecords": "جارٍ التحميل...",--}}
-{{--                        "sProcessing": "جارٍ التحميل...",--}}
-{{--                        "sLengthMenu": "أظهر _MENU_ مدخلات",--}}
-{{--                        "sZeroRecords": "لم يعثر على أية سجلات",--}}
-{{--                        "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",--}}
-{{--                        "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",--}}
-{{--                        "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",--}}
-{{--                        "sInfoPostFix": "",--}}
-{{--                        "sSearch": "ابحث:",--}}
-{{--                        "sUrl": "",--}}
-{{--                        "oPaginate": {--}}
-{{--                            "sFirst": "الأول",--}}
-{{--                            "sPrevious": "السابق",--}}
-{{--                            "sNext": "التالي",--}}
-{{--                            "sLast": "الأخير"--}}
-{{--                        },--}}
-{{--                        "oAria": {--}}
-{{--                            "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",--}}
-{{--                            "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"--}}
-{{--                        }--}}
-{{--                    },--}}
-{{--                    buttons: [--}}
-{{--                        {extend: 'copy', text: 'نسخ'},--}}
-{{--                        {extend: 'excel', text: 'تصدير إلى اكسل'},--}}
-{{--                    ],--}}
-{{--                    // start of row group section--}}
-{{--                    // paging: false,--}}
-{{--                    order: [--}}
-{{--                        [4, 'asc'], [0, 'asc']--}}
-{{--                    ],--}}
-{{--                    columnDefs: [ { orderable: false, targets: [0, 1] }],--}}
-{{--                    // rowGroup: {--}}
-{{--                    //     startRender: null,--}}
-{{--                    //     endRender: function (rows, group) {--}}
-{{--                    //--}}
-{{--                    //--}}
-{{--                    //         var customer_name = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(3)[0];--}}
-{{--                    //--}}
-{{--                    //         var collected_amount = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(4)--}}
-{{--                    //             .reduce(function (a, b) {--}}
-{{--                    //                 // console.log(b);--}}
-{{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-{{--                    //             }, 0);--}}
-{{--                    //--}}
-{{--                    //         var cash_sales = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(5)--}}
-{{--                    //             .reduce(function (a, b) {--}}
-{{--                    //                 // console.log(b);--}}
-{{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-{{--                    //             }, 0);--}}
-{{--                    //--}}
-{{--                    //         var postponed_sales = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(6)--}}
-{{--                    //             .reduce(function (a, b) {--}}
-{{--                    //                 // console.log(b);--}}
-{{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-{{--                    //             }, 0);--}}
-{{--                    //--}}
-{{--                    //--}}
-{{--                    //         var postponed_total = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(7)--}}
-{{--                    //             .reduce(function (a, b) {--}}
-{{--                    //                 // console.log(b);--}}
-{{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-{{--                    //             }, 0);--}}
-{{--                    //--}}
-{{--                    //         var dueAmount = rows--}}
-{{--                    //             .data()--}}
-{{--                    //             .pluck(8)--}}
-{{--                    //             .reduce(function (a, b) {--}}
-{{--                    //                 // console.log(b);--}}
-{{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
-{{--                    //             }, 0);--}}
-{{--                    //--}}
-{{--                    //         // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );--}}
-{{--                    //--}}
-{{--                    //         // var ageAvg = rows--}}
-{{--                    //         //     .data()--}}
-{{--                    //         //     .pluck(3)--}}
-{{--                    //         //     .reduce( function (a, b) {--}}
-{{--                    //         //         return a + b*1;--}}
-{{--                    //         //     }, 0) / rows.count();--}}
-{{--                    //--}}
-{{--                    //         return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')--}}
-{{--                    //             .append('<td style="border: 1px solid;" colspan="4">المجموع لـ '+ group + '</td>')--}}
-{{--                    //             .append('<td style="border: 1px solid;" >' + collected_amount.toLocaleString("en-US") + '</td>')--}}
-{{--                    //             .append('<td style="border: 1px solid;" >' + cash_sales.toLocaleString("en-US") + '</td>')--}}
-{{--                    //             .append('<td style="border: 1px solid;" >' + postponed_sales.toLocaleString("en-US") + '</td>')--}}
-{{--                    //             .append('<td style="border: 1px solid;" >' + postponed_total.toLocaleString("en-US") + '</td>')--}}
-{{--                    //             .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>');--}}
-{{--                    //     },--}}
-{{--                    //     dataSrc: [2, 3]--}}
-{{--                    // }--}}
-{{--                });--}}
-
-
-{{--            const table = new DataTable('#tbl2');--}}
-{{--            table.draw();--}}
+    {{--                            });--}}
+    {{--                    },--}}
+    {{--                    dom: 'lBfrtip',--}}
+    {{--                    retrieve: true,--}}
+    {{--                    // "bDestroy": true,--}}
+    {{--                    "lengthMenu": [ 100, 200, 300, 400 ],--}}
+    {{--                    "pageLength": 300,--}}
+    {{--                    "language": {--}}
+    {{--                        "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",--}}
+    {{--                        "sLoadingRecords": "جارٍ التحميل...",--}}
+    {{--                        "sProcessing": "جارٍ التحميل...",--}}
+    {{--                        "sLengthMenu": "أظهر _MENU_ مدخلات",--}}
+    {{--                        "sZeroRecords": "لم يعثر على أية سجلات",--}}
+    {{--                        "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",--}}
+    {{--                        "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",--}}
+    {{--                        "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",--}}
+    {{--                        "sInfoPostFix": "",--}}
+    {{--                        "sSearch": "ابحث:",--}}
+    {{--                        "sUrl": "",--}}
+    {{--                        "oPaginate": {--}}
+    {{--                            "sFirst": "الأول",--}}
+    {{--                            "sPrevious": "السابق",--}}
+    {{--                            "sNext": "التالي",--}}
+    {{--                            "sLast": "الأخير"--}}
+    {{--                        },--}}
+    {{--                        "oAria": {--}}
+    {{--                            "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",--}}
+    {{--                            "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"--}}
+    {{--                        }--}}
+    {{--                    },--}}
+    {{--                    buttons: [--}}
+    {{--                        {extend: 'copy', text: 'نسخ'},--}}
+    {{--                        {extend: 'excel', text: 'تصدير إلى اكسل'},--}}
+    {{--                    ],--}}
+    {{--                    // start of row group section--}}
+    {{--                    // paging: false,--}}
+    {{--                    order: [--}}
+    {{--                        [4, 'asc'], [0, 'asc']--}}
+    {{--                    ],--}}
+    {{--                    columnDefs: [ { orderable: false, targets: [0, 1] }],--}}
+    {{--                    // rowGroup: {--}}
+    {{--                    //     startRender: null,--}}
+    {{--                    //     endRender: function (rows, group) {--}}
+    {{--                    //--}}
+    {{--                    //--}}
+    {{--                    //         var customer_name = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(3)[0];--}}
+    {{--                    //--}}
+    {{--                    //         var collected_amount = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(4)--}}
+    {{--                    //             .reduce(function (a, b) {--}}
+    {{--                    //                 // console.log(b);--}}
+    {{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
+    {{--                    //             }, 0);--}}
+    {{--                    //--}}
+    {{--                    //         var cash_sales = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(5)--}}
+    {{--                    //             .reduce(function (a, b) {--}}
+    {{--                    //                 // console.log(b);--}}
+    {{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
+    {{--                    //             }, 0);--}}
+    {{--                    //--}}
+    {{--                    //         var postponed_sales = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(6)--}}
+    {{--                    //             .reduce(function (a, b) {--}}
+    {{--                    //                 // console.log(b);--}}
+    {{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
+    {{--                    //             }, 0);--}}
+    {{--                    //--}}
+    {{--                    //--}}
+    {{--                    //         var postponed_total = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(7)--}}
+    {{--                    //             .reduce(function (a, b) {--}}
+    {{--                    //                 // console.log(b);--}}
+    {{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
+    {{--                    //             }, 0);--}}
+    {{--                    //--}}
+    {{--                    //         var dueAmount = rows--}}
+    {{--                    //             .data()--}}
+    {{--                    //             .pluck(8)--}}
+    {{--                    //             .reduce(function (a, b) {--}}
+    {{--                    //                 // console.log(b);--}}
+    {{--                    //                 return a + parseFloat(b.replace(/\,/g,'')) * 1;--}}
+    {{--                    //             }, 0);--}}
+    {{--                    //--}}
+    {{--                    //         // dueAmount = $.fn.dataTable.render.number(',', '.', 0, '$').display( dueAmount );--}}
+    {{--                    //--}}
+    {{--                    //         // var ageAvg = rows--}}
+    {{--                    //         //     .data()--}}
+    {{--                    //         //     .pluck(3)--}}
+    {{--                    //         //     .reduce( function (a, b) {--}}
+    {{--                    //         //         return a + b*1;--}}
+    {{--                    //         //     }, 0) / rows.count();--}}
+    {{--                    //--}}
+    {{--                    //         return $('<tr style="background-color: #f2f0f0; font-weight: bold; color: #233881;" />')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" colspan="4">المجموع لـ '+ group + '</td>')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" >' + collected_amount.toLocaleString("en-US") + '</td>')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" >' + cash_sales.toLocaleString("en-US") + '</td>')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" >' + postponed_sales.toLocaleString("en-US") + '</td>')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" >' + postponed_total.toLocaleString("en-US") + '</td>')--}}
+    {{--                    //             .append('<td style="border: 1px solid;" >' + dueAmount.toLocaleString("en-US") + '</td>');--}}
+    {{--                    //     },--}}
+    {{--                    //     dataSrc: [2, 3]--}}
+    {{--                    // }--}}
+    {{--                });--}}
 
 
-
-{{--            // filtering--}}
-{{--            // const report_typeEl = document.querySelector('#report_type');--}}
-{{--            // report_typeEl.selectedIndex = 0;--}}
-{{--            //--}}
-{{--            //--}}
-{{--            // if (report_typeEl.value == "show") {--}}
-{{--            //     // Custom range filtering function--}}
-{{--            //     DataTable.ext.search.push(function (settings, data, dataIndex) {--}}
-{{--            //         let reportType = data[9]; // use data for the status column--}}
-{{--            //         // console.log(reportType);--}}
-{{--            //         // console.log(report_typeEl.value);--}}
-{{--            //         if (report_typeEl.value == reportType) {--}}
-{{--            //             return true--}}
-{{--            //         }--}}
-{{--            //--}}
-{{--            //         return false;--}}
-{{--            //     });--}}
-{{--            //--}}
-{{--            // }--}}
-{{--            // else {--}}
-{{--            //     DataTable.ext.search.pop();--}}
-{{--            // }--}}
-{{--            //--}}
-{{--            // const table = new DataTable('#tbl2');--}}
-{{--            // table.draw();--}}
-
-{{--// Changes to the inputs will trigger a redraw to update the table--}}
-{{--//             report_typeEl.addEventListener('change', function () {--}}
-{{--//                 if (report_typeEl.value == "show") {--}}
-{{--//                     // Custom range filtering function--}}
-{{--//                     DataTable.ext.search.push(function (settings, data, dataIndex) {--}}
-{{--//                         let reportType = data[9]; // use data for the status column--}}
-{{--//--}}
-{{--//                         if (report_typeEl.value == reportType) {--}}
-{{--//                             return true--}}
-{{--//                         }--}}
-{{--//--}}
-{{--//                         return false;--}}
-{{--//                     });--}}
-{{--//                 }--}}
-{{--//                 else {--}}
-{{--//                     DataTable.ext.search.pop();--}}
-{{--//                 }--}}
-{{--//                 table.draw();--}}
-{{--//             });--}}
-{{--        }--}}
+    {{--            const table = new DataTable('#tbl2');--}}
+    {{--            table.draw();--}}
 
 
 
-{{--    </script>--}}
+    {{--            // filtering--}}
+    {{--            // const report_typeEl = document.querySelector('#report_type');--}}
+    {{--            // report_typeEl.selectedIndex = 0;--}}
+    {{--            //--}}
+    {{--            //--}}
+    {{--            // if (report_typeEl.value == "show") {--}}
+    {{--            //     // Custom range filtering function--}}
+    {{--            //     DataTable.ext.search.push(function (settings, data, dataIndex) {--}}
+    {{--            //         let reportType = data[9]; // use data for the status column--}}
+    {{--            //         // console.log(reportType);--}}
+    {{--            //         // console.log(report_typeEl.value);--}}
+    {{--            //         if (report_typeEl.value == reportType) {--}}
+    {{--            //             return true--}}
+    {{--            //         }--}}
+    {{--            //--}}
+    {{--            //         return false;--}}
+    {{--            //     });--}}
+    {{--            //--}}
+    {{--            // }--}}
+    {{--            // else {--}}
+    {{--            //     DataTable.ext.search.pop();--}}
+    {{--            // }--}}
+    {{--            //--}}
+    {{--            // const table = new DataTable('#tbl2');--}}
+    {{--            // table.draw();--}}
+
+    {{--// Changes to the inputs will trigger a redraw to update the table--}}
+    {{--//             report_typeEl.addEventListener('change', function () {--}}
+    {{--//                 if (report_typeEl.value == "show") {--}}
+    {{--//                     // Custom range filtering function--}}
+    {{--//                     DataTable.ext.search.push(function (settings, data, dataIndex) {--}}
+    {{--//                         let reportType = data[9]; // use data for the status column--}}
+    {{--//--}}
+    {{--//                         if (report_typeEl.value == reportType) {--}}
+    {{--//                             return true--}}
+    {{--//                         }--}}
+    {{--//--}}
+    {{--//                         return false;--}}
+    {{--//                     });--}}
+    {{--//                 }--}}
+    {{--//                 else {--}}
+    {{--//                     DataTable.ext.search.pop();--}}
+    {{--//                 }--}}
+    {{--//                 table.draw();--}}
+    {{--//             });--}}
+    {{--        }--}}
+
+
+
+    {{--    </script>--}}
 @stop
 @section('css-scripts')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

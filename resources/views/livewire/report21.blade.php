@@ -1,3 +1,6 @@
+@section('title')
+    17- كشف حساب عميل
+@stop
 <div>
     <div class="mb-5">
         <nav class="flex" aria-label="Breadcrumb">
@@ -23,10 +26,10 @@
             </ol>
         </nav>
     </div>
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">كشف حساب عميل (21)</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">كشف حساب عميل (21)</div>--}}
+{{--    </div>--}}
     <div id="branch-container" class="mb-6 mt-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -137,10 +140,10 @@
                             </td>
                             @php  $ob = floatval($record->CumulativeBalance) + floatval($record->Credit) - floatval($record->Debit); @endphp
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
+                                {{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
+                                {{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ $ob != 0 ? number_format($ob, 2) : '' }}
@@ -293,10 +296,10 @@
                             </td>
                             @php  $ob = floatval($record['CumulativeBalance']) + floatval($record['Credit']) - floatval($record['Debit']); @endphp
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
+                                {{--                                {{ $ob > 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-{{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
+                                {{--                                {{ $ob < 0 ? number_format($ob, 2) : ''}}--}}
                             </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                                 {{ $ob != 0 ? number_format($ob, 2) : '' }}

@@ -1,5 +1,5 @@
 @section('title')
-    تقرير الارباح والخسائر
+    22- تقرير الارباح والخسائر
 @stop
 <div>
     <div id="branch-container" class="mb-6 mt-6">
@@ -104,12 +104,12 @@
                             @php $full_total = $full_total + floatval($record['Total']); @endphp
                             @php if($account_code == 41 || $account_code == 51) $profit = $profit + floatval($record['Total']); @endphp
                         </tr>
-                            @if($account_code == 51)
+                        @if($account_code == 51)
                             <tr style="background-color: #d9ddde; border: 2px solid black; font-weight: bold;">
                                 <td colspan="4" style="border: 2px solid black;" class="border p-2 whitespace-nowrap col-id-no" scope="row">هامش الربح</td>
                                 <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">{{ number_format($profit, 2) }}</td>
                             </tr>
-                            @endif
+                        @endif
                     @endif
                         <?php $account_code = $record['Account Code2'] ?>
 

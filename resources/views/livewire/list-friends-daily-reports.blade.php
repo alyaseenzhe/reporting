@@ -1,5 +1,5 @@
 @section('title')
-    تقارير زملائي
+    2- تقارير زملائي
 @stop
 <div>
     <div class="mb-5">
@@ -38,7 +38,7 @@
                         <select wire:model="single_emp_code"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
-                                <option value="-1">اختر الموظف</option>
+                            <option value="-1">اختر الموظف</option>
                             @foreach($emps as $emp)
                                 <option value="{{ $emp->id }}">{{ $emp->name }}</option>
                             @endforeach
@@ -83,79 +83,79 @@
 
     <div>
 
-            <div class="overflow-x-auto">
-                @if(count($friends_reports) > 0 )
-                    <table class="table-auto w-full border text-center">
-                        <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
+        <div class="overflow-x-auto">
+            @if(count($friends_reports) > 0 )
+                <table class="table-auto w-full border text-center">
+                    <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
+                    <tr>
+                        <th class="border p-2 whitespace-nowrap">
+                            <div class="text-lg">الفترة</div>
+                        </th>
+                        <th class="border p-2 whitespace-nowrap">
+                            <div class="text-lg">رقم الموظف</div>
+                        </th>
+                        <th class="border p-2 whitespace-nowrap">
+                            <div class="text-lg">الموظف</div>
+                        </th>
+                        <th class="border p-2 whitespace-nowrap">
+                            <div class="font-semibold"></div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-gray-100">
+                    @forelse($friends_reports as $record)
                         <tr>
-                            <th class="border p-2 whitespace-nowrap">
-                                <div class="text-lg">الفترة</div>
-                            </th>
-                            <th class="border p-2 whitespace-nowrap">
-                                <div class="text-lg">رقم الموظف</div>
-                            </th>
-                            <th class="border p-2 whitespace-nowrap">
-                                <div class="text-lg">الموظف</div>
-                            </th>
-                            <th class="border p-2 whitespace-nowrap">
-                                <div class="font-semibold"></div>
-                            </th>
+                            <td class="border p-2 whitespace-nowrap">
+                                <div>
+                                    <div class="text-center text-gray-800 text-lg" style="color: #c02424;">{{ $record->start_of_week }} - {{ $record->end_of_week }}</div>
+                                </div>
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                <div>
+                                    <div class="text-center text-gray-800 text-lg">{{ $record->user->emp_code }}</div>
+                                </div>
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                <div>
+                                    <div class="text-center text-gray-800 text-lg">{{ $record->user->name }}</div>
+                                </div>
+                            </td>
+
+                            <td class="p-2 whitespace-nowrap sm:flex justify-center">
+                                <div class="m-1.5">
+                                    <a
+                                        {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
+                                        href="{{ route('show.employee-report', array('id' => $record->added_by, 'week_date' => $record->start_of_week)) }}"
+                                        class="btn border-gray-200 hover:border-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
+                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <circle cx="12" cy="12" r="2"/>
+                                            <path
+                                                d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
+                                        </svg>
+
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody class="text-sm divide-y divide-gray-100">
-                        @forelse($friends_reports as $record)
-                            <tr>
-                                <td class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-lg" style="color: #c02424;">{{ $record->start_of_week }} - {{ $record->end_of_week }}</div>
-                                    </div>
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-lg">{{ $record->user->emp_code }}</div>
-                                    </div>
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    <div>
-                                        <div class="text-center text-gray-800 text-lg">{{ $record->user->name }}</div>
-                                    </div>
-                                </td>
-
-                                <td class="p-2 whitespace-nowrap sm:flex justify-center">
-                                    <div class="m-1.5">
-                                        <a
-                                            {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
-                                            href="{{ route('show.employee-report', array('id' => $record->added_by, 'week_date' => $record->start_of_week)) }}"
-                                            class="btn border-gray-200 hover:border-gray-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
-                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
-                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                <circle cx="12" cy="12" r="2"/>
-                                                <path
-                                                    d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
-                                            </svg>
-
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="2" class="border text-center p-6 text-lg font-bold">لا يوجد تقارير حتى الآن
-                                </td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                @else
-                    <div>
-                        <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد تقارير حتى الآن</div>
-                    </div>
-                @endif
-{{--                {{ $friends_reports->links() }}--}}
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="border text-center p-6 text-lg font-bold">لا يوجد تقارير حتى الآن
+                            </td>
+                        </tr>
+                    @endforelse
+                    </tbody>
+                </table>
+            @else
+                <div>
+                    <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد تقارير حتى الآن</div>
+                </div>
+            @endif
+            {{--                {{ $friends_reports->links() }}--}}
         </div>
+    </div>
 </div>
 
 @section('scripts')

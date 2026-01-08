@@ -1,9 +1,12 @@
+@section('title')
+    8- التحصيل والمبيعات
+@stop
 <div>
     {{-- Stop trying to control. --}}
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">التحصيل والمبيعات</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">التحصيل والمبيعات</div>--}}
+{{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-row gap-4">

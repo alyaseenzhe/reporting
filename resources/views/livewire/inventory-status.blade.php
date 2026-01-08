@@ -1,5 +1,5 @@
 @section('title')
-    كميات المخزون
+    21- كميات المخزون
 @stop
 <div>
     <div class="mb-5">
@@ -10,18 +10,6 @@
                         <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                         <span class="mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">الصفحة الرئيسية</span>
                     </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-3 h-3 text-gray-400" fill="#94a3b8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                             viewBox="0 0 199.404 199.404"
-                             xml:space="preserve">
-<g>
-    <polygon points="135.412,0 35.709,99.702 135.412,199.404 163.695,171.119 92.277,99.702 163.695,28.285 	"/>
-</g>
-</svg>
-                        <a href="{{ route('sap-reports') }}" class="text-gray-700 hover:text-gray-900 mr-1 md:mr-2 ml-1 ml:mr-2 text-sm font-medium">تقارير ساب</a>
-                    </div>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
@@ -91,7 +79,8 @@
                             <input type="radio" name="search_type" value="item_code_search"
                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                برقم الصنف</label>
+                                برقم الصنف/وصف الصنف
+                            </label>
                         </div>
                         <div class="flex items-center w-full">
                             <input type="radio" name="search_type" value="vendor_search"
@@ -138,7 +127,8 @@
         <div id="product-code-row" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide">
             <div class="w-full flex flex-col sm:flex-row gap-4">
                 <div wire:ignore id="product_code_div" class="w-full">
-                    <label class="block font-bold mb-2">رقم الصنف
+                    <label class="block font-bold mb-2">
+                        رقم الصنف/وصف الصنف
                         <span class="text-red-500">*</span>
                     </label>
                     <select id="product_code" name="product_code"

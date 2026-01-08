@@ -1,5 +1,5 @@
 @section('title')
-    التقارير اليومية
+    3- تقارير الموظفين
 @stop
 <div>
     <div class="mb-5">
@@ -34,7 +34,7 @@
                         <span class="text-red-500">*</span>
                     </label>
                     <div>
-{{--                        <select wire:model="single_emp_code"--}}
+                        {{--                        <select wire:model="single_emp_code"--}}
                         <select id="customer_name"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('vendor_type') border: solid 1px #fda4af; @enderror">
@@ -48,7 +48,7 @@
                 <div class="w-full">
                     <label class="block font-bold mb-2">تاريخ البداية
                     </label>
-{{--                    <input wire:model="start_date" id="start_date" type="date" name="start_date"--}}
+                    {{--                    <input wire:model="start_date" id="start_date" type="date" name="start_date"--}}
                     <input id="start_date" type="date" name="start_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
@@ -57,7 +57,7 @@
                 <div class="w-full">
                     <label class="block font-bold mb-2">تاريخ النهاية
                     </label>
-{{--                    <input wire:model="end_date" id="end_date" type="date" name="end_date"--}}
+                    {{--                    <input wire:model="end_date" id="end_date" type="date" name="end_date"--}}
                     <input id="end_date" type="date" name="end_date"
                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                            style="@error('item_id') border: solid 1px #fda4af; @enderror">
@@ -65,7 +65,7 @@
                 </div>
                 <div class="mt-8 text-center w-full">
                     <button
-{{--                        wire:click="search" --}}
+                        {{--                        wire:click="search" --}}
                         id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold" wire:loading.remove wire:target="search">
                         <span></span>
@@ -77,20 +77,20 @@
                     </span>
                     </button>
                 </div>
-{{--                <div class="mt-8 text-center w-full">--}}
-{{--                    <button--}}
-{{--                        wire:click="resetEmps" --}}
-{{--                        id="gen-rest-report" style="background-color: #000000;" class="w-full btn hover:bg-indigo-600 text-white">--}}
-{{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="resetEmps">--}}
-{{--                        <span></span>--}}
-{{--                        <span>استعادة</span>--}}
-{{--                    </span>--}}
-{{--                        <span class="mr-2 font-bold" wire:loading wire:target="resetEmps">--}}
-{{--                    <span></span>--}}
-{{--                    <span>الرجاء الانتظار</span>--}}
-{{--                    </span>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
+                {{--                <div class="mt-8 text-center w-full">--}}
+                {{--                    <button--}}
+                {{--                        wire:click="resetEmps" --}}
+                {{--                        id="gen-rest-report" style="background-color: #000000;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+                {{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="resetEmps">--}}
+                {{--                        <span></span>--}}
+                {{--                        <span>استعادة</span>--}}
+                {{--                    </span>--}}
+                {{--                        <span class="mr-2 font-bold" wire:loading wire:target="resetEmps">--}}
+                {{--                    <span></span>--}}
+                {{--                    <span>الرجاء الانتظار</span>--}}
+                {{--                    </span>--}}
+                {{--                    </button>--}}
+                {{--                </div>--}}
             </div>
         </div>
     </div>
@@ -136,9 +136,9 @@
                             <td class="p-2 whitespace-nowrap sm:flex justify-center">
                                 <div class="m-1.5">
                                     <a
-{{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
+                                        {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
                                         href="{{ route('show.employee-report', array('id' => $record->added_by, 'week_date' => $record->start_of_week)) }}"
-                                       class="btn border-gray-200 hover:border-gray-300">
+                                        class="btn border-gray-200 hover:border-gray-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
                                              viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
                                              stroke-linecap="round" stroke-linejoin="round">
@@ -165,7 +165,7 @@
                     <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد تقارير حتى الآن</div>
                 </div>
             @endif
-{{--            {{ $daily_reports->links() }}--}}
+            {{--            {{ $daily_reports->links() }}--}}
         </div>
     </div>
 </div>

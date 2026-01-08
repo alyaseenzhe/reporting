@@ -1,5 +1,5 @@
 @section('title')
-    المستخدمين
+    إدارة المستخدمين
 @stop
 @section('title-btn')
     <a href="{{ route('create.user') }}" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">

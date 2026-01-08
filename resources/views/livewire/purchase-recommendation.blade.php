@@ -1,5 +1,5 @@
 @section('title')
-    تقرير توصية الشراء
+    12- توصية الشراء
 @stop
 @section('title-btn')
 
@@ -68,7 +68,7 @@
                 </div>
                 <div id="export-div" style="display: none; cursor: pointer" class="mt-8 text-center w-full">
                     <div id="export-to-excel" style="background-color: #680202;"
-                            class="w-full btn hover:bg-indigo-600 text-white">
+                         class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold">
                         <span></span>
                         <span>تصدير إلى اكسل</span>
@@ -103,57 +103,57 @@
             </div>
         @endif
         <div id="tbl-container" class="overflow-x-auto overflow-y-auto">
-        <table id="tbl" style="border: 2px solid black;" class="table-container w-full border text-center">
-            <tbody class="text-sm divide-y divide-gray-100">
-                <?php
-                $vendor_id = "*";
-                ?>
-            @forelse($sap_results as $record)
-                <div wire:key="time()">
-                    @if($record['CardCode'] != $vendor_id)
-                            <?php $vendor_id = $record['CardCode']; ?>
-                        <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
-                            <td style="border: 2px solid black;background-color: #dcdcdc"
-                                class="border p-2 whitespace-nowrap col-id-no"
-                                scope="row">{{ $record['CardCode'] }}</td>
-                            <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc"
-                                class="border p-2 whitespace-nowrap col-id-no"
-                                scope="row">{{ $record['CardName'] }}</td>
-                        </tr>
-                    @endif
-                        <?php
-                        $vendor_id = $record['CardCode'];
-                        $full_days = intval($record['LeadTime']) + intval($dist_days);
-                        $no_days = ceil($full_days / 30);
-                        $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
+            <table id="tbl" style="border: 2px solid black;" class="table-container w-full border text-center">
+                <tbody class="text-sm divide-y divide-gray-100">
+                    <?php
+                    $vendor_id = "*";
+                    ?>
+                @forelse($sap_results as $record)
+                    <div wire:key="time()">
+                        @if($record['CardCode'] != $vendor_id)
+                                <?php $vendor_id = $record['CardCode']; ?>
+                            <tr style="background-color: #dcdcdc; border: 2px solid black; font-weight: bold">
+                                <td style="border: 2px solid black;background-color: #dcdcdc"
+                                    class="border p-2 whitespace-nowrap col-id-no"
+                                    scope="row">{{ $record['CardCode'] }}</td>
+                                <td colspan="29" style="border: 2px solid black;background-color: #dcdcdc"
+                                    class="border p-2 whitespace-nowrap col-id-no"
+                                    scope="row">{{ $record['CardName'] }}</td>
+                            </tr>
+                        @endif
+                            <?php
+                            $vendor_id = $record['CardCode'];
+                            $full_days = intval($record['LeadTime']) + intval($dist_days);
+                            $no_days = ceil($full_days / 30);
+                            $target_date = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days);
 
-                        $next_target_date01 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+1);
-                        $next_target_date02 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+2);
-                        $next_target_date03 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+3);
+                            $next_target_date01 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+1);
+                            $next_target_date02 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+2);
+                            $next_target_date03 = \Carbon\Carbon::today()->firstOfMonth()->addMonths($no_days+3);
 
-                        $year = $target_date->format('Y');
-                        $month = $target_date->format('n');
+                            $year = $target_date->format('Y');
+                            $month = $target_date->format('n');
 
 
-                        $start_date = \Carbon\Carbon::today()->firstOfMonth()->format('Y-m-d');
-                        $end_date = \Carbon\Carbon::today()->addMonths($no_days - 1)->endOfMonth()->format('Y-m-d');
-                        $period = new \Carbon\CarbonPeriod($start_date, '1 month', $end_date);
+                            $start_date = \Carbon\Carbon::today()->firstOfMonth()->format('Y-m-d');
+                            $end_date = \Carbon\Carbon::today()->addMonths($no_days - 1)->endOfMonth()->format('Y-m-d');
+                            $period = new \Carbon\CarbonPeriod($start_date, '1 month', $end_date);
 
-                        $stmt = "";
-                        $period = $period->toArray();
-                        foreach ($period as $key => $month_n) {
-                            if (count($period) > 1) {
-                                if ($key === array_key_first($period)) {
-                                    $stmt .= "((year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
-                                } elseif ($key === array_key_last($period)) {
-                                    $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "'))";
+                            $stmt = "";
+                            $period = $period->toArray();
+                            foreach ($period as $key => $month_n) {
+                                if (count($period) > 1) {
+                                    if ($key === array_key_first($period)) {
+                                        $stmt .= "((year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
+                                    } elseif ($key === array_key_last($period)) {
+                                        $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "'))";
+                                    } else {
+                                        $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
+                                    }
                                 } else {
-                                    $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "') or ";
+                                    $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "')";
                                 }
-                            } else {
-                                $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "')";
                             }
-                        }
 
                             $val_mozanah = intval($record["U_SafetyStock"]) - (intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"]));
                             $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and month = '" . $month . "' and year = '" . $year . "'");
@@ -164,166 +164,166 @@
                             $faed_maqzon = (intval($record["OnHand"]) + (intval($record["OnOrder"])+intval($record["OpenQoutation"]))) - intval($val_target->target);
                             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
 
-                        ?>
-                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
-                        <th colspan="30" style="border: 2px solid black; background-color: #faebd7"
-                            class="col-id-no fixed-header border p-2 whitespace-nowrap">
-                            <div class="flex flex-row">
-                                <div class="w-full text-sm text-center">رقم الصنف</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemCode"] }} ({{ $record["OldItemCode"] }})</div>
-                                <div class="w-full text-sm text-center">اسم الصنف</div>
-                                <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record["ItemName"] }}</div>
-                                <div class="w-full text-sm text-center">الوحدة</div>
-                                <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record["InvntryUom"] }}</div>
-                                <div class="w-full text-sm text-center">المورد</div>
-                                <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record["CardName"] }}</div>
-                                <div class="w-full text-sm text-center">فترة الطلب</div>
-                                <div style="color: #fd0e0e"
-                                     class="w-full text-sm text-center">{{ $record["LeadTime"] }}</div>
-                                <div class="w-full text-sm text-center">فترة التوزيع</div>
-                                <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
-                            </div>
-                        </th>
-                    </tr>
-                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">فترة كلية (شهر)</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المخزون</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">
-                                طلبات الشراء
-{{--                                <br>--}}
-{{--                                @if($record["OpenQty"])--}}
-{{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}
-{{--                                    <span class="text-xs">({{ $record["DocDueDate"]? \Carbon\Carbon::parse($record["DocDueDate"])->format('Y-m-d') : "N/A" }}){{intval($record["count_purchase_order"]) > 1 ? "*" : ""}} </span>--}}
-{{--                                @endif--}}
-                            </div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">امر الشراء</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المتاح</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">المتاح الأدنى</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">موازنة المتاح</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">
-                                المستهدف
-                                <br>
-                            <span class="text-xs">({{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }})</span>
-                            </div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">
-                                الإستهلاك
-                                <br>
-                                @if(ceil($full_days/30) > 1)
-                                    <span class="text-xs">(</span>
-                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
-                                    <span class="text-xs"> الى</span>
-                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m')}}</span>
-                                    <span class="text-xs">)</span>
-                                @else
-                                    <span class="text-xs">(</span>
-                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
-                                    <span class="text-xs">)</span>
-                                @endif
+                            ?>
+                        <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
+                            <th colspan="30" style="border: 2px solid black; background-color: #faebd7"
+                                class="col-id-no fixed-header border p-2 whitespace-nowrap">
+                                <div class="flex flex-row">
+                                    <div class="w-full text-sm text-center">رقم الصنف</div>
+                                    <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $record["ItemCode"] }} ({{ $record["OldItemCode"] }})</div>
+                                    <div class="w-full text-sm text-center">اسم الصنف</div>
+                                    <div style="color: #fd0e0e"
+                                         class="w-full text-sm text-center">{{ $record["ItemName"] }}</div>
+                                    <div class="w-full text-sm text-center">الوحدة</div>
+                                    <div style="color: #fd0e0e"
+                                         class="w-full text-sm text-center">{{ $record["InvntryUom"] }}</div>
+                                    <div class="w-full text-sm text-center">المورد</div>
+                                    <div style="color: #fd0e0e"
+                                         class="w-full text-sm text-center">{{ $record["CardName"] }}</div>
+                                    <div class="w-full text-sm text-center">فترة الطلب</div>
+                                    <div style="color: #fd0e0e"
+                                         class="w-full text-sm text-center">{{ $record["LeadTime"] }}</div>
+                                    <div class="w-full text-sm text-center">فترة التوزيع</div>
+                                    <div style="color: #fd0e0e" class="w-full text-sm text-center">{{ $dist_days }}</div>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">فترة كلية (شهر)</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">المخزون</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+                                    طلبات الشراء
+                                    {{--                                <br>--}}
+                                    {{--                                @if($record["OpenQty"])--}}
+                                    {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}
+                                    {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? \Carbon\Carbon::parse($record["DocDueDate"])->format('Y-m-d') : "N/A" }}){{intval($record["count_purchase_order"]) > 1 ? "*" : ""}} </span>--}}
+                                    {{--                                @endif--}}
+                                </div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">امر الشراء</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">المتاح</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">المتاح الأدنى</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">موازنة المتاح</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+                                    المستهدف
+                                    <br>
+                                    <span class="text-xs">({{ \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30))->format('Y-m') }})</span>
+                                </div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+                                    الإستهلاك
+                                    <br>
+                                    @if(ceil($full_days/30) > 1)
+                                        <span class="text-xs">(</span>
+                                        <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                        <span class="text-xs"> الى</span>
+                                        <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m')}}</span>
+                                        <span class="text-xs">)</span>
+                                    @else
+                                        <span class="text-xs">(</span>
+                                        <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                        <span class="text-xs">)</span>
+                                    @endif
 
-                            </div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">فائض المخزون</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">توصية الشراء</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">
-                                مستهدف
-                                <span class="text-xs">(3 شهور تالية)</span>
-                                <br>
-                                <span class="text-xs">(</span>
-                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->addMonths(ceil($full_days/30)+1)->firstOfMonth()->format('Y-m')}}</span>
-                                <span class="text-xs"> الى</span>
-                                <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)+3)->format('Y-m')}}</span>
-                                <span class="text-xs">)</span>
-                            </div>
-                        </th>
-                    </tr>
-                    <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ ceil($full_days/30) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format($record["OnHand"]) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format(intval($record["OpenQoutation"])) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format(intval($record["OnOrder"])) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format(intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"])) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format($record["U_SafetyStock"]) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            @php //$val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty)); @endphp
-                            <div class="text-sm">{{ number_format($val_mozanah < 0 ? 0 : $val_mozanah) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <?php
-                                //$val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
+                                </div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">فائض المخزون</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">توصية الشراء</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+                                    مستهدف
+                                    <span class="text-xs">(3 شهور تالية)</span>
+                                    <br>
+                                    <span class="text-xs">(</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->addMonths(ceil($full_days/30)+1)->firstOfMonth()->format('Y-m')}}</span>
+                                    <span class="text-xs"> الى</span>
+                                    <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)+3)->format('Y-m')}}</span>
+                                    <span class="text-xs">)</span>
+                                </div>
+                            </th>
+                        </tr>
+                        <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ ceil($full_days/30) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format($record["OnHand"]) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format(intval($record["OpenQoutation"])) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format(intval($record["OnOrder"])) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format(intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"])) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format($record["U_SafetyStock"]) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                @php //$val_mozanah = intval($record->MinOrder) - (intval($record->Stock) + intval($record->final_qty)); @endphp
+                                <div class="text-sm">{{ number_format($val_mozanah < 0 ? 0 : $val_mozanah) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <?php
+                                    //$val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and month = '" . $month . "' and year = '" . $year . "'");
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
-                                ?>
-                            <div class="text-sm">{{ number_format($val_mostahdef->target) }}</div>
-                        </th>
-                            <?php
-                            //$val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
+                                    ?>
+                                <div class="text-sm">{{ number_format($val_mostahdef->target) }}</div>
+                            </th>
+                                <?php
+                                //$val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record->Code . "' and " . $stmt);
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '". $record->Code ."' and " . $stmt);
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
-                            ?>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            <div class="text-sm">{{ number_format($val_target->target) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <?php
-                                //$faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val->target);
                                 ?>
-                            <div class="text-sm">{{ $faed_maqzon < 0 ? 0 : number_format($faed_maqzon)  }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-{{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
-                            <div class="text-sm">{{ number_format($recommendation) }}</div>
-                        </th>
-                        <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                            {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
-                            <div class="text-sm">{{ number_format($next_val_target->target) }}</div>
-                        </th>
-                    </tr>
-                </div>
-            @empty
-                <div class="w-full p-6" style="background-color: #fff0f5; border: 1px solid #9f4764; color: #9f4764; text-align: center; font-weight: bold;">
-                    <svg class="w-20" style="margin: auto; margin-bottom: 20px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#f9dcc4;}.cls-2{fill:#fff2e9;}.cls-3{fill:#edbe9d;}.cls-4{fill:#577590;}</style></defs><path class="cls-1" d="M23.5,2h-12a.47.47,0,0,0-.35.15l-5,5A.47.47,0,0,0,6,7.5v20A2.5,2.5,0,0,0,8.5,30h15A2.5,2.5,0,0,0,26,27.5V4.5A2.5,2.5,0,0,0,23.5,2Z"/><path class="cls-2" d="M15,2h7a1,1,0,0,1,0,2H15a1,1,0,0,1,0-2Z"/><path class="cls-2" d="M6,13.5v-2a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Z"/><path class="cls-2" d="M6,24.5v-8a1,1,0,0,1,2,0v8a1,1,0,0,1-2,0Z"/><path class="cls-3" d="M24,20v4a4,4,0,0,1-4,4H11a1,1,0,0,0-1,1h0a1,1,0,0,0,1,1H23.5A2.5,2.5,0,0,0,26,27.5V20a1,1,0,0,0-1-1h0A1,1,0,0,0,24,20Z"/><path class="cls-3" d="M11.69,2a.47.47,0,0,0-.54.11l-5,5A.47.47,0,0,0,6,7.69.5.5,0,0,0,6.5,8h3A2.5,2.5,0,0,0,12,5.5v-3A.5.5,0,0,0,11.69,2Z"/><path class="cls-4" d="M21.5,11.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,16.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,21.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/></svg>
-                    <span class="mt-4">لا يوجد تقرير للعرض</span>
-                </div>
-            @endforelse
-            </tbody>
-        </table>
-    </div>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format($val_target->target) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                    <?php
+                                    //$faed_maqzon = (intval($record->Stock) + intval($record->final_qty)) - intval($val->target);
+                                    ?>
+                                <div class="text-sm">{{ $faed_maqzon < 0 ? 0 : number_format($faed_maqzon)  }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
+                                <div class="text-sm">{{ number_format($recommendation) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                {{--                            <div class="text-sm">{{ intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon)   }}</div>--}}
+                                <div class="text-sm">{{ number_format($next_val_target->target) }}</div>
+                            </th>
+                        </tr>
+                    </div>
+                @empty
+                    <div class="w-full p-6" style="background-color: #fff0f5; border: 1px solid #9f4764; color: #9f4764; text-align: center; font-weight: bold;">
+                        <svg class="w-20" style="margin: auto; margin-bottom: 20px" viewBox="0 0 32 32" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#f9dcc4;}.cls-2{fill:#fff2e9;}.cls-3{fill:#edbe9d;}.cls-4{fill:#577590;}</style></defs><path class="cls-1" d="M23.5,2h-12a.47.47,0,0,0-.35.15l-5,5A.47.47,0,0,0,6,7.5v20A2.5,2.5,0,0,0,8.5,30h15A2.5,2.5,0,0,0,26,27.5V4.5A2.5,2.5,0,0,0,23.5,2Z"/><path class="cls-2" d="M15,2h7a1,1,0,0,1,0,2H15a1,1,0,0,1,0-2Z"/><path class="cls-2" d="M6,13.5v-2a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Z"/><path class="cls-2" d="M6,24.5v-8a1,1,0,0,1,2,0v8a1,1,0,0,1-2,0Z"/><path class="cls-3" d="M24,20v4a4,4,0,0,1-4,4H11a1,1,0,0,0-1,1h0a1,1,0,0,0,1,1H23.5A2.5,2.5,0,0,0,26,27.5V20a1,1,0,0,0-1-1h0A1,1,0,0,0,24,20Z"/><path class="cls-3" d="M11.69,2a.47.47,0,0,0-.54.11l-5,5A.47.47,0,0,0,6,7.69.5.5,0,0,0,6.5,8h3A2.5,2.5,0,0,0,12,5.5v-3A.5.5,0,0,0,11.69,2Z"/><path class="cls-4" d="M21.5,11.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,16.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/><path class="cls-4" d="M21.5,21.4a1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.23,1.23,0,0,1-1.61,0,2.12,2.12,0,0,0-1.39-.5,2.15,2.15,0,0,0-1.4.5,1.17,1.17,0,0,1-.8.3,1.2,1.2,0,0,1-.81-.3,2.12,2.12,0,0,0-1.39-.5.5.5,0,0,0,0,1,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5,2.07,2.07,0,0,0,1.39-.5,1.23,1.23,0,0,1,1.61,0,2.2,2.2,0,0,0,2.79,0,1.18,1.18,0,0,1,.81-.3,1.15,1.15,0,0,1,.8.3,2.12,2.12,0,0,0,1.4.5.5.5,0,0,0,0-1Z"/></svg>
+                        <span class="mt-4">لا يوجد تقرير للعرض</span>
+                    </div>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
     @endif
 </div>
 @section('scripts')

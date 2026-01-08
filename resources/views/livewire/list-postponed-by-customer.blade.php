@@ -1,8 +1,11 @@
+@section('title')
+   9- المستحقات بالموظف
+@stop
 <div wire:init="init">
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">المستحقات بالموظف</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">المستحقات بالموظف</div>--}}
+{{--    </div>--}}
     <div id="report-btn" wire:loading.remove wire:target="load_data">
         <div id="tbl2-container" class="overflow-x-auto">
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
@@ -33,72 +36,76 @@
                 </thead>
                 <tbody class="text-sm divide-y divide-gray-100">
                 @foreach($postponed as $record)
-                        @if(strlen($record->Code ) == 7 || strlen($record->Code ) == 9)
-                            <tr>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{$record->Code}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{$record->Arabic_Name}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    @if((substr($record->Code, 0, 2) == "01" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-01") && strlen($record->Code ) == 9)
-                                        الاحساء
-                                    @elseif((substr($record->Code, 0, 2) == "02" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-02") && strlen($record->Code ) == 9)
-                                        جدة
-                                    @elseif((substr($record->Code, 0, 2) == "03" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-03") && strlen($record->Code ) == 9)
-                                        الرياض
-                                    @elseif((substr($record->Code, 0, 2) == "04" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-04") && strlen($record->Code ) == 9)
-                                        وادي الدواسر
-                                    @elseif((substr($record->Code, 0, 2) == "05" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-05") && strlen($record->Code ) == 9)
-                                        الجوف
-                                    @elseif((substr($record->Code, 0, 2) == "06" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-06") && strlen($record->Code ) == 9)
-                                        الدمام
-                                    @elseif((substr($record->Code, 0, 2) == "07" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-07") && strlen($record->Code ) == 9)
-                                        الخرج
-                                    @elseif((substr($record->Code, 0, 2) == "08" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-08") && strlen($record->Code ) == 9)
-                                        نجران
-                                    @elseif((substr($record->Code, 0, 2) == "09" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-09") && strlen($record->Code ) == 9)
-                                        حائل
-                                    @elseif((substr($record->Code, 0, 2) == "10" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-10") && strlen($record->Code ) == 9)
-                                        تبوك
-                                    @elseif((substr($record->Code, 0, 2) == "11" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-11") && strlen($record->Code ) == 9)
-                                        القصيم
-                                    @elseif((substr($record->Code, 0, 2) == "12" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-12" && strlen($record->Code ) == 9))
-                                        ساجر
-                                    @endif
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{number_format($record->due_amount, 2)}}
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
+                    @if(strlen($record->Code ) == 7 || strlen($record->Code ) == 9)
+                        <tr>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record->Code}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{$record->Arabic_Name}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                @if((substr($record->Code, 0, 2) == "01" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-01") && strlen($record->Code ) == 9)
+                                    الاحساء
+                                @elseif((substr($record->Code, 0, 2) == "02" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-02") && strlen($record->Code ) == 9)
+                                    جدة
+                                @elseif((substr($record->Code, 0, 2) == "03" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-03") && strlen($record->Code ) == 9)
+                                    الرياض
+                                @elseif((substr($record->Code, 0, 2) == "04" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-04") && strlen($record->Code ) == 9)
+                                    وادي الدواسر
+                                @elseif((substr($record->Code, 0, 2) == "05" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-05") && strlen($record->Code ) == 9)
+                                    الجوف
+                                @elseif((substr($record->Code, 0, 2) == "06" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-06") && strlen($record->Code ) == 9)
+                                    الدمام
+                                @elseif((substr($record->Code, 0, 2) == "07" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-07") && strlen($record->Code ) == 9)
+                                    الخرج
+                                @elseif((substr($record->Code, 0, 2) == "08" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-08") && strlen($record->Code ) == 9)
+                                    نجران
+                                @elseif((substr($record->Code, 0, 2) == "09" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-09") && strlen($record->Code ) == 9)
+                                    حائل
+                                @elseif((substr($record->Code, 0, 2) == "10" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-10") && strlen($record->Code ) == 9)
+                                    تبوك
+                                @elseif((substr($record->Code, 0, 2) == "11" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-11") && strlen($record->Code ) == 9)
+                                    القصيم
+                                @elseif((substr($record->Code, 0, 2) == "12" && strlen($record->Code ) == 7) || (substr($record->Code, 0, 4) == "1-12" && strlen($record->Code ) == 9))
+                                    ساجر
+                                @endif
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{number_format($record->due_amount, 2)}}
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
                                     <?php
-                                        $id = array_search($record->Code, array_column($this->posponed_due_amount, 'Code'));
-                                        if ($id) {
-                                            $due = $this->posponed_due_amount[$id]['due_amount'];
-                                        }
-                                        else {
-                                            $due = 0;
-                                        }
+                                    $id = array_search($record->Code, array_column($this->posponed_due_amount, 'Code'));
+                                    if ($id) {
+                                        $due = $this->posponed_due_amount[$id]['due_amount'];
+                                    }
+                                    else {
+                                        $due = 0;
+                                    }
                                     ?>
-                                    @if($id)
-                                        {{number_format($due, 2)}}
-                                    @else
-                                        0.00
-                                    @endif
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    @if($id)
-                                        % {{$record->due_amount == 0 ? 0 : number_format(($due/$record->due_amount*100)) }}
+                                @if($id)
+                                    {{number_format($due, 2)}}
+                                @else
+                                    0.00
+                                @endif
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                @if($id)
+                                    @if($record->due_amount != 0)
+                                        %{{number_format(($due/$record->due_amount*100))}}
                                     @else
                                         %0
                                     @endif
-                                </td>
-                                <td class="border p-2 whitespace-nowrap">
-                                    {{ $record->EmpName }}
-                                </td>
-                            </tr>
-                        @endif
+                                @else
+                                    %0
+                                @endif
+                            </td>
+                            <td class="border p-2 whitespace-nowrap">
+                                {{ $record->EmpName }}
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
                 </tbody>
             </table>
@@ -237,7 +244,7 @@
                         },
                         dataSrc: [6]
                     }
-        })});
+                })});
 
 
 

@@ -1,9 +1,13 @@
+@section('title')
+    14- أداء مهندسي المبيعات
+@stop
+
 <div>
     {{-- Stop trying to control. --}}
-    <div
-        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">
-        <div class="w-full">التقرير الإسبوعي</div>
-    </div>
+{{--    <div--}}
+{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+{{--        <div class="w-full">التقرير الإسبوعي</div>--}}
+{{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -85,19 +89,21 @@
                         </span>
                     </button>
                 </div>
-                <div wire:ignore class="mt-8 text-center w-full">
-                    <button wire:click.prevent="sendReport" wire:loading.attr="disabled"
-                            style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                @if(auth()->user()->role == 'a')
+                    <div wire:ignore class="mt-8 text-center w-full">
+                        <button wire:click.prevent="sendReport" wire:loading.attr="disabled"
+                                style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold" wire:loading.remove wire:target="sendReport">
                             <span></span>
                             <span>ارسال</span>
                         </span>
-                        <span class="mr-2 font-bold" wire:loading wire:target="sendReport">
+                            <span class="mr-2 font-bold" wire:loading wire:target="sendReport">
                         <span></span>
                         <span>الرجاء الانتظار</span>
                         </span>
-                    </button>
-                </div>
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

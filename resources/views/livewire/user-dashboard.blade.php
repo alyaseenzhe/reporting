@@ -1,7 +1,13 @@
 <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+    <div class="relative my-4">
+
+        <p class="text-center text-2xl md:text-3xl font-bold" style="color: #499d62">منصة الياسين الزراعية</p>
+    </div>
     <div class="relative bg-gray-200 p-4 sm:p-6 rounded-sm overflow-hidden mb-8">
+
         <div class="absolute left-0 top- -mt-4 mr-16 pointer-events-none hidden xl:block"
              aria-hidden="true">
+
             <svg width="319" height="198" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <defs>
                     <path id="welcome-a" d="M64 0l64 128-64-20-64 20z"/>
@@ -42,7 +48,7 @@
             </svg>
         </div>
         <div class="relative" style="direction: rtl">
-            <h1 class="text-2xl md:text-3xl text-gray-800 font-bold mb-1">اهلاً وسهلاً
+            <h1 class="text-md md:text-xl text-gray-800 font-bold mb-1">اهلاً وسهلاً
                 بك، {{ \Illuminate\Support\Facades\Auth::user()->name }}</h1>
             <p>هنا بإمكانك الإطلاع على التقارير المتعلقة بالشركة</p>
         </div>
@@ -149,7 +155,7 @@
                             <div class="font-bold text-green-500 mr-2">
                                 <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                      viewBox="0 0 503.467 503.467" xml:space="preserve">
-<g transform="translate(1 1)">
+<g transform="translate(1 1)">f
     <path style="fill:#AAB1BA;" d="M344.6,498.2H156.867v-17.067V421.4c0-0.853,0-2.56,0-3.413c0-0.853,0-1.707,0-2.56v-0.853
 		c0-1.707,0.853-2.56,0.853-4.267s0.853-2.56,1.707-4.267c0.853-1.707,1.707-2.56,2.56-4.267c2.56-4.267,5.973-7.68,11.093-11.093
 		l0,0c10.24-6.827,26.453-11.093,51.2-11.093l25.6,85.333l25.6-85.333c24.747,0,40.96,4.267,51.2,11.093l0,0
@@ -232,21 +238,20 @@
                                 <svg class="w-20 h-20 icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M906.179468 202.493801h-79.1791v-45.670405c0-12.405395-10.10882-22.514214-22.511143-22.514215-12.344985 0-22.39442 10.10882-22.39442 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.111891-22.514214-22.514214-22.514215-12.341914 0-22.39442 10.10882-22.39442 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.10882-22.514214-22.511143-22.514215-12.344985 0-22.397491 10.10882-22.397491 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.10882-22.514214-22.454829-22.514215-12.402323 0-22.451757 10.10882-22.451757 22.514215v45.670405h-79.1791c-11.638504 0-21.1033 9.464796-21.103301 21.1033v42.498408l-37.854064-37.794679c-20.278049-20.456205-53.549202-20.221735-74.062745 0.291808l-42.67554 42.615131c-20.513542 20.573952-20.748012 53.844081-0.352217 74.239877L265.99824 500.334874v364.14584c0 11.638504 9.464796 21.1033 21.103301 21.103301h619.077927c11.638504 0 21.1033-9.464796 21.1033-21.103301V223.597101c0-11.638504-9.46582-21.1033-21.1033-21.1033z" fill="#27323A" /><path d="M186.130065 356.587518l53.254324-53.194938 274.72891 274.711504-2.175756 51.02123-50.963892 2.233094h-0.057338z" fill="#79CCBF" /><path d="M579.887693 716.884573c-43.145504-16.399571-99.280017-41.969059-103.041772-43.027757-0.294879-0.291807-0.999312-0.999312-1.411938-1.408866 0.941974-8.8177 2.05801-18.635737 2.585311-23.513527l0.412626-0.412625 51.668325-1.29112 1.176444-51.610987 0.174061-0.117747c4.878814-0.586686 14.813573-1.763131 23.74902-2.762443 0.412626 0.412626 1.059721 1.117059 1.411937 1.411938 1.05665 3.527285 26.921017 59.544051 43.497721 102.571808-7.111907-1.528661-13.462044-0.938903-17.341546 2.940599-3.761755 3.818068-4.40885 10.10882-2.880189 17.220727z" fill="#FFFFFF" /><path d="M878.729102 838.561057H762.167949c38.558497-11.872974 78.589342-28.449678 116.561153-51.373446v51.373446z" fill="#F4CE73" /><path d="M649.014286 832.096245c51.607916-29.039436 108.919897-69.53922 141.778425-102.632217 16.164078 14.518694 40.560193 27.568112 63.189083 36.559873-69.771642 39.560881-146.773961 58.0758-204.967508 66.072344z" fill="#79CCBF" /><path d="M878.729102 743.747228c-23.453117-7.936135-68.302366-29.096773-74.886972-42.028445-2.293503-4.466188-6.641944-7.464124-11.638505-8.053881-4.938199-0.644024-9.934759 1.294191-13.167165 5.116354-48.788136 56.663862-188.333467 138.48561-219.605996 139.779801H312.671029V547.008687l144.540867 144.540867 0.294879-0.057337 2.997936 2.997936c0.529349 0.586686 1.233782 0.999312 2.115348 1.233782l171.463932 64.540611c0.938903 0.23447 1.938215 0.060409 2.937527-0.117746 1.706817-0.174061 3.409538-0.704433 4.64332-1.938215 1.119107-1.117059 1.763131-2.527973 2.059033-3.939911 0.412626-1.294191 0.469963-2.58531 0.117747-3.761755l-65.30443-170.639704c-0.352217-0.824228-0.704433-1.528661-1.294191-2.175756l-2.88019-2.88019 0.06041-0.469963-261.752188-261.574032v-65.06996h53.609612v24.687923c-8.583231 6.759691-14.404019 16.751788-14.404019 28.510087 0 20.335386 16.519366 36.854752 36.854752 36.854752 20.338458 0 36.798439-16.519366 36.798439-36.854752 0-11.758299-5.820788-21.750396-14.34361-28.510087v-24.687923h93.69677v24.687923c-8.580159 6.759691-14.400947 16.751788-14.400947 28.510087 0 20.335386 16.516294 36.854752 36.798439 36.854752 20.335386 0 36.854752-16.519366 36.854752-36.854752 0-11.69789-5.820788-21.689987-14.34361-28.45275v-24.744236h93.69677v24.687923c-8.522821 6.759691-14.400947 16.751788-14.400947 28.510087 0 20.335386 16.458957 36.854752 36.795367 36.854752 20.338458 0 36.854752-16.519366 36.854752-36.854752 0-11.69789-5.817716-21.689987-14.340537-28.45275v-24.744236h93.696769V272.387285c-8.522821 6.759691-14.404019 16.751788-14.404018 28.510086 0 20.335386 16.458957 36.854752 36.798438 36.854753 20.338458 0 36.854752-16.519366 36.854753-36.854753 0-11.69789-5.817716-21.689987-14.34361-28.452749v-24.744236h51.728734v496.046842z" fill="#F4CE73" /><path d="M216.960276 281.58587l-52.902107 52.928728-25.392356-25.422048 52.903131-52.902107z" fill="#FFFFFF" /></svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">التقرير اليومي</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">1- التقرير اليومي</div>
                     </div>
                 </div>
             </a>
         @endif
-
-            @if ((Auth::user()->user_group && in_array('list.friends-daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-                <a class="w-full" href="{{ route('list.friends-daily-reports') }}">
-                    <div
-                        class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                        <div class="px-5 pt-5">
-                            <div class="flex items-center justify-center mb-8">
-                                <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                    <svg class="w-20 h-20" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                         width="800px" height="800px" viewBox="0 0 32 32" xml:space="preserve">
+        @if ((Auth::user()->user_group && in_array('list.friends-daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('list.friends-daily-reports') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     width="800px" height="800px" viewBox="0 0 32 32" xml:space="preserve">
 <style type="text/css">
     .pictogram_een{fill:#F4D6B0;}
     .pictogram_twee{fill:#F8AD89;}
@@ -261,30 +266,31 @@
     .st5{clip-path:url(#SVGID_2_);fill:#0C6667;}
     .st6{fill:#0C6667;}
 </style>
+                                    <g>
+                                        <circle class="pictogram_vier" cx="16" cy="16" r="16"/>
+                                        <path class="pictogram_een" d="M1.174,22C3.549,27.861,9.287,32,16,32s12.451-4.139,14.826-10H1.174z"/>
+                                        <path class="pictogram_vijf" d="M16,22H1.174c1.146,2.828,3.077,5.246,5.523,7H16V22z"/>
+                                        <polygon class="pictogram_twee" points="29.57,18.023 29.557,18.01 29.534,18.033 	"/>
+                                        <polygon class="pictogram_twee" points="17.036,14.665 22.333,19.962 29.533,18.033 18.965,7.465 	"/>
                                         <g>
-                                            <circle class="pictogram_vier" cx="16" cy="16" r="16"/>
-                                            <path class="pictogram_een" d="M1.174,22C3.549,27.861,9.287,32,16,32s12.451-4.139,14.826-10H1.174z"/>
-                                            <path class="pictogram_vijf" d="M16,22H1.174c1.146,2.828,3.077,5.246,5.523,7H16V22z"/>
-                                            <polygon class="pictogram_twee" points="29.57,18.023 29.557,18.01 29.534,18.033 	"/>
-                                            <polygon class="pictogram_twee" points="17.036,14.665 22.333,19.962 29.533,18.033 18.965,7.465 	"/>
-                                            <g>
-                                                <path class="pictogram_zes" d="M22.333,19.962l-5.298-5.298l-1.939,7.237L22.333,19.962z M18.179,21.076
+                                            <path class="pictogram_zes" d="M22.333,19.962l-5.298-5.298l-1.939,7.237L22.333,19.962z M18.179,21.076
 			C18.079,21.102,18.019,21.118,18.179,21.076L18.179,21.076z M18.291,21.046c-0.013,0.003-0.026,0.007-0.039,0.01
 			C18.265,21.052,18.276,21.049,18.291,21.046z M31.979,15.587l-2.423,2.423l-0.023,0.023l0,0l0,0L18.965,7.465l-0.028-0.028
 			l5.197-5.197C28.725,4.959,31.834,9.899,31.979,15.587z"/>
-                                                <path class="st6" d="M18.402,21.016c0.007-0.002,0.011-0.003,0.011-0.003c-0.001,0-0.002,0.001-0.003,0.001
+                                            <path class="st6" d="M18.402,21.016c0.007-0.002,0.011-0.003,0.011-0.003c-0.001,0-0.002,0.001-0.003,0.001
 			C18.409,21.014,18.405,21.015,18.402,21.016z"/>
-                                            </g>
                                         </g>
+                                    </g>
 </svg>
-                                </div>
                             </div>
-                            <div class="text-3xl font-semibold text-gray-800 text-center">تقارير زملائي</div>
                         </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">2- تقارير زملائي</div>
                     </div>
-                </a>
-            @endif
+                </div>
+            </a>
+        @endif
     </div>
+
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
         @if ((Auth::user()->user_group && in_array('list.employees-daily-reports', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('list.employees-daily-reports') }}">
@@ -296,20 +302,21 @@
                                 <svg class="w-20 h-20 icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M906.179468 202.493801h-79.1791v-45.670405c0-12.405395-10.10882-22.514214-22.511143-22.514215-12.344985 0-22.39442 10.10882-22.39442 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.111891-22.514214-22.514214-22.514215-12.341914 0-22.39442 10.10882-22.39442 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.10882-22.514214-22.511143-22.514215-12.344985 0-22.397491 10.10882-22.397491 22.514215v45.670405h-93.69677v-45.670405c0-12.405395-10.10882-22.514214-22.454829-22.514215-12.402323 0-22.451757 10.10882-22.451757 22.514215v45.670405h-79.1791c-11.638504 0-21.1033 9.464796-21.103301 21.1033v42.498408l-37.854064-37.794679c-20.278049-20.456205-53.549202-20.221735-74.062745 0.291808l-42.67554 42.615131c-20.513542 20.573952-20.748012 53.844081-0.352217 74.239877L265.99824 500.334874v364.14584c0 11.638504 9.464796 21.1033 21.103301 21.103301h619.077927c11.638504 0 21.1033-9.464796 21.1033-21.103301V223.597101c0-11.638504-9.46582-21.1033-21.1033-21.1033z" fill="#27323A" /><path d="M186.130065 356.587518l53.254324-53.194938 274.72891 274.711504-2.175756 51.02123-50.963892 2.233094h-0.057338z" fill="#79CCBF" /><path d="M579.887693 716.884573c-43.145504-16.399571-99.280017-41.969059-103.041772-43.027757-0.294879-0.291807-0.999312-0.999312-1.411938-1.408866 0.941974-8.8177 2.05801-18.635737 2.585311-23.513527l0.412626-0.412625 51.668325-1.29112 1.176444-51.610987 0.174061-0.117747c4.878814-0.586686 14.813573-1.763131 23.74902-2.762443 0.412626 0.412626 1.059721 1.117059 1.411937 1.411938 1.05665 3.527285 26.921017 59.544051 43.497721 102.571808-7.111907-1.528661-13.462044-0.938903-17.341546 2.940599-3.761755 3.818068-4.40885 10.10882-2.880189 17.220727z" fill="#FFFFFF" /><path d="M878.729102 838.561057H762.167949c38.558497-11.872974 78.589342-28.449678 116.561153-51.373446v51.373446z" fill="#F4CE73" /><path d="M649.014286 832.096245c51.607916-29.039436 108.919897-69.53922 141.778425-102.632217 16.164078 14.518694 40.560193 27.568112 63.189083 36.559873-69.771642 39.560881-146.773961 58.0758-204.967508 66.072344z" fill="#79CCBF" /><path d="M878.729102 743.747228c-23.453117-7.936135-68.302366-29.096773-74.886972-42.028445-2.293503-4.466188-6.641944-7.464124-11.638505-8.053881-4.938199-0.644024-9.934759 1.294191-13.167165 5.116354-48.788136 56.663862-188.333467 138.48561-219.605996 139.779801H312.671029V547.008687l144.540867 144.540867 0.294879-0.057337 2.997936 2.997936c0.529349 0.586686 1.233782 0.999312 2.115348 1.233782l171.463932 64.540611c0.938903 0.23447 1.938215 0.060409 2.937527-0.117746 1.706817-0.174061 3.409538-0.704433 4.64332-1.938215 1.119107-1.117059 1.763131-2.527973 2.059033-3.939911 0.412626-1.294191 0.469963-2.58531 0.117747-3.761755l-65.30443-170.639704c-0.352217-0.824228-0.704433-1.528661-1.294191-2.175756l-2.88019-2.88019 0.06041-0.469963-261.752188-261.574032v-65.06996h53.609612v24.687923c-8.583231 6.759691-14.404019 16.751788-14.404019 28.510087 0 20.335386 16.519366 36.854752 36.854752 36.854752 20.338458 0 36.798439-16.519366 36.798439-36.854752 0-11.758299-5.820788-21.750396-14.34361-28.510087v-24.687923h93.69677v24.687923c-8.580159 6.759691-14.400947 16.751788-14.400947 28.510087 0 20.335386 16.516294 36.854752 36.798439 36.854752 20.335386 0 36.854752-16.519366 36.854752-36.854752 0-11.69789-5.820788-21.689987-14.34361-28.45275v-24.744236h93.69677v24.687923c-8.522821 6.759691-14.400947 16.751788-14.400947 28.510087 0 20.335386 16.458957 36.854752 36.795367 36.854752 20.338458 0 36.854752-16.519366 36.854752-36.854752 0-11.69789-5.817716-21.689987-14.340537-28.45275v-24.744236h93.696769V272.387285c-8.522821 6.759691-14.404019 16.751788-14.404018 28.510086 0 20.335386 16.458957 36.854752 36.798438 36.854753 20.338458 0 36.854752-16.519366 36.854753-36.854753 0-11.69789-5.817716-21.689987-14.34361-28.452749v-24.744236h51.728734v496.046842z" fill="#F4CE73" /><path d="M216.960276 281.58587l-52.902107 52.928728-25.392356-25.422048 52.903131-52.902107z" fill="#FFFFFF" /></svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">تقارير الموظفين</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">3- تقارير الموظفين</div>
                     </div>
                 </div>
             </a>
         @endif
-            @if ((Auth::user()->user_group && in_array('commission-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-                <a class="w-full" href="{{ route('commission-report') }}">
-                    <div
-                        class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                        <div class="px-5 pt-5">
-                            <div class="flex items-center justify-center mb-8">
-                                <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                    <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                         viewBox="0 0 55.764 55.764" xml:space="preserve">
+
+        @if ((Auth::user()->user_group && in_array('commission-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('commission-report') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     viewBox="0 0 55.764 55.764" xml:space="preserve">
 <g>
     <rect x="9.882" y="35.292" style="fill:#66CEDB;" width="2" height="14"/>
     <path style="fill:#F8CF26;" d="M17.329,48.251l10.902,5.378c0.385,0.192,0.836,0.141,1.206-0.075l21.815-12.743
@@ -351,18 +358,22 @@
     </g>
 </g>
 </svg>
-                                </div>
                             </div>
-                            <div class="text-3xl font-semibold text-gray-800 text-center">تقرير العمولة</div>
                         </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">4- تقرير العمولة</div>
                     </div>
-                </a>
-            @endif
+                </div>
+            </a>
+        @endif
+
     </div>
 
+
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.non-paid-vouchers', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.non-paid-vouchers') }}">
+
+
+        @if ((Auth::user()->user_group && in_array('list.aging', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('list.aging') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
                     <div class="px-5 pt-5">
@@ -447,59 +458,59 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center"> الفواتير المُعلقة<small style="color: red"> (جديد)</small></div>
-                    </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center"> 5- فواتير حسب الإستحقاق<small style="color: red"> (جديد)</small></div></div>
                 </div>
-            </a>
-        @endif
-        @if ((Auth::user()->user_group && in_array('list.aging-by-customer-employee', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-                <a class="w-full" href="{{ route('list.aging-by-customer-employee') }}">
-                    <div
-                        class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                        <div class="px-5 pt-5">
-                            <div class="flex items-center justify-center mb-8">
-                                <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                    <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                         viewBox="0 0 512.001 512.001" xml:space="preserve">
+    </div>
+    </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('list.aging-by-customer-employee', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.aging-by-customer-employee') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512.001 512.001" xml:space="preserve">
 <path style="fill:#F2BF7E;" d="M407.836,424.369H295.776v47.733c0,0,7.417,31.65,40.026,32.007s40.017-31.869,40.017-31.869
 	S374.549,424.369,407.836,424.369z"/>
-                                        <path style="fill:#D4E4AC;" d="M455.847,488.106h-80.018v-30.465c0-18.528,15.02-33.549,33.549-33.549h1.867
+                                <path style="fill:#D4E4AC;" d="M455.847,488.106h-80.018v-30.465c0-18.528,15.02-33.549,33.549-33.549h1.867
 	c24.633,0,44.602,19.969,44.602,44.602L455.847,488.106L455.847,488.106z"/>
-                                        <path style="fill:#F2BF7E;" d="M357.244,384.084h-61.432v-96.021c0-13.258,10.748-24.006,24.006-24.006l0,0
+                                <path style="fill:#F2BF7E;" d="M357.244,384.084h-61.432v-96.021c0-13.258,10.748-24.006,24.006-24.006l0,0
 	c13.258,0,24.006,10.748,24.006,24.006v15.503c0,26.761,5.106,53.275,15.045,78.121l0,0
 	C359.326,382.835,358.48,384.084,357.244,384.084z"/>
-                                        <path style="fill:#D4E4AC;" d="M335.82,504.318c-22.096,0-40.009-18.017-40.009-40.113c0,0-0.229-111.404,0-159.879
+                                <path style="fill:#D4E4AC;" d="M335.82,504.318c-22.096,0-40.009-18.017-40.009-40.113c0,0-0.229-111.404,0-159.879
 	s24.006-39.853,24.006-39.853H71.762c-13.258,0-24.246,10.332-24.246,23.59v176.039c0,22.096,18.154,40.217,40.25,40.217H335.82
 	V504.318z"/>
-                                        <rect x="95.771" y="16.003" style="fill:#E2804F;" width="368.078" height="56.016"/>
-                                        <path style="fill:#D4E4AC;" d="M379.414,384.084L379.414,384.084c-19.657,0-35.593-15.935-35.593-35.593c0,0-0.531-33.331,0-44.425
+                                <rect x="95.771" y="16.003" style="fill:#E2804F;" width="368.078" height="56.016"/>
+                                <path style="fill:#D4E4AC;" d="M379.414,384.084L379.414,384.084c-19.657,0-35.593-15.935-35.593-35.593c0,0-0.531-33.331,0-44.425
 	c1.905-39.81-24.006-40.009-24.006-40.009H135.777V40.009h288.062v299.65C423.839,364.194,403.95,384.084,379.414,384.084z"/>
-                                        <polygon points="471.849,80.017 439.843,80.017 439.843,64.013 455.846,64.013 455.846,16.003 103.769,16.003 103.769,64.013
+                                <polygon points="471.849,80.017 439.843,80.017 439.843,64.013 455.846,64.013 455.846,16.003 103.769,16.003 103.769,64.013
 	119.773,64.013 119.773,80.017 87.766,80.017 87.766,0 471.849,0 "/>
-                                        <rect x="175.856" y="87.743" width="104.143" height="15.779"/>
-                                        <rect x="175.856" y="120.354" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
-                                        <rect x="215.83" y="120.354" width="15.779" height="15.779"/>
-                                        <rect x="240.025" y="120.354" width="15.779" height="15.779"/>
-                                        <rect x="264.22" y="120.354" width="15.779" height="15.779"/>
-                                        <rect x="175.856" y="160.328" width="208.287" height="15.779"/>
-                                        <rect x="175.856" y="191.887" style="fill:#FFFFFF;" width="208.287" height="15.779"/>
-                                        <rect x="175.856" y="224.497" width="208.287" height="15.779"/>
-                                        <rect x="359.948" y="256.056" width="24.195" height="15.779"/>
-                                        <rect x="359.948" y="288.666" width="24.195" height="15.779"/>
-                                        <rect x="359.948" y="320.225" width="24.195" height="15.779"/>
-                                        <rect x="87.492" y="296.03" width="168.312" height="15.779"/>
-                                        <rect x="167.44" y="328.64" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
-                                        <rect x="207.414" y="328.64" width="48.39" height="15.779"/>
-                                        <rect x="207.414" y="360.199" width="48.39" height="15.779"/>
-                                        <rect x="167.44" y="360.199" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
-                                        <rect x="87.492" y="415.953" width="79.948" height="15.779"/>
-                                        <g>
-                                            <rect x="240.025" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
-                                            <rect x="215.83" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
-                                            <rect x="191.635" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
-                                        </g>
-                                        <rect x="87.492" y="455.927" width="168.312" height="15.779"/>
-                                        <path d="M416.076,416.203c-0.17,0-0.339,0.012-0.509,0.013l-103.991-0.262l-0.039,15.779l69.019,0.174
+                                <rect x="175.856" y="87.743" width="104.143" height="15.779"/>
+                                <rect x="175.856" y="120.354" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
+                                <rect x="215.83" y="120.354" width="15.779" height="15.779"/>
+                                <rect x="240.025" y="120.354" width="15.779" height="15.779"/>
+                                <rect x="264.22" y="120.354" width="15.779" height="15.779"/>
+                                <rect x="175.856" y="160.328" width="208.287" height="15.779"/>
+                                <rect x="175.856" y="191.887" style="fill:#FFFFFF;" width="208.287" height="15.779"/>
+                                <rect x="175.856" y="224.497" width="208.287" height="15.779"/>
+                                <rect x="359.948" y="256.056" width="24.195" height="15.779"/>
+                                <rect x="359.948" y="288.666" width="24.195" height="15.779"/>
+                                <rect x="359.948" y="320.225" width="24.195" height="15.779"/>
+                                <rect x="87.492" y="296.03" width="168.312" height="15.779"/>
+                                <rect x="167.44" y="328.64" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
+                                <rect x="207.414" y="328.64" width="48.39" height="15.779"/>
+                                <rect x="207.414" y="360.199" width="48.39" height="15.779"/>
+                                <rect x="167.44" y="360.199" style="fill:#FFFFFF;" width="24.195" height="15.779"/>
+                                <rect x="87.492" y="415.953" width="79.948" height="15.779"/>
+                                <g>
+                                    <rect x="240.025" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
+                                    <rect x="215.83" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
+                                    <rect x="191.635" y="415.953" style="fill:#FFFFFF;" width="15.779" height="15.779"/>
+                                </g>
+                                <rect x="87.492" y="455.927" width="168.312" height="15.779"/>
+                                <path d="M416.076,416.203c-0.17,0-0.339,0.012-0.509,0.013l-103.991-0.262l-0.039,15.779l69.019,0.174
 	c-7.758,8.511-12.493,19.811-12.493,32.194c0,17.711-14.354,32.119-31.996,32.119c-0.072,0-0.142-0.005-0.214-0.005v-0.005h-0.229
 	c-17.371-0.241-31.43-14.547-31.43-32.108V288.062c0-9.036,6.931-16.116,15.779-16.116c8.848,0,15.779,7.079,15.779,16.116v56.012
 	c0,12.277,4.644,23.486,12.26,31.972l-36.442-0.067l-0.028,15.779c0,0,71.14,0.215,72.073,0.215
@@ -513,15 +524,15 @@
 	c0-8.947,7.102-16.226,15.831-16.226h221.055c-2.794,4.757-4.405,10.304-4.405,16.226v176.039c0,12.322,4.655,23.568,12.287,32.065
 	L87.766,495.902z"/>
 </svg>
-                                </div>
-                            </div>
-                            <div class="text-3xl font-semibold text-gray-800 text-center"> التعمير <small style="color: red"> (جديد)</small></div>
                         </div>
                     </div>
-                </a>
-            @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+                    <div class="text-3xl font-semibold text-gray-800 text-center"> 6- تعمير العملاء <small style="color: red"> (جديد)</small></div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
     @if ((Auth::user()->user_group && in_array('list.sales-profit', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
         <a class="w-full" href="{{ route('list.sales-profit') }}">
             <div
@@ -641,7 +652,7 @@
 </svg>
                         </div>
                     </div>
-                    <div class="text-3xl font-semibold text-gray-800 text-center">مبيعات، هامش/موظف</div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">7- مبيعات، هامش/موظف</div>
                 </div>
             </div>
         </a>
@@ -656,33 +667,33 @@
                             <svg class="w-20 h-20" viewBox="0 0 50 50" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#231f20;}.cls-2{fill:#ffba50;}.cls-3{fill:#ff8e5a;}.cls-4{fill:#7cc05b;}.cls-5{fill:#8d7f89;}.cls-6{fill:#00a1d3;}</style></defs><title/><path class="cls-1" d="M43.554,38.866l1.939-11.227a.488.488,0,0,0-.048-.293.339.339,0,0,0-.018-.039.374.374,0,0,0-.045-.067.491.491,0,0,0-.4-.218H26.22l-.635-3.674a1.654,1.654,0,0,0-1.633-1.376H20.763a1.442,1.442,0,0,0-1.441,1.441v.392a1.442,1.442,0,0,0,1.441,1.441H24.9l2.433,14.085a3.483,3.483,0,0,0,1.205,2.089,2.142,2.142,0,1,0,2.674.808h8.384a2.113,2.113,0,0,0-.334,1.136,2.136,2.136,0,1,0,3.73-1.407.492.492,0,0,0,.062-.229.5.5,0,0,0-.5-.5H30.771a2.481,2.481,0,0,1-2.421-1.939H43.06A.459.459,0,0,0,43.554,38.866ZM39.52,30.975H43.9l-.309,1.794a.5.5,0,0,0-.115-.023H39.3Zm-.349,2.771h4.253l-.306,1.772H38.949Zm-11.844-1a.489.489,0,0,0-.115.023l-.31-1.794H31.31l.217,1.771Zm.054,1H31.65l.217,1.772h-4.18Zm.785,4.543-.306-1.771h4.129l.217,1.771Zm9.426,0H33.213L33,36.518h4.819Zm.349-2.77H32.874l-.217-1.772h5.506Zm.348-2.772H32.534l-.217-1.771h6.2Zm4.352,5.542H38.6l.223-1.77h4.123Z"/><path class="cls-1" d="M23.44,35.2H23.1a1.384,1.384,0,0,0,.071-.419V33.5a1.412,1.412,0,0,0-1.411-1.41h-5.19a6.343,6.343,0,1,0-9.757,2.164,6.34,6.34,0,0,0,7.262,10.351,1.411,1.411,0,0,0,1.309.891H23.44a1.412,1.412,0,0,0,1.41-1.41V42.814a1.412,1.412,0,0,0-1.41-1.41H23.1a1.408,1.408,0,0,0,.07-.418V39.711a1.408,1.408,0,0,0-.07-.418h.341a1.412,1.412,0,0,0,1.41-1.41V36.607A1.412,1.412,0,0,0,23.44,35.2Z"/><path class="cls-2" d="M5.5,39.153A5.347,5.347,0,1,1,10.847,44.5,5.354,5.354,0,0,1,5.5,39.153Z"/><path class="cls-2" d="M23.85,42.814V44.09a.411.411,0,0,1-.41.41H15.382a.411.411,0,0,1-.411-.41.494.494,0,0,0-.02-.1A6.374,6.374,0,0,0,16.288,42.4H23.44A.411.411,0,0,1,23.85,42.814Z"/><path class="cls-1" d="M10.847,34.7A4.449,4.449,0,1,0,15.3,39.153,4.454,4.454,0,0,0,10.847,34.7Z"/><path class="cls-3" d="M10.847,42.6A3.449,3.449,0,1,1,14.3,39.153,3.453,3.453,0,0,1,10.847,42.6Z"/><path class="cls-3" d="M16.774,41.4a6.284,6.284,0,0,0,.413-2.1h4.571a.41.41,0,0,1,.411.41v1.275a.41.41,0,0,1-.411.41c-.013,0-.025.007-.038.008Z"/><path class="cls-1" d="M11.026,38.651l-.361,0a.414.414,0,0,1,0-.828h1.067a.5.5,0,0,0,0-1h-.385v-.4a.5.5,0,0,0-1,0v.438a1.412,1.412,0,0,0,.321,2.789l.362,0a.414.414,0,0,1,0,.828H9.962a.5.5,0,0,0,0,1h.385v.4a.5.5,0,0,0,1,0V41.44a1.412,1.412,0,0,0-.321-2.789Z"/><path class="cls-2" d="M5.5,29.369a5.347,5.347,0,1,1,8.515,4.292,6.295,6.295,0,0,0-6.335,0A5.325,5.325,0,0,1,5.5,29.369Z"/><path class="cls-1" d="M16.974,16.381a3.3,3.3,0,0,0,2.794-1.561l6.583,2.743a3.305,3.305,0,1,0,6.01-1.1L39.932,10.2a3.424,3.424,0,1,0-.609-.795l-7.632,6.311a3.26,3.26,0,0,0-4.975.917L20.161,13.9a3.3,3.3,0,1,0-3.187,2.482Z"/><path class="cls-4" d="M42.2,5.5a2.3,2.3,0,1,1-2.3,2.3A2.306,2.306,0,0,1,42.2,5.5Z"/><path class="cls-4" d="M29.585,15.934a2.3,2.3,0,1,1-2.3,2.3A2.306,2.306,0,0,1,29.585,15.934Z"/><path class="cls-4" d="M16.974,10.773a2.3,2.3,0,1,1-2.3,2.3A2.306,2.306,0,0,1,16.974,10.773Z"/><path class="cls-5" d="M20.763,24.246a.442.442,0,0,1-.441-.441v-.392a.442.442,0,0,1,.441-.441h3.189a.657.657,0,0,1,.648.546l.126.728Z"/><path class="cls-6" d="M29.409,44.5a1.136,1.136,0,1,1,1.136-1.136A1.137,1.137,0,0,1,29.409,44.5Z"/><circle class="cls-6" cx="41.396" cy="43.364" r="1.136"/><polygon class="cls-5" points="44.412 28.022 44.075 29.975 26.73 29.975 26.392 28.022 44.412 28.022"/><path class="cls-3" d="M21.758,33.094a.41.41,0,0,1,.411.41v1.274a.411.411,0,0,1-.411.411c-.013,0-.025.007-.038.008H15.8a6.325,6.325,0,0,0-.919-.939,6.4,6.4,0,0,0,1.1-1.164Z"/><path class="cls-2" d="M23.85,37.883a.411.411,0,0,1-.41.41H21.758c-.013,0-.025.007-.038.008H17.13a6.3,6.3,0,0,0-.67-2.1h6.98a.411.411,0,0,1,.41.41Z"/></svg>
                         </div>
                     </div>
-                    <div class="text-3xl font-semibold text-gray-800 text-center">التحصيل والمبيعات</div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">8- التحصيل والمبيعات</div>
                 </div>
             </div>
         </a>
     @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.postponed-by-customers', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.postponed-by-customers') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="h-20 w-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                     viewBox="0 0 392.594 392.594" xml:space="preserve">
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('list.postponed-by-customers', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.postponed-by-customers') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="h-20 w-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 392.594 392.594" xml:space="preserve">
 <path style="fill:#FFFFFF;" d="M298.47,329.18l22.691,24.566V32.711c0-6.012-4.848-10.925-10.925-10.925H82.422
 	c-6.012,0-10.925,4.848-10.925,10.925V353.81l22.691-24.566c2.004-2.133,4.719-3.426,7.628-3.491c0.065,0,0.259,0,0.323,0
 	c2.78,0,5.495,1.099,7.564,3.038l39.628,37.947l39.628-37.947c4.267-4.008,10.925-4.008,15.063,0l39.434,37.689l39.434-37.689
 	c2.069-2.004,4.913-3.103,7.887-3.038C293.687,325.754,296.466,326.982,298.47,329.18z"/>
-                                    <polygon style="fill:#FFC10D;" points="100.846,289.875 93.347,297.956 93.347,43.442 299.311,43.442 299.311,297.956
+                                <polygon style="fill:#FFC10D;" points="100.846,289.875 93.347,297.956 93.347,43.442 299.311,43.442 299.311,297.956
 	291.812,289.875 243.521,336.162 196.588,291.168 149.331,336.356 "/>
-                                    <g>
-                                        <path style="fill:#194F82;" d="M137.436,134.012C137.371,134.012,137.371,134.012,137.436,134.012
+                                <g>
+                                    <path style="fill:#194F82;" d="M137.436,134.012C137.371,134.012,137.371,134.012,137.436,134.012
 		C137.113,134.077,137.307,134.012,137.436,134.012z"/>
-                                        <path style="fill:#194F82;" d="M136.208,112.097L136.208,112.097C136.466,112.097,136.272,112.097,136.208,112.097z"/>
-                                        <path style="fill:#194F82;" d="M136.208,112.097C136.143,112.097,136.143,112.097,136.208,112.097
+                                    <path style="fill:#194F82;" d="M136.208,112.097L136.208,112.097C136.466,112.097,136.272,112.097,136.208,112.097z"/>
+                                    <path style="fill:#194F82;" d="M136.208,112.097C136.143,112.097,136.143,112.097,136.208,112.097
 		c-4.913-0.646-8.792-4.784-8.792-9.826c0-5.495,4.461-9.891,9.891-9.891c5.495,0,9.891,4.461,9.891,9.891
 		c0,6.012,4.848,10.925,10.925,10.925c6.077,0,10.925-4.848,10.925-10.925c0-13.705-8.663-25.277-20.816-29.737v-3.685
 		c0-6.012-4.848-10.925-10.925-10.925c-6.077,0-10.925,4.848-10.925,10.925v3.685c-12.154,4.461-20.816,16.097-20.816,29.737
@@ -691,94 +702,94 @@
 		s-10.925,4.848-10.925,10.925c0,13.705,8.663,25.277,20.816,29.737v3.685c0,6.012,4.848,10.925,10.925,10.925
 		c6.077,0,10.925-4.848,10.925-10.925v-3.685c12.154-4.461,20.816-16.097,20.816-29.737
 		C169.048,126.319,153.727,112.097,136.208,112.097z"/>
-                                        <path style="fill:#194F82;" d="M276.103,122.828H209c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
+                                    <path style="fill:#194F82;" d="M276.103,122.828H209c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
 		h67.103c6.012,0,10.925,4.848,10.925,10.925C286.963,117.915,282.115,122.828,276.103,122.828z"/>
-                                        <path style="fill:#194F82;" d="M276.103,170.861H209c-6.012,0-10.925-4.848-10.925-10.925S202.923,149.01,209,149.01h67.103
+                                    <path style="fill:#194F82;" d="M276.103,170.861H209c-6.012,0-10.925-4.848-10.925-10.925S202.923,149.01,209,149.01h67.103
 		c6.012,0,10.925,4.848,10.925,10.925C286.963,165.947,282.115,170.861,276.103,170.861z"/>
-                                        <path style="fill:#194F82;" d="M276.103,218.828H116.555c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
+                                    <path style="fill:#194F82;" d="M276.103,218.828H116.555c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
 		h159.547c6.012,0,10.925,4.848,10.925,10.925C286.963,213.98,282.115,218.828,276.103,218.828z"/>
-                                        <path style="fill:#194F82;" d="M276.103,266.925H116.555c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
+                                    <path style="fill:#194F82;" d="M276.103,266.925H116.555c-6.012,0-10.925-4.848-10.925-10.925c0-6.012,4.848-10.925,10.925-10.925
 		h159.547c6.012,0,10.925,4.848,10.925,10.925C286.963,262.012,282.115,266.925,276.103,266.925z"/>
-                                        <path style="fill:#194F82;" d="M310.236,0H82.422C64.321,0,49.646,14.675,49.646,32.711v348.897
+                                    <path style="fill:#194F82;" d="M310.236,0H82.422C64.321,0,49.646,14.675,49.646,32.711v348.897
 		c0,9.115,11.119,15.192,18.941,7.434l34.069-36.848l38.917,37.301c5.042,4.008,10.925,3.943,15.515,0l39.434-37.689l39.434,37.689
 		c4.267,4.008,10.925,4.008,15.063,0l38.917-37.301l34.069,36.848c7.37,7.564,18.941,1.939,18.941-7.434V32.711
 		C343.012,14.675,328.337,0,310.236,0z M243.521,366.481l-39.434-37.689c-4.267-4.008-10.925-4.008-15.063,0l-39.628,37.947
 		l-39.628-38.012c-2.004-1.939-4.719-3.038-7.564-3.038c-0.065,0-0.259,0-0.323,0c-2.909,0.065-5.689,1.293-7.628,3.491
 		l-22.691,24.566V32.711c0-6.012,4.848-10.925,10.925-10.925h227.879c6.012,0,10.925,4.848,10.925,10.925v320.97l-22.82-24.501
 		c-2.004-2.133-4.719-3.426-7.628-3.491c-2.909-0.065-5.689,1.034-7.887,3.038L243.521,366.481z"/>
-                                    </g>
+                                </g>
 </svg>
-                            </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">المستحقات بالموظف</div>
                     </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">9- المستحقات بالموظف</div>
                 </div>
-            </a>
-        @endif
-        @if ((Auth::user()->user_group && in_array('list.customer-cash-statement', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.customer-cash-statement') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="w-20 h-20" viewBox="0 0 48 48" id="svg5" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+            </div>
+        </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('list.customer-cash-statement', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.customer-cash-statement') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 48 48" id="svg5" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
 
 <defs id="defs2"/>
 
-                                    <g id="layer1" transform="translate(-314.00003,-233)">
+                                <g id="layer1" transform="translate(-314.00003,-233)">
 
-                                        <path d="m 318.50027,237.5 h 19.99445 l 9.00552,9 -0.006,29 h -28.99445 z" id="rect19954" style="fill:#f8f8f8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 318.50027,237.5 h 19.99445 l 9.00552,9 -0.006,29 h -28.99445 z" id="rect19954" style="fill:#f8f8f8;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="M 318.50024,245.5293 V 275.5 h 23.83203 a 28.826267,16.861496 50.597708 0 0 -9,-18.18946 28.826267,16.861496 50.597708 0 0 -14.83203,-11.78124 z" id="path25329" style="fill:#e4e9ef;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
+                                    <path d="M 318.50024,245.5293 V 275.5 h 23.83203 a 28.826267,16.861496 50.597708 0 0 -9,-18.18946 28.826267,16.861496 50.597708 0 0 -14.83203,-11.78124 z" id="path25329" style="fill:#e4e9ef;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
 
-                                        <path d="m 347.50024,246.5 h -9 v -9 z" id="rect19969" style="fill:#e4e9ef;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 347.50024,246.5 h -9 v -9 z" id="rect19969" style="fill:#e4e9ef;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.50027,241.5 h 11.99997 v 6 h -11.99997 z" id="rect19974" style="fill:#ff5576;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.50027,241.5 h 11.99997 v 6 h -11.99997 z" id="rect19974" style="fill:#ff5576;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.31274,258.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 12.48437 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19976" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.31274,258.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 12.48437 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19976" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.23266,262.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 9.53516 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19978" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.23266,262.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 9.53516 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19978" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.11157,266.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 9.77734 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19980" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.11157,266.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 9.77734 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19980" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.33422,270.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 11.16602 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19982" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+                                    <path d="m 322.33422,270.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 11.16602 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path19982" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
 
-                                        <path d="m 322.61157,250.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 17.77734 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path20716" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.61157,250.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 17.77734 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path20716" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 322.50024,254.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 13 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path20718" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+                                    <path d="m 322.50024,254.5 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 13 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path20718" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
 
-                                        <path d="m 357.50024,266.49998 c 0,5.52285 -4.47716,10.00002 -10.00002,10.00002 -5.52288,0 -10.00004,-4.47717 -10.00004,-10.00002 0,-5.52286 4.47716,-10.00004 10.00004,-10.00004 5.52286,0 10.00002,4.47718 10.00002,10.00004 z" id="path19956" style="fill:#f2a50c;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
+                                    <path d="m 357.50024,266.49998 c 0,5.52285 -4.47716,10.00002 -10.00002,10.00002 -5.52288,0 -10.00004,-4.47717 -10.00004,-10.00002 0,-5.52286 4.47716,-10.00004 10.00004,-10.00004 5.52286,0 10.00002,4.47718 10.00002,10.00004 z" id="path19956" style="fill:#f2a50c;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
 
-                                        <path d="m 347.50024,256.5 c -5.52287,0 -10,4.47715 -10,10 0,4.01074 2.3614,7.46892 5.76953,9.0625 5.1103,-1.59587 8.81836,-6.36785 8.81836,-12.00391 0,-2.46468 -0.7119,-4.76079 -1.9375,-6.70117 C 349.30645,256.62595 348.4179,256.5 347.50024,256.5 Z" id="path24291" style="fill:#f7c63d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
+                                    <path d="m 347.50024,256.5 c -5.52287,0 -10,4.47715 -10,10 0,4.01074 2.3614,7.46892 5.76953,9.0625 5.1103,-1.59587 8.81836,-6.36785 8.81836,-12.00391 0,-2.46468 -0.7119,-4.76079 -1.9375,-6.70117 C 349.30645,256.62595 348.4179,256.5 347.50024,256.5 Z" id="path24291" style="fill:#f7c63d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
 
-                                        <path d="m 347.50024,258.82031 a 1.0055461,0.99447156 0 0 0 -1.00586,0.99609 v 1.28516 c -1.37449,0.41296 -2.40234,1.64607 -2.40234,3.1211 0,1.81802 1.56087,3.27148 3.4082,3.27148 0.80605,0 1.39648,0.58718 1.39648,1.2832 0,0.69605 -0.59044,1.2793 -1.39648,1.2793 -0.80605,0 -1.39648,-0.58325 -1.39648,-1.2793 a 1.0055461,0.99447156 0 0 0 -1.00586,-0.99609 1.0055461,0.99447156 0 0 0 -1.00586,0.99609 c 0,1.47503 1.02785,2.70815 2.40234,3.1211 v 1.28515 a 1.0055461,0.99447156 0 0 0 1.00586,0.9961 1.0055461,0.99447156 0 0 0 1.00391,-0.9961 v -1.28515 c 1.37488,-0.41243 2.40234,-1.64543 2.40234,-3.1211 0,-1.81801 -1.55892,-3.27148 -3.40625,-3.27148 -0.80606,0 -1.39648,-0.58715 -1.39648,-1.2832 0,-0.69603 0.59042,-1.2793 1.39648,-1.2793 0.80606,0 1.39648,0.58327 1.39648,1.2793 a 1.0055461,0.99447156 0 0 0 1.00586,0.99609 1.0055461,0.99447156 0 0 0 1.00391,-0.99609 c 0,-1.47566 -1.02746,-2.70868 -2.40234,-3.1211 v -1.28516 a 1.0055461,0.99447156 0 0 0 -1.00391,-0.99609 z" id="path24192" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.999996;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
+                                    <path d="m 347.50024,258.82031 a 1.0055461,0.99447156 0 0 0 -1.00586,0.99609 v 1.28516 c -1.37449,0.41296 -2.40234,1.64607 -2.40234,3.1211 0,1.81802 1.56087,3.27148 3.4082,3.27148 0.80605,0 1.39648,0.58718 1.39648,1.2832 0,0.69605 -0.59044,1.2793 -1.39648,1.2793 -0.80605,0 -1.39648,-0.58325 -1.39648,-1.2793 a 1.0055461,0.99447156 0 0 0 -1.00586,-0.99609 1.0055461,0.99447156 0 0 0 -1.00586,0.99609 c 0,1.47503 1.02785,2.70815 2.40234,3.1211 v 1.28515 a 1.0055461,0.99447156 0 0 0 1.00586,0.9961 1.0055461,0.99447156 0 0 0 1.00391,-0.9961 v -1.28515 c 1.37488,-0.41243 2.40234,-1.64543 2.40234,-3.1211 0,-1.81801 -1.55892,-3.27148 -3.40625,-3.27148 -0.80606,0 -1.39648,-0.58715 -1.39648,-1.2832 0,-0.69603 0.59042,-1.2793 1.39648,-1.2793 0.80606,0 1.39648,0.58327 1.39648,1.2793 a 1.0055461,0.99447156 0 0 0 1.00586,0.99609 1.0055461,0.99447156 0 0 0 1.00391,-0.99609 c 0,-1.47566 -1.02746,-2.70868 -2.40234,-3.1211 v -1.28516 a 1.0055461,0.99447156 0 0 0 -1.00391,-0.99609 z" id="path24192" style="color:#000000;fill:#808b9b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.999996;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
 
-                                        <path d="m 347.50021,261.94787 v -2.13194" id="path24184" style="color:#000000;fill:#ebcfb2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.99999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
+                                    <path d="m 347.50021,261.94787 v -2.13194" id="path24184" style="color:#000000;fill:#ebcfb2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.99999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1"/>
 
-                                        <path d="m 347.50021,273.18399 v -2.13192" id="path24196" style="color:#000000;fill:#ebcfb2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.99999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1;-inkscape-stroke:none"/>
+                                    <path d="m 347.50021,273.18399 v -2.13192" id="path24196" style="color:#000000;fill:#ebcfb2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.99999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-opacity:1;-inkscape-stroke:none"/>
 
-                                    </g>
+                                </g>
 
 </svg>
-                            </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">كشف حساب عميل نقدي</div>
                     </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">10- فواتير عميل</div>
                 </div>
-            </a>
-        @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || (Auth::user()->user_group && in_array('list.my-product-target-only', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.my-product-target') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="w-20 h-20" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                     viewBox="0 0 512 512" xml:space="preserve">
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('list.my-product-target', json_decode(Auth::user()->user_group->report_type))) || (Auth::user()->user_group && in_array('list.my-product-target-only', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.my-product-target') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
 <g>
     <circle style="fill:#8ECBFD;" cx="256" cy="256" r="256"/>
     <circle style="fill:#2EA8FC;" cx="256" cy="256" r="198.862"/>
@@ -834,22 +845,22 @@
     </g>
 </g>
 </svg>
-                            </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">مستهدف الياسين</div>
                     </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">11- مستهدف الياسين</div>
                 </div>
-            </a>
-        @endif
-        @if ((Auth::user()->user_group && in_array('list.purchase-recommendation', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.purchase-recommendation') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                     viewBox="0 0 484.185 484.185" xml:space="preserve">
+            </div>
+        </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('list.purchase-recommendation', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.purchase-recommendation') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 484.185 484.185" xml:space="preserve">
 <g>
     <g id="XMLID_31_">
         <g>
@@ -886,78 +897,809 @@
     </g>
 </g>
 </svg>
-                            </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">توصية الشراء</div>
                     </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">12- توصية الشراء</div>
                 </div>
-            </a>
-        @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.distribution-calc', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.distribution-calc') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="h-20 w-20" viewBox="0 0 64 64" id="calculator" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#d8d8fc;}.cls-2{fill:#f03800;}.cls-3{fill:#f2f2fc;}.cls-4{fill:#4bb9ec;}.cls-5{fill:#fdbf00;}</style></defs><title/><path class="cls-1" d="M55,17H37V34.992H55ZM45.2,34.046a6.784,6.784,0,1,1,0-13.568,1,1,0,0,1,1,1v4.784h4.784a1,1,0,0,1,1,1A6.787,6.787,0,0,1,45.2,34.046Zm8.676-8.519H48.1a1,1,0,0,1-1-1V18.743a1,1,0,0,1,1-1,6.787,6.787,0,0,1,6.784,6.784A1,1,0,0,1,53.88,25.527Z"/><path class="cls-1" d="M33,53a1,1,0,0,1-1,1H19.015v5H59V13.008H33Zm2-37a1,1,0,0,1,1-1H56a1,1,0,0,1,1,1V35.992a1,1,0,0,1-1,1H36a1,1,0,0,1-1-1Zm0,24a1,1,0,0,1,1-1H56a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H36a1,1,0,0,1-1-1Zm1,7.008H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Zm0,4H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Zm0,4H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Z"/><path d="M36,36.992H56a1,1,0,0,0,1-1V16a1,1,0,0,0-1-1H36a1,1,0,0,0-1,1V35.992A1,1,0,0,0,36,36.992ZM37,17H55V34.992H37Z"/><rect class="cls-2" height="2" width="18" x="37" y="41"/><path d="M36,45H56a1,1,0,0,0,1-1V40a1,1,0,0,0-1-1H36a1,1,0,0,0-1,1v4A1,1,0,0,0,36,45Zm1-4H55v2H37Z"/><path d="M36,49.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path d="M36,53.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path d="M36,57.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path class="cls-3" d="M31,52V5H5V52Zm-1.995-3.984a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-12a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm-12.99-13h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4A1,1,0,0,1,16.015,35.016Zm-1-3.008v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4A1,1,0,0,1,15.015,32.008Zm13.99,0a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM28.99,24a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1V20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM7,8A1,1,0,0,1,8,7H28a1,1,0,0,1,1,1v8a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1ZM7,20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1Zm6.015,28.008a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm0-7.992a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm0-8.008a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM15,20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H16a1,1,0,0,1-1-1Zm.015,28.008v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4A1,1,0,0,1,15.015,48.008Z"/><path d="M60,11.008H33V4a1,1,0,0,0-1-1H4A1,1,0,0,0,3,4V53a1,1,0,0,0,1,1H17.015v6a1,1,0,0,0,1,1H60a1,1,0,0,0,1-1V12.008A1,1,0,0,0,60,11.008ZM5,5H31V52H5ZM59,59H19.015V54H32a1,1,0,0,0,1-1V13.008H59Z"/><rect class="cls-4" height="6" width="18" x="9" y="9"/><path d="M8,17H28a1,1,0,0,0,1-1V8a1,1,0,0,0-1-1H8A1,1,0,0,0,7,8v8A1,1,0,0,0,8,17ZM9,9H27v6H9Z"/><rect class="cls-5" height="2" width="2" x="9" y="21"/><path d="M8,25h4a1,1,0,0,0,1-1V20a1,1,0,0,0-1-1H8a1,1,0,0,0-1,1v4A1,1,0,0,0,8,25Zm1-4h2v2H9Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="29.008"/><path d="M12.015,27.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,27.008Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="37.016"/><path d="M12.015,35.016h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,35.016Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="45.008"/><path d="M12.015,43.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,43.008Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="17" y="21"/><path d="M16,25h4a1,1,0,0,0,1-1V20a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v4A1,1,0,0,0,16,25Zm1-4h2v2H17Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="29.008"/><path d="M16.015,33.008h4a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1v4A1,1,0,0,0,16.015,33.008Zm1-4h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="37.016"/><path d="M15.015,40.016a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1Zm2-3h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="45.008"/><path d="M20.015,49.008a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1Zm-3-4h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="24.99" y="21"/><path d="M27.99,19h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V20A1,1,0,0,0,27.99,19Zm-1,4h-2V21h2Z"/><rect class="cls-5" height="2" width="2" x="25.005" y="29.008"/><path d="M28.005,27.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,28.005,27.008Zm-1,4h-2v-2h2Z"/><rect class="cls-2" height="10" width="2" x="25.005" y="37.016"/><path d="M28.005,35.016h-4a1,1,0,0,0-1,1v12a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-12A1,1,0,0,0,28.005,35.016Zm-1,12h-2v-10h2Z"/><path class="cls-5" d="M45.2,28.262a1,1,0,0,1-1-1V22.583a4.784,4.784,0,1,0,5.679,5.679Z"/><path d="M50.988,26.262H46.2V21.479a1,1,0,0,0-1-1,6.784,6.784,0,1,0,6.784,6.784A1,1,0,0,0,50.988,26.262ZM45.2,32.046a4.784,4.784,0,0,1-1-9.463v4.679a1,1,0,0,0,1,1h4.679A4.788,4.788,0,0,1,45.2,32.046Z"/><path class="cls-4" d="M49.1,19.848v3.679h3.679A4.8,4.8,0,0,0,49.1,19.848Z"/><path d="M48.1,17.743a1,1,0,0,0-1,1v5.784a1,1,0,0,0,1,1H53.88a1,1,0,0,0,1-1A6.787,6.787,0,0,0,48.1,17.743Zm1,5.784V19.848a4.8,4.8,0,0,1,3.679,3.679Z"/></svg>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">حاسبة التوزيع</div>
-                    </div>
-                </div>
-            </a>
-        @endif
-        @if ((Auth::user()->user_group && in_array('list.weekly-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.weekly-report') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg class="h-20 w-20" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M153.9 105.9h715.4v812.8H153.9z" fill="#55B7A8" /><path d="M877.3 926.8H145.9V97.9h731.4v828.9z m-715.4-16h699.4V113.9H161.9v796.9z" fill="#0A0408" /><path d="M221.3 182.9h580.5v658.8H221.3z" fill="#FFFFFF" /><path d="M793.8 833.8h16v16h-16zM777.7 849.8h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0H568v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H439v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H310v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16zM213.3 833.8h16v16h-16zM229.3 818.1h-16v-15.7h16v15.7z m0-31.4h-16V771h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V724z m0-31.3h-16V677h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16V332h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V285z m0-31.4h-16V238h16v15.6z m0-31.3h-16v-15.7h16v15.7zM213.3 174.9h16v16h-16zM777.7 190.9h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0H568v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H439v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H310v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16zM793.8 174.9h16v16h-16zM809.8 818.1h-16v-15.7h16v15.7z m0-31.4h-16V771h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V724z m0-31.3h-16V677h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16V332h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V285z m0-31.4h-16V238h16v15.6z m0-31.3h-16v-15.7h16v15.7z" fill="#0A0408" /><path d="M364.5 306.6m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 359.4c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8s16.5 36.8 36.8 36.8 36.8-16.5 36.8-36.8-16.5-36.8-36.8-36.8zM459.3 262.6h144.1v16H459.3zM459.3 332.2h244.1v16H459.3z" fill="#0A0408" /><path d="M364.5 516.3m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 569.1c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8 0 20.3 16.5 36.8 36.8 36.8s36.8-16.5 36.8-36.8c0-20.3-16.5-36.8-36.8-36.8zM459.3 472.3h144.1v16H459.3zM459.3 541.9h244.1v16H459.3z" fill="#0A0408" /><path d="M364.5 726m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 778.8c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8 0 20.3 16.5 36.8 36.8 36.8s36.8-16.5 36.8-36.8c0-20.3-16.5-36.8-36.8-36.8zM459.3 682h144.1v16H459.3zM459.3 751.6h244.1v16H459.3z" fill="#0A0408" /><path d="M359 72.4h305.2v75.9H359z" fill="#EBB866" /><path d="M672.2 156.2H351V64.4h321.2v91.8z m-305.2-16h289.2V80.4H367v59.8z" fill="#0A0408" /><path d="M808.3 807.9m-141.7 0a141.7 141.7 0 1 0 283.4 0 141.7 141.7 0 1 0-283.4 0Z" fill="#EBB866" /><path d="M808.3 957.6c-82.5 0-149.7-67.1-149.7-149.7s67.1-149.7 149.7-149.7S958 725.4 958 807.9s-67.2 149.7-149.7 149.7z m0-283.4c-73.7 0-133.7 60-133.7 133.7s60 133.7 133.7 133.7S942 881.6 942 807.9s-60-133.7-133.7-133.7z" fill="#0A0408" /><path d="M810.3 727.1l26 52.5 58 8.5-42 40.9 9.9 57.8-51.9-27.3-51.9 27.3 9.9-57.8-41.9-40.9 58-8.5z" fill="#FFFFFF" /><path d="M872.8 901.4l-62.5-32.9-62.5 32.9 11.9-69.6-50.6-49.3 69.9-10.2 31.3-63.3 31.3 63.3 69.9 10.2-50.6 49.3 11.9 69.6z m-62.5-51l41.3 21.7-7.9-45.9 33.4-32.5L831 787l-20.6-41.8-20.7 41.8-46.1 6.7 33.4 32.5-7.9 45.9 41.2-21.7z" fill="#0A0408" /></svg>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">التقرير الإسبوعي</div>
-                    </div>
-                </div>
-            </a>
-        @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        @if ((Auth::user()->user_group && in_array('list.marketing-depts-sales', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.marketing-depts-sales') }}">
-                <div
-                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                    <div class="px-5 pt-5">
-                        <div class="flex items-center justify-center mb-8">
-                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                                <svg viewBox="0 0 1024 1024" class="w-20 h-20 icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M135.3 373h753.1v493H135.3z" fill="#FFFFFF" /><path d="M880.5 365h16v16h-16zM864.8 381h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H755v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16H708v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0H504v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16H457v16z m-31.4 0H410v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H159v-16h15.7v16zM127.3 365h16v16h-16zM143.3 841.5h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.8h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16V710z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16V562h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4zM127.3 858h16v16h-16zM864.8 874h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H755v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16H708v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0H504v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16H457v16z m-31.4 0H410v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H159v-16h15.7v16zM880.5 858h16v16h-16zM896.5 841.5h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.8h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16V710z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16V562h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z" fill="#0A0408" /><path d="M192.7 440.7h645.2v454.9H192.7z" fill="#EBB866" /><path d="M71.9 864.5H952v83.9H71.9z" fill="#FFFFFF" /><path d="M959.9 956.4h-896v-99.9H960v99.9z m-880-16H944v-67.9H79.9v67.9z" fill="#0A0408" /><path d="M314.5 334.1h84.4v319.7h-84.4z" fill="#55B7A8" /><path d="M406.9 661.8H306.5V326.1h100.4v335.7z m-84.4-16h68.4V342.1h-68.4v303.7z" fill="#0A0408" /><path d="M475.3 145.7h84.4v508.1h-84.4z" fill="#DC444A" /><path d="M567.6 661.8H467.3V137.7h100.4v524.1z m-84.3-16h68.4V153.7h-68.4v492.1z" fill="#0A0408" /><path d="M636 241.8h84.4v412H636z" fill="#68A4D9" /><path d="M728.4 661.8H628v-428h100.4v428z m-84.4-16h68.4v-396H644v396z" fill="#0A0408" /><path d="M314.5 308.7h84.4v110.8h-84.4z" fill="#FFFFFF" /><path d="M406.9 427.5H306.5V300.7h100.4v126.8z m-84.4-16h68.4v-94.8h-68.4v94.8z" fill="#0A0408" /><path d="M475.3 104h84.4v110.8h-84.4z" fill="#FFFFFF" /><path d="M567.6 222.8H467.3V96h100.4v126.8z m-84.3-16h68.4V112h-68.4v94.8z" fill="#0A0408" /><path d="M636 223.3h84.4v110.8H636z" fill="#FFFFFF" /><path d="M728.4 342.1H628V215.3h100.4v126.8z m-84.4-16h68.4v-94.8H644v94.8z" fill="#0A0408" /><path d="M314.5 742.2h8v16h-8zM696.8 758.2h-15.6v-16h15.6v16z m-31.2 0H650v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16H572v16z m-31.2 0h-15.6v-16h15.6v16z m-31.1 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16zM712.4 742.2h8v16h-8z" fill="#0A0408" /><path d="M109.9 347.6h50.9v50.9h-50.9z" fill="#DC444A" /><path d="M168.8 406.5h-66.9v-66.9h66.9v66.9z m-50.9-16h34.9v-34.9h-34.9v34.9z" fill="#0A0408" /><path d="M863.7 346.9h50.9v50.9h-50.9z" fill="#DC444A" /><path d="M922.6 405.7h-66.9v-66.9h66.9v66.9z m-50.9-16h34.9v-34.9h-34.9v34.9z" fill="#0A0408" /></svg>
-                            </div>
-                        </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">تقرير الاقسام التسويقية</div>
-                    </div>
-                </div>
-            </a>
-        @endif
-    </div>
-    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
-        <a class="w-full" href="{{ route('sap-reports') }}">
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('list.distribution-calc', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.distribution-calc') }}">
             <div
                 class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
                 <div class="px-5 pt-5">
                     <div class="flex items-center justify-center mb-8">
                         <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                            <img src="{{ asset('images/sap-logo.png') }}" width="20%" style="margin: auto;">
+                            <svg class="h-20 w-20" viewBox="0 0 64 64" id="calculator" xmlns="http://www.w3.org/2000/svg"><defs><style>.cls-1{fill:#d8d8fc;}.cls-2{fill:#f03800;}.cls-3{fill:#f2f2fc;}.cls-4{fill:#4bb9ec;}.cls-5{fill:#fdbf00;}</style></defs><title/><path class="cls-1" d="M55,17H37V34.992H55ZM45.2,34.046a6.784,6.784,0,1,1,0-13.568,1,1,0,0,1,1,1v4.784h4.784a1,1,0,0,1,1,1A6.787,6.787,0,0,1,45.2,34.046Zm8.676-8.519H48.1a1,1,0,0,1-1-1V18.743a1,1,0,0,1,1-1,6.787,6.787,0,0,1,6.784,6.784A1,1,0,0,1,53.88,25.527Z"/><path class="cls-1" d="M33,53a1,1,0,0,1-1,1H19.015v5H59V13.008H33Zm2-37a1,1,0,0,1,1-1H56a1,1,0,0,1,1,1V35.992a1,1,0,0,1-1,1H36a1,1,0,0,1-1-1Zm0,24a1,1,0,0,1,1-1H56a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H36a1,1,0,0,1-1-1Zm1,7.008H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Zm0,4H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Zm0,4H56a1,1,0,0,1,0,2H36a1,1,0,0,1,0-2Z"/><path d="M36,36.992H56a1,1,0,0,0,1-1V16a1,1,0,0,0-1-1H36a1,1,0,0,0-1,1V35.992A1,1,0,0,0,36,36.992ZM37,17H55V34.992H37Z"/><rect class="cls-2" height="2" width="18" x="37" y="41"/><path d="M36,45H56a1,1,0,0,0,1-1V40a1,1,0,0,0-1-1H36a1,1,0,0,0-1,1v4A1,1,0,0,0,36,45Zm1-4H55v2H37Z"/><path d="M36,49.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path d="M36,53.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path d="M36,57.008H56a1,1,0,0,0,0-2H36a1,1,0,0,0,0,2Z"/><path class="cls-3" d="M31,52V5H5V52Zm-1.995-3.984a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-12a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm-12.99-13h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4A1,1,0,0,1,16.015,35.016Zm-1-3.008v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4A1,1,0,0,1,15.015,32.008Zm13.99,0a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM28.99,24a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1V20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM7,8A1,1,0,0,1,8,7H28a1,1,0,0,1,1,1v8a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1ZM7,20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1Zm6.015,28.008a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm0-7.992a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1Zm0-8.008a1,1,0,0,1-1,1h-4a1,1,0,0,1-1-1v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1ZM15,20a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1H16a1,1,0,0,1-1-1Zm.015,28.008v-4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v4a1,1,0,0,1-1,1h-4A1,1,0,0,1,15.015,48.008Z"/><path d="M60,11.008H33V4a1,1,0,0,0-1-1H4A1,1,0,0,0,3,4V53a1,1,0,0,0,1,1H17.015v6a1,1,0,0,0,1,1H60a1,1,0,0,0,1-1V12.008A1,1,0,0,0,60,11.008ZM5,5H31V52H5ZM59,59H19.015V54H32a1,1,0,0,0,1-1V13.008H59Z"/><rect class="cls-4" height="6" width="18" x="9" y="9"/><path d="M8,17H28a1,1,0,0,0,1-1V8a1,1,0,0,0-1-1H8A1,1,0,0,0,7,8v8A1,1,0,0,0,8,17ZM9,9H27v6H9Z"/><rect class="cls-5" height="2" width="2" x="9" y="21"/><path d="M8,25h4a1,1,0,0,0,1-1V20a1,1,0,0,0-1-1H8a1,1,0,0,0-1,1v4A1,1,0,0,0,8,25Zm1-4h2v2H9Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="29.008"/><path d="M12.015,27.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,27.008Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="37.016"/><path d="M12.015,35.016h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,35.016Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="9.015" y="45.008"/><path d="M12.015,43.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,12.015,43.008Zm-1,4h-2v-2h2Z"/><rect class="cls-5" height="2" width="2" x="17" y="21"/><path d="M16,25h4a1,1,0,0,0,1-1V20a1,1,0,0,0-1-1H16a1,1,0,0,0-1,1v4A1,1,0,0,0,16,25Zm1-4h2v2H17Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="29.008"/><path d="M16.015,33.008h4a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1v4A1,1,0,0,0,16.015,33.008Zm1-4h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="37.016"/><path d="M15.015,40.016a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1Zm2-3h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="17.015" y="45.008"/><path d="M20.015,49.008a1,1,0,0,0,1-1v-4a1,1,0,0,0-1-1h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1Zm-3-4h2v2h-2Z"/><rect class="cls-5" height="2" width="2" x="24.99" y="21"/><path d="M27.99,19h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V20A1,1,0,0,0,27.99,19Zm-1,4h-2V21h2Z"/><rect class="cls-5" height="2" width="2" x="25.005" y="29.008"/><path d="M28.005,27.008h-4a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-4A1,1,0,0,0,28.005,27.008Zm-1,4h-2v-2h2Z"/><rect class="cls-2" height="10" width="2" x="25.005" y="37.016"/><path d="M28.005,35.016h-4a1,1,0,0,0-1,1v12a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1v-12A1,1,0,0,0,28.005,35.016Zm-1,12h-2v-10h2Z"/><path class="cls-5" d="M45.2,28.262a1,1,0,0,1-1-1V22.583a4.784,4.784,0,1,0,5.679,5.679Z"/><path d="M50.988,26.262H46.2V21.479a1,1,0,0,0-1-1,6.784,6.784,0,1,0,6.784,6.784A1,1,0,0,0,50.988,26.262ZM45.2,32.046a4.784,4.784,0,0,1-1-9.463v4.679a1,1,0,0,0,1,1h4.679A4.788,4.788,0,0,1,45.2,32.046Z"/><path class="cls-4" d="M49.1,19.848v3.679h3.679A4.8,4.8,0,0,0,49.1,19.848Z"/><path d="M48.1,17.743a1,1,0,0,0-1,1v5.784a1,1,0,0,0,1,1H53.88a1,1,0,0,0,1-1A6.787,6.787,0,0,0,48.1,17.743Zm1,5.784V19.848a4.8,4.8,0,0,1,3.679,3.679Z"/></svg>
                         </div>
                     </div>
-                    <div class="text-3xl font-semibold text-gray-800 text-center">تقارير ساب</div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">13- حاسبة التوزيع</div>
                 </div>
             </div>
         </a>
-    </div>
+    @endif
+    @if ((Auth::user()->user_group && in_array('list.weekly-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.weekly-report') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="h-20 w-20" viewBox="0 0 1024 1024" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M153.9 105.9h715.4v812.8H153.9z" fill="#55B7A8" /><path d="M877.3 926.8H145.9V97.9h731.4v828.9z m-715.4-16h699.4V113.9H161.9v796.9z" fill="#0A0408" /><path d="M221.3 182.9h580.5v658.8H221.3z" fill="#FFFFFF" /><path d="M793.8 833.8h16v16h-16zM777.7 849.8h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0H568v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H439v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H310v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16zM213.3 833.8h16v16h-16zM229.3 818.1h-16v-15.7h16v15.7z m0-31.4h-16V771h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V724z m0-31.3h-16V677h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16V332h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V285z m0-31.4h-16V238h16v15.6z m0-31.3h-16v-15.7h16v15.7zM213.3 174.9h16v16h-16zM777.7 190.9h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0H568v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H439v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16z m-32.3 0H310v-16h16.1v16z m-32.3 0h-16.1v-16h16.1v16z m-32.2 0h-16.1v-16h16.1v16zM793.8 174.9h16v16h-16zM809.8 818.1h-16v-15.7h16v15.7z m0-31.4h-16V771h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V724z m0-31.3h-16V677h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16V332h16v15.7z m0-31.3h-16v-15.7h16v15.7z m0-31.4h-16v-15.7h16V285z m0-31.4h-16V238h16v15.6z m0-31.3h-16v-15.7h16v15.7z" fill="#0A0408" /><path d="M364.5 306.6m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 359.4c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8s16.5 36.8 36.8 36.8 36.8-16.5 36.8-36.8-16.5-36.8-36.8-36.8zM459.3 262.6h144.1v16H459.3zM459.3 332.2h244.1v16H459.3z" fill="#0A0408" /><path d="M364.5 516.3m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 569.1c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8 0 20.3 16.5 36.8 36.8 36.8s36.8-16.5 36.8-36.8c0-20.3-16.5-36.8-36.8-36.8zM459.3 472.3h144.1v16H459.3zM459.3 541.9h244.1v16H459.3z" fill="#0A0408" /><path d="M364.5 726m-44.8 0a44.8 44.8 0 1 0 89.6 0 44.8 44.8 0 1 0-89.6 0Z" fill="#DC444A" /><path d="M364.5 778.8c-29.1 0-52.8-23.7-52.8-52.8s23.7-52.8 52.8-52.8 52.8 23.7 52.8 52.8-23.7 52.8-52.8 52.8z m0-89.6c-20.3 0-36.8 16.5-36.8 36.8 0 20.3 16.5 36.8 36.8 36.8s36.8-16.5 36.8-36.8c0-20.3-16.5-36.8-36.8-36.8zM459.3 682h144.1v16H459.3zM459.3 751.6h244.1v16H459.3z" fill="#0A0408" /><path d="M359 72.4h305.2v75.9H359z" fill="#EBB866" /><path d="M672.2 156.2H351V64.4h321.2v91.8z m-305.2-16h289.2V80.4H367v59.8z" fill="#0A0408" /><path d="M808.3 807.9m-141.7 0a141.7 141.7 0 1 0 283.4 0 141.7 141.7 0 1 0-283.4 0Z" fill="#EBB866" /><path d="M808.3 957.6c-82.5 0-149.7-67.1-149.7-149.7s67.1-149.7 149.7-149.7S958 725.4 958 807.9s-67.2 149.7-149.7 149.7z m0-283.4c-73.7 0-133.7 60-133.7 133.7s60 133.7 133.7 133.7S942 881.6 942 807.9s-60-133.7-133.7-133.7z" fill="#0A0408" /><path d="M810.3 727.1l26 52.5 58 8.5-42 40.9 9.9 57.8-51.9-27.3-51.9 27.3 9.9-57.8-41.9-40.9 58-8.5z" fill="#FFFFFF" /><path d="M872.8 901.4l-62.5-32.9-62.5 32.9 11.9-69.6-50.6-49.3 69.9-10.2 31.3-63.3 31.3 63.3 69.9 10.2-50.6 49.3 11.9 69.6z m-62.5-51l41.3 21.7-7.9-45.9 33.4-32.5L831 787l-20.6-41.8-20.7 41.8-46.1 6.7 33.4 32.5-7.9 45.9 41.2-21.7z" fill="#0A0408" /></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">14- أداء مهندسي المبيعات</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('list.marketing-depts-sales', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.marketing-depts-sales') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg viewBox="0 0 1024 1024" class="w-20 h-20 icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M135.3 373h753.1v493H135.3z" fill="#FFFFFF" /><path d="M880.5 365h16v16h-16zM864.8 381h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H755v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16H708v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0H504v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16H457v16z m-31.4 0H410v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H159v-16h15.7v16zM127.3 365h16v16h-16zM143.3 841.5h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.8h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16V710z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16V562h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4zM127.3 858h16v16h-16zM864.8 874h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H755v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16H708v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0H504v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16H457v16z m-31.4 0H410v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.4 0h-15.7v-16h15.7v16z m-31.3 0h-15.7v-16h15.7v16z m-31.4 0H159v-16h15.7v16zM880.5 858h16v16h-16zM896.5 841.5h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.8h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16V710z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16V562h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z m0-32.9h-16v-16.4h16v16.4z" fill="#0A0408" /><path d="M192.7 440.7h645.2v454.9H192.7z" fill="#EBB866" /><path d="M71.9 864.5H952v83.9H71.9z" fill="#FFFFFF" /><path d="M959.9 956.4h-896v-99.9H960v99.9z m-880-16H944v-67.9H79.9v67.9z" fill="#0A0408" /><path d="M314.5 334.1h84.4v319.7h-84.4z" fill="#55B7A8" /><path d="M406.9 661.8H306.5V326.1h100.4v335.7z m-84.4-16h68.4V342.1h-68.4v303.7z" fill="#0A0408" /><path d="M475.3 145.7h84.4v508.1h-84.4z" fill="#DC444A" /><path d="M567.6 661.8H467.3V137.7h100.4v524.1z m-84.3-16h68.4V153.7h-68.4v492.1z" fill="#0A0408" /><path d="M636 241.8h84.4v412H636z" fill="#68A4D9" /><path d="M728.4 661.8H628v-428h100.4v428z m-84.4-16h68.4v-396H644v396z" fill="#0A0408" /><path d="M314.5 308.7h84.4v110.8h-84.4z" fill="#FFFFFF" /><path d="M406.9 427.5H306.5V300.7h100.4v126.8z m-84.4-16h68.4v-94.8h-68.4v94.8z" fill="#0A0408" /><path d="M475.3 104h84.4v110.8h-84.4z" fill="#FFFFFF" /><path d="M567.6 222.8H467.3V96h100.4v126.8z m-84.3-16h68.4V112h-68.4v94.8z" fill="#0A0408" /><path d="M636 223.3h84.4v110.8H636z" fill="#FFFFFF" /><path d="M728.4 342.1H628V215.3h100.4v126.8z m-84.4-16h68.4v-94.8H644v94.8z" fill="#0A0408" /><path d="M314.5 742.2h8v16h-8zM696.8 758.2h-15.6v-16h15.6v16z m-31.2 0H650v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16H572v16z m-31.2 0h-15.6v-16h15.6v16z m-31.1 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16z m-31.2 0h-15.6v-16h15.6v16zM712.4 742.2h8v16h-8z" fill="#0A0408" /><path d="M109.9 347.6h50.9v50.9h-50.9z" fill="#DC444A" /><path d="M168.8 406.5h-66.9v-66.9h66.9v66.9z m-50.9-16h34.9v-34.9h-34.9v34.9z" fill="#0A0408" /><path d="M863.7 346.9h50.9v50.9h-50.9z" fill="#DC444A" /><path d="M922.6 405.7h-66.9v-66.9h66.9v66.9z m-50.9-16h34.9v-34.9h-34.9v34.9z" fill="#0A0408" /></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">15- تقرير الاقسام التسويقية</div>
+                </div>
+            </div>
+        </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('list.employee-growth', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('list.employee-growth') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
+<path style="fill:#C1C1C1;" d="M40.421,439.242h431.158c17.86,0,32.337,14.477,32.337,32.337l0,0
+c0,17.86-14.477,32.337-32.337,32.337H40.421c-17.86,0-32.337-14.477-32.337-32.337l0,0
+C8.084,453.719,22.561,439.242,40.421,439.242z"/>
+                                <path style="fill:#FE5A3A;" d="M347.317,68.51l55.375-55.375c6.735-6.735,17.655-6.735,24.39,0l55.375,55.375
+c10.864,10.864,3.17,29.442-12.195,29.442h-28.427v373.627h-53.895V97.952h-28.427C344.148,97.952,336.453,79.374,347.317,68.51z"/>
+                                <path style="fill:#FED76E;" d="M29.544,226.558l55.375-55.375c6.735-6.735,17.655-6.735,24.39,0l55.375,55.375
+c10.864,10.864,3.17,29.442-12.195,29.442H124.06v215.579H70.166V256H41.739C26.374,256,18.68,237.424,29.544,226.558z"/>
+                                <path style="fill:#FE9D5E;" d="M229.053,471.579V180.547h-28.427c-15.365,0-23.059-18.576-12.195-29.442l55.375-55.375
+c6.735-6.735,17.655-6.735,24.39,0l55.375,55.375c10.864,10.864,3.17,29.442-12.195,29.442h-28.426v291.032H229.053z"/>
+                                <path d="M471.579,431.158h-21.66V106.036h20.343c10.439,0,19.406-5.992,23.402-15.637s1.892-20.223-5.491-27.606L432.798,7.42
+C428.014,2.634,421.653,0,414.887,0s-13.128,2.634-17.911,7.419l-55.375,55.375c-7.381,7.383-9.485,17.96-5.49,27.605
+s12.963,15.637,23.402,15.637h20.343v357.459h-8.084c-4.465,0-8.084,3.618-8.084,8.084s3.62,8.084,8.084,8.084h86.232
+c4.465,0,8.084-3.618,8.084-8.084s-3.62-8.084-8.084-8.084h-8.084v-16.168h21.659c13.373,0,24.253,10.88,24.253,24.253
+s-10.879,24.253-24.253,24.253H40.421c-13.373,0-24.253-10.88-24.253-24.253s10.879-24.253,24.253-24.253h21.66v16.168h-8.084
+c-4.465,0-8.084,3.618-8.084,8.084s3.62,8.084,8.084,8.084h86.232c4.465,0,8.084-3.618,8.084-8.084s-3.62-8.084-8.084-8.084h-8.084
+V264.084h20.343c10.44,0,19.408-5.992,23.403-15.638c3.995-9.644,1.891-20.222-5.492-27.604l-55.375-55.375
+c-9.877-9.876-25.947-9.875-35.823,0l-55.375,55.375c-7.383,7.382-9.487,17.96-5.492,27.605
+c3.997,9.645,12.964,15.637,23.404,15.637h20.343v167.074H40.421C18.132,431.158,0,449.29,0,471.579
+C0,493.868,18.132,512,40.421,512h431.158C493.868,512,512,493.868,512,471.579C512,449.29,493.868,431.158,471.579,431.158z
+ M441.834,89.867c-4.465,0-8.084,3.618-8.084,8.084v365.543h-37.726V97.952c0-4.466-3.62-8.084-8.084-8.084h-28.427
+c-5.681,0-7.915-4.33-8.465-5.656c-0.55-1.327-2.031-5.968,1.986-9.986l55.375-55.375c1.73-1.73,4.031-2.683,6.478-2.683
+c2.447,0,4.747,0.953,6.478,2.684l55.375,55.373c4.017,4.018,2.536,8.659,1.987,9.987c-0.55,1.326-2.784,5.656-8.465,5.656
+C470.261,89.867,441.834,89.867,441.834,89.867z M41.739,247.916c-5.681,0-7.915-4.33-8.465-5.656
+c-0.55-1.327-2.031-5.968,1.987-9.985l55.375-55.375c3.571-3.572,9.385-3.572,12.957,0l55.375,55.375
+c4.017,4.016,2.536,8.657,1.987,9.985c-0.55,1.326-2.784,5.656-8.466,5.656h-28.427c-4.465,0-8.084,3.618-8.084,8.084v207.495
+H78.251V256c0-4.466-3.62-8.084-8.084-8.084H41.739z M200.625,188.632h20.343v274.863h-8.084c-4.465,0-8.084,3.618-8.084,8.084
+s3.62,8.084,8.084,8.084h86.232c4.465,0,8.084-3.618,8.084-8.084s-3.62-8.084-8.084-8.084h-8.084V188.632h20.343
+c10.44,0,19.408-5.992,23.402-15.637c3.996-9.645,1.891-20.223-5.491-27.605l-55.375-55.375c-9.876-9.876-25.946-9.876-35.823,0
+l-55.375,55.375c-7.383,7.383-9.485,17.96-5.491,27.605C181.219,182.64,190.186,188.632,200.625,188.632z M194.147,156.823
+l55.375-55.375c3.572-3.571,9.385-3.573,12.957,0l55.375,55.375c4.017,4.016,2.536,8.657,1.987,9.985
+c-0.55,1.326-2.784,5.656-8.465,5.656h-28.428c-4.465,0-8.084,3.618-8.084,8.084v282.947h-37.726V180.547
+c0-4.466-3.62-8.084-8.084-8.084h-28.427c-5.681,0-7.915-4.33-8.465-5.656C191.612,165.479,190.131,160.839,194.147,156.823z
+ M204.879,447.326h-54.59c-4.465,0-8.084-3.618-8.084-8.084c0-4.466,3.62-8.084,8.084-8.084h54.59c4.465,0,8.084,3.618,8.084,8.084
+C212.963,443.708,209.343,447.326,204.879,447.326z M308.278,431.158h54.331c4.465,0,8.084,3.618,8.084,8.084
+c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194,434.776,303.813,431.158,308.278,431.158z"/>
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">16- تقرير نمو الموظفين</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('report-21', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('report-21') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 16666.66 16666.66" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+
+<defs>
+
+    <style type="text/css">
+        <![CDATA[
+        .fil0 {fill:none}
+        .fil2 {fill:black;fill-rule:nonzero}
+        .fil3 {fill:#ACD4F7;fill-rule:nonzero}
+        .fil4 {fill:#DEDEDE;fill-rule:nonzero}
+        .fil1 {fill:white;fill-rule:nonzero}
+        ]]>
+    </style>
+
+</defs>
+
+                                <g id="Layer_x0020_1">
+
+                                    <rect class="fil0" height="16666.66" width="16666.66" x="-0" y="-0"/>
+
+                                    <g id="_1316253526416">
+
+                                        <polygon class="fil1" points="1030.51,13616.26 10075.45,13616.26 10075.45,10712.34 1030.51,10712.34 "/>
+
+                                        <path class="fil2" d="M1111.81 13534.87l8882.28 0 0 -2741.15 -8882.28 0 0 2741.15zm8963.66 162.77l-9044.97 0c-45,0 -81.39,-36.49 -81.39,-81.39l0 -2903.92c0,-45 36.38,-81.39 81.39,-81.39l9044.97 0c44.9,0 81.39,36.38 81.39,81.39l0 2903.92c0,44.89 -36.49,81.39 -81.39,81.39z"/>
+
+                                        <polygon class="fil1" points="1030.51,5954.33 10075.45,5954.33 10075.45,3050.43 1030.51,3050.43 "/>
+
+                                        <path class="fil2" d="M1111.81 5872.94l8882.28 0 0 -2741.13 -8882.28 0 0 2741.13zm8963.66 162.77l-9044.97 0c-45,0 -81.39,-36.38 -81.39,-81.38l0 -2903.9c0,-44.92 36.38,-81.41 81.39,-81.41l9044.97 0c44.9,0 81.39,36.49 81.39,81.41l0 2903.9c0,45 -36.49,81.38 -81.39,81.38z"/>
+
+                                        <polygon class="fil3" points="1030.51,9785.25 10075.45,9785.25 10075.45,6881.33 1030.51,6881.33 "/>
+
+                                        <path class="fil2" d="M1111.81 9703.87l8882.28 0 0 -2741.15 -8882.28 0 0 2741.15zm8963.66 162.77l-9044.97 0c-45,0 -81.39,-36.38 -81.39,-81.38l0 -2903.82c0,-45 36.38,-81.41 81.39,-81.41l9044.97 0c44.9,0 81.39,36.41 81.39,81.41l0 2903.82c0,45 -36.49,81.38 -81.39,81.38z"/>
+
+                                        <path class="fil1" d="M2163.51 4473.33c0,-197.85 160.44,-358.29 358.29,-358.29 197.96,0 358.39,160.44 358.39,358.29 0,197.85 -160.43,358.29 -358.39,358.29 -197.85,0 -358.29,-160.43 -358.29,-358.29z"/>
+
+                                        <path class="fil2" d="M2521.8 4196.42c-152.67,0 -276.91,124.24 -276.91,276.91 0,152.77 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.13 277.01,-276.91 0,-152.67 -124.24,-276.91 -277.01,-276.91zm0 716.61c-242.48,0 -439.68,-197.22 -439.68,-439.7 0,-242.48 197.19,-439.78 439.68,-439.78 242.48,0 439.78,197.3 439.78,439.78 0,242.48 -197.3,439.7 -439.78,439.7z"/>
+
+                                        <path class="fil1" d="M2163.51 4473.33c0,-197.85 160.44,-358.29 358.29,-358.29 197.96,0 358.39,160.44 358.39,358.29 0,197.85 -160.43,358.29 -358.39,358.29 -197.85,0 -358.29,-160.43 -358.29,-358.29z"/>
+
+                                        <path class="fil2" d="M2521.8 4196.42c-152.67,0 -276.91,124.24 -276.91,276.91 0,152.77 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.13 277.01,-276.91 0,-152.67 -124.24,-276.91 -277.01,-276.91zm0 716.61c-242.48,0 -439.68,-197.22 -439.68,-439.7 0,-242.48 197.19,-439.78 439.68,-439.78 242.48,0 439.78,197.3 439.78,439.78 0,242.48 -197.3,439.7 -439.78,439.7z"/>
+
+                                        <path class="fil1" d="M2163.51 8333.34c0,-197.96 160.44,-358.31 358.29,-358.31 197.96,0 358.39,160.35 358.39,358.31 0,197.85 -160.43,358.29 -358.39,358.29 -197.85,0 -358.29,-160.44 -358.29,-358.29z"/>
+
+                                        <path class="fil2" d="M2521.8 8056.41c-152.67,0 -276.91,124.16 -276.91,276.93 0,152.67 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.24 277.01,-276.91 0,-152.77 -124.24,-276.93 -277.01,-276.93zm0 716.61c-242.48,0 -439.68,-197.3 -439.68,-439.67 0,-242.48 197.19,-439.7 439.68,-439.7 242.48,0 439.78,197.22 439.78,439.7 0,242.38 -197.3,439.67 -439.78,439.67z"/>
+
+                                        <path class="fil1" d="M2163.51 12164.24c0,-197.85 160.44,-358.29 358.29,-358.29 197.96,0 358.39,160.43 358.39,358.29 0,197.96 -160.43,358.4 -358.39,358.4 -197.85,0 -358.29,-160.44 -358.29,-358.4z"/>
+
+                                        <path class="fil2" d="M2521.8 11887.34c-152.67,0 -276.91,124.24 -276.91,276.91 0,152.78 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.13 277.01,-276.91 0,-152.67 -124.24,-276.91 -277.01,-276.91zm0 716.61c-242.48,0 -439.68,-197.22 -439.68,-439.7 0,-242.48 197.19,-439.67 439.68,-439.67 242.48,0 439.78,197.19 439.78,439.67 0,242.48 -197.3,439.7 -439.78,439.7z"/>
+
+                                        <path class="fil1" d="M2163.51 12164.24c0,-197.85 160.44,-358.29 358.29,-358.29 197.96,0 358.39,160.43 358.39,358.29 0,197.96 -160.43,358.4 -358.39,358.4 -197.85,0 -358.29,-160.44 -358.29,-358.4z"/>
+
+                                        <path class="fil2" d="M2521.8 11887.34c-152.67,0 -276.91,124.24 -276.91,276.91 0,152.78 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.13 277.01,-276.91 0,-152.67 -124.24,-276.91 -277.01,-276.91zm0 716.61c-242.48,0 -439.68,-197.22 -439.68,-439.7 0,-242.48 197.19,-439.67 439.68,-439.67 242.48,0 439.78,197.19 439.78,439.67 0,242.48 -197.3,439.7 -439.78,439.7z"/>
+
+                                        <path class="fil1" d="M4001.5 8333.34c0,-197.96 160.44,-358.31 358.4,-358.31 197.85,0 358.29,160.35 358.29,358.31 0,197.85 -160.44,358.29 -358.29,358.29 -197.96,0 -358.4,-160.44 -358.4,-358.29z"/>
+
+                                        <path class="fil2" d="M4359.79 8056.41c-152.67,0 -276.91,124.16 -276.91,276.93 0,152.67 124.24,276.91 276.91,276.91 152.77,0 277.01,-124.24 277.01,-276.91 0,-152.77 -124.24,-276.93 -277.01,-276.93zm0 716.61c-242.38,0 -439.67,-197.3 -439.67,-439.67 0,-242.48 197.3,-439.7 439.67,-439.7 242.48,0 439.81,197.22 439.81,439.7 0,242.38 -197.32,439.67 -439.81,439.67z"/>
+
+                                        <path class="fil2" d="M2151.89 13381.25l-19.17 -7.95c-10.66,-10.56 -10.66,-27.69 0,-38.35 575.45,-575.45 1373.7,-1476.81 2135.5,-2411.11 9.44,-11.51 26.57,-13.28 38.16,-3.93 11.62,9.55 13.39,26.57 3.93,38.27 -762.91,935.59 -1562.57,1838.47 -2139.21,2415.11l-19.2 7.95z"/>
+
+                                        <path class="fil2" d="M1554.01 13336.36l-17.76 -6.66c-11.33,-9.92 -12.44,-27.02 -2.63,-38.34l538.67 -616.68c9.92,-11.24 27.05,-12.36 38.27,-2.52 11.32,9.81 12.44,26.94 2.63,38.24l-538.67 616.68 -20.5 9.28z"/>
+
+                                        <path class="fil2" d="M2929.78 11753.66l-17.95 -6.74c-11.24,-9.92 -12.36,-27.05 -2.44,-38.26l685.08 -778.16c10,-11.32 27.13,-12.44 38.34,-2.52 11.22,9.92 12.25,27.02 2.44,38.24l-685.07 778.26 -20.39 9.18z"/>
+
+                                        <path class="fil2" d="M1267.29 12899.17l-16.84 -5.89c-11.69,-9.25 -13.66,-26.39 -4.4,-38.08 525.86,-662.43 1081.63,-1315.05 1652.09,-1939.77 10.11,-11.14 27.34,-11.88 38.27,-1.78 11.14,10.1 11.88,27.21 1.78,38.26 -569.54,623.87 -1124.56,1275.56 -1649.65,1936.96l-21.24 10.29z"/>
+
+                                        <path class="fil2" d="M1294.68 12047.51l-17.47 -6.37c-11.43,-9.65 -12.92,-26.76 -3.29,-38.26 295.81,-351.48 607.06,-697.52 925.12,-1028.41 10.39,-10.66 27.61,-11.14 38.37,-0.74 10.85,10.37 11.14,27.58 0.74,38.35 -317.24,330.05 -627.72,675.16 -922.68,1025.78l-20.79 9.65z"/>
+
+                                        <path class="fil2" d="M1284.69 11343.52l-19.54 -8.22c-10.4,-10.87 -10.02,-27.98 0.74,-38.37l408.17 -393.93c10.85,-10.29 27.95,-10.1 38.35,0.74 10.37,10.76 10.1,27.98 -0.67,38.35l-408.25 393.85 -18.8 7.58z"/>
+
+                                        <path class="fil2" d="M2746.7 13381.25l-17.4 -6.36c-11.51,-9.63 -13.02,-26.76 -3.37,-38.16 681.97,-812.68 1390.17,-1623.29 2104.79,-2409.22 10.1,-11.14 27.31,-11.88 38.37,-1.88 11.14,10.1 11.88,27.34 1.86,38.37 -714.25,785.45 -1421.86,1595.42 -2103.49,2407.63l-20.76 9.63z"/>
+
+                                        <path class="fil2" d="M3383.11 13359.19l-17.29 -6.28c-11.51,-9.63 -13.1,-26.65 -3.56,-38.27 664.1,-800.22 1356.1,-1597.17 2056.24,-2368.81 10.29,-11.11 27.13,-11.88 38.37,-1.85 11.22,10.1 12.15,27.21 1.86,38.26 -699.66,771.05 -1391.1,1567.45 -2054.65,2367.11l-20.98 9.84z"/>
+
+                                        <path class="fil2" d="M4001.5 13381.25l-17.5 -6.44c-11.4,-9.65 -12.81,-26.76 -3.07,-38.27l1992.35 -2343.27c10.29,-11.4 27.13,-12.81 38.35,-3.07 11.24,9.63 13.1,26.76 2.81,38.24l-1992.25 2343.27 -20.69 9.54z"/>
+
+                                        <path class="fil2" d="M4592.64 13381.25l-17.11 -6.07c-11.61,-9.47 -13.28,-26.49 -3.95,-38.19 660.76,-809.95 1344.61,-1618.34 2032.21,-2402.86 10.29,-11.22 27.13,-12.33 38.37,-2.41 11.22,9.81 12.15,26.94 2.81,38.26 -687.62,783.94 -1371.48,1591.95 -2031.28,2401.35l-21.06 9.92z"/>
+
+                                        <path class="fil2" d="M5158.44 13381.25l-16.84 -5.99c-11.22,-9.33 -13.1,-26.46 -3.74,-38.08 642.7,-797.78 1313.46,-1592.32 1993.57,-2361.49 10.29,-11.33 27.13,-12.36 38.35,-2.33 11.24,9.92 12.17,27.02 2.81,38.24 -680.12,768.63 -1350.87,1562.49 -1992.62,2359.55l-21.54 10.1z"/>
+
+                                        <path class="fil2" d="M5759.03 13359.19l-18.7 -7.13c-11.22,-10 -12.17,-27.2 -1.88,-38.24 689.48,-758.8 1360.23,-1550.9 1994.53,-2354.33 9.33,-11.78 26.17,-13.74 37.42,-4.48 12.15,9.26 14.03,26.28 4.67,38.08 -635.22,804.44 -1306.91,1597.47 -1996.38,2357.19l-19.65 8.91z"/>
+
+                                        <path class="fil2" d="M6326.89 13336.36l-16.84 -6.47c-12.17,-9.73 -13.1,-26.83 -3.74,-38.26l1841.09 -2155.2c9.33,-11.51 26.17,-12.73 38.35,-3 11.22,9.63 12.17,26.76 2.81,38.16l-1840.16 2155.23 -21.51 9.55z"/>
+
+                                        <path class="fil2" d="M6905.05 13359.19l-17.79 -6.47c-11.22,-9.73 -13.07,-26.76 -2.79,-38.27l1801.79 -2130.8c9.33,-11.41 26.17,-12.73 38.34,-3.19 11.22,9.73 12.17,26.76 2.81,38.27l-1801.79 2130.81 -20.58 9.65z"/>
+
+                                        <path class="fil2" d="M7543.05 13359.19l-17.77 -6.94c-11.22,-9.81 -12.17,-27.02 -2.81,-38.16 609.02,-687.04 1198.39,-1409.16 1752.2,-2146.61 9.36,-11.88 26.2,-14.43 38.37,-5.33 11.22,8.96 14.03,25.99 4.67,37.98 -554.76,738.48 -1145.06,1461.82 -1754.08,2149.9l-20.58 9.17z"/>
+
+                                        <path class="fil2" d="M8124.95 13359.19l-15.91 -5.62c-12.15,-9.07 -14.03,-26.09 -5.59,-38.08 546.33,-715.2 1128.22,-1413.27 1730.67,-2074.96 10.31,-11.03 28.08,-11.8 38.37,-1.78 11.22,10.11 12.15,27.31 1.85,38.35 -601.52,660.47 -1182.48,1357.34 -1727.89,2071.41l-21.5 10.69z"/>
+
+                                        <path class="fil2" d="M8646.03 13336.36l-17.8 -6.55c-11.22,-9.73 -13.07,-26.86 -2.78,-38.26l1148.8 -1337.22c9.33,-11.43 27.13,-12.62 38.34,-2.81 11.22,9.73 12.17,26.86 2.81,38.26l-1148.8 1337.11 -20.57 9.47z"/>
+
+                                        <path class="fil2" d="M9149.32 13359.19l-18.7 -7.03c-11.24,-10.02 -11.24,-27.13 -1.88,-38.26l628.67 -699c10.29,-11.24 28.06,-12.09 38.34,-2.07 11.22,10 12.17,27.13 2.81,38.27l-629.6 699 -19.65 9.09z"/>
+
+                                        <path class="fil2" d="M9688.18 13359.19l-17.77 -7.03c-11.22,-9.92 -12.17,-27.05 -2.81,-38.26l162.77 -181.39c10.29,-11.24 27.13,-12.07 38.37,-2.15 11.22,10 12.15,27.21 1.85,38.35l-161.84 181.39 -20.58 9.09z"/>
+
+                                        <path class="fil1" d="M11974.56 10415.97c568.8,559.06 1136.66,1118.12 1705.42,1677.18 299.37,295.26 600.61,591.15 928.04,847.39 175.87,138.08 372.34,268.66 586.56,268.87 215.17,0.08 443.44,-180.93 441.56,-423.42 -1.86,-189.26 -131.91,-341.29 -254.44,-470.38 -904.65,-954.32 -1850.45,-1859.13 -2832.72,-2710.26 -179.64,263.8 -360.17,527.53 -574.42,810.61z"/>
+
+                                        <path class="fil2" d="M12083.08 10407.93l1653.98 1627.22c293.77,288.97 596.88,587.78 920.56,841.3 167.44,130.5 348,251.37 536.97,251.56l0.93 0c92.63,0 190.85,-42.64 261.95,-114.03 62.69,-63.88 98.22,-144.71 97.3,-227.53 -0.93,-158.18 -115.06,-291.67 -232.01,-414.8 -878.44,-926.23 -1805.53,-1815.71 -2757.89,-2644.87 -149.67,218.62 -304.96,443.89 -481.78,681.15zm3112.44 2882.76l-0.93 0c-238.56,-0.08 -447.18,-137.6 -637.08,-286.16 -331.16,-259.06 -638,-561.13 -934.59,-853.39l-1705.42 -1677.18c-29.01,-28.61 -31.8,-74.46 -7.48,-107.11 214.22,-282.71 395.7,-549.43 571.6,-807.35 13.07,-19.17 33.68,-31.9 57.07,-34.79 22.44,-3.19 45.83,3.93 63.59,19.17 980.44,849.62 1935.58,1763.34 2838.34,2715.8 132.86,140.23 275.05,308.25 276.91,525.75 0.96,126.47 -50.52,248.37 -145,343.23 -101.04,101.51 -242.3,162.03 -377.01,162.03z"/>
+
+                                        <path class="fil1" d="M9757.42 10469.29c-1486.54,0 -2691.46,-1205.13 -2691.46,-2691.64 0,-1486.62 1204.92,-2691.75 2691.46,-2691.75 1486.51,0 2691.46,1205.13 2691.46,2691.75 0,1486.52 -1204.94,2691.64 -2691.46,2691.64zm0 0c-1486.54,0 -2691.46,-1205.13 -2691.46,-2691.64 0,-1486.62 1204.92,-2691.75 2691.46,-2691.75 1486.51,0 2691.46,1205.13 2691.46,2691.75 0,1486.52 -1204.94,2691.64 -2691.46,2691.64zm0 -6235.64c-1957.09,0 -3543.73,1586.62 -3543.73,3544 0,1957.27 1586.65,3543.89 3543.73,3543.89 1957.08,0 3543.7,-1586.62 3543.7,-3543.89 0,-1957.37 -1586.62,-3544 -3543.7,-3544z"/>
+
+                                        <path class="fil2" d="M7147.34 7777.65c0,1439.28 1170.31,2610.15 2610.07,2610.15 1438.81,0 2610.07,-1170.87 2610.07,-2610.15 0,-1439.39 -1171.26,-2610.26 -2610.07,-2610.26 -1439.76,0 -2610.07,1170.87 -2610.07,2610.26zm2610.07 2773.03c-1529.55,0 -2772.87,-1243.95 -2772.87,-2773.03 0,-1529.1 1243.31,-2773.13 2772.87,-2773.13 1528.62,0 2772.84,1244.03 2772.84,2773.13 0,1529.07 -1244.22,2773.03 -2772.84,2773.03zm0 -6235.64c-1909.38,0 -3462.32,1553.31 -3462.32,3462.61 0,1909.27 1552.94,3462.5 3462.32,3462.5 1909.37,0 3462.32,-1553.23 3462.32,-3462.5 0,-1909.3 -1552.94,-3462.61 -3462.32,-3462.61zm0 7087.88c-1999.2,0 -3625.12,-1626.29 -3625.12,-3625.27 0,-1999.01 1625.92,-3625.38 3625.12,-3625.38 1999.16,0 3625.09,1626.37 3625.09,3625.38 0,1998.98 -1625.92,3625.27 -3625.09,3625.27z"/>
+
+                                        <path class="fil2" d="M12432.03 10517.48l-7.48 -1.04c-14.98,-4.11 -22.46,-19.09 -18.72,-33.49l62.69 -218.17c3.74,-14.4 18.69,-23.1 32.72,-18.62 14.98,4.03 23.39,19.17 18.72,33.49l-61.74 218.17c-3.74,11.96 -14.98,19.65 -26.2,19.65z"/>
+
+                                        <path class="fil2" d="M12730.45 10899.64l-3.74 -0.19c-14.96,-1.96 -25.24,-15.54 -23.39,-30.42 32.75,-254.63 72.98,-512.28 118.83,-765.61 2.81,-14.88 17.77,-24.31 31.8,-21.9 14.98,2.73 24.32,16.76 22.46,31.63 -45.85,252.48 -86.08,509.1 -119.76,762.91 -1.86,13.66 -13.1,23.57 -26.2,23.57z"/>
+
+                                        <path class="fil2" d="M13116.82 11270.55c-14.96,0 -27.13,-12.07 -27.13,-27.13 0,-127.61 19.65,-341.74 37.42,-530.53 10.29,-115.14 19.65,-214.59 22.46,-277.2 0.93,-14.85 12.17,-27.69 29.01,-25.72 14.96,0.77 26.17,13.47 25.24,28.45 -2.81,63.7 -12.17,163.62 -22.46,279.34 -17.77,187.75 -37.42,400.48 -37.42,525.65 0,15.06 -12.15,27.13 -27.13,27.13z"/>
+
+                                        <path class="fil2" d="M13513.48 11635.97c-14.96,0 -27.13,-11.8 -27.13,-26.57l-20.58 -905.1c0,-14.98 12.15,-27.42 26.2,-27.79 17.77,0.56 28.06,11.59 28.06,26.46l20.57 905.2c0,14.98 -11.22,27.42 -26.2,27.79l-0.93 0z"/>
+
+                                        <path class="fil2" d="M13890.49 12036.26c-14.03,0 -26.2,-11.51 -27.13,-26.09l-35.56 -947.85c0,-14.98 11.24,-27.61 26.2,-28.16 14.98,1.48 28.06,11.11 28.06,26.09l35.56 947.95c0.93,14.87 -11.22,27.5 -26.2,28.06l-0.93 0z"/>
+
+                                        <path class="fil2" d="M14274.98 12373.79c-14.96,0 -27.13,-11.22 -27.13,-25.62l-48.63 -885.48c-0.96,-14.96 11.22,-27.76 26.17,-28.53 15.91,-2.04 27.13,10.69 28.08,25.56l47.7 885.45c0.93,14.96 -10.29,27.79 -25.27,28.53l-0.93 0.08z"/>
+
+                                        <path class="fil2" d="M14654.8 12685.7c-14.03,0 -26.2,-10.85 -27.13,-25.06l-66.43 -861.98c-0.93,-14.98 10.29,-28.08 25.27,-29.2 13.07,-1.41 27.13,10 28.98,24.98l66.43 862.06c0.93,14.87 -10.29,27.98 -25.27,29.11l-1.86 0.08z"/>
+
+                                        <path class="fil2" d="M15014.05 12965.97c-13.1,0 -25.27,-10.37 -26.2,-24.4l-78.6 -756.09c-0.93,-14.88 9.36,-28.17 24.34,-29.65 14.03,-1.88 28.99,9.15 29.94,24.13l77.65 756.17c1.86,14.88 -9.36,28.16 -24.34,29.65l-2.79 0.19z"/>
+
+                                        <path class="fil2" d="M15366.72 12925.74c-13.1,0 -24.31,-9.44 -27.13,-22.81l-54.26 -337.74c-2.81,-14.77 7.48,-28.72 22.46,-31.13 14.96,-2.63 28.99,7.56 30.87,22.43l55.19 337.82c1.88,14.77 -8.41,28.72 -22.44,31.06l-4.69 0.37z"/>
+
+                                        <path class="fil4" d="M9757.42 10387.8c-1439.76,0 -2610.07,-1170.87 -2610.07,-2610.15 0,-123.97 8.41,-246.04 25.25,-365.5 26.2,90.75 55.21,180.65 87,269.43 0,141.9 15.91,200.37 67.36,367.28 34.61,121.51 68.28,243.3 112.25,361.95 43.04,115.54 116.02,368.95 328.38,659.06l0 0.08c196.45,238.56 486.45,493.88 616.5,585.26 306.84,206.47 448.11,286.74 741.85,355.03 189.93,47.15 357.36,64.36 507.99,64.36 180.56,0 337.71,-24.8 483.67,-52 560.36,-103.1 893.41,-220.24 1335.89,-540.81 14.98,-9.07 29.94,-14.88 45.85,-17.98 87.01,-66.14 172.13,-136.12 261,-215.44 102.92,-97.77 284.41,-302.36 298.44,-327.98 52.4,-61.65 87.94,-138.66 134.71,-205.17 -377.94,977.41 -1327.48,1672.59 -2436.05,1672.59zm-2171.33 -886.85c-4.67,-4.78 -8.43,-9.55 -13.1,-14.51 -196.44,-220.39 -306.84,-441.93 -381.68,-656.44 100.08,242.75 233.87,468.39 394.78,670.94zm4376.3 -43.89c113.2,-148.63 212.36,-308.99 294.7,-478.98 -6.55,18.43 -14.03,36.97 -20.58,55.4 -38.37,90.64 -80.46,180.27 -123.5,269.32 -41.15,47.26 -92.6,99.44 -150.62,154.26z"/>
+
+                                        <path class="fil2" d="M9668.53 10475.29c-101.96,0 -203,-8.14 -303.11,-26.39l-2.81 -0.56c-161.84,-18.99 -325.54,-38.19 -482.72,-83.82 -288.12,-93.56 -547.26,-254.47 -791.44,-430.63 -102.89,-84.65 -265.68,-175.87 -502.36,-432.94 -160.91,-202.55 -294.7,-428.19 -394.78,-670.94 -40.23,-115.83 -70.17,-229.57 -98.22,-340.07 -46.78,-364.57 -53.33,-731.93 -5.62,-1098.18 3.74,-0.3 7.48,-0.37 11.22,-0.37 25.27,0 49.59,5.78 72.05,15.99 0.93,1.59 0.93,3.18 1.86,4.77 -16.84,119.46 -25.25,241.53 -25.25,365.5 0,1439.28 1170.31,2610.15 2610.07,2610.15 1108.57,0 2058.12,-695.18 2436.05,-1672.59 20.58,-29.65 43.97,-57.15 71.1,-80.35 20.58,-12.36 43.04,-18.06 66.43,-18.06 17.76,0 35.53,3.44 51.44,9.92 -41.16,117.31 -83.27,234.34 -125.35,351.37 -82.34,169.98 -181.49,330.34 -294.7,478.98 -175.87,165.69 -416.29,355.21 -652.04,501.81 -48.66,36.49 -85.12,61.47 -188.04,125.38 -255.4,134.9 -534.18,220.39 -813.9,288.97 -134.71,36.2 -268.47,77.09 -407.88,88.6 -77.65,8.7 -155.29,13.47 -232.01,13.47z"/>
+
+                                        <path class="fil4" d="M12135.48 10688.39c-19.65,-14.58 -37.42,-32.19 -52.4,-51.74l52.4 51.74z"/>
+
+                                        <path class="fil4" d="M12386.18 10706.34l-222.65 -219.17c208.62,-185.6 395.73,-394.99 557.57,-623.71 87.93,77.65 175.87,155.67 263.8,234.26 -3.74,6.26 -6.55,12.44 -10.29,18.51 -37.42,62.21 -82.31,119.83 -130.05,175.13 10.29,-59.59 20.58,-118.99 31.82,-178.2 1.86,-14.88 -7.48,-28.91 -22.46,-31.63 -0.93,-0.27 -2.81,-0.37 -4.67,-0.37 -12.17,0 -24.31,8.99 -27.13,22.28 -15.91,88.41 -30.87,177.28 -45.85,266.43 -103.85,134.53 -232.94,249.89 -382.63,332.2 -2.78,1.48 -4.67,2.89 -7.48,4.3zm107.59 -461.39c-11.22,0 -22.43,7.96 -25.24,19.84l-62.69 218.17c-3.74,14.4 3.74,29.38 18.72,33.49l7.48 1.04c11.22,0 22.46,-7.69 26.2,-19.65l61.74 -218.17c4.67,-14.32 -3.74,-29.46 -18.72,-33.49 -1.86,-0.85 -4.67,-1.22 -7.48,-1.22z"/>
+
+                                        <path class="fil2" d="M12274.86 10735.54c-50.52,0 -99.15,-17.77 -139.38,-47.15l-52.4 -51.74c-12.15,-16.65 -23.39,-34.9 -31.8,-54.07 38.34,-31.05 75.76,-62.87 112.25,-95.41l222.65 219.17c-37.42,20.21 -74.83,29.2 -111.32,29.2zm710.05 -637.82c-87.93,-78.6 -175.87,-156.62 -263.8,-234.26 18.7,-26.65 37.42,-53.59 55.19,-80.91 1.88,0 3.74,-0.11 5.62,-0.11 18.7,0 39.27,2.89 60.81,8.99 129.09,34.24 199.26,187.38 142.19,306.29z"/>
+
+                                        <path class="fil2" d="M12051.28 10582.58c-29.94,-71.39 -26.2,-156.78 34.61,-231.27 24.31,-42.08 70.17,-61.07 108.51,-87.75l1.88 -1.96c194.59,-175.68 227.32,-164.07 345.19,-301.41l9.36 -10.85c55.21,-85.15 126.31,-164.09 225.46,-166.8 -17.77,27.31 -36.49,54.26 -55.19,80.91 -161.84,228.72 -348.96,438.11 -557.57,623.71 -36.49,32.54 -73.91,64.36 -112.25,95.41z"/>
+
+                                        <path class="fil2" d="M12432.03 10517.48l-7.48 -1.04c-14.98,-4.11 -22.46,-19.09 -18.72,-33.49l62.69 -218.17c2.81,-11.88 14.03,-19.84 25.24,-19.84 2.81,0 5.62,0.37 7.48,1.22 14.98,4.03 23.39,19.17 18.72,33.49l-61.74 218.17c-3.74,11.96 -14.98,19.65 -26.2,19.65z"/>
+
+                                        <path class="fil2" d="M12776.3 10369.85c14.98,-89.15 29.94,-178.02 45.85,-266.43 2.81,-13.28 14.96,-22.28 27.13,-22.28 1.86,0 3.74,0.11 4.67,0.37 14.98,2.73 24.32,16.76 22.46,31.63 -11.24,59.22 -21.53,118.62 -31.82,178.2 -18.69,21.91 -38.34,43.41 -57.07,64.65 -3.74,4.67 -7.48,9.26 -11.22,13.84z"/>
+
+                                        <polygon class="fil3" points="8925.75,7151.6 8503.81,7545.08 9653.57,8822.61 10924.91,6972.26 10453.42,6597.96 9566.56,7848.75 "/>
+
+                                        <path class="fil2" d="M8617.95 7550.05l1027.19 1141.32 1169.41 -1702.56 -344.29 -273.62 -837.26 1180.6c-14.03,20.02 -36.49,32.65 -61.76,34.16 -24.31,1.41 -47.7,-8.04 -64.54,-26.2l-585.63 -636.7 -303.1 283zm1035.62 1353.95c-22.46,0 -44.9,-9.73 -60.81,-26.94l-1148.8 -1277.52c-29.94,-33.02 -28.08,-83.75 4.67,-113.95l421.91 -393.48c15.91,-14.77 36.49,-22.91 58.95,-21.8 21.51,0.85 42.09,10.29 56.14,26.28l572.53 622.97 828.86 -1168.74c13.1,-18.22 33.68,-30.31 55.19,-33.49 22.46,-2.89 44.89,3 62.69,16.94l470.54 374.39c33.68,26.57 40.23,74.57 15.91,109.73l-1270.42 1850.35c-14.03,20.5 -37.42,33.5 -61.73,35.09l-5.62 0.19z"/>
+
+                                        <path class="fil4" d="M9429.04 11694.63c-152.48,-1.14 -305.92,-15.43 -456.52,-42.37 75.76,-97.22 150.6,-194.7 224.5,-292.55 160.91,25.09 324.64,39.48 491.15,42.56 -87.01,96.74 -173.06,194.22 -259.14,292.36zm72.98 -0.37c85.13,-97.85 172.13,-194.96 258.21,-291.33 78.57,-0.08 157.15,-2.63 233.87,-7.67l0 270.54c-18.72,5.7 -37.42,8.43 -57.07,8.43 -5.62,0 -11.22,-0.19 -16.84,-0.56 -117.87,14.77 -236.68,14.77 -355.5,18.51 -20.58,0.93 -42.09,1.59 -62.67,2.07zm-589.37 -53.43c-148.74,-29.94 -294.7,-72.02 -435.96,-125.91l227.34 -268.02c140.34,42.85 285.34,77.35 432.2,102.89 -73.91,97.3 -148.74,194.41 -223.57,291.04zm-489.26 -146.86c-61.76,-25.28 -122.57,-52.77 -182.45,-82.53 -60.8,-29.09 -120.66,-59.22 -179.61,-90.74l127.24 -149.11c9.36,-11.4 8.41,-28.54 -2.81,-38.16 -5.62,-4.4 -12.17,-6.55 -17.77,-6.55 -7.48,0 -15.91,3.26 -20.58,9.54l-134.71 157.89c-110.4,-60.44 -216.13,-126.39 -317.16,-201.04 27.15,-33.39 53.33,-66.8 79.53,-100.19 9.36,-11.8 7.48,-28.82 -4.67,-38.08 -4.69,-3.93 -10.29,-5.81 -16.84,-5.81 -7.51,0 -15.91,3.47 -20.58,10.29 -27.13,33.6 -53.33,67.28 -80.46,100.85 -37.42,-29.28 -73.91,-59.85 -108.54,-91.86 -51.45,-47.7 -66.41,-113.39 -55.19,-174.76l259.14 0c275.05,184.3 578.15,331.83 899.95,435.59l-224.5 264.65z"/>
+
+                                        <path class="fil2" d="M9994.09 11665.8l0 -270.54c23.39,-1.51 46.78,-3.18 69.24,-5.14 58,63.06 69.21,169.43 -0.95,234.53 -18.7,19.83 -43.04,33.31 -68.29,41.16zm-2246.16 -872.09l-259.14 0c9.36,-50.59 36.49,-98.22 75.79,-130.39 59.85,45.16 120.66,88.76 183.35,130.39z"/>
+
+                                        <path class="fil2" d="M7695.53 11093.27c-14.03,-10.85 -28.06,-21.8 -43.01,-32.94 27.13,-33.57 53.33,-67.25 80.46,-100.85 4.67,-6.81 13.07,-10.29 20.58,-10.29 6.55,0 12.15,1.88 16.84,5.81 12.15,9.26 14.03,26.28 4.67,38.08 -26.2,33.39 -52.37,66.8 -79.53,100.19z"/>
+
+                                        <path class="fil2" d="M8061.33 11320.69c-16.84,-8.7 -32.75,-17.48 -48.63,-26.39l134.71 -157.89c4.67,-6.28 13.1,-9.54 20.58,-9.54 5.59,0 12.15,2.15 17.77,6.55 11.22,9.63 12.17,26.76 2.81,38.16l-127.24 149.11z"/>
+
+                                        <path class="fil2" d="M8476.69 11514.91c-17.77,-6.84 -35.54,-13.84 -53.3,-20.95l224.5 -264.65c18.72,5.96 37.42,11.88 56.14,17.58l-227.34 268.02z"/>
+
+                                        <path class="fil2" d="M8972.53 11652.25c-20.58,-3.66 -40.23,-7.4 -59.88,-11.43 74.83,-96.63 149.67,-193.74 223.57,-291.04 20.58,3.47 41.16,6.84 60.81,9.92 -73.91,97.85 -148.74,195.33 -224.5,292.55z"/>
+
+                                        <path class="fil2" d="M9449.62 11694.71c-7.48,0 -14.03,0 -20.58,-0.08 86.08,-98.14 172.13,-195.63 259.14,-292.36 23.39,0.48 45.85,0.66 69.24,0.66 0.93,0 1.85,0 2.81,0 -86.07,96.37 -173.08,193.48 -258.21,291.33 -17.77,0.26 -35.56,0.45 -52.4,0.45z"/>
+
+                                        <path class="fil2" d="M9757.42 11402.93c-23.39,0 -45.85,-0.19 -69.24,-0.66 -166.51,-3.08 -330.24,-17.48 -491.15,-42.56 -19.65,-3.07 -40.23,-6.44 -60.81,-9.92 -146.86,-25.54 -291.86,-60.04 -432.2,-102.89 -18.72,-5.7 -37.42,-11.61 -56.14,-17.58 -321.8,-103.77 -624.91,-251.29 -899.95,-435.59 -62.69,-41.63 -123.5,-85.23 -183.35,-130.39 31.8,-25.46 71.1,-41.18 115.99,-41.18 1.88,0 4.67,0 6.55,0.11 2.81,-0.11 5.62,-0.19 7.48,-0.19 80.46,0 136.6,59.96 192.71,109.63 27.13,20.31 121.64,100.11 261.02,182.81 373.27,219.47 831.67,388.97 1153.47,427.53 99.18,7 224.53,10.29 338.67,10.29 137.52,0 259.14,-4.77 304.04,-13.66 1.88,0 2.81,-0.1 4.69,-0.1 46.78,0 86.05,20.57 114.13,51.55 -22.46,1.96 -45.85,3.63 -69.24,5.14 -76.72,5.04 -155.29,7.59 -233.87,7.67 -0.95,0 -1.88,0 -2.81,0z"/>
+
+                                    </g>
+
+                                </g>
+
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">17- كشف حساب عميل</div>
+                </div>
+            </div>
+        </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('report-11', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('report-11') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
+<rect x="112.393" y="32.397" style="fill:#D4E4AC;" width="287.224" height="127.325"/>
+                                <circle style="fill:#FFFFFF;" cx="256.005" cy="95.762" r="63.959"/>
+                                <path style="fill:#F2BF7E;" d="M88.104,8.702l-0.3,175.06h336.092l0.3-175.06C424.196,8.702,88.104,8.702,88.104,8.702z
+	 M399.8,159.796H112.201V31.626H399.8V159.796z"/>
+                                <g>
+                                    <path style="fill:#D4E4AC;" d="M200.035,239.672c0,17.662-14.318,31.98-31.98,31.98S96.1,239.672,96.1,239.672
+		s54.294-31.98,71.956-31.98S200.035,222.01,200.035,239.672z"/>
+                                    <rect x="160.055" y="359.603" style="fill:#D4E4AC;" width="191.878" height="23.987"/>
+                                </g>
+                                <polygon style="fill:#F2BF7E;" points="319.961,503.509 192.04,503.509 176.05,383.583 335.951,383.583 "/>
+                                <rect x="152.063" y="303.636" style="fill:#E2804F;" width="207.874" height="55.965"/>
+                                <path d="M351.867,392.167v-15.63H160.134v15.63h9.176l13.893,104.203h-6.397V512h158.388v-15.63h-6.397l13.894-104.203H351.867z
+	 M313.027,496.37H198.973l-13.893-104.203h141.844L313.027,496.37z"/>
+                                <rect x="209.114" y="473.444" width="93.782" height="15.63"/>
+                                <path style="fill:#E2804F;" d="M251.007,142.217v-11.194c-7.266-0.23-14.54-2.307-18.695-5.08l3.111-10.852
+	c4.503,2.655,10.969,5.08,18.009,5.08c7.275,0,12.238-3.576,12.238-9.122c0-5.193-4.042-8.539-12.576-11.655
+	c-12.125-4.389-19.974-9.93-19.974-20.664c0-9.925,6.927-17.544,18.582-19.625V47.79h9.465v10.739
+	c7.275,0.23,12.238,1.96,15.932,3.807l-3.121,10.621c-2.763-1.269-7.849-3.924-15.697-3.924c-8.083,0-10.969,4.155-10.969,8.079
+	c0,4.733,4.164,7.388,13.967,11.312c12.934,4.85,18.704,11.082,18.704,21.355c0,9.813-6.815,18.47-19.504,20.547v11.891H251.007z"/>
+                                <path d="M104.573,24.584v142.952h302.853V24.584H104.573z M312.146,95.761c0,30.959-25.187,56.145-56.145,56.145
+	s-56.145-25.187-56.145-56.145c0-28.188,20.883-51.582,47.988-55.546h16.313C291.263,44.178,312.146,67.573,312.146,95.761z
+	 M120.204,151.906V40.215h90.397c-16.088,13.173-26.376,33.179-26.376,55.546c0,22.715,10.618,42.984,27.139,56.145H120.204z
+	 M391.796,151.906h-91.158c16.52-13.161,27.138-33.43,27.138-56.145c0-22.367-10.288-42.372-26.376-55.546h90.396V151.906z"/>
+                                <path d="M256.001,217.107h23.985c12.63,0,22.906-11.397,22.906-25.406v-0.18h128.807L432.025,0H80.302l-0.326,191.521H287.26v0.18
+	c0,4.614-3.111,9.775-7.275,9.775h-23.985c-19.955,0-36.033,13.731-39.212,32.303h-9.376c-2.856-19.159-19.415-33.903-39.357-33.903
+	c-18.839,0-66.549,27.541-75.922,33.061L80.7,239.671l11.432,6.734c9.373,5.521,57.083,33.061,75.922,33.061
+	c18.585,0,34.231-12.806,38.586-30.057h10.562c3.986,17.506,19.596,30.219,38.797,30.219h7.995c10.606,0,19.373,6.632,22.491,16.189
+	H144.25v71.595h223.502v-71.595h-65.174c-3.596-18.152-19.527-31.819-38.581-31.819h-7.995c-13.55,0-24.165-10.298-24.165-23.446
+	S242.45,217.107,256.001,217.107z M95.906,15.63h320.461l-0.273,160.26H95.633L95.906,15.63z M190.163,249.41
+	c-3.753,8.487-12.248,14.427-22.11,14.427c-5.36,0-24.893-6.693-56.245-24.166c31.347-17.473,50.882-24.165,56.245-24.165
+	c11.292,0,20.798,7.787,23.435,18.273h-14.684v15.63H190.163z M352.121,311.448v40.335H159.88v-40.335H352.121z"/>
+                                <rect x="151.802" y="233.778" width="15.63" height="15.63"/>
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center"> 18- تقرير عمليات الأصناف</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('report-25', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('report-25') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
+<path style="fill:#8AD5DD;" d="M448,0H64v512h384V0z M321.712,95.464h33.032v184.328h-33.032V95.464z M266.656,48.88h33.032V279.8
+	h-33.032V48.88z M211.6,139.232h33.032v140.56H211.6V139.232z M156.544,189.44h33.032v90.352h-33.032V189.44z M101.48,226.384
+	h33.032v53.408H101.48C101.48,279.792,101.48,226.384,101.48,226.384z M405.264,463.12H106.736v-10.664h298.52v10.664H405.264z
+	 M405.264,431.12H106.736v-10.664h298.52v10.664H405.264z M405.264,399.12H106.736v-10.664h298.52v10.664H405.264z M405.264,367.12
+	H106.736v-10.664h298.52v10.664H405.264z M405.264,335.12H106.736v-10.664h298.52v10.664H405.264z M409.808,280.112h-33.032V169.68
+	h33.032V280.112z"/>
+                                <g>
+                                    <rect x="106.736" y="324.456" style="fill:#FFFFFF;" width="298.48" height="10.664"/>
+                                    <rect x="106.736" y="356.456" style="fill:#FFFFFF;" width="298.48" height="10.664"/>
+                                    <rect x="106.736" y="388.456" style="fill:#FFFFFF;" width="298.48" height="10.664"/>
+                                    <rect x="106.736" y="420.48" style="fill:#FFFFFF;" width="298.48" height="10.664"/>
+                                    <rect x="106.736" y="452.48" style="fill:#FFFFFF;" width="298.48" height="10.664"/>
+                                </g>
+                                <rect x="156.544" y="189.44" style="fill:#DB2B42;" width="33.032" height="90.352"/>
+                                <g>
+                                    <rect x="101.48" y="226.4" style="fill:#FFFFFF;" width="33.032" height="53.408"/>
+                                    <rect x="211.6" y="139.232" style="fill:#FFFFFF;" width="33.032" height="140.56"/>
+                                </g>
+                                <rect x="266.64" y="48.88" style="fill:#DB2B42;" width="33.032" height="230.92"/>
+                                <rect x="321.68" y="95.464" style="fill:#FFFFFF;" width="33.032" height="184.32"/>
+                                <rect x="376.8" y="169.68" style="fill:#DB2B42;" width="33.032" height="110.432"/>
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">19- تقرير حركة عميل</div>
+                </div>
+            </div>
+        </a>
+    @endif
+    @if ((Auth::user()->user_group && in_array('report-42', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('report-42') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="h-20 w-20" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                 viewBox="0 0 512 512" xml:space="preserve">
+<polygon style="fill:#CFF09E;" points="196.186,116.459 319.569,83.399 286.509,206.782 "/>
+                                <path style="fill:#507C5C;" d="M330.721,72.247c-3.985-3.982-9.794-5.544-15.235-4.082l-123.383,33.06
+	c-5.443,1.459-9.693,5.709-11.152,11.152c-1.459,5.441,0.098,11.25,4.082,15.234l12.046,12.046l-80.595,80.593
+	c-6.159,6.159-6.16,16.145,0,22.305l43.928,43.93c2.957,2.957,6.969,4.619,11.152,4.619c4.183,0,8.195-1.662,11.152-4.619
+	l58.483-58.483c6.159-6.159,6.159-16.145,0-22.305c-6.159-6.157-16.145-6.157-22.305,0l-47.331,47.331l-21.624-21.624l69.443-69.441
+	l55.973,55.973c2.997,2.995,7.025,4.619,11.154,4.619c1.361,0,2.732-0.175,4.082-0.538c5.443-1.459,9.693-5.709,11.152-11.152
+	l33.06-123.381C336.261,82.039,334.705,76.231,330.721,72.247z M278.344,176.313l-51.691-51.689l70.61-18.921L278.344,176.313z"/>
+                                <rect x="274.027" y="367.394" style="fill:#CFF09E;" width="77.989" height="128.836"/>
+                                <path style="fill:#507C5C;" d="M496.229,423.176c8.711,0,15.771-7.062,15.771-15.771V273.348c0-8.709-7.061-15.771-15.771-15.771
+	h-77.993c-8.711,0-15.771,7.062-15.771,15.771v207.108h-34.667V367.394c0-8.709-7.061-15.771-15.771-15.771h-77.993
+	c-8.711,0-15.771,7.062-15.771,15.771v113.062H145.6V447.58h62.221c8.711,0,15.771-7.062,15.771-15.771s-7.061-15.771-15.771-15.771
+	h-77.993c-8.711,0-15.771,7.062-15.771,15.771v48.647H31.543V15.771C31.543,7.062,24.482,0,15.771,0S0,7.062,0,15.771v480.457
+	C0,504.938,7.061,512,15.771,512h480.457c8.711,0,15.771-7.062,15.771-15.771s-7.061-15.771-15.771-15.771h-62.221V289.119h46.45
+	v118.285C480.457,416.115,487.518,423.176,496.229,423.176z M289.804,480.457v-97.292h46.45v97.29h-46.45V480.457z"/>
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">20- تقرير تحليل الفرع</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+    @if ((Auth::user()->user_group && in_array('inventory-status-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('inventory-status-report') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="h-20 w-20" viewBox="0 0 512 512" id="Layer_1" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<g id="_x30_7_Warehouse">
+
+    <g>
+
+        <g>
+
+            <g>
+
+                <g>
+
+                    <rect height="311.406" style="fill:#EDEDED;" width="357.286" x="104.965" y="174.191"/>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <polygon points="486.34,154.847 486.34,485.588 462.246,485.588 462.246,174.203 104.959,174.203         104.959,485.588 80.864,485.588 80.864,154.847 283.582,70.715       " style="fill:#A8B2B4;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <polygon points="486.34,154.847 486.34,167.938 283.582,83.807 80.864,167.938 80.864,154.847         283.582,70.715       " style="fill:#D1DAD9;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <rect height="15.903" style="fill:#677375;" width="24.095" x="80.864" y="469.685"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="15.903" style="fill:#677375;" width="24.095" x="462.246" y="469.685"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <path d="M506.907,116.903v46.476L283.588,70.7L60.309,163.379v-46.476l215.047-88.462        c5.14-2.691,11.285-2.691,16.464,0L506.907,116.903z" style="fill:#FC8A8A;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <polygon points="506.901,149.444 506.901,163.379 283.582,70.694 60.303,163.379 60.303,149.444         283.582,56.799       " style="fill:#F96364;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <path d="M506.901,116.897v13.895L291.814,42.324c-5.18-2.691-11.324-2.691-16.465,0L60.302,130.792        v-13.895l215.047-88.468c5.14-2.691,11.285-2.691,16.465,0L506.901,116.897z" style="fill:#FCB0B0;"/>
+
+                    </g>
+
+                </g>
+
+            </g>
+
+            <g>
+
+                <g>
+
+                    <g>
+
+                        <rect height="118.418" style="fill:#FEE9B4;" width="118.418" x="204.244" y="367.172"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M322.662,367.152V485.59H204.223v-25.411h40.422c29.04,0,52.605-23.503,52.605-52.605v-40.423        L322.662,367.152L322.662,367.152z" style="fill:#FEDD8E;"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="118.418" style="fill:#FEE9B4;" width="118.418" x="322.662" y="367.172"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M441.08,367.152V485.59H322.642v-25.411h40.422c29.04,0,52.605-23.503,52.605-52.605v-40.423        L441.08,367.152L441.08,367.152z" style="fill:#FEDD8E;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <rect height="118.418" style="fill:#FEE9B4;" width="118.418" x="263.453" y="248.754"/>
+
+                </g>
+
+                <g>
+
+                    <path d="M381.899,248.723v118.439H263.461v-25.411h40.422c29.04,0,52.605-23.504,52.605-52.605v-40.423       L381.899,248.723L381.899,248.723z" style="fill:#FEDD8E;"/>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <rect height="36.105" style="fill:#FC8A8A;" width="28.765" x="249.07" y="367.172"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="36.105" style="fill:#FC8A8A;" width="28.765" x="308.279" y="248.754"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="36.105" style="fill:#FC8A8A;" width="28.765" x="367.488" y="367.172"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <path d="M277.857,367.162v36.116h-28.794v-10.952h6.892c6.029,0,10.95-4.861,10.95-10.952v-14.212        H277.857z" style="fill:#F96364;"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M337.046,248.723v36.116h-28.794v-10.89h6.89c6.091,0,10.952-4.922,10.952-10.952v-14.274        H337.046z" style="fill:#F96364;"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M396.234,367.162v36.116h-28.732v-10.952h6.892c6.03,0,10.95-4.861,10.95-10.952v-14.212        H396.234z" style="fill:#F96364;"/>
+
+                    </g>
+
+                </g>
+
+            </g>
+
+            <g>
+
+                <g>
+
+                    <g>
+
+                        <rect height="87.486" style="fill:#FEDD8E;" width="87.486" x="3.013" y="398.104"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M90.499,398.089v87.501H2.998v-18.773h29.863c21.455,0,38.864-17.364,38.864-38.864v-29.864        L90.499,398.089L90.499,398.089z" style="fill:#FDD367;"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="87.486" style="fill:#FEDD8E;" width="87.486" x="90.499" y="398.104"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M177.985,398.089v87.501H90.484v-18.773h29.863c21.455,0,38.864-17.364,38.864-38.864v-29.864        L177.985,398.089L177.985,398.089z" style="fill:#FDD367;"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+
+                    <rect height="87.486" style="fill:#FEDD8E;" width="87.486" x="46.756" y="310.618"/>
+
+                </g>
+
+                <g>
+
+                    <path d="M134.263,310.596v87.501H46.762v-18.773h29.863c21.455,0,38.864-17.364,38.864-38.864v-29.864       L134.263,310.596L134.263,310.596z" style="fill:#FDD367;"/>
+
+                </g>
+
+                <g>
+
+                    <g>
+
+                        <rect height="26.674" style="fill:#FC8A8A;" width="21.251" x="36.131" y="398.104"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="26.674" style="fill:#FC8A8A;" width="21.251" x="79.874" y="310.618"/>
+
+                    </g>
+
+                    <g>
+
+                        <rect height="26.674" style="fill:#FC8A8A;" width="21.251" x="123.617" y="398.104"/>
+
+                    </g>
+
+                </g>
+
+                <g>
+0
+                    <g>
+
+                        <path d="M57.398,398.097v26.682H36.125v-8.091h5.092c4.454,0,8.09-3.591,8.09-8.091v-10.5H57.398z" style="fill:#F96364;"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M101.126,310.596v26.682H79.853v-8.046h5.09c4.5,0,8.091-3.637,8.091-8.091v-10.545H101.126z" style="fill:#F96364;"/>
+
+                    </g>
+
+                    <g>
+
+                        <path d="M144.854,398.097v26.682h-21.227v-8.091h5.092c4.454,0,8.09-3.591,8.09-8.091v-10.5H144.854z" style="fill:#F96364;"/>
+
+                    </g>
+
+                </g>
+
+            </g>
+
+        </g>
+
+        <path d="M508.989,482.577h-19.636V159.353l16.4,6.807c0.921,0.392,1.988,0.282,2.823-0.274    c0.839-0.561,1.341-1.499,1.341-2.506v-46.476c0-1.22-0.737-2.321-1.867-2.784L293.208,25.768c-6.047-3.142-13.248-3.142-19-0.11    L59.162,114.12c-1.129,0.463-1.867,1.564-1.867,2.784v46.476c0,1.008,0.502,1.945,1.341,2.506c0.502,0.333,1.083,0.506,1.67,0.506    c0.393,0,0.784-0.075,1.153-0.231l16.389-6.803v148.25H46.753c-1.663,0-3.012,1.349-3.012,3.012v84.474H3.012    c-1.663,0-3.012,1.349-3.012,3.012v87.485c0,1.663,1.349,3.012,3.012,3.012h505.977c1.663,0,3.012-1.349,3.012-3.012    S510.652,482.577,508.989,482.577z M63.32,158.869v-39.95l213.431-87.811c4.271-2.224,9.384-2.228,13.926,0.118l213.218,87.696    v39.946L284.744,67.917c-0.369-0.153-0.761-0.231-1.153-0.231s-0.784,0.078-1.153,0.231L63.32,158.869z M82.886,313.631h15.228    v20.647H82.886V313.631z M39.144,401.116h7.612h7.616v20.651H39.144V401.116z M87.486,482.577H6.024v-81.461h27.095v23.663    c0,1.663,1.349,3.012,3.012,3.012h21.251c1.663,0,3.012-1.349,3.012-3.012v-23.663h27.091v81.461H87.486z M49.767,395.092V313.63    h27.095v23.66c0,1.662,1.349,3.012,3.012,3.012h21.252c1.662,0,3.012-1.35,3.012-3.012v-23.66h27.091v81.462h-40.73H49.767z     M134.24,401.116h7.616v20.651h-15.228v-20.651H134.24z M174.975,482.577H93.51v-81.461h27.095v23.663    c0,1.663,1.349,3.012,3.012,3.012h21.252c1.663,0,3.012-1.349,3.012-3.012v-23.663h27.095L174.975,482.577L174.975,482.577z     M249.071,406.289h28.766c1.663,0,3.012-1.35,3.012-3.012v-33.092h38.801v112.392H207.254V370.185h38.805v33.092    C246.06,404.939,247.408,406.289,249.071,406.289z M308.277,287.869h28.766c1.663,0,3.012-1.349,3.012-3.012v-33.091h38.805    v112.396h-56.197h-56.198V251.766h38.801v33.091C305.265,286.52,306.614,287.869,308.277,287.869z M311.289,281.845v-30.079    h22.742v30.079H311.289z M438.069,482.577H325.673V370.185h38.801v33.092c0,1.662,1.35,3.012,3.012,3.012h28.766    c1.663,0,3.012-1.35,3.012-3.012v-33.092h38.805V482.577z M393.24,400.265h-22.742v-30.08h11.373h11.369L393.24,400.265    L393.24,400.265z M274.825,370.185v30.08h-22.742v-30.08h11.369H274.825z M459.234,482.577h-15.142V367.173    c0-1.663-1.349-3.012-3.012-3.012h-56.198V248.755c0-1.663-1.349-3.012-3.012-3.012H263.452c-1.663,0-3.012,1.349-3.012,3.012    v115.407h-56.198c-1.662,0-3.012,1.349-3.012,3.012v115.403h-20.231v-84.473c0-1.663-1.35-3.012-3.012-3.012h-40.735v-84.474    c0-1.663-1.349-3.012-3.012-3.012h-26.271V177.214h351.266L459.234,482.577L459.234,482.577z M483.33,482.577h-18.071V174.203    c0-1.663-1.349-3.012-3.012-3.012h-357.29c-1.663,0-3.012,1.349-3.012,3.012v133.404H83.874v-150.75L283.59,73.961l199.74,82.893    L483.33,482.577L483.33,482.577z" style="fill:#333333;"/>
+
+    </g>
+
+</g>
+
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">21- تقرير كميات المخزون</div>
+                </div>
+            </div>
+        </a>
+    @endif
+
+    @if ((Auth::user()->user_group && in_array('profit-loss-stmt-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('profit-loss-stmt-report') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 64 64" id="svg5" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+<defs id="defs2"/>
+
+                                <g id="layer1" transform="translate(-288,-672)">
+
+                                    <path d="m 298,681 h 49 v 6 h -49 z" id="path61222" style="fill:#3e4f59;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 298,687 h 49 v 40 h -49 z" id="path61224" style="fill:#acbec2;fill-opacity:1;fill-rule:evenodd;stroke-width:2.00001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 298,687 v 40 h 29.76953 a 28.484051,41.392605 35.599482 0 0 18.625,-40 z" id="path61226" style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.00002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 300,680 c -1.64501,0 -3,1.355 -3,3 v 40 c 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 v -40 c 0,-0.56413 0.43587,-1 1,-1 h 45 c 0.56413,0 1,0.43587 1,1 v 3 h -42 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 h 42 v 37 c 0,0.56413 -0.43587,1 -1,1 h -49 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 h 49 c 1.64501,0 3,-1.35499 3,-3 0,-14 0,-28 0,-42 0,-1.645 -1.35499,-3 -3,-3 z" id="path61228" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 343,683 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path61230" style="color:#000000;fill:#ed7161;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+
+                                    <path d="m 339,683 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path61232" style="color:#000000;fill:#ecba16;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+
+                                    <path d="m 335,683 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path61234" style="color:#000000;fill:#42b05c;fill-opacity:1;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+
+                                    <path d="m 293,726 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z" id="path61236" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+
+                                    <path d="m 301,686 c -0.55228,0 -1,0.44772 -1,1 0,0.55229 0.44772,1 1,1 0.55229,0 1,-0.44771 1,-1 0,-0.55228 -0.44771,-1 -1,-1 z" id="path61238" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;-inkscape-stroke:none"/>
+
+                                    <path d="m 334.30441,693.8201 -1.41422,8.48528 -2.12132,-2.12131 -4.94974,4.94974 a 2.0002,2.0002 0 0 1 -2.82843,0 l -2.82843,-2.82843 -6.05874,6.05874 a 2,2 0 0 1 -2.82843,0 2,2 0 0 1 0,-2.82841 l 7.47296,-7.47296 a 2.0002,2.0002 0 0 1 2.82843,-1e-5 l 2.82843,2.82843 3.53553,-3.53553 -2.12132,-2.12133 z" id="path11120-0" style="color:#000000;fill:#fe73c5;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1;stroke-dasharray:none;stroke-opacity:1"/>
+
+                                    <path d="m 324.0918,705.69515 a 2.0002,2.0002 0 0 1 -1.10157,-0.56055 l -2.16992,-2.17187 a 14.5,11.5 0 0 1 -0.32031,-2.26172 14.5,11.5 0 0 1 0.52734,-3.01953 2.0002,2.0002 0 0 1 0.54883,0.38086 l 2.82813,2.82812 3.53711,-3.53515 -2.12305,-2.1211 8.48633,-1.41406 -1.41407,8.48438 -2.12109,-2.1211 -4.95117,4.95117 a 2.0002,2.0002 0 0 1 -1.72656,0.56055 z" id="path17802-9" style="fill:#fe93d3;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 334,708.0625 h -3 c -0.554,0 -1,0.446 -1,1 v 11 c 0,0.554 0.446,1 1,1 h 3 c 0.554,0 1,-0.446 1,-1 v -11 c 0,-0.554 -0.446,-1 -1,-1 z" id="rect11074-7" style="fill:#0075d3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="M 333,711.0625 A 4,7 0 0 1 335,712 v 8.0625 c 0,0.554 -0.446,1 -1,1 h -3 c -0.554,0 -1,-0.446 -1,-1 v -6.62891 a 4,7 0 0 1 3,-2.37109 z" id="path17915-6" style="fill:#0588e2;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 334,707.0625 c 1.0907,0 2,0.9093 2,2 v 11 c 0,1.0907 -0.9093,2 -2,2 h -3 c -1.0907,0 -2,-0.9093 -2,-2 v -7 a 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 v 7 h 3 v -11 h -3 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 c 0,-1.0907 0.9093,-2 2,-2 z" id="path23823-2" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 324,712.0625 h -3 c -0.554,0 -1,0.446 -1,1 v 7 c 0,0.554 0.446,1 1,1 h 3 c 0.554,0 1,-0.446 1,-1 v -7 c 0,-0.554 -0.446,-1 -1,-1 z" id="rect11076-36" style="fill:#0075d3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="M 323,715.0625 A 4,7 0 0 1 325,716 v 4.0625 c 0,0.554 -0.446,1 -1,1 h -3 c -0.554,0 -1,-0.446 -1,-1 v -2.62891 a 4,7 0 0 1 3,-2.37109 z" id="ellipse17917-6" style="fill:#0588e2;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 324,711.0625 c 1.0907,0 2,0.9093 2,2 v 7 c 0,1.0907 -0.9093,2 -2,2 h -3 c -1.0907,0 -2,-0.9093 -2,-2 v -3 a 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 v 3 h 3 v -7 h -3 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 c 0,-1.0907 0.9093,-2 2,-2 z" id="path23825-1" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 314,715.0625 h -3 c -0.554,0 -1,0.446 -1,1 v 4 c 0,0.554 0.446,1 1,1 h 3 c 0.554,0 1,-0.446 1,-1 v -4 c 0,-0.554 -0.446,-1 -1,-1 z" id="rect11078-0" style="fill:#ffa221;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="M 313,717.0625 A 4,7 0 0 1 315,718 v 2.0625 c 0,0.554 -0.446,1 -1,1 h -3 c -0.554,0 -1,-0.446 -1,-1 v -0.62891 a 4,7 0 0 1 3,-2.37109 z" id="ellipse17919-8" style="fill:#ffc343;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 314,714.0625 c 1.0907,0 2,0.9093 2,2 v 4 c 0,1.0907 -0.9093,2 -2,2 h -3 c -1.0907,0 -2,-0.9093 -2,-2 a 1,1 0 0 1 1,-1 1,1 0 0 1 1,1 h 3 v -4 h -3 a 1,1 0 0 1 -1,1 1,1 0 0 1 -1,-1 c 0,-1.0907 0.9093,-2 2,-2 z" id="path23827-7" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                    <path d="m 312.68945,709.9432 c -0.76986,0 -1.53949,-0.2895 -2.12109,-0.8711 a 1,1 0 0 1 0,-1.41601 1,1 0 0 1 1.41406,0 c 0.3989,0.3989 1.01516,0.3989 1.41406,0 l 6.0586,-6.0586 a 1.0001,1.0001 0 0 1 1.41406,0 l 2.43945,2.43946 a 1,1 0 0 1 0,1.41406 1,1 0 0 1 -1.41406,0 l -1.73242,-1.73242 -5.35156,5.35351 c -0.5816,0.5816 -1.35124,0.8711 -2.1211,0.8711 z m -0.86328,-3.95899 a 1,1 0 0 1 -0.70703,-0.29297 1,1 0 0 1 0,-1.41406 l 6.92188,-6.92187 c 1.16322,-1.163 3.07895,-1.163 4.24218,0 l 2.1211,2.12109 2.12109,-2.12109 -1.41406,-1.41407 a 1.0001,1.0001 0 0 1 0.54297,-1.69335 l 8.48632,-1.41407 a 1.0001,1.0001 0 0 1 1.1504,1.15039 l -1.41407,8.48633 a 1.0001,1.0001 0 0 1 -1.69336,0.54102 l -1.41406,-1.41407 -3.76562,3.76563 a 1,1 0 0 1 -1.41407,0 1,1 0 0 1 0,-1.41406 l 4.47266,-4.47266 a 1.0001,1.0001 0 0 1 1.41406,0 l 0.74805,0.74805 0.86328,-5.1875 -5.1875,0.86328 0.74805,0.74805 a 1.0001,1.0001 0 0 1 0,1.41406 l -3.53711,3.53515 a 1.0001,1.0001 0 0 1 -1.41406,0 l -2.82813,-2.82812 c -0.39896,-0.39888 -1.01511,-0.39888 -1.41406,0 l -6.92188,6.92187 a 1,1 0 0 1 -0.70703,0.29297 z" id="path23829-9" style="color:#000000;fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.1"/>
+
+                                </g>
+
+</svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">22- تقرير الارباح والخسائر</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
+<div>
+
+    @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ route('visit-calendar') }}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Window Header -->
+                                <rect x="6" y="8" width="52" height="6" rx="1.5" fill="#3e4f59"/>
+                                <circle cx="46" cy="11" r="1.3" fill="#ed7161"/>
+                                <circle cx="42" cy="11" r="1.3" fill="#ecba16"/>
+                                <circle cx="38" cy="11" r="1.3" fill="#42b05c"/>
+
+                                <!-- Window Body -->
+                                <rect x="6" y="14" width="52" height="42" rx="2" fill="#acbec2"/>
+                                <path d="M6 14h32c8 0 14 14 14 42H6z" fill="#e8edee"/>
+
+                                <!-- Visit Location Pin -->
+                                <path
+                                    d="M32 24c-4.4 0-8 3.3-8 7.5 0 5.7 8 13.5 8 13.5s8-7.8 8-13.5c0-4.2-3.6-7.5-8-7.5z"
+                                    fill="#fe73c5"/>
+                                <circle cx="32" cy="31" r="3" fill="#fe93d3"/>
+
+                                <!-- Calendar / Visit Line -->
+                                <rect x="20" y="46" width="24" height="6" rx="1.5" fill="#0075d3"/>
+                                <rect x="20" y="46" width="12" height="6" rx="1.5" fill="#0588e2"/>
+
+                                <!-- Outline -->
+                                <path
+                                    d="M6 8c-1.7 0-3 1.3-3 3v42c0 1.7 1.3 3 3 3h52c1.7 0 3-1.3 3-3V11c0-1.7-1.3-3-3-3H6zm0 2h52c.6 0 1 .4 1 1v42c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1z"
+                                    fill="#000"/>
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">منصة الزيارات</div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
 </div>
 
 @section('css-scripts')
