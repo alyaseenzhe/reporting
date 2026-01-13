@@ -156,10 +156,10 @@
                             }
 
                             $val_mozanah = intval($record["U_SafetyStock"]) - (intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"]));
-                            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and month = '" . $month . "' and year = '" . $year . "'");
-                            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and " . $stmt);
+                            $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" .( $record["OldItemCode"]?: $record["ItemCode"] ). "' and month = '" . $month . "' and year = '" . $year . "'");
+                            $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . ($record["OldItemCode"]?  :$record["ItemCode"]). "' and " . $stmt);
 
-                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . $record["OldItemCode"] . "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
+                            $next_val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" .( $record["OldItemCode"]?: $record["ItemCode"] ). "' and ((year ='" . $next_target_date01->format('Y') . "' and month = '" . $next_target_date01->format('n') . "') or (year ='" . $next_target_date02->format('Y') . "' and month = '" . $next_target_date02->format('n') . "') or (year ='" . $next_target_date03->format('Y') . "' and month = '" . $next_target_date03->format('n') . "'))");
 
                             $faed_maqzon = (intval($record["OnHand"]) + (intval($record["OnOrder"])+intval($record["OpenQoutation"]))) - intval($val_target->target);
                             $recommendation = intval($val_mostahdef->target) + intval(($val_mozanah < 0 ? 0 : $val_mozanah)) - ($faed_maqzon < 0 ? 0 : $faed_maqzon);
