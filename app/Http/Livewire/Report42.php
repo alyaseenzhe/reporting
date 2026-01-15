@@ -112,7 +112,9 @@ class Report42 extends Component
                 // only sap
 //                dd('only sap');
 //                $this->scribesQuery($start_date, $end_date, $dept_id);
-                $this->sapQuery($start_date, $end_date, $dept_id);
+//                $this->sapQuery($start_date, $end_date, $dept_id);
+                $this->sapQuery2025($start_date, $end_date, $this->dept_id);
+
             }
             elseif ($this->year <= 2023) {
 //                dd('2023');
@@ -2782,7 +2784,7 @@ ON disc_without_qty_tbl."DisBranchId" = tbl1."BPLId"
             if (!$result)
             {
                 echo "Error while sending SQL statement to the database server.\n";
-                echo "ODBC error code: "  . odbc_error() . ". Message: " . odbc_errormsg();
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
             }
             else
             {
