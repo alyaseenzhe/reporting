@@ -91,12 +91,13 @@ class CommissionReport extends Component
         '10339' =>	'mat_dev_manager2',
         '10342' =>	'area_manager',
 //        '10348' =>	'store_manager',
-        '10348' =>	'mat_dev_manager2',
+        '10348' =>	'store_manager',
         '10346' =>	'mat_dev_manager2',
         '10353' =>  'mat_dev_manager2',
         '10349' => 'mat_dev_manager1',
         '10347' => 'mat_dev_manager1',
-        ''=>'mat_dev_manager2'
+        '408'=>'store_manager',
+//        ''=>'store_manager'
     ];
     public $position_commission = [
         "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
@@ -456,7 +457,7 @@ AND "BPLId" IS NOT NULL';
                 // }
             }
 
-dd($sql2);
+//dd($sql2);
             $result2 = odbc_exec($conn, $sql2);
             if (!$result2)
             {
@@ -479,7 +480,7 @@ dd($sql2);
                     array_push($this->slp_code, $row["SalesEmployeeCode"]);
                 }
 //dd($this->slp_code);
-//                dd($this->sap_results2);
+// 408               dd($this->sap_results2);
 
                 $gross_collect = collect($this->sap_results2);
                 $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');

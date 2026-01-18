@@ -257,7 +257,8 @@
                         <tr>
                             <td class="border p-2 whitespace-nowrap">
                                 <div>
-                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['OldSlpCode'] : ""}}</div>
+
+                                    <div class="text-center text-gray-800 text-sm">{{$result2 ? $result2['OldSlpCode']?: $result2['SlpCode'] : ""}}</div>
                                 </div>
                             </td>
                             <td class="border p-2 whitespace-nowrap">
@@ -270,15 +271,15 @@
                                     <div class="text-center text-gray-800 text-sm">
                                         {{--                                                                {{$result2 ? $result2->role : ""}}--}}
 
-                                        @if(($emp_position[$result2['OldSlpCode']?? null]??null) == "area_manager")
+                                        @if(($emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']?? null]??null) == "area_manager")
                                             <span>مدير منطقة</span>
-                                        @elseif(($emp_position[$result2['OldSlpCode']?? null]??null)  == "store_manager")
+                                        @elseif(($emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']?? null]??null)  == "store_manager")
                                             <span>مدير معرض</span>
-                                        @elseif(($emp_position[$result2['OldSlpCode']?? null]??null)  == "sales_manager")
+                                        @elseif(($emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']?? null]??null)  == "sales_manager")
                                             <span>مدير مبيعات</span>
-                                        @elseif(($emp_position[$result2['OldSlpCode']?? null]??null)  == "mat_dev_manager1")
+                                        @elseif(($emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']?? null]??null)  == "mat_dev_manager1")
                                             <span>تطوير مواد 1</span>
-                                        @elseif(($emp_position[$result2['OldSlpCode']?? null]??null)  == "mat_dev_manager2")
+                                        @elseif(($emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']?? null]??null)  == "mat_dev_manager2")
                                             <span>تطوير مواد 2</span>
                                         @endif
                                     </div>
@@ -300,19 +301,20 @@
                                     <div class="text-center text-gray-800 text-sm">
                                         @if($tot >= 0 && $tot <= 120000)
                                             30
-                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']]] = 30; ?>
+                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SlpCode']]] = 30; ?>
                                         @elseif($tot > 120000 && $tot <= 240000)
                                             60
                                             @php $percent = 60; @endphp
-                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']]] = 60; ?>
+{{--                                            @dd($result2['OldSlpCode'], $result2['SlpCode'],$result2['SalesEmployeeCode'], $emp_position);--}}
+                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SlpCode']?: $result2['SalesEmployeeCode']]] = 60; ?>
                                         @elseif($tot > 240000 && $tot < 400000)
                                             80
                                             @php $percent = 80; @endphp
-                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']]] = 80; ?>
+                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SlpCode']]] = 80; ?>
                                         @elseif($tot >= 400000)
                                             100
                                             @php $percent = 100; @endphp
-                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']]] = 100; ?>
+                                                <?php $commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SlpCode']]] = 100; ?>
                                         @endif
                                     </div>
                                 </div>
@@ -398,10 +400,9 @@
 
                                         @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                             {{$result2 ? number_format(floatval($emp_comm)*(5/100)) : ""}}
-                                                <?php $total_sales_manager += (($result2 ? floatval($emp_comm)*(5/100) : 0)*($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)); ?>
                                         @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                             {{$result2 ? number_format(floatval($emp_comm)*(5/100)) : ""}}
-                                                <?php $total_sales_manager += (($result2 ? floatval($emp_comm)*(5/100) : 0)*($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)); ?>
+                                                <?php $total_sales_manager += (($result2 ? floatval($emp_comm)*(5/100) : 0)*($commission_percentage[$emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']]]/100)); ?>
                                         @else
                                             <span>0</span>
                                         @endif
@@ -415,11 +416,11 @@
                                         {{--                                    <span style="color: red">{{ ($commission_percentage[$emp_position[$result2['OldCode']]]) }}</span>--}}
                                         {{--                                    <span style="color: green">{{ ($commission_percentage[$emp_position[$result2['OldCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['area_manager']/100))*$emp_comm) }}</span>--}}
                                         @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) : ""}}
-                                                <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) ?>
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['area_manager']/100))*$emp_comm) : ""}}
+                                                <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['area_manager']/100))*$emp_comm) ?>
                                         @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) : ""}}
-                                                <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) ?>
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['area_manager']/100))*$emp_comm) : ""}}
+                                                <?php $total_area_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['area_manager']/100))*$emp_comm) ?>
                                         @else
                                             <span>0</span>
                                         @endif
@@ -431,14 +432,14 @@
                                     <div class="text-center text-gray-800 text-sm">
                                         @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}--}}
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) : ""}}
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?: $result2['SalesEmployeeCode']]]['store_manager']/100))*$emp_comm) : ""}}
                                                 <?php //$total_store_manager += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['store_manager']/100))*$emp_comm) ?>
-                                                <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) ?>
+                                                <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?: $result2["SalesEmployeeCode"]]]['store_manager']/100))*$emp_comm) ?>
 
                                         @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) : ""}}
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?: $result2["SlpCode"]?: $result2['SalesEmployeeCode']]]['store_manager']/100))*$emp_comm) : ""}}
                                                 <?php //$total_store_manager += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['store_manager']/100))*$emp_comm) ?>
-                                                <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) ?>
+                                                <?php $total_store_manager += ($commission_percentage[$emp_position[$result2['OldSlpCode']?: $result2["SlpCode"]]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?: $result2["SalesEmployeeCode"]]]['store_manager']/100))*$emp_comm) ?>
 
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_store_manager'])) : ""}}--}}
                                         @else
@@ -452,15 +453,15 @@
                                     <div class="text-center text-gray-800 text-sm">
                                         @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}--}}
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
                                                 <?php //$total_mat_dev1 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
-                                                <?php $total_mat_dev1 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
+                                                <?php $total_mat_dev1 += ($commission_percentage[$emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2["SalesEmployeeCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
 
                                         @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                             {{--                                        {{$result2 ? number_format(floatval($result2['calc_mat_dev1'])) : ""}}--}}
-                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
+                                            {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager1']/100))*$emp_comm) : ""}}
                                                 <?php //$total_mat_dev1 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
-                                                <?php $total_mat_dev1 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
+                                                <?php $total_mat_dev1 += ($commission_percentage[$emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) ?>
 
                                         @else
                                             <span>0</span>
@@ -474,15 +475,15 @@
                                         <div class="text-center text-gray-800 text-sm">
                                             @if(floatval(number_format($result2['Balance'])) == 0 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                                 {{--                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}--}}
-                                                {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
+                                                {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
                                                     <?php //$total_mat_dev2 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
-                                                    <?php $total_mat_dev2 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
+                                                    <?php $total_mat_dev2 += ($commission_percentage[$emp_position[$result2['OldSlpCode']?:$result2['SalesEmployeeCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager2']/100))*$emp_comm) ?>
 
                                             @elseif(number_format(floatval($result2['Balance Due'])/floatval($result2['Balance'])*100) <= 20 && \Carbon\Carbon::parse($result2['OldestInvoice'])->diffInDays($last_date) <= $commission_days)
                                                 {{--                                            {{$result2 ? number_format(floatval($result2['calc_mat_dev2'])) : ""}}--}}
-                                                {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
+                                                {{$result2 ? number_format((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager2']/100))*$emp_comm) : ""}}
                                                     <?php //$total_mat_dev2 += ((floatval($result2["GrossProfitLC"])/$total_grossProfit)*100)*((floatval($position_commission[$emp_position[$result2["OldCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
-                                                    <?php $total_mat_dev2 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) ?>
+                                                    <?php $total_mat_dev2 += ($commission_percentage[$emp_position[$result2['OldSlpCode']]]/100)*((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager2']/100))*$emp_comm) ?>
 
                                             @else
                                                 <span>0</span>
@@ -501,11 +502,11 @@
                             <?php //$employee_commission += ($result2 ? (((floatval(number_format($result2['employee_postponed'])) == 0 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240) || (number_format(floatval($result2['employee_postponed_due'])/floatval($result2['employee_postponed'])*100) <= 20 && \Carbon\Carbon::parse($result2['oldest_voucher'])->diffInDays($last_date) <= 240)) ? floatval($result2['employee_commission']) : 0) : 0) ?>
                             <?php $employee_commission += ($result2 && $pay? $emp_comm : 0) ?>
                             <?php //$calc_sales_manager += ($result2 && $pay? $total_sales_manager : 0) ?>
-                            <?php $calc_sales_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['sales_manager']/100))*$emp_comm) : 0) ?>
-                            <?php $calc_area_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['area_manager']/100))*$emp_comm) : 0) ?>
-                            <?php $calc_store_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['store_manager']/100))*$emp_comm) : 0) ?>
-                            <?php $calc_mat_dev1 += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager1']/100))*$emp_comm) : 0) ?>
-                            <?php $calc_mat_dev2 += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]]]['mat_dev_manager2']/100))*$emp_comm) : 0) ?>
+                            <?php $calc_sales_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['sales_manager']/100))*$emp_comm) : 0) ?>
+                            <?php $calc_area_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['area_manager']/100))*$emp_comm) : 0) ?>
+                            <?php $calc_store_manager += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['store_manager']/100))*$emp_comm) : 0) ?>
+                            <?php $calc_mat_dev1 += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager1']/100))*$emp_comm) : 0) ?>
+                            <?php $calc_mat_dev2 += ($result2 && $pay? ((floatval($position_commission[$emp_position[$result2["OldSlpCode"]?:$result2['SalesEmployeeCode']]]['mat_dev_manager2']/100))*$emp_comm) : 0) ?>
                         {{--                @elseif(($result2 && $result2['Employeecode'] == \Illuminate\Support\Facades\Auth::user()->emp_code && \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '1') || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
                         {{--                    <tr>--}}
                         {{--                        <td class="border p-2 whitespace-nowrap">--}}
