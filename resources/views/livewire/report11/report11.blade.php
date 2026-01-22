@@ -156,7 +156,7 @@
                         <span class="text-red-500">*</span>
                     </label>
                     <div wire:ignore>
-                        <select id="cat_type" name="cat_type" multiple="multiple"
+                        <select id="cat_type" wire:model.lazy="cat_type" name="cat_type" multiple="multiple"
                                 class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 style="@error('cat_type') border: solid 1px #fda4af; @enderror">
 
@@ -378,6 +378,7 @@
                             </span>
                         </label>
 
+                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                         <label class="cursor-pointer">
                             <input
                                 type="radio"
@@ -412,6 +413,7 @@
                             </span>
                         </label>
 
+                            @endif
                     </div>
 
 

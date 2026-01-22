@@ -153,7 +153,7 @@
             console.log('selected' + selected_cat_type);
             $("#cat_type").select2('val', selected_cat_type);
             old_search_type = $("input[name='search_type']:checked").val();
-            var data = $('#group_type').select2("val");
+            // var data = $('#group_type').select2("val");
             console.log('old_search_type:'+ old_search_type);
 
             if(old_search_type == 'item_code_search') {

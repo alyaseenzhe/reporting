@@ -61,6 +61,7 @@ class CreateProductTarget extends Component
     public $edit_special_product;
     public $items;
     public $item_price;
+    public $historical_sales;
 
     protected $listeners = ['targets-entered' => 'test', 'create-report' => 'create_report'];
 
@@ -118,12 +119,12 @@ class CreateProductTarget extends Component
 
 //        dd($this->users);
 
-        $this->vendor_list = AccMast::join('ProductMast', 'ProductMast.VendorNo', 'accmast.NodeNo')
-        ->where('ProductMast.PriceList', 1)
+        // $this->vendor_list = AccMast::join('ProductMast', 'ProductMast.VendorNo', 'accmast.NodeNo')
+        // ->where('ProductMast.PriceList', 1)
 //        ->select('accmast.NodeNo as nodeno', 'accmast.Arabic_Name as arabic_name')
-        ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
+        // ->selectRaw('DISTINCT accmast.NodeNo, accmast.Arabic_Name')
 //        ->distinct()
-        ->get();
+        // ->get();
 //        dd($this->vendor_list);
 //        foreach ($this->vendor_list as $list) {
 //            dd($list->Arabic_Name);
@@ -147,7 +148,9 @@ class CreateProductTarget extends Component
 //        $this->vendor_list = User::all();
 //        dd($this->vendor_list);
 
+        $this->vendorsList();
         $this->get_filters();
+//        $this->historicalSales();
 
     }
 
@@ -231,9 +234,13 @@ class CreateProductTarget extends Component
         }
         if (count($this->dept_id) == 1) {
             $this->generateReport();
+            $this->historicalSales();
+//            dd($this->historical_sales->where('ItemCode', '12020013'));
+//            dd(collect($this->historical_sales));
         }
         else {
             $this->generateBranchesReport();
+            $this->historicalSales();
         }
     }
 
@@ -743,7 +750,7 @@ class CreateProductTarget extends Component
 //            ->whereIn('products.SpecialityCode', $this->sp_type)
 //            ->whereRaw($cat_stmt2)
             ->whereRaw($cat_txt2)
-            ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
+            ->selectRaw('product_code as ProductCode, sap_code, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
 //            ->toSql();
             ->get()->toArray();
 
@@ -799,6 +806,108 @@ class CreateProductTarget extends Component
 
     }
 
+    public function historicalSales()
+    {
+
+        if (!extension_loaded('odbc')) {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+
+// Host
+// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
+        $host = env('DB_HOST_FOURTH');
+
+// Default name of your hana instance
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+// Try to connect
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn) {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+
+        } else {
+
+            $selected_year1 = Carbon::parse($this->selected_month)->subYear();
+            $selected_year2 = Carbon::parse($this->selected_month)->subYear()->addMonth(11);
+
+            $sql = 'SELECT "BranchName", "ItemCode", "ItemDescription","Year",
+SUM("Month_1") AS "month1",
+SUM("Month_2") AS "month2",
+SUM("Month_3") AS "month3",
+SUM("Month_4") AS "month4",
+SUM("Month_5") AS "month5",
+SUM("Month_6") AS "month6",
+SUM("Month_7") AS "month7",
+SUM("Month_8") AS "month8",
+SUM("Month_9") AS "month9",
+SUM("Month_10") AS "month10",
+SUM("Month_11") AS "month11",
+SUM("Month_12") AS "month12"
+FROM (
+SELECT "BranchName", "SalesEmployeeOrBuyerName", "ItemCode", "ItemDescription",YEAR("DocumentDate") as "Year",
+SUM(CASE WHEN MONTH("DocumentDate") = 1 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_1",
+SUM(CASE WHEN MONTH("DocumentDate") = 2 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_2",
+SUM(CASE WHEN MONTH("DocumentDate") = 3 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_3",
+SUM(CASE WHEN MONTH("DocumentDate") = 4 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_4",
+SUM(CASE WHEN MONTH("DocumentDate") = 5 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_5",
+SUM(CASE WHEN MONTH("DocumentDate") = 6 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_6",
+SUM(CASE WHEN MONTH("DocumentDate") = 7 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_7",
+SUM(CASE WHEN MONTH("DocumentDate") = 8 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_8",
+SUM(CASE WHEN MONTH("DocumentDate") = 9 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_9",
+SUM(CASE WHEN MONTH("DocumentDate") = 10 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_10",
+SUM(CASE WHEN MONTH("DocumentDate") = 11 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_11",
+SUM(CASE WHEN MONTH("DocumentDate") = 12 THEN "QuantityInInventoryUoM"  ELSE 0 END) AS "Month_12",
+CASE
+	WHEN "BranchCode" = \'5\' THEN \'7\'
+	WHEN "BranchCode" = \'10\' THEN \'12\'
+	WHEN "BranchCode" = \'3\' THEN \'3\'
+	WHEN "BranchCode" = \'7\' THEN \'4\'
+	WHEN "BranchCode" = \'11\' THEN \'11\'
+	WHEN "BranchCode" = \'9\' THEN \'5\'
+	WHEN "BranchCode" = \'14\' THEN \'505\'
+	WHEN "BranchCode" = \'6\' THEN \'13\'
+	WHEN "BranchCode" = \'8\' THEN \'6\'
+	WHEN "BranchCode" = \'12\' THEN \'9\'
+	WHEN "BranchCode" = \'13\' THEN \'8\'
+	WHEN "BranchCode" = \'4\' THEN \'10\'
+
+
+END AS "Department"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" T0
+WHERE "DocumentDate" >= \''.$selected_year1.'\' AND "DocumentDate" <= \''.$selected_year2.'\'
+GROUP BY "BranchName", "SalesEmployeeOrBuyerName", "ItemCode", "ItemDescription","QuantityInInventoryUoM",YEAR("DocumentDate"),"BranchCode"
+ORDER BY YEAR("DocumentDate"))
+WHERE "Department" IN ('. implode(',' , $this->dept_id) . ')
+GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
+';
+
+
+
+            $result = odbc_exec($conn, $sql);
+            if (!$result) {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            } else {
+//                dd(odbc_fetch_array($result));
+                $this->historical_sales = [];
+
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->historical_sales, $row);
+                }
+
+            }
+            odbc_close($conn);
+            $this->historical_sales = collect($this->historical_sales);
+        }
+    }
     public function generateBranchesReport()
     {
 
@@ -1375,6 +1484,7 @@ class CreateProductTarget extends Component
             ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
 //            ->toSql();
             ->get()->toArray();
+//        dd($this->items);
 //        dd($this->items);
 
 //        $this->items = Products::where('Pricelist', '1')
@@ -2421,7 +2531,7 @@ AND Pricelist = 1 ";
 //            dd($this->dept_id);
         }
         else {
-          $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
+            $this->selected_month = Carbon::parse(Carbon::now())->format('Y-m');
         }
     }
 
@@ -2452,6 +2562,62 @@ AND Pricelist = 1 ";
                 'user_id' => Auth::id(),
                 'page' => 'create',
             ]);
+        }
+    }
+
+    public function vendorsList() {
+
+        if (! extension_loaded('odbc'))
+        {
+            die('ODBC extension not enabled / loaded');
+        }
+
+        $driver = env('DB_CONNECTION_FOURTH');
+
+// Host
+// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
+        $host = env('DB_HOST_FOURTH');
+
+// Default name of your hana instance
+        $db_name = env('DB_DATABASE_FOURTH');
+        $username = env('DB_USERNAME_FOURTH');
+        $password = env('DB_PASSWORD_FOURTH');
+
+// Try to connect
+        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+
+        if (!$conn)
+        {
+            // Try to get a meaningful error if the connection fails
+            echo "Connection failed.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+
+        }
+        else
+        {
+            $sql = 'SELECT "CardCode", "CardName" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\' AND "GroupCode" = 123';
+
+
+
+            $result = odbc_exec($conn, $sql);
+            if (!$result)
+            {
+                echo "Error while sending SQL statement to the database server.\n";
+                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            }
+            else
+            {
+//                dd(odbc_fetch_array($result));
+                $this->vendor_list = [];
+
+                while ($row = odbc_fetch_array($result)) {
+                    array_push($this->vendor_list, $row);
+                }
+
+            }
+            odbc_close($conn);
+
+//            dd($this->vendor_list);
         }
     }
 

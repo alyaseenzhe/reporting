@@ -207,6 +207,7 @@ class Report11 extends Component
         $this->group_results = [];
 
         $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
+//        dd($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
 //        $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type);
 //        $this->sapQuery($start_date, $end_date, $dept_id);
 //
@@ -718,11 +719,11 @@ class Report11 extends Component
 
 // If you want the structure to be: BusinessPartnerCode => [ [ item1 ], [ item2 ], ... ]
 
-//                  Sort employees by total sales descending
-//                $this->group_results = $this->group_results
-//                    ->sortBy('totalSales')
-//                    ->values(); // reset keys
-////
+//
+                $this->group_results = $this->group_results
+                    ->sortBy('totalSales')
+                    ->values(); // reset keys
+//
 //                $this->group_results = $this->group_results
 //                    ->sortBy('totalSales')
 //                    ->values(); // reset keys
@@ -759,6 +760,7 @@ class Report11 extends Component
                     });
 
 // Step 2: Convert to array if needed
+//                $this->totalSalesByItem = $groupedByEmployeeAndItem->toArray();
                 $this->totalSalesByItem = $groupedByEmployeeAndItem->toArray();
 //                dd($this->group_results);
 
@@ -1444,11 +1446,13 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
             if (in_array('dept_all', $departments)) {
 //                $sap_depts = $depts;
                 $sap_depts = array_intersect_key($depts, array_flip($user_depts));
+//                dd($sap_depts);
             }
             else {
                 foreach ($departments as $department) {
                     array_push($sap_depts, $depts[$department]);
                 }
+//                dd($department);
             }
 
             if (! extension_loaded('odbc'))
@@ -2351,7 +2355,7 @@ SUM("GrossProfitSC") AS "GrossProfitSC",
 SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
 SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
 SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBy0SalesAmount"
 
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
 WHERE "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\'

@@ -28,7 +28,6 @@ class ListProductsTargets extends Component
 
     public function booted() {
 
-
         if (Auth::user()->is_active == '0'){
             return redirect()->route('non-active-user');
         }
