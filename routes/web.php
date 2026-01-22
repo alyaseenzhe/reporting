@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
+use App\Http\Livewire\Items\ItemsSalesByBranch;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -76,6 +76,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/show-visit/{id}', \App\Http\Livewire\ShowVisit::class)->name('show.visit');
 
     Route::get('/show-visit/{id}', \App\Http\Livewire\ShowVisit::class)->name('show.visit');
+    Route::get('/show-visit/{id}', \App\Http\Livewire\ShowVisit::class)->name('show.visit');
+
+    Route::get('/items-sales-by-branch', ItemsSalesByBranch::class)->name('items.sales');
 
 
 });
