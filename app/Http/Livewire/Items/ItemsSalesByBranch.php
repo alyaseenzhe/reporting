@@ -1201,11 +1201,12 @@ ORDER BY "CardCode"';
                 $sql = 'SELECT
     X."ItemCode"                              AS "ItemCode",
     X."ItemName"                              AS "ItemName",
-    X."UgpEntry"                             AS "Unit",
+    --X."UgpEntry"                             AS "Unit",
     X."VendorName"                            AS "VendorName",
     X."CardName"                              AS "CardName" ,
     X."SlpName"                               AS "SlpName" ,
     V."ItemGroup",
+    V."UoMGroup" AS "Unit",
   --  X."QryGroup1"                             AS "مميز0 ",
   --  X."QryGroup2"                             AS "مميز 1",
    -- X."QryGroup3"                             AS "مميز 2",
