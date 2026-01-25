@@ -2,9 +2,9 @@
 
 <div   wire:init="$set('activePanel', 'calendar')"
        x-data="{ panel: @entangle('activePanel')}"
-         x-on:togglePanel.window="panel = $event.detail.panel"
-         class="w-full">
-{{--    Tabs --}}
+       x-on:togglePanel.window="panel = $event.detail.panel"
+       class="w-full">
+    {{--    Tabs --}}
     <!-- Tabs Component -->
     <div class="w-full">
 
@@ -19,7 +19,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                 التقويم
+                التقويم
             </button>
             <button  @click="panel = 'list'"
                      :class="panel === 'list'
@@ -29,7 +29,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 6h18M3 14h18M3 18h18" />
                 </svg>
-              بحث
+                بحث
             </button>
 
 
@@ -88,28 +88,28 @@
                 <div style="background-color:#f0f8ff" class="p-5 flex flex-col gap-4">
                     <div class="w-full flex flex-col sm:flex-row gap-4">
 
-{{--                        @php--}}
-{{--                            $uniqueRequesters = collect($visits)--}}
-{{--                                ->flatMap(function ($visit) {--}}
-{{--                                    return $visit['emps_requester'];--}}
-{{--                                })--}}
-{{--                                ->unique(fn($r) => $r['user']['id']);--}}
-{{--                        @endphp--}}
-                       <div class="w-full">
-                           <label class="block font-bold mb-2">اسم الزائر
+                        {{--                        @php--}}
+                        {{--                            $uniqueRequesters = collect($visits)--}}
+                        {{--                                ->flatMap(function ($visit) {--}}
+                        {{--                                    return $visit['emps_requester'];--}}
+                        {{--                                })--}}
+                        {{--                                ->unique(fn($r) => $r['user']['id']);--}}
+                        {{--                        @endphp--}}
+                        <div class="w-full">
+                            <label class="block font-bold mb-2">اسم الزائر
 
-                           </label>
+                            </label>
 
-                           <select class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500  shadow-sm sm:text-sm border-gray-300 rounded-md" wire:model.lazy="user">
-{{--                               @foreach($visits as $visit)--}}
-                               <option value="all">الكل</option>
-                               @foreach($uniqueRequesters as $requester)
-                                   <option value="{{$requester['user']['id']}}" >{{$requester['user']['name']}}</option>
-                               @endforeach
-{{--
-@endforeach--}}
-                           </select>
-                       </div>
+                            <select class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500  shadow-sm sm:text-sm border-gray-300 rounded-md" wire:model.lazy="user">
+                                {{--                               @foreach($visits as $visit)--}}
+                                <option value="all">الكل</option>
+                                @foreach($uniqueRequesters as $requester)
+                                    <option value="{{$requester['user']['id']}}" >{{$requester['user']['name']}}</option>
+                                @endforeach
+                                {{--
+                                @endforeach--}}
+                            </select>
+                        </div>
 
 
                         <div class="w-full">
@@ -117,7 +117,7 @@
 
                             </label>
                             <div>
-                            <input class="form-input w-full" type="date" wire:model.lazy="start"/>
+                                <input class="form-input w-full" type="date" wire:model.lazy="start"/>
 
                             </div>
                         </div>
@@ -126,7 +126,7 @@
 
                             </label>
                             <div>
-                            <input class="form-input w-full" type="date" wire:model.lazy="end"/>
+                                <input class="form-input w-full" type="date" wire:model.lazy="end"/>
 
                             </div>
                         </div>
@@ -192,176 +192,176 @@
             </div>
 
             <div class="overflow-x-auto">
-                      @if(count($visits) > 0 )
+                @if(count($visits) > 0 )
 
-                        <table class="table-auto w-full border text-center">
-                            <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
-                            <tr>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">#</div>
-                                </th>
-
-
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">الزائر</div>
-                                </th>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">العنوان</div>
-                                </th>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">المكان</div>
-                                </th>
-
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">التاريخ</div>
-                                </th>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">الوقت</div>
-                                </th>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="text-sm">الحالة</div>
-                                </th>
-                                <th class="border p-2 whitespace-nowrap">
-                                    <div class="font-semibold"></div>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody class="text-sm divide-y divide-gray-100">
+                    <table class="table-auto w-full border text-center">
+                        <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
+                        <tr>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">#</div>
+                            </th>
 
 
-                            @forelse($visits as $visit)
-                                <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">الزائر</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">العنوان</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">المكان</div>
+                            </th>
 
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
-                                    </td>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">التاريخ</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">الوقت</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">الحالة</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="font-semibold"></div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-sm divide-y divide-gray-100">
 
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div class="text-center text-gray-800 text-sm">{{ $visit['emps_requester'][0]['user']['name']?? null }}</div>
-                                    </td>
-{{--                                    <td class="border p-2 whitespace-nowrap">--}}
-{{--                                        <div>--}}
-{{--                                            @dd($visit['emps_requester'] )--}}
-{{--                                            @php $visit_type = $visit['emps_requester'][0]['user_id'] == \Illuminate\Support\Facades\Auth::id() ? "outgoing" : "ingoing"  @endphp--}}
-{{--                                            <div class="text-center text-gray-800 text-sm">--}}
-{{--                                                @if($visit_type == "outgoing")--}}
-{{--                                                    صادرة--}}
-{{--                                                @else--}}
-{{--                                                    واردة--}}
-{{--                                                @endif--}}
-{{--                                            </div>--}}
-{{--                                        </div>--}}
-{{--                                    </td>--}}
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div>
-                                            <div class="text-center text-gray-800 text-sm">{{ $visit["title"] }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div>
-                                            <div class="text-center text-gray-800 text-sm">
-                                                @if($visit["branch"] == "0101")
-                                                    فرع الاحساء
-                                                @elseif($visit["branch"] == "0102")
-                                                    فرع جدة
-                                                @elseif($visit["branch"] == "0103")
-                                                    فرع الرياض
-                                                @elseif($visit["branch"] == "0104")
-                                                    فرع وادي الدواسر
-                                                @elseif($visit["branch"] == "0105")
-                                                    فرع الجوف
-                                                @elseif($visit["branch"] == "0106")
-                                                    فرع الدمام
-                                                @elseif($visit["branch"] == "0107")
-                                                    فرع الخرج
-                                                @elseif($visit["branch"] == "0108")
-                                                    فرع نجران
-                                                @elseif($visit["branch"] == "0109")
-                                                    فرع حائل
-                                                @elseif($visit["branch"] == "0110")
-                                                    فرع تبوك
-                                                @elseif($visit["branch"] == "0111")
-                                                    فرع القصيم
-                                                @elseif($visit["branch"] == "0112")
-                                                    فرع ساجر
-                                                @elseif($visit["branch"] == "0201")
-                                                    مزرعة الدالوة
-                                                @elseif($visit["branch"] == "0202")
-                                                    مزرعة الفضول
-                                                @elseif($visit["branch"] == "0203")
-                                                    مزرعة الدلم
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
 
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div>
+                        @forelse($visits as $visit)
+                            <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
 
-                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('Y-m-d')}} - {{ \Carbon\Carbon::parse($visit["end"])->addDays(-1)->format('Y-m-d') }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="border p-2 whitespace-nowrap">
-                                        <div>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
+                                </td>
 
-                                            <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('h:i A') }}</div>
-
-                                        </div>
-                                    </td>
-                                    <td class="border p-2 whitespace-nowrap">
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div class="text-center text-gray-800 text-sm">{{ $visit['emps_requester'][0]['user']['name']?? null }}</div>
+                                </td>
+                                {{--                                    <td class="border p-2 whitespace-nowrap">--}}
+                                {{--                                        <div>--}}
+                                {{--                                            @dd($visit['emps_requester'] )--}}
+                                {{--                                            @php $visit_type = $visit['emps_requester'][0]['user_id'] == \Illuminate\Support\Facades\Auth::id() ? "outgoing" : "ingoing"  @endphp--}}
+                                {{--                                            <div class="text-center text-gray-800 text-sm">--}}
+                                {{--                                                @if($visit_type == "outgoing")--}}
+                                {{--                                                    صادرة--}}
+                                {{--                                                @else--}}
+                                {{--                                                    واردة--}}
+                                {{--                                                @endif--}}
+                                {{--                                            </div>--}}
+                                {{--                                        </div>--}}
+                                {{--                                    </td>--}}
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+                                        <div class="text-center text-gray-800 text-sm">{{ $visit["title"] }}</div>
+                                    </div>
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
                                         <div class="text-center text-gray-800 text-sm">
-                                            @if($visit["status"] == 0)
-                                                تحت الموافقة
-                                            @elseif($visit["status"] == 1)
-                                                مقبولة
-                                            @elseif($visit["status"] == 2)
-                                                مرفوضة
-                                            @elseif($visit["status"] == 3)
-                                              التقارير تحت الإجراء
-                                            @elseif($visit["status"] == 4)
-                                                ملغية
-                                            @elseif($visit["status"] == 5)
-                                                التقارير تامة
+                                            @if($visit["branch"] == "0101")
+                                                فرع الاحساء
+                                            @elseif($visit["branch"] == "0102")
+                                                فرع جدة
+                                            @elseif($visit["branch"] == "0103")
+                                                فرع الرياض
+                                            @elseif($visit["branch"] == "0104")
+                                                فرع وادي الدواسر
+                                            @elseif($visit["branch"] == "0105")
+                                                فرع الجوف
+                                            @elseif($visit["branch"] == "0106")
+                                                فرع الدمام
+                                            @elseif($visit["branch"] == "0107")
+                                                فرع الخرج
+                                            @elseif($visit["branch"] == "0108")
+                                                فرع نجران
+                                            @elseif($visit["branch"] == "0109")
+                                                فرع حائل
+                                            @elseif($visit["branch"] == "0110")
+                                                فرع تبوك
+                                            @elseif($visit["branch"] == "0111")
+                                                فرع القصيم
+                                            @elseif($visit["branch"] == "0112")
+                                                فرع ساجر
+                                            @elseif($visit["branch"] == "0201")
+                                                مزرعة الدالوة
+                                            @elseif($visit["branch"] == "0202")
+                                                مزرعة الفضول
+                                            @elseif($visit["branch"] == "0203")
+                                                مزرعة الدلم
                                             @endif
                                         </div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap sm:flex justify-center">
-                                        <div class="m-1.5">
-                                            <a
-                                                {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
-                                                href="{{ route('show.visit', ['id' => $visit["id"]]) }}"
-                                                class="btn border-gray-200 hover:border-gray-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
-                                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
-                                                     stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                    <circle cx="12" cy="12" r="2"/>
-                                                    <path
-                                                        d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
-                                                </svg>
+                                    </div>
+                                </td>
 
-                                            </a>
-                                        </div>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
 
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="2" class="border text-center p-6 text-lg font-bold">لا يوجد زيارات حتى الآن
-                                    </td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    @else
-                        <div>
-                            <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد زيارات حتى الآن</div>
-                        </div>
-                    @endif
+                                        <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('Y-m-d')}} - {{ \Carbon\Carbon::parse($visit["end"])->addDays(-1)->format('Y-m-d') }}</div>
+                                    </div>
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div>
+
+                                        <div class="text-center text-gray-800 text-sm">{{ \Carbon\Carbon::parse($visit["start"]?? null)->format('h:i A') }}</div>
+
+                                    </div>
+                                </td>
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div class="text-center text-gray-800 text-sm">
+                                        @if($visit["status"] == 0)
+                                            تحت الموافقة
+                                        @elseif($visit["status"] == 1)
+                                            مقبولة
+                                        @elseif($visit["status"] == 2)
+                                            مرفوضة
+                                        @elseif($visit["status"] == 3)
+                                            التقارير تحت الإجراء
+                                        @elseif($visit["status"] == 4)
+                                            ملغية
+                                        @elseif($visit["status"] == 5)
+                                            التقارير تامة
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="p-2 whitespace-nowrap sm:flex justify-center">
+                                    <div class="m-1.5">
+                                        <a
+                                            {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
+                                            href="{{ route('show.visit', ['id' => $visit["id"]]) }}"
+                                            class="btn border-gray-200 hover:border-gray-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
+                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                                                 stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <circle cx="12" cy="12" r="2"/>
+                                                <path
+                                                    d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
+                                            </svg>
+
+                                        </a>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="border text-center p-6 text-lg font-bold">لا يوجد زيارات حتى الآن
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+{{--                @else--}}
+{{--                    <div>--}}
+{{--                        <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد زيارات حتى الآن</div>--}}
+{{--                    </div>--}}
+                @endif
             </div>
         </div>
     </div>
-{{--    Ends of Tabs--}}
+    {{--    Ends of Tabs--}}
 </div>
 
 @section('css-scripts')
@@ -401,7 +401,7 @@
             box-sizing: border-box;
             padding: 1rem;
         }
-        </style>
+    </style>
 
 @stop
 @section('scripts')
@@ -449,15 +449,15 @@
 
 
             const visit = '';
-{{--            @if(auth()->user()->group == 7)--}}
-            {{--visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string--}}
-            visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string
+            {{--            @if(auth()->user()->group == 7)--}}
+                {{--visits = {!! json_encode($visits) !!}; // Outputs as valid JavaScript object, NOT string--}}
+                visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string
 
-{{--            @else--}}
-{{--            visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string--}}
-{{--            --}}{{--visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string--}}
+            {{--            @else--}}
+            {{--            visits = {!! json_encode($showAllVisits) !!}; // Outputs as valid JavaScript object, NOT string--}}
+            {{--            --}}{{--visits = {!! json_encode($calendarVisit) !!}; // Outputs as valid JavaScript object, NOT string--}}
 
-{{--            @endif--}}
+            {{--            @endif--}}
 
             const currentUserId = {{ \Illuminate\Support\Facades\Auth::id()  }};
 
@@ -466,7 +466,7 @@
                 initialView: 'dayGridMonth',
                 firstDay: 6, // Saturday
                 selectable: true,
-                 events: visits.map(formatVisit),
+                events: visits.map(formatVisit),
                 // events:            [ {
                 //     title: 'Accepted Order',
                 //     start: '2025-11-04',
@@ -499,15 +499,15 @@
 
                 select : function (info) {
 
-                //     console.log(info);
-                //     var title = prompt('Enter Event Name:');
-                //     console.log(title);
-                //
-                //     if(title) {
-                //         Livewire.emit('addVisit', {title: title, start: info.startStr, end: info.endStr});
-                //     }
-                // },
-                // dateClick: function (info) {
+                    //     console.log(info);
+                    //     var title = prompt('Enter Event Name:');
+                    //     console.log(title);
+                    //
+                    //     if(title) {
+                    //         Livewire.emit('addVisit', {title: title, start: info.startStr, end: info.endStr});
+                    //     }
+                    // },
+                    // dateClick: function (info) {
 
 
                     let selectedDate = info.startStr; // 👉 selected date
@@ -711,7 +711,7 @@
                                     //     // option.disabled = true;
                                     //     disabledEmployees.push(emp.id.toString());
                                     // }
-                                     $(employeeSelect).append(option);
+                                    $(employeeSelect).append(option);
                                 });
 
 
@@ -761,15 +761,15 @@
                             const exists = await checkDuplicate(branch, visitDate);
 
 
-                                if (!title.trim() || !reason.trim() || !branch   || !selectedEmployees.length) {
-                                    Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
-                                    return false;
-                                }
+                            if (!title.trim() || !reason.trim() || !branch   || !selectedEmployees.length) {
+                                Swal.showValidationMessage('الرجاء تعبئة الحقول المطلوبة');
+                                return false;
+                            }
 
-                                if (start > end) {
-                                    Swal.showValidationMessage('يجب أن يكون تاريخ النهاية بعد تاريخ البداية');
-                                    return false;
-                                }
+                            if (start > end) {
+                                Swal.showValidationMessage('يجب أن يكون تاريخ النهاية بعد تاريخ البداية');
+                                return false;
+                            }
 
 
 
@@ -791,29 +791,29 @@
                             }
 
                             // const startDateTime = combineDateAndTime(info.startStr, visitTime);
-                                const startDateTime = combineDateAndTime(start, visitTime);
-                                const endDateTime = combineDateAndTime(end, endTime, isEnd= true);
+                            const startDateTime = combineDateAndTime(start, visitTime);
+                            const endDateTime = combineDateAndTime(end, endTime, isEnd= true);
 
-                                const extraServices = Array.from(document.querySelectorAll('input[name="extra-services"]:checked'))
-                                    .map(cb => cb.value);
+                            const extraServices = Array.from(document.querySelectorAll('input[name="extra-services"]:checked'))
+                                .map(cb => cb.value);
 
-                                return {
-                                    title,
-                                    reason,
-                                    goals,
-                                    branch,
-                                    attendants,
-                                    employees: selectedEmployees,
-                                     start: startDateTime,
-                                    // start,
-                                     end: endDateTime,
-                                   // end,
-                                    extra_services: extraServices,
-                                    requester: @json(Auth::user()->name)
-                                };
+                            return {
+                                title,
+                                reason,
+                                goals,
+                                branch,
+                                attendants,
+                                employees: selectedEmployees,
+                                start: startDateTime,
+                                // start,
+                                end: endDateTime,
+                                // end,
+                                extra_services: extraServices,
+                                requester: @json(Auth::user()->name)
+                            };
 
 
-                            }
+                        }
 
 
                     }).then((result) => {
@@ -833,7 +833,7 @@
 
                             });
                         }
-                          // window.location.reload()
+                        // window.location.reload()
 
 
                     });
@@ -848,7 +848,7 @@
                     // 👇 Example condition:
                     // Replace this with your actual logic
                     const isAllowed = visit.emps.some(emp => emp.user_id === authUserId); // for example, something you send from backend
-                     console.log(visit)
+                    console.log(visit)
                     if (isAllowed || canViewAll) {
                         // ✅ Go to the URL
                         window.location.href = `/show-visit/${info.event.id}`;
@@ -873,10 +873,10 @@
 
                 // window.location.reload();
 
-                   calendar.removeAllEvents();
+                calendar.removeAllEvents();
                 // calendar.getEventById(visit.id)?.remove();
                 // calendar.addEvent(formatVisit(visit));
-                   calendar.addEventSource(visits.map(formatVisit)); // Apply formatting again
+                calendar.addEventSource(visits.map(formatVisit)); // Apply formatting again
                 console.log(visits.emps);
 
 
@@ -955,7 +955,7 @@
                 }
 
                 return {
-                     ...visit,
+                    ...visit,
                     backgroundColor,
                     textColor,
                     borderColor: 'transparent',
