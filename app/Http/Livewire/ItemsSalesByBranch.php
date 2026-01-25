@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Items;
+namespace App\Http\Livewire;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -1189,7 +1189,7 @@ ORDER BY "CardCode"';
 ////                dd($this->vendor_type[0]);
     $sql = '';        // 🔥 RESET
                 $bindings = [];   // 🔥 RESET
-
+//dd($this->product_code);
 //_____________________________________________________________________________________________________
                 $cat_type = $this->cat_type;
 //                $marketing_type = $this->marketing_type;
@@ -1981,7 +1981,7 @@ FROM
 //                --"ItemCode"
 //                --  X."BPLName",
 //  --  X."CardName"
-//                dd($sql);
+                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result) {
                     echo "Error while sending SQL statement to the database server.\n";

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Livewire\Items\ItemsSalesByBranch;
+use App\Http\Livewire\ItemsSalesByBranch;
 use Illuminate\Support\Facades\Route;
 
 /*

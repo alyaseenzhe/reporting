@@ -9,14 +9,6 @@
 
 @include('livewire.items.search')
 
-{{--    <button    style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white" wire:click="create_report">--}}
-{{--    <button    style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white" wire:click="generateReport">--}}
-
-{{--        انشاء تقرير--}}
-{{--    </button>--}}
-
-
-
 @if($show_msg)
     <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-4">
 
@@ -189,26 +181,28 @@
 
             </tr>
 {{--            <tr   @click="showBranches = !showBranches" x-text="showBranches ? '-' : '+'"  onclick="show_hide({{$record["ItemCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="item-{{ $key }}-{{ $record['ItemCode'] }}">--}}
-{{--            <tr  style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="groups-{{ $key }}-{{ $record['ItemCode'] }}">--}}
-{{--                --}}{{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}">+</td>--}}
-{{--                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+            <tr  style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="groups-{{ $key }}-{{ $record['ItemCode'] }}">
+{{--                                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}">+</td>--}}
+                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
 {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][4])}}--}}
-{{--                </td>--}}
-{{--                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+                </td>
+                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
 {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][3])}}--}}
-{{--                </td>--}}
-{{--                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                </td>
+                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
 {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][0], 2)}}--}}
-{{--                </td>--}}
-{{--                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+                    {{number_format($record['TotalQuantitySale'])}}
+
+                </td>
+                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
 {{--                    {{ $totalSalesByItem[$record["ItemCode"]][3] != 0? number_format($totalSalesByItem[$record["ItemCode"]][0]/$totalSalesByItem[$record["ItemCode"]][3], 2) : 0 }}--}}
-{{--                </td>--}}
+                </td>
 {{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
 {{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][1], 2)}}</td>--}}
 {{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][2], 2)}}</td>--}}
 {{--                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["ItemCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["ItemCode"]][2]/$totalSalesByItem[$record["ItemCode"]][0])*100, 2)}}</td>--}}
 {{--                @endif--}}
-{{--            </tr>--}}
+            </tr>
         @endif
 {{--        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["ItemCode"]}} " x-show="showBranches"  wire:key="hidden-{{ $key }}-{{ $record['ItemCode'] }}">--}}
                     @foreach($record['branches'] as $bindex =>$branch)
