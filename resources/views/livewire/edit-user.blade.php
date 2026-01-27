@@ -101,55 +101,75 @@
     </div>
 
     <hr style="color: #cbd5e1;border: 2px solid;">
+
+    <h1 class="mt-4 bold text-2xl mb-6">المكان</h1>
+    <div class="my-6">
+        <select wire:model="sales_dept_code"  class="form-select">
+            <option value=''></option>  //alahsaa branch
+            <option value='0101'>{{__('0101')}}</option>  //alahsaa branch
+            <option value='0102' >{{__('0102')}}</option> // jeddah
+            <option value='0103' >{{__('0103')}}</option> //riyadh
+            <option value='0104' >{{__('0104')}}</option> // wadi adwasir
+            <option value='0105' >{{__('0105')}}</option> //jouf
+            <option value='0106' >{{__('0106')}}</option> //dammam
+            <option value='0107' >{{__('0107')}}</option>   //kharj
+            <option value='0108' >{{__('0108')}}</option> //najran
+            <option value='0109' >{{__('0109')}}</option>  //hail
+            <option value='0110' >{{__('0110')}}</option> //tabouk
+            <option value='0111' >{{__('0111')}}</option> //qaseem
+            <option value='0112' >{{__('0112')}}</option> //sajer
+        </select>
+    </div>
+    <hr style="color: #cbd5e1;border: 2px solid;">
     <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
     <div>
 
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاحساء</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جدة</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الرياض</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">وادي الدواسر</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الجوف</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدمام</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الخرج</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نجران</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حائل</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تبوك</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">القصيم</label>
         </div>
         <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <input wire:model.defer="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
             <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ساجر</label>
         </div>
 

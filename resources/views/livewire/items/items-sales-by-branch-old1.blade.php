@@ -152,7 +152,7 @@
             <tr  @click="showBranches = showBranches === '{{ $record['ItemCode'] }}' ? null : '{{ $record['ItemCode'] }}';
             showEmployees = '{{ $empKey }}' ? null :    '{{ $empKey }}'"  style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="sections-{{ $key }}-{{ $record['ItemCode'] }}">
 {{--                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}" x-text="showBranches ? '-' : '+'">+</td>--}}
-                <td rowspan="" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}" x-text="showBranches === '{{ $record['ItemCode'] }}' ? '-' : '+'">+</td>
+                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}" x-text="showBranches === '{{ $record['ItemCode'] }}' ? '-' : '+'">+</td>
                 <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                     <div class="flex flex-row justify-between">
                         <div>قسم:
@@ -183,15 +183,35 @@
 {{--            <tr   @click="showBranches = !showBranches" x-text="showBranches ? '-' : '+'"  onclick="show_hide({{$record["ItemCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="item-{{ $key }}-{{ $record['ItemCode'] }}">--}}
             <tr  style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  wire:key="groups-{{ $key }}-{{ $record['ItemCode'] }}">
 {{--                                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}">+</td>--}}
-                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                    <div class="flex flex-row justify-between">
+                        <div>اجمالي المبيعات:
+                            <span style="color: #227dd7;">  {{number_format($record['TotalQuantitySale'])}} </span>
+                        </div>
+
+                    </div>
 {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][4])}}--}}
+{{--                    {{$record['IsBestBranch']}}--}}
+
                 </td>
-                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-{{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][3])}}--}}
+                <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
+                    @foreach($record['branches'] as $bindex =>$branch)
+
+                        @if($branch['IsBestBranch'] == 'Y')
+                            <div class="flex flex-row justify-between">
+                                <div>الفرع الأكثر مبيعا:
+                                    <span style="color: #227dd7;" class="pl-4">      {{ $branch['BranchName'] }}</span>
+                                    الكمية المباعة:
+                           <span style="color: #227dd7;"> {{ $branch['TotalQuantitySaleByBranch'] }}</span>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+
                 </td>
                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
 {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][0], 2)}}--}}
-                    {{number_format($record['TotalQuantitySale'])}}
+
 
                 </td>
                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
@@ -206,6 +226,12 @@
         @endif
 {{--        <tr class="@if($counter%2==0) bg-white @else bg-gray-200 @endif row-{{$record["ItemCode"]}} " x-show="showBranches"  wire:key="hidden-{{ $key }}-{{ $record['ItemCode'] }}">--}}
                     @foreach($record['branches'] as $bindex =>$branch)
+
+{{--                        @dd($branch['BranchId'] ,$dept_id)--}}
+{{--                        @dd($branchOptions [$branch['BranchId']][0][0], $dept_id[0])--}}
+{{--                    @dd($dept_id )--}}
+{{--                        @if( isset($dept_id[0]) && $dept_id[0] == 'dept_all' || [$branch['BranchId']][0] == $depts[$dept_id[0]]  )--}}
+
 {{--                        <?php $empKey = $record['ItemCode'] . '_' . Str::slug($branch['BranchName'].'_'.$bindex) ?>--}}
 
                             <?php $branchSlug = Str::slug($branch['BranchName']); // converts "فرع حائل" → "fraa-hael"
@@ -229,9 +255,10 @@
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
 
                                 {{ $branch['BranchName'] }}
+{{--                                @if($branch['IsBestBranch'] === 'Y') ⭐ @endif--}}
                             </td>
-            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                {{number_format($record['TotalQuantitySale'])}}</td>
+{{--            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                {{number_format($record['TotalQuantitySale'])}}</td>--}}
 
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 {{ $branch['TotalQuantitySaleByBranch'] }}
@@ -249,8 +276,8 @@
                                 <td style="padding-left:40px; border-left: 2px solid black;"  class="py-2">
                                     {{ $emp['EmployeeName'] }}
                                 </td>
-                                <td style="border-left: 2px solid black;" style="direction: ltr" class="py-2" >
-                                    {{number_format($record['TotalQuantitySale'])}}</td>
+{{--                                <td style="border-left: 2px solid black;" style="direction: ltr" class="py-2" >--}}
+{{--                                    {{number_format($record['TotalQuantitySale'])}}</td>--}}
                                 <td style="border-left: 2px solid black;" class="py-2">
                                     {{ $emp['Quantity'] }}
                                 </td>
@@ -258,6 +285,7 @@
                                     {{ $emp['EmployeePer'] }}
                                 </td>
                             </tr>
+
             @endforeach
 {{--            @endforeach--}}
 {{--                        --}}
@@ -313,6 +341,8 @@
 {{--                </td>--}}
 {{--            @endif--}}
 {{--        </tr>--}}
+
+{{--        @endif--}}
             @endforeach
         @php $counter++ @endphp
     @endforeach

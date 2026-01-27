@@ -41,12 +41,15 @@ class ItemsSalesByBranch extends Component
     public $empKey;
     public $counter = 0,
 
+
 $item_code = "*",
 $item_group_code = "*",
 $item_group_itemCode_code = "*",
 $speciality_code = "*",
 $marketing_type_code = "*",
 $vendor_code = "*";
+    public  $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' => '5', '0104' => '6', '0105' => '7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' => '16', '0203' => '17'];
+    public $expanded = [];
     public     $branchOptions = [
 
         '10' => [['0102', 'جدة']],
@@ -60,12 +63,15 @@ $vendor_code = "*";
         '9'  => [['0110', 'تبوك']],
         '8'  => [['0111', 'القصيم']],
         '505'=> [['0112', 'ساجر']],
+        '14'=>'0201',
+        '16'=>['0202'],
         '3' => [
             ['0101', 'الاحساء'],
             ['0201', 'مزرعة الدالوة'],
             ['0202', 'مزرعة الفضول'],
             ['0203', 'مزرعة الدلم'],
             ['0001', 'المركز الرئيسي'],
+
         ],
     ];
 
@@ -76,7 +82,7 @@ $vendor_code = "*";
     protected $rules = [
         'start_date' => 'required',
         'end_date' => 'required',
-//        'dept_id' => 'required',
+        'dept_id' => 'required',
 //        'group_type'=> 'required',
 //        'marketing_type' =>'required',
 //        'cat_type' =>'required',
@@ -89,7 +95,7 @@ $vendor_code = "*";
     protected $messages = [
         'start_date.required' => ' مطلوب',
         'end_date.required' => ' مطلوب',
-//        'dept_id.required' => ' مطلوب',
+        'dept_id.required' => ' مطلوب',
 //        'group_type.required' => ' مطلوب',
 //        'marketing_type.required' => ' مطلوب',
 //        'cat_type.required' => ' مطلوب',
@@ -202,6 +208,50 @@ $vendor_code = "*";
             odbc_close($conn);
         }
     }
+    // Component property
+
+    public function loadBranches($itemCode)
+    {
+        $this->branches[$itemCode] = collect($this->sap_results)
+            ->where('ItemCode', $itemCode)
+            ->groupBy('BranchName')
+        ->map(function ($branchRows, $branchName) {
+
+                // Group employees inside this branch
+                $employees = $branchRows
+                    ->groupBy('SlpName')  // group by employee
+                    ->map(function ($empRows, $empName) {
+                        return [
+                            'EmployeeName' => $empName,
+                            'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
+                            'EmployeePer' =>$empRows->sum('TotalSalesPer'),
+                            'IsBestBranch' =>$empRows->first()['IsBestBranch'],
+
+                        ];
+                    })
+                    ->values();
+
+                return [
+                    'BranchId' =>  $branchRows->first()['BranchId'],
+                    'BranchName' => $branchName,
+                    'BranchTotal' => $employees->sum('Quantity'), // optional: total branch quantity
+                    'employees' => $employees,
+                    'TotalQuantitySaleByBranch' =>
+                        $branchRows->sum('TotalQuantitySaleByBranch'),
+
+//                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
+                    'TotalSalesPer' =>
+                        $branchRows->sum('TotalSalesPer'),
+                    'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
+
+                ];
+            })
+            ->values();
+
+        // Toggle expanded state
+        $this->expanded[$itemCode] = !($this->expanded[$itemCode] ?? false);
+    }
+
 
     public function render()
     {
@@ -316,33 +366,38 @@ $vendor_code = "*";
                     'TotalQuantitySale' =>$itemMeta['TotalQuantitySale'],
                     'branches' => $itemRows
                         ->groupBy('BranchName')
-                        ->map(function ($branchRows, $branchName) {
-
-                            // Group employees inside this branch
-                            $employees = $branchRows
-                                ->groupBy('SlpName')  // group by employee
-                                ->map(function ($empRows, $empName) {
-                                    return [
-                                        'EmployeeName' => $empName,
-                                        'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
-                                        'EmployeePer' =>$empRows->sum('TotalSalesPer'),
-                                    ];
-                                })
-                                ->values();
-
-                            return [
-                                'BranchName' => $branchName,
-                                'BranchTotal' => $employees->sum('Quantity'), // optional: total branch quantity
-                                'employees' => $employees,
-                                'TotalQuantitySaleByBranch' =>
-                                    $branchRows->sum('TotalQuantitySaleByBranch'),
-
-//                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
-                                'TotalSalesPer' =>
-                                    $branchRows->sum('TotalSalesPer'),
-                            ];
-                        })
-                        ->values(),
+//                        ->map(function ($branchRows, $branchName) {
+//
+//                            // Group employees inside this branch
+//                            $employees = $branchRows
+//                                ->groupBy('SlpName')  // group by employee
+//                                ->map(function ($empRows, $empName) {
+//                                    return [
+//                                        'EmployeeName' => $empName,
+//                                        'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
+//                                        'EmployeePer' =>$empRows->sum('TotalSalesPer'),
+//                                        'IsBestBranch' =>$empRows->first()['IsBestBranch'],
+//
+//                                    ];
+//                                })
+//                                ->values();
+//
+//                            return [
+//                                'BranchId' =>  $branchRows->first()['BranchId'],
+//                                'BranchName' => $branchName,
+//                                'BranchTotal' => $employees->sum('Quantity'), // optional: total branch quantity
+//                                'employees' => $employees,
+//                                'TotalQuantitySaleByBranch' =>
+//                                    $branchRows->sum('TotalQuantitySaleByBranch'),
+//
+////                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
+//                                'TotalSalesPer' =>
+//                                    $branchRows->sum('TotalSalesPer'),
+//                                'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
+//
+//                            ];
+//                        })
+//                        ->values(),
                 ];
             })
             ->values();
@@ -1207,6 +1262,7 @@ ORDER BY "CardCode"';
     X."SlpName"                               AS "SlpName" ,
     V."ItemGroup",
     V."UoMGroup" AS "Unit",
+
   --  X."QryGroup1"                             AS "مميز0 ",
   --  X."QryGroup2"                             AS "مميز 1",
    -- X."QryGroup3"                             AS "مميز 2",
@@ -1230,22 +1286,44 @@ WHEN X."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
 WHEN X."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
 ELSE \'general\'
 END AS "mrkt_type",
-  --  X."QryGroup30"                            AS "ادارة فنية - الاسمدة م1",
-  --  X."QryGroup31"                            AS "ادارة فنية - المبيدات م1",
-  --  X."QryGroup32"                            AS "ادارة فنية - البذور م1",
-  --  X."QryGroup40"                            AS "اقسام تسويقية - الحدائق و الصحة العامة",
-  --  X."QryGroup41"                            AS "اقسام تسويقية - المكافحة المتكاملة",
-  --  X."QryGroup50"                            AS "الاليات و الري - الاليات",
-  --  X."QryGroup51"                            AS "الاليات و الري - الري",
-  --  X."QryGroup52"                            AS "الاليات و الري - نترا",
-  --  X."QryGroup53"                            AS "الاليات و الري - الخدمات",
+    CASE
+    WHEN
+        ROW_NUMBER() OVER (
+            PARTITION BY X."ItemCode"
+            ORDER BY X."BranchQty" DESC
+        ) = 1
+    THEN \'Y\'
+    ELSE \'N\'
+END AS "IsBestBranch",
+
+
+CASE
+    WHEN ROW_NUMBER() OVER (
+        PARTITION BY X."ItemCode"
+        ORDER BY X."BranchQty" DESC
+    ) = 1
+    THEN \'Y\'
+    ELSE \'N\'
+END AS "IsBestEmployee",
 
     SUM(X."BranchQty")
         OVER (PARTITION BY X."ItemCode")      AS "TotalQuantitySale",
 
 
+    X."BPLId"                                 AS "BranchId",
     X."BPLName"                               AS "BranchName",
     X."BranchQty"                             AS "TotalQuantitySaleByBranch",
+
+    ROW_NUMBER() OVER (
+    PARTITION BY X."ItemCode"
+    ORDER BY X."BranchQty" DESC
+) AS "BranchRank",
+
+
+ROW_NUMBER() OVER (
+    PARTITION BY X."ItemCode"
+    ORDER BY X."BranchQty" DESC
+) AS "EmployeeRank",
 
     ROUND(
         (X."BranchQty" * 100.0) /
@@ -1265,6 +1343,7 @@ FROM
         Z."CardName",
         Z."SlpName",
         Z."BPLName",
+        Z."BPLId",
 
         Z."QryGroup1",
         Z."QryGroup2",
@@ -1293,6 +1372,7 @@ FROM
             C."CardName"        AS "CardName",
             S."SlpName"         AS "SlpName",
             B."BPLName",
+            B."BPLId",
 
             T2."QryGroup1",
             T2."QryGroup2",
@@ -1547,6 +1627,7 @@ FROM
             C."CardName",
             S."SlpName",
             B."BPLName",
+            B."BPLId",
             T2."QryGroup1",
             T2."QryGroup2",
             T2."QryGroup3",
@@ -1574,6 +1655,7 @@ FROM
             C."CardName"        AS "CardName",
             S."SlpName"         AS "SlpName",
             B."BPLName",
+            B."BPLId",
 
             T2."QryGroup1",
             T2."QryGroup2",
@@ -1699,6 +1781,7 @@ FROM
             C."CardName",
             S."SlpName",
             B."BPLName",
+            B."BPLId",
             T2."QryGroup1",
             T2."QryGroup2",
             T2."QryGroup3",
@@ -1720,6 +1803,7 @@ FROM
         Z."CardName",
         Z."SlpName",
         Z."BPLName",
+        Z."BPLId",
         Z."QryGroup1",
         Z."QryGroup2",
         Z."QryGroup3",
@@ -1736,7 +1820,7 @@ FROM
    LEFT JOIN "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" V
    ON X."ItemCode" = V."ItemCode"';
 
-                $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ',X."BPLName"';
+                $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "BranchRank" ,  "EmployeeRank" ASC, X."SlpName" ,X."ItemCode"';
 
 //dd($sql);
 
@@ -1967,13 +2051,13 @@ FROM
 //        Z."QryGroup52",
 //        Z."QryGroup53"
 //) X
-//        LEFT JOIN "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" V
+//        LEFT JOIN "_SYS_BIC"."sap.alyase  enagriplive.ar.case/SalesAnalysisQuery" V
 //        ON X."ItemCode" = V."ItemCode"
 //--ORDER BY "ItemCode" ASC
 //';
 //                $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', X."BPLName"';
 
-//dd($sql);
+dd($sql);
 
 
 //                --ORDER BY
@@ -1981,7 +2065,7 @@ FROM
 //                --"ItemCode"
 //                --  X."BPLName",
 //  --  X."CardName"
-                dd($sql);
+//                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result) {
                     echo "Error while sending SQL statement to the database server.\n";
