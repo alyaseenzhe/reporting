@@ -138,6 +138,30 @@
                             $start_date = \Carbon\Carbon::today()->firstOfMonth()->format('Y-m-d');
                             $end_date = \Carbon\Carbon::today()->addMonths($no_days - 1)->endOfMonth()->format('Y-m-d');
                             $period = new \Carbon\CarbonPeriod($start_date, '1 month', $end_date);
+//                                $base = \Carbon\Carbon::today()->subYear();
+//
+//                                $last_start_date = $base->copy()->firstOfMonth()->format('Y-m-d');
+////                                \Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)
+//                                $last_end_date   = $base->copy()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m-d');
+
+                                // Same as ADD_YEARS(CURRENT_DATE, -1)
+                                $historicalEnd = \Carbon\Carbon::today()->subYear();
+
+                                // Same as ADD_DAYS(END, -(LeadTime + dist_days))
+                                $historicalStart = $historicalEnd->copy()->subDays($full_days);
+
+                                $months = ceil($full_days / 30);
+
+                                // Start: first month of current period, last year
+                                $historicalStart = \Illuminate\Support\Carbon::today()
+                                    ->firstOfMonth()
+                                    ->subYear()->format('Y-m-d');
+
+                                // End: same number of months, last year
+                                $historicalEnd = \Illuminate\Support\Carbon::today()
+                                    ->firstOfMonth()
+                                    ->addMonths($months - 1)
+                                    ->subYear()->format('Y-m-d');
 
                             $stmt = "";
                             $period = $period->toArray();
@@ -154,7 +178,7 @@
                                     $stmt .= "(year ='" . $month_n->format('Y') . "' and month = '" . $month_n->format('n') . "')";
                                 }
                             }
-
+//                            $stmt .='AND tbl_Sales."DocumentDate" BETWEEN \'' . $last_start_date . '\' AND  \'' .$last_end_date . '\'';
                             $val_mozanah = intval($record["U_SafetyStock"]) - (intval($record["OnHand"]) + intval($record["OnOrder"])+intval($record["OpenQoutation"]));
                             $val_mostahdef = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" .( $record["OldItemCode"]?: $record["ItemCode"] ). "' and month = '" . $month . "' and year = '" . $year . "'");
                             $val_target = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '" . ($record["OldItemCode"]?  :$record["ItemCode"]). "' and " . $stmt);
@@ -188,6 +212,7 @@
                                 </div>
                             </th>
                         </tr>
+
                         <tr class="@if($recommendation > 0) positive-record @else negative-record @endif">
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">فترة كلية (شهر)</div>
@@ -233,6 +258,24 @@
                                         <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
                                         <span class="text-xs"> الى</span>
                                         <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->addMonths(ceil($full_days/30)-1)->format('Y-m')}}</span>
+                                        <span class="text-xs">)</span>
+                                    @else
+                                        <span class="text-xs">(</span>
+                                        <span class="text-xs">{{\Illuminate\Support\Carbon::today()->firstOfMonth()->format('Y-m')}}</span>
+                                        <span class="text-xs">)</span>
+                                    @endif
+
+                                </div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+                                  المبيعات التاريخية
+                                    <br>
+                                    @if(ceil($full_days/30) > 1)
+                                        <span class="text-xs">(</span>
+                                        <span class="text-xs">{{ $historicalStart}}</span>
+                                        <span class="text-xs"> الى</span>
+                                        <span class="text-xs">{{ $historicalEnd}}</span>
                                         <span class="text-xs">)</span>
                                     @else
                                         <span class="text-xs">(</span>
@@ -298,6 +341,9 @@
                                 ?>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">{{ number_format($val_target->target) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">{{ number_format($record["HistoricalSalesAmount"]) }}</div>
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <?php

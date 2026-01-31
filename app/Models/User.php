@@ -67,4 +67,9 @@ class User extends Authenticatable
     public function user_group() {
         return $this->belongsTo(UserGroup::class, 'group');
     }
+
+    public function contacts(){
+        return $this->hasMany(Contact::class);
+    }
+
 }

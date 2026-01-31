@@ -108,7 +108,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
@@ -118,7 +118,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
 
                         ]);
@@ -142,7 +142,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
 
                         ]);
@@ -153,7 +153,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                     }
@@ -176,7 +176,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
@@ -186,7 +186,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required',
                             'password' => 'sometimes',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                     }
@@ -207,7 +207,7 @@ class EditUser extends Component
                             'emp_code' => 'required',
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
-//                            'branches' => 'required|array|min:1',
+                            'branches' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
