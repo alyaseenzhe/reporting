@@ -836,6 +836,7 @@ INNER JOIN
 
 	AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
 
+
 WHERE
 
     T2."DocStatus" = \'O\' -- Filters for open purchase quotation
@@ -869,8 +870,8 @@ $stmt = 'SELECT
     T0."OnOrder",
     SUM(tbl_Quotation."OpenQoutation") AS "OpenQoutation",
     T0."OnHand",
-    --COALESCE(SUM(tbl_Sales."NetQty"), 0) AS "HistoricalSalesQty",
-    COALESCE(SUM(tbl_Sales."NetSalesAmountSC"), 0) AS "HistoricalSalesAmount"
+    COALESCE(SUM(tbl_Sales."QuantityInInventoryUoM"), 0) AS "HistoricalSalesQty"
+    --COALESCE(SUM(tbl_Sales."NetSalesAmountSC"), 0) AS "HistoricalSalesAmount"
 FROM AL_YASEEN_AGRI_PLIVE.OITM T0
 INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
 
@@ -936,7 +937,7 @@ GROUP BY
     T0."OnHand"
 ORDER BY T1."CardCode"
 ';
-//dd($stmt);
+dd($stmt);
             $result = odbc_exec($conn, $stmt);
             if (!$result)
             {
