@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class ItemsSalesByBranchOld extends Component
+class ItemsSalesByBrancho2 extends Component
 {
     public $start_date;
     public $end_date;
@@ -42,14 +42,14 @@ class ItemsSalesByBranchOld extends Component
     public $counter = 0,
 
 
-$item_code = "*",
-$item_group_code = "*",
-$item_group_itemCode_code = "*",
-$speciality_code = "*",
-$marketing_type_code = "*",
-$vendor_code = "*";
+        $item_code = "*",
+        $item_group_code = "*",
+        $item_group_itemCode_code = "*",
+        $speciality_code = "*",
+        $marketing_type_code = "*",
+        $vendor_code = "*";
     public  $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' => '5', '0104' => '6', '0105' => '7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' => '16', '0203' => '17'];
-    public $expanded = [];
+
     public     $branchOptions = [
 
         '10' => [['0102', 'جدة']],
@@ -77,32 +77,19 @@ $vendor_code = "*";
 
     public $all_option;
 
-//    public $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0;
 
     protected $rules = [
         'start_date' => 'required',
         'end_date' => 'required',
         'dept_id' => 'required',
-//        'group_type'=> 'required',
-//        'marketing_type' =>'required',
-//        'cat_type' =>'required',
-//        'customer_type'=>'required',
-//        'vendor_type'=>'required',
-//        'sp_type'=>'required',
-//        'emps_type'=>'required'
+
     ];
 
     protected $messages = [
         'start_date.required' => ' مطلوب',
         'end_date.required' => ' مطلوب',
         'dept_id.required' => ' مطلوب',
-//        'group_type.required' => ' مطلوب',
-//        'marketing_type.required' => ' مطلوب',
-//        'cat_type.required' => ' مطلوب',
-//        'customer_type.required' => 'طلوب',
-//        'vendor_type.required'=> 'مطلوب',
-//        'sp_type.required'=> 'مطلوب',
-//        'emps_type.required'=> 'مطلوب'
+
     ];
     public $query;
 
@@ -215,7 +202,7 @@ $vendor_code = "*";
         $this->branches[$itemCode] = collect($this->sap_results)
             ->where('ItemCode', $itemCode)
             ->groupBy('BranchName')
-        ->map(function ($branchRows, $branchName) {
+            ->map(function ($branchRows, $branchName) {
 
                 // Group employees inside this branch
                 $employees = $branchRows
@@ -247,9 +234,6 @@ $vendor_code = "*";
                 ];
             })
             ->values();
-
-        // Toggle expanded state
-        $this->expanded[$itemCode] = !($this->expanded[$itemCode] ?? false);
     }
 
 
@@ -271,8 +255,8 @@ $vendor_code = "*";
 
         $this->validate();
         $this->show_msg = false;
-    //    $this->report_type = $report_type;
-      //  $this->scribes_results = [];
+        //    $this->report_type = $report_type;
+        //  $this->scribes_results = [];
         $this->sap_results = [];
         $this->group_results = [];
 
@@ -282,7 +266,7 @@ $vendor_code = "*";
         if (is_null($start_date) == false && is_null($end_date) == false) {
 
 
-             $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
+            $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
 
 //            dd($this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type));
 
@@ -295,59 +279,7 @@ $vendor_code = "*";
 //        dd($this->sap_results);
         $sap_collection = collect($this->sap_results);
 
-//        dd( $sap_collection->lazy() );
 
-
-//
-//        $groups = $sap_collection->groupBy('OldCode');
-//        $this->group_results = $groups->map(function ($row) {
-//
-//            return [
-////                'OldCode' => $row->first()['OldCode'],
-//                'OldCode' => $row->first()['OldCode'],
-//                'ItemName' => $row->first()['ItemName'],
-//                'SalUnitMsr' =>   $row->first()['SalUnitMsr'],
-//                'Speciality' =>   $row->first()['Speciality'],
-//                'VendorName' =>   $row->first()['VendorCode'],
-//                'TotalQuantitySold' => $row->sum('TotalQuantitySold'),
-//                'TotalSalesAmount' => $row->sum('TotalSalesAmount'),
-//                'AverageUnitPrice' => $row->sum('TotalQuantitySold') == 0 ? 0 : $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold'),
-////                'AverageUnitPrice' => $row->sum('TotalSalesAmount')/$row->sum('TotalQuantitySold')$row->avg('AverageUnitPrice'),
-//                'Cost' => $row->sum('Cost'),
-//                'GrossProfit' => $row->sum('GrossProfit'),
-//                'GrossProfitPer' => $row->sum('Cost') == 0 ? 0 : ($row->sum('GrossProfit')/$row->sum('Cost'))*100,
-////                'GrossProfitPer' => $row->sum('GrossProfitPer'),
-//            ];
-//        });
-
-//
-//        $this->group_results = $sap_collection
-//            ->groupBy(['ItemCode', 'BranchName'])
-//            ->map(function ($branches, $itemCode) {
-//                return [
-//                    'ItemCode' => $itemCode,
-//                    'ItemName' => $branches->first()->first()['ItemName'],
-//                    'VendorName' =>   $branches->first()->first()['VendorName'],
-//                    'branches' => $branches->map(function ($rows, $branchName) {
-//                        return [
-//                            'BranchName' => $branchName,
-//                            'TotalQuantitySaleByBranch' => $rows->sum('TotalQuantitySaleByBranch'),
-//                            'TotalSalesPer' => $rows->sum('TotalSalesPer'),
-//
-//                            'TotalQuantitySale' => $rows->first()['TotalQuantitySale'],
-////                            'Speciality' =>   $rows->first()['Speciality'],
-//                            'employees' => $rows->map(function ($row)
-//                            {
-//                                return [
-//                                'EmployeeName' => $row['SlpName'],
-//                                ];
-//                            })
-//                        ];
-//
-//                    })->values()
-//                ];
-//            })
-//            ->values();
 
         $this->group_results = collect($this->sap_results)
             ->groupBy('ItemCode')
@@ -366,43 +298,41 @@ $vendor_code = "*";
                     'TotalQuantitySale' =>$itemMeta['TotalQuantitySale'],
                     'branches' => $itemRows
                         ->groupBy('BranchName')
-//                        ->map(function ($branchRows, $branchName) {
-//
-//                            // Group employees inside this branch
-//                            $employees = $branchRows
-//                                ->groupBy('SlpName')  // group by employee
-//                                ->map(function ($empRows, $empName) {
-//                                    return [
-//                                        'EmployeeName' => $empName,
-//                                        'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
-//                                        'EmployeePer' =>$empRows->sum('TotalSalesPer'),
-//                                        'IsBestBranch' =>$empRows->first()['IsBestBranch'],
-//
-//                                    ];
-//                                })
-//                                ->values();
-//
-//                            return [
-//                                'BranchId' =>  $branchRows->first()['BranchId'],
-//                                'BranchName' => $branchName,
-//                                'BranchTotal' => $employees->sum('Quantity'), // optional: total branch quantity
-//                                'employees' => $employees,
-//                                'TotalQuantitySaleByBranch' =>
-//                                    $branchRows->sum('TotalQuantitySaleByBranch'),
-//
-////                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
-//                                'TotalSalesPer' =>
-//                                    $branchRows->sum('TotalSalesPer'),
-//                                'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
-//
-//                            ];
-//                        })
-//                        ->values(),
+                        ->map(function ($branchRows, $branchName) {
+
+                            // Group employees inside this branch
+                            $employees = $branchRows
+                                ->groupBy('SlpName')  // group by employee
+                                ->map(function ($empRows, $empName) {
+                                    return [
+                                        'EmployeeName' => $empName,
+                                        'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
+                                        'EmployeePer' =>$empRows->sum('TotalSalesPer'),
+                                        'IsBestBranch' =>$empRows->first()['IsBestBranch'],
+
+                                    ];
+                                })
+                                ->values();
+
+                            return [
+                                'BranchId' =>  $branchRows->first()['BranchId'],
+                                'BranchName' => $branchName,
+                                'BranchTotal' => $employees->sum('Quantity'), // optional: total branch quantity
+                                'employees' => $employees,
+                                'TotalQuantitySaleByBranch' =>
+                                    $branchRows->sum('TotalQuantitySaleByBranch'),
+
+//                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
+                                'TotalSalesPer' =>
+                                    $branchRows->sum('TotalSalesPer'),
+                                'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
+
+                            ];
+                        })
+                        ->values(),
                 ];
             })
             ->values();
-
-
 
 
 
@@ -411,53 +341,12 @@ $vendor_code = "*";
 // Per item → per branch rows (keep as-is)
         $byItem = $results->groupBy('ItemCode');
 
-// Example usage
-//        foreach ($byItem as $itemCode => $rows) {
-//            $totalQty = $rows->first()['TotalQuantitySale'];
-//
-//            foreach ($rows as $branchRow) {
-//                $branch = $branchRow['BranchName'];
-//                $branchQty = $branchRow['TotalQuantitySaleByBranch'];
-//            }
-//        }
-//
-//        $this->grouped = $results->groupBy('ItemCode')->map(function ($rows) {
-//            return [
-//                'ItemCode' => $rows->first()['ItemCode'],
-//                'ItemName' => $rows->first()['ItemName'],
-//                'VendorName' => $rows->first()['VendorName'],
-//                'TotalQuantitySale' => $rows->first()['TotalQuantitySale'],
-//                'Branches' => $rows->map(function ($r) {
-//                    return [
-//                        'BranchName' => $r['BranchName'],
-//                        'Qty' => $r['TotalQuantitySaleByBranch'],
-//                        'Percent' => $r['TotalSalesPer'],
-//                    ];
-//                })->values(),
-//            ];
-//        })->values();
-//        $this->branchTotals = $sap_collection
-//            ->groupBy('BranchCode')
-//            ->map(fn ($rows) => $rows->sum('TotalQuantitySaleByBranch'));
-//
-//        $this->grouped= $results->groupBy('ItemCode')->map(function ($rows) {
-//            return [
-//                'ItemCode' => $rows->first()['ItemCode'],
-//                'ItemName' => $rows->first()['ItemName'],
-//                'VendorName' => $rows->first()['VendorName'],
-//                'Branches' => $rows->map(function ($r) {
-//                    return [
-//                        'BranchName' => $r['BranchName'],
-//                        'Qty' => $r['TotalQuantitySaleByBranch'],
-//                    ];
-//                })->values(),
-//            ];
-//        })->values();
+
 
 
         $this->show_msg = true;
         $this->emit('finished');
-}
+    }
 
     public function customers()
     {
@@ -795,366 +684,7 @@ ORDER BY "CardCode"';
                 echo "Connection failed.\n";
                 echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
             } else {
-//                $sqlTest = ' AND "BranchCode" IN (\'' . implode("','", $sap_depts) . '\')';
-//                dd(strlen($sqlTest));
 
-////
-//
-//                $sql = 'SELECT
-//	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
-//	"ItemCode",
-//    "ItemDescription" AS "ItemName",
-//    "ItemGroup",
-//    SUM("TransCount") AS "TransCount",
-//    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
-//    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
-//    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
-//    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
-//    SUM("GrossProfitLC") as "GrossProfit",
-//   SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
-// (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
-//
-//     "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//"mrkt_type",
-//"IsInventoryItem",
-//
-//SUM(SUM("NetSalesAmountLC"))
-//OVER (PARTITION BY "ItemCode") AS "GroupTotalSales",
-//
-//SUM(SUM("GrossProfitLC"))
-//OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit"
-//
-//       --  SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
-//        --OVER (PARTITION BY "ItemCode") AS "GroupGrossProfitPer"
-//
-//
-//FROM (
-//
-//SELECT *, CASE
-//		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
-//		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
-//		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
-//		ELSE \'\'
-//	END AS "Speciality",
-//	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
-//	T2."CardCode" AS "VendorCode",
-//"DefaultPreferredVendor" AS "VendorName",
-//--
-//CASE
-//WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-//WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-//WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-//WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-//WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-//WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-//WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-//WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-//WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
-//ELSE \'general\'
-//END AS "mrkt_type",
-//"InvntItem" AS "IsInventoryItem"
-//--
-//FROM (
-//Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-//CASE
-//	WHEN "DocumentTypeCode" = 13 THEN 1
-//	WHEN "DocumentTypeCode" = 14 THEN -1
-//	ELSE 0
-//END AS "TransCount",
-//SUM("GrossProfitSC") AS "GrossProfitSC",
-//SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-//SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-//SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-//SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-//
-//FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-//WHERE "DocumentDate" >= \'' . $start_date . '\' AND "DocumentDate" <= \'' . $end_date . '\'
-//AND "DocumentTypeCode" != \'17\'
-//AND "DocumentTypeCode" != \'15\'';
-//                if ($customer_type != 'customer_all') {
-//                    $sql .= ' AND "BusinessPartnerCode" = \'' . $customer_type . '\'';
-//                }
-////                $sql .= ' AND "BranchCode" IN (\'' . implode("','", $sap_depts) . '\')
-//
-//               $sql .= ' AND "BranchCode" IN (' . implode(', ', $sap_depts) . ')
-//
-//AND "ItemCode" IN (' . implode(', ', $this->sap_codes) . ')
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//) T1
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-//ON T1."ItemCode2" = T2."ItemCode"
-//WHERE T2."ItemCode" IN (' . implode(', ', $this->sap_codes) . ')';
-//                if ($emps_type != 'employees_all') {
-//                    $sql .= ' AND TS."Memo" = \'' . $emps_type . '\'';
-//                }
-//                $sql .= ')
-//WHERE "BranchName" IS NOT NULL
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//---
-//"mrkt_type",
-//"IsInventoryItem"';
-//
-////order By "TotalSalesAmount"';
-//
-//                if ($sortBy == 'code') {
-//                    $sql .= 'ORDER BY "ItemCode" ' . $direction . '';
-//                } else {
-//
-//                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
-//                }
-//                    dd($sql);
-////
-//                $sql = 'SELECT
-//	"BranchName" AS "Branch", "BranchCode","BranchRegistrationNumber" AS "Department",
-//	"ItemCode",
-//    "ItemDescription" AS "ItemName",
-//    "ItemGroup",
-//    SUM("TransCount") AS "TransCount",
-//    SUM("QuantityInInventoryUoM") AS "TotalQuantitySold",
-//    SUM("NetSalesAmountLC") AS "TotalSalesAmount",
-//    AVG("NetSalesAmountLC"/"QuantityInInventoryUoM") AS "AverageUnitPrice",
-//    COUNT(DISTINCT "DocumentNumber") AS "NumberOfInvoices",
-//    SUM("GrossProfitLC") as "GrossProfit",
-//   SUM("NetSalesAmountLC")-SUM("GrossProfitLC") as "Cost",
-// (SUM("GrossProfitLC")/ NULLIF(SUM("NetSalesAmountLC"), 0))*100 as "GrossProfitPer",
-//
-//     "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//"mrkt_type",
-//"IsInventoryItem",
-//
-//SUM(SUM("NetSalesAmountLC"))
-//OVER (PARTITION BY "ItemCode") AS "GroupTotalSales",
-//
-//SUM(SUM("GrossProfitLC"))
-//OVER (PARTITION BY "ItemCode") AS "GroupGrossProfit"
-//
-//       --  SUM((SUM("GrossProfitLC") / NULLIF(SUM("NetSalesAmountLC"), 0))*100)
-//        --OVER (PARTITION BY "ItemCode") AS "GroupGrossProfitPer"
-//
-//
-//FROM (
-//
-//SELECT *, CASE
-//		WHEN T2."QryGroup1" = \'Y\' THEN \'0\'
-//		WHEN T2."QryGroup2" = \'Y\' THEN \'1\'
-//		WHEN T2."QryGroup3" = \'Y\' THEN \'2\'
-//		ELSE \'\'
-//	END AS "Speciality",
-//	CASE WHEN T2."U_UDF1" IS NULL THEN "ItemCode" ELSE T2."U_UDF1" END AS "OldCode",
-//	T2."CardCode" AS "VendorCode",
-//"DefaultPreferredVendor" AS "VendorName",
-//--
-//CASE
-//WHEN T2."QryGroup30" = \'Y\' THEN \'fan - asmedah 1\'
-//WHEN T2."QryGroup31" = \'Y\' THEN \'fan - mobedat 1\'
-//WHEN T2."QryGroup32" = \'Y\' THEN \'fan - bathoor 1\'
-//WHEN T2."QryGroup40" = \'Y\' THEN \'tasweeg - sehah\'
-//WHEN T2."QryGroup41" = \'Y\' THEN \'tasweeg - mokafahh\'
-//WHEN T2."QryGroup50" = \'Y\' THEN \'aleyat - aleyat\'
-//WHEN T2."QryGroup51" = \'Y\' THEN \'aleyat - ray\'
-//WHEN T2."QryGroup52" = \'Y\' THEN \'aleyat - ray matary\'
-//WHEN T2."QryGroup53" = \'Y\' THEN \'aleyat - khadamat\'
-//ELSE \'general\'
-//END AS "mrkt_type",
-//"InvntItem" AS "IsInventoryItem"
-//--
-//FROM (
-//Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode" as "ItemCode2", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-//CASE
-//	WHEN "DocumentTypeCode" = 13 THEN 1
-//	WHEN "DocumentTypeCode" = 14 THEN -1
-//	ELSE 0
-//END AS "TransCount",
-//SUM("GrossProfitSC") AS "GrossProfitSC",
-//SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-//SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-//SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-//SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-//
-//FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-//WHERE "DocumentDate" >= \'' . $start_date . '\' AND "DocumentDate" <= \'' . $end_date . '\'
-//AND "DocumentTypeCode" != \'17\'
-//AND "DocumentTypeCode" != \'15\'';
-//                if ($customer_type != 'customer_all') {
-//                    $sql .= ' AND "BusinessPartnerCode" = \'' . $customer_type . '\'';
-//                }
-////                $sql .= ' AND "BranchCode" IN (\'' . implode("','", $sap_depts) . '\')
-//
-//               $sql .= ' AND "BranchCode" IN (' . implode(', ', $sap_depts) . ')
-//
-//AND "ItemCode" IN (' . implode(', ', $this->sap_codes) . ')
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-//"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-//"CancellationStatus", "DocumentDate",
-//"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-//"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-//"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName"
-//) T1
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TX ON T1."BusinessPartnerCode" = TX."CardCode"
-//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TX."SlpCode" = TS."SlpCode"
-//RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-//ON T1."ItemCode2" = T2."ItemCode"
-//WHERE T2."ItemCode" IN (' . implode(', ', $this->sap_codes) . ')';
-//                if ($emps_type != 'employees_all') {
-//                    $sql .= ' AND TS."Memo" = \'' . $emps_type . '\'';
-//                }
-//                $sql .= ')
-//WHERE "BranchName" IS NOT NULL
-//
-//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
-//    "ItemDescription",
-//    "ItemGroup",
-//    "Speciality",
-//	"SalUnitMsr",
-//"OldCode",
-//"VendorCode",
-//"VendorName",
-//---
-//"mrkt_type",
-//"IsInventoryItem"';
-//
-////order By "TotalSalesAmount"';
-//
-//                if ($sortBy == 'code') {
-//                    $sql .= 'ORDER BY "ItemCode" ' . $direction . '';
-//                } else {
-//
-//                    $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
-//                }
-////                    dd($sql);
-////
-
-//                dd($sql);
-
-
-//
-//                $sql = 'SELECT
-//    X."ItemCode"                              AS "ItemCode",
-//    X."ItemName"                              AS "ItemName",
-//    X."VendorName"                            AS "VendorName",
-//    SUM(X."BranchQty")
-//        OVER (PARTITION BY X."ItemCode")      AS "TotalQuantitySale",
-//    X."BPLName"                               AS "BranchName",
-//    X."BranchQty"                             AS "TotalQuantitySaleByBranch",
-//    ROUND(
-//        (X."BranchQty" * 100.0) /
-//        NULLIF(
-//            SUM(X."BranchQty")
-//                OVER (PARTITION BY X."ItemCode"),
-//        0),
-//    2)                                        AS "TotalSalesPer"
-//FROM
-//(
-//    SELECT
-//        Z."ItemCode",
-//        Z."ItemName",
-//        Z."VendorName",
-//        Z."BPLName",
-//        SUM(Z."Qty") AS "BranchQty"
-//    FROM
-//    (
-//        /* =======================
-//           فواتير المبيعات
-//        ======================== */
-//        SELECT
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T4."CardName"          AS "VendorName",
-//            T3."BPLName",
-//            SUM(T0."Quantity")     AS "Qty"
-//        FROM AL_YASEEN_AGRI_PLIVE.INV1 T0
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."DocEntry" = T1."DocEntry"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T0."ItemCode" = T2."ItemCode"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T1."BPLId" = T3."BPLId"
-//        LEFT  JOIN AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T2."CardCode" = T4."CardCode"
-//        WHERE
-//            T1."CANCELED" = \'N\'
-//            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'
-//             GROUP BY
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T4."CardName",
-//            T3."BPLName"
-//
-//        UNION ALL
-//
-//        /* =======================
-//           مرتجعات المبيعات
-//           فقط التي لها حركة مخزون
-//        ======================== */
-//        SELECT
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T4."CardName"          AS "VendorName",
-//            T3."BPLName",
-//            SUM(T0."Quantity") * -1 AS "Qty"
-//        FROM AL_YASEEN_AGRI_PLIVE.RIN1 T0
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.ORIN T1 ON T0."DocEntry" = T1."DocEntry"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T0."ItemCode" = T2."ItemCode"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T1."BPLId" = T3."BPLId"
-//        LEFT  JOIN AL_YASEEN_AGRI_PLIVE.OCRD T4 ON T2."CardCode" = T4."CardCode"
-//        WHERE
-//            T1."CANCELED" = \'N\'
-//            AND T0."NoInvtryMv" = \'N\'
-//            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'
-//                    GROUP BY
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T4."CardName",
-//            T3."BPLName"
-//    ) Z
-//    GROUP BY
-//        Z."ItemCode",
-//        Z."ItemName",
-//        Z."VendorName",
-//        Z."BPLName"
-//) X
-//ORDER BY
-//    X."ItemCode",
-//    X."BPLName"';
-
-//dd($sortBy , $direction);
-//dd($emps_type);
-//                dd($this->sp_type[0]);
-////                dd($this->vendor_type[0]);
-    $sql = '';        // 🔥 RESET
-                $bindings = [];   // 🔥 RESET
-//dd($this->product_code);
 //_____________________________________________________________________________________________________
                 $cat_type = $this->cat_type;
 //                $marketing_type = $this->marketing_type;
@@ -1388,140 +918,6 @@ FROM
                     $sql.= ' AND T2."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
                 }
 
-
-//                if ($emps_type != 'employees_all') {
-//                    $sql .= ' AND S."Memo" = \''.$emps_type[0].'\'';
-//                }
-//
-//
-//
-//                if ($this->sp_type != 'sp_all') {
-//                    foreach ($this->sp_type as $speciality){
-//
-//                        $sql .= ' AND (
-//    (\''.$speciality.'\' = 0 AND T2."QryGroup1" = \'Y\')
-// OR (\''.$speciality.'\' = 1 AND T2."QryGroup2" = \'Y\')
-// OR (\''.$speciality.'\' = 2 AND T2."QryGroup3" = \'Y\')
-//)
-//';
-//                    }
-//
-//                }
-
-                //// -------- Marketing Type Filter (multi) --------
-//                $marketing_type = (array) ($this->marketing_type ?? []);
-
-//                if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type, true)) {
-//                    $mrktConditions = [];
-//
-//                    $map = [
-//                        '30' => 'T2."QryGroup30"',
-//                        '31' => 'T2."QryGroup31"',
-//                        '32' => 'T2."QryGroup32"',
-//                        '40' => 'T2."QryGroup40"',
-//                        '41' => 'T2."QryGroup41"',
-//                        '50' => 'T2."QryGroup50"',
-//                        '51' => 'T2."QryGroup51"',
-//                        '52' => 'T2."QryGroup52"',
-//                        '53' => 'T2."QryGroup53"',
-//                    ];
-//
-//                    foreach ($marketing_type as $val) {
-//                        if (isset($map[$val])) {
-//                            $mrktConditions[] = $map[$val] . " = 'Y'";
-//                        }
-//                    }
-//
-//                    if (!empty($mrktConditions)) {
-//                        $sql .= ' AND (' . implode(' OR ', $mrktConditions) . ') ';
-//                    }
-//                }
-
-//
-//
-//                if ($this->sp_type !== 'sp_all' && !empty($this->sp_type)) {
-//
-//                    $conditions = [];
-//
-//                    if (in_array('0', $this->sp_type, true)) {
-//                        $conditions[] = 'T2."QryGroup1" = \'Y\'';
-//                    }
-//
-//                    if (in_array('1', $this->sp_type, true)) {
-//                        $conditions[] = 'T2."QryGroup2" = \'Y\'';
-//                    }
-//
-//                    if (in_array('2', $this->sp_type, true)) {
-//                        $conditions[] = 'T2."QryGroup3" = \'Y\'';
-//                    }
-//
-//                    if (!empty($conditions)) {
-//                        $sql .= ' AND ( ' . implode(' OR ', $conditions) . ' ) ';
-//                    }
-//                }
-
-
-
-//                if (!empty($this->marketing_type) && !in_array('marketing_all', $this->marketing_type, true)) {
-//
-//                    $mrktConditions = [];
-//
-//                    if (in_array('fan_asmedah', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup30" = \'Y\'';
-//                    }
-//
-//                    if (in_array('fan_mobedat', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup31" = \'Y\'';
-//                    }
-//
-//                    if (in_array('fan_bathoor', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup32" = \'Y\'';
-//                    }
-//
-//                    if (in_array('tasweeg_sehah', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup40" = \'Y\'';
-//                    }
-//
-//                    if (in_array('tasweeg_mokafahh', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup41" = \'Y\'';
-//                    }
-//
-//                    if (in_array('aleyat_aleyat', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup50" = \'Y\'';
-//                    }
-//
-//                    if (in_array('aleyat_ray', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup51" = \'Y\'';
-//                    }
-//
-//                    if (in_array('aleyat_ray_matary', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup52" = \'Y\'';
-//                    }
-//
-//                    if (in_array('aleyat_khadamat', $this->marketing_type, true)) {
-//                        $mrktConditions[] = 'T2."QryGroup53" = \'Y\'';
-//                    }
-//
-//                    if (!empty($mrktConditions)) {
-//                        $sql .= ' AND ( ' . implode(' OR ', $mrktConditions) . ' ) ';
-//                    }
-//                }
-
-
-//                if (!in_array('all', $this->marketing_type, true)) {
-//                    $types = array_map(fn ($t) => "'".$t."'", $this->marketing_type);
-//                    $sql .= ' AND T0."MarketingType" IN ('.implode(',', $types).') ';
-//                }
-
-//
-//                if ($this->sp_type != 'sp_all') {
-//                    $sql .= 'AND (
-//    (\''.$this->sp_type[0].'\' = \'0\' AND T2."QryGroup1" = \'Y\')
-// OR (\''.$this->sp_type[0].'\' = \'1\' AND T2."QryGroup2" = \'Y\')
-// OR (\''.$this->sp_type[0].'\' = \'2\' AND T2."QryGroup3" = \'Y\')
-// OR (\''.$this->sp_type[0].'\' IS NULL)
-//)
-//';
 //                }
 //                dd($this->vendor_type );
                 if ($this->vendor_type != 'vendor_all' && $this->vendor_type != null) {
@@ -1679,7 +1075,7 @@ FROM
                 }
 
 
-                     $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
+                $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
 
 
 
@@ -1732,250 +1128,7 @@ FROM
 
                 $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', "BranchRank" ,  "EmployeeRank" ASC, X."SlpName" ,X."ItemCode"';
 
-//dd($sql);
 
-
-//                $sql='
-//// Base SELECT
-//    $sql = '';        // 🔥 RESET
-    $bindings = [];   // 🔥 RESET
-// $vendor_type = $this->vendor_type;
-//                dd($this->cat_type);
-//_____________________________________________________________________________________________________
-//                $cat_type = $this->cat_type;
-////                $marketing_type = $this->marketing_type;
-////                dd($this->marketing_type);
-//                $marketing_type = array_unique((array) $this->marketing_type);
-//                $sp_type        = array_unique((array) $this->sp_type);
-//                $vendor_type    = array_unique((array) $this->vendor_type);
-////                $sp_type = $this->sp_type;
-//$sql = '
-//SELECT
-//    X."ItemCode",
-//    X."ItemName",
-//    X."UgpEntry" AS "Unit",
-//    X."VendorName",
-//    X."CardName",
-//    X."SlpName",
-//    V."ItemGroup",
-//    CASE
-//        WHEN X."QryGroup1" = \'Y\' THEN \'0\'
-//        WHEN X."QryGroup2" = \'Y\' THEN \'1\'
-//        WHEN X."QryGroup3" = \'Y\' THEN \'2\'
-//        ELSE \'\'
-//    END AS "Speciality",
-//    CASE
-//        WHEN X."QryGroup30" = \'Y\' THEN \'fan_asmedah\'
-//        WHEN X."QryGroup31" = \'Y\' THEN \'fan_mobedat\'
-//        WHEN X."QryGroup32" = \'Y\' THEN \'fan_bathoor\'
-//        WHEN X."QryGroup40" = \'Y\' THEN \'tasweeg_sehah\'
-//        WHEN X."QryGroup41" = \'Y\' THEN \'tasweeg_mokafahh\'
-//        WHEN X."QryGroup50" = \'Y\' THEN \'aleyat_aleyat\'
-//        WHEN X."QryGroup51" = \'Y\' THEN \'aleyat_ray\'
-//        WHEN X."QryGroup52" = \'Y\' THEN \'aleyat_ray_matary\'
-//        WHEN X."QryGroup53" = \'Y\' THEN \'aleyat_khadamat\'
-//        ELSE \'general\'
-//    END AS "mrkt_type",
-//    SUM(X."BranchQty") OVER (PARTITION BY X."ItemCode") AS "TotalQuantitySale",
-//    X."BPLName" AS "BranchName",
-//    X."BranchQty" AS "TotalQuantitySaleByBranch",
-//    ROUND(
-//        (X."BranchQty" * 100.0) /
-//        NULLIF(SUM(X."BranchQty") OVER (PARTITION BY X."ItemCode"), 0),
-//    2) AS "TotalSalesPer"
-//FROM (
-//    SELECT
-//        Z."ItemCode",
-//        Z."ItemName",
-//        Z."UgpEntry",
-//        Z."VendorName",
-//        Z."CardName",
-//        Z."SlpName",
-//        Z."BPLName",
-//        Z."QryGroup1",
-//        Z."QryGroup2",
-//        Z."QryGroup3",
-//        Z."QryGroup30",
-//        Z."QryGroup31",
-//        Z."QryGroup32",
-//        Z."QryGroup40",
-//        Z."QryGroup41",
-//        Z."QryGroup50",
-//        Z."QryGroup51",
-//        Z."QryGroup52",
-//        Z."QryGroup53",
-//        SUM(Z."Qty") AS "BranchQty"
-//    FROM (
-//        /* =======================
-//           SALES INVOICES
-//        ======================= */
-//        SELECT
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T2."UgpEntry",
-//            V."CardName" AS "VendorName",
-//            C."CardName" AS "CardName",
-//            S."SlpName",
-//            B."BPLName",
-//            T2."QryGroup1",
-//            T2."QryGroup2",
-//            T2."QryGroup3",
-//            T2."QryGroup30",
-//            T2."QryGroup31",
-//            T2."QryGroup32",
-//            T2."QryGroup40",
-//            T2."QryGroup41",
-//            T2."QryGroup50",
-//            T2."QryGroup51",
-//            T2."QryGroup52",
-//            T2."QryGroup53",
-//            SUM(T0."Quantity") AS "Qty"
-//        FROM AL_YASEEN_AGRI_PLIVE.INV1 T0
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OINV T1 ON T0."DocEntry" = T1."DocEntry"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OITM T2 ON T0."ItemCode" = T2."ItemCode"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD C  ON T1."CardCode" = C."CardCode"
-//        LEFT  JOIN AL_YASEEN_AGRI_PLIVE.OCRD V  ON T2."CardCode" = V."CardCode"
-//        LEFT  JOIN AL_YASEEN_AGRI_PLIVE.OSLP S  ON C."SlpCode" = S."SlpCode"
-//        INNER JOIN AL_YASEEN_AGRI_PLIVE.OBPL B  ON T1."BPLId" = B."BPLId"
-//        WHERE T1."CANCELED" = \'N\'
-//        AND T1."DocDate" BETWEEN  \'' . $start_date . '\' AND  \'' . $end_date . '\'
-//        AND T1."BPLId" IN (' . implode(',', $sap_depts) . ')
-//';
-//
-//if($this->product_code){
-//    $sql .= ' AND T0."ItemCode" = \'' . $this->product_code . '\' ';
-//
-//}
-//// -------- Employee Filter --------
-//if ($emps_type != 'employees_all') {
-//    $sql .= ' AND S."Memo" = \'' . $emps_type[0] . '\' ';
-//}
-//
-//// -------- Customer Filter --------
-//// Ensure $customer_type is set
-//                $customer_type = $this->customer_type ?? 'customer_all';
-//
-//                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
-//                    // Apply filter for a single value
-//                    $sql .= ' AND C."CardCode" = \''.$customer_type.'\'' ;
-//
-//                }
-//
-//
-//// -------- Vendor Filter (multi) --------
-////                if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type)) {
-////                    $placeholders = implode(',', array_fill(0, count($vendor_type), '?'));
-////                    $sql .= ' AND T2."CardCode" IN (' . $placeholders . ') ';
-////                    $bindings = array_merge($bindings, $vendor_type);
-////                }
-//                if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type, true)) {
-//                    $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $vendor_type);
-//                    $sql .= ' AND T2."CardCode" IN (' . implode(',', $escaped) . ') ';
-//                }
-//
-//
-//// -------- Speciality Filter (multi) --------
-//                if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
-//                    $spConditions = [];
-//                    if (in_array('0', $sp_type)) $spConditions[] = 'T2."QryGroup1" = \'Y\'';
-//                    if (in_array('1', $sp_type)) $spConditions[] = 'T2."QryGroup2" = \'Y\'';
-//                    if (in_array('2', $sp_type)) $spConditions[] = 'T2."QryGroup3" = \'Y\'';
-//                    if ($spConditions) $sql .= ' AND (' . implode(' OR ', $spConditions) . ') ';
-//                }
-//
-//// -------- Marketing Type Filter (multi) --------
-////                $marketing_type = (array) ($this->marketing_type ?? []);
-//
-//                if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type, true)) {
-//                    $mrktConditions = [];
-//
-//                    $map = [
-//                        '30' => 'T2."QryGroup30"',
-//                        '31' => 'T2."QryGroup31"',
-//                        '32' => 'T2."QryGroup32"',
-//                        '40' => 'T2."QryGroup40"',
-//                        '41' => 'T2."QryGroup41"',
-//                        '50' => 'T2."QryGroup50"',
-//                        '51' => 'T2."QryGroup51"',
-//                        '52' => 'T2."QryGroup52"',
-//                        '53' => 'T2."QryGroup53"',
-//                    ];
-//
-//                    foreach ($marketing_type as $val) {
-//                        if (isset($map[$val])) {
-//                            $mrktConditions[] = $map[$val] . " = 'Y'";
-//                        }
-//                    }
-//
-//                    if (!empty($mrktConditions)) {
-//                        $sql .= ' AND (' . implode(' OR ', $mrktConditions) . ') ';
-//                    }
-//                }
-//// -------- Marketing Type Filter (multi) --------
-//
-//                if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
-//                    $sql.= ' AND T2."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
-//                }
-//
-//
-//$sql .= '
-//        GROUP BY
-//            T0."ItemCode",
-//            T2."ItemName",
-//            T2."UgpEntry",
-//            V."CardName",
-//            C."CardName",
-//            S."SlpName",
-//            B."BPLName",
-//            T2."QryGroup1",
-//            T2."QryGroup2",
-//            T2."QryGroup3",
-//            T2."QryGroup30",
-//            T2."QryGroup31",
-//            T2."QryGroup32",
-//            T2."QryGroup40",
-//            T2."QryGroup41",
-//            T2."QryGroup50",
-//            T2."QryGroup51",
-//            T2."QryGroup52",
-//            T2."QryGroup53"
-//    ) Z
-//    GROUP BY
-//        Z."ItemCode",
-//        Z."ItemName",
-//        Z."UgpEntry",
-//        Z."VendorName",
-//        Z."CardName",
-//        Z."SlpName",
-//        Z."BPLName",
-//        Z."QryGroup1",
-//        Z."QryGroup2",
-//        Z."QryGroup3",
-//        Z."QryGroup30",
-//        Z."QryGroup31",
-//        Z."QryGroup32",
-//        Z."QryGroup40",
-//        Z."QryGroup41",
-//        Z."QryGroup50",
-//        Z."QryGroup51",
-//        Z."QryGroup52",
-//        Z."QryGroup53"
-//) X
-//        LEFT JOIN "_SYS_BIC"."sap.alyase  enagriplive.ar.case/SalesAnalysisQuery" V
-//        ON X."ItemCode" = V."ItemCode"
-//--ORDER BY "ItemCode" ASC
-//';
-//                $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . ', X."BPLName"';
-
-dd($sql);
-
-
-//                --ORDER BY
-//                --"TotalQuantitySale" DESC
-//                --"ItemCode"
-//                --  X."BPLName",
-//  --  X."CardName"
-//                dd($sql);
                 $result = odbc_exec($conn, $sql);
                 if (!$result) {
                     echo "Error while sending SQL statement to the database server.\n";

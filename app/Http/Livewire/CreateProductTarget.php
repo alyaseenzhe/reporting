@@ -266,7 +266,7 @@ class CreateProductTarget extends Component
                 ->whereIn('write_product_target', ['1', '2'])
                 ->select('users.id', 'users.emp_code')
                 ->get();
-
+//           dd($emps);
             $dept_code = "";
 
             if ($branch == "3") {

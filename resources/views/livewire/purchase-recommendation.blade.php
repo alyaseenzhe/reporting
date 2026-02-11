@@ -273,9 +273,9 @@
                                     <br>
                                     @if(ceil($full_days/30) > 1)
                                         <span class="text-xs">(</span>
-                                        <span class="text-xs">{{ $historicalStart}}</span>
+                                        <span class="text-xs">{{ \Illuminate\Support\Carbon::parse($historicalStart)->format('Y-m')}}</span>
                                         <span class="text-xs"> الى</span>
-                                        <span class="text-xs">{{ $historicalEnd}}</span>
+                                        <span class="text-xs">{{  \Illuminate\Support\Carbon::parse($historicalEnd)->format('Y-m')}}</span>
                                         <span class="text-xs">)</span>
                                     @else
                                         <span class="text-xs">(</span>

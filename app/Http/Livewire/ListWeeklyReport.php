@@ -147,57 +147,69 @@ class ListWeeklyReport extends Component
 
     public function sendReport() {
 
-        $ahsa_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'amir.saleh@alyaseenagri.com', 'sales.ahsa@alyaseenagri.com', 'gamil.mohamed@alyaseenagri.com', 'ahmed.wahd@alyaseenagri.com'];
-        $jeddah_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ibrahim.talat@alyaseenagri.com', 'sales.jeddah@alyaseenagri.com', 'ahmed.nassef@alyaseenagri.com'];
-        $riyadh_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.samy@alyaseenagri.com', 'mohammed.fawzy@alyaseenagri.com', 'sales.riyadh@alyaseenagri.com'];
-        $wadi_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.salem@alyaseenagri.com', 'omar.elhelefy@alyaseenagri.com', 'sales.wadi@alyaseenagri.com', 'ahmed.ibrahim@alyaseenagri.com'];
-        $jouf_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'alsaid.saad@alyaseenagri.com', 'mosaad.dahshan@alyaseenagri.com', 'sales.aljouf@alyaseenagri.com'];
-        $dammam_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.dammam@alyaseenagri.com', 'atef.ibrahem@alyaseenagri.com'];
-        $kharaj_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'radwan.hussen@alyaseenagri.com', 'sales.alkharj@alyaseenagri.com'];
-        $najran_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'wael.badr@alyaseenagri.com', 'omar.mohammed@alyaseenagri.com', 'sales.najran@alyaseenagri.com'];
-        $hail_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ahmed.elzekely@alyaseenagri.com', 'mohammed.majdi@alyaseenagri.com'];
-        $tabouk_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mahmoud.hashem@alyaseenagri.com', 'ahmed.khaled@alyaseenagri.com', 'sales.tabuk@alyaseenagri.com'];
-        $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'abdelwahab.hegazy@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'mohamed.nagy@alyaseenagri.com'];
-        $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.sajer@alyaseenagri.com', 'abdulaziz.sharqawi@alyaseenagri.com'];
+//        $ahsa_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'amir.saleh@alyaseenagri.com', 'sales.ahsa@alyaseenagri.com', 'gamil.mohamed@alyaseenagri.com', 'ahmed.wahd@alyaseenagri.com'];
+        $ahsa_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch01@alyaseenagri.com'];
+//        $jeddah_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ibrahim.talat@alyaseenagri.com', 'sales.jeddah@alyaseenagri.com', 'ahmed.nassef@alyaseenagri.com'];
+        $jeddah_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch02@alyaseenagri.com'];
+//        $riyadh_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.samy@alyaseenagri.com', 'mohammed.fawzy@alyaseenagri.com', 'sales.riyadh@alyaseenagri.com'];
+        $riyadh_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com','g-branch03@alyaseenagri.com'];
+//        $wadi_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mohammed.salem@alyaseenagri.com', 'omar.elhelefy@alyaseenagri.com', 'sales.wadi@alyaseenagri.com', 'ahmed.ibrahim@alyaseenagri.com','mosab.omer@alyaseenagri.com'];
+        $wadi_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch04@alyaseenagri.com'];
+//        $jouf_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'alsaid.saad@alyaseenagri.com', 'mosaad.dahshan@alyaseenagri.com', 'sales.aljouf@alyaseenagri.com'];
+        $jouf_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch05@alyaseenagri.com'];
+//        $dammam_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.dammam@alyaseenagri.com', 'atef.ibrahem@alyaseenagri.com'];
+        $dammam_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch06@alyaseenagri.com'];
+//        $kharaj_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'radwan.hussen@alyaseenagri.com', 'sales.alkharj@alyaseenagri.com'];
+        $kharaj_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch07@alyaseenagri.com'];
+//        $najran_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'wael.badr@alyaseenagri.com', 'omar.mohammed@alyaseenagri.com', 'sales.najran@alyaseenagri.com'];
+        $najran_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch08@alyaseenagri.com'];
+//        $hail_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'ahmed.elzekely@alyaseenagri.com', 'mohammed.majdi@alyaseenagri.com','sales.hail@alyaseenagri.com'];
+        $hail_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch09@alyaseenagri.com'];
+//        $tabouk_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'mahmoud.hashem@alyaseenagri.com', 'ahmed.khaled@alyaseenagri.com', 'sales.tabuk@alyaseenagri.com','ahmed.abdulsalam@alyaseenagri.com'];
+        $tabouk_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch10@alyaseenagri.com'];
+//        $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'abdelwahab.hegazy@alyaseenagri.com', 'sales.qaseem@alyaseenagri.com', 'mohamed.nagy@alyaseenagri.com'];
+        $qaseem_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch11@alyaseenagri.com'];
+//        $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com', 'atia.abdullah@alyaseenagri.com', 'waleed.elnaggar@alyaseenagri.com', 'sales.sajer@alyaseenagri.com', 'abdulaziz.sharqawi@alyaseenagri.com','wael.mubarak@alyaseenagri.com'];
+        $sajer_branch = ['sadekr@alyaseenagri.com', 'mohammedsr@alyaseenagri.com',  'waleed.elnaggar@alyaseenagri.com', 'g-branch12@alyaseenagri.com'];
 
 //        Mail::to(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->emp_total, $this->area_id, $this->start_date, $this->end_date, $this->emp_codes, $this->customer_purchased, $this->visits, $this->category_qty, $this->category_qty_total));
 
         if ($this->area_id == '01') {
 //            Mail::to($ahsa_branch)->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
-            Mail::to($ahsa_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($ahsa_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '02') {
-            Mail::to($jeddah_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($jeddah_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '03') {
-            Mail::to($riyadh_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($riyadh_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '04') {
-            Mail::to($wadi_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($wadi_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '05') {
-            Mail::to($jouf_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($jouf_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '06') {
-            Mail::to($dammam_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($dammam_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '07') {
-            Mail::to($kharaj_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($kharaj_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '08') {
-            Mail::to($najran_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($najran_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '09') {
-            Mail::to($hail_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($hail_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '10') {
-            Mail::to($tabouk_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($tabouk_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '11') {
-            Mail::to($qaseem_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($qaseem_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '12') {
-            Mail::to($sajer_branch)->cc(['basil.alrashed@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($sajer_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
 
         return 0;

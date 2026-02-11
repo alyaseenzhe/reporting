@@ -916,7 +916,9 @@ LEFT JOIN "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" AS tbl_S
 
     ADD_YEARS(ADD_DAYS(CURRENT_DATE, 1 - DAYOFMONTH(CURRENT_DATE)), -1)
     AND ADD_YEARS(
-        ADD_MONTHS(ADD_DAYS(CURRENT_DATE, 1 - DAYOFMONTH(CURRENT_DATE)), CEIL((T0."LeadTime" + 15)/30) - 1),
+        LAST_DAY(
+        ADD_MONTHS(ADD_DAYS(CURRENT_DATE, 1 - DAYOFMONTH(CURRENT_DATE)), CEIL((T0."LeadTime" + 15)/30) - 1)
+         ),
         -1
     )
 
@@ -937,7 +939,7 @@ GROUP BY
     T0."OnHand"
 ORDER BY T1."CardCode"
 ';
-dd($stmt);
+//dd($stmt);
             $result = odbc_exec($conn, $stmt);
             if (!$result)
             {
