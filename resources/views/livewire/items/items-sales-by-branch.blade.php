@@ -62,7 +62,7 @@
                     </th>
 
                     <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                        <div class="text-sm" >النسبة
+                        <div class="text-sm" >النسبة%
 
                         </div>
                     </th>
@@ -75,20 +75,35 @@
 <tbody>
                 @foreach($group_results as $item)
                     {{-- Item Row --}}
-                    <tr
-                        class="bg-orange-50 cursor-pointer hover:bg-orange-100"
+{{--                    <tr--}}
+{{--                        class="bg-orange-50 cursor-pointer hover:bg-orange-100"--}}
 
-                    >
-                        <td colspan="5" class="p-2 font-bold">{{$item['ItemCode']  .' - '.  $item['ItemName'] }}</td>
+{{--                    >--}}
+{{--                        <td colspan="5" class="p-2 font-bold">{{$item['ItemCode']  .' - '.  $item['ItemName'] }}</td>--}}
 {{--                        <td class="p-2">{{ $item['VendorName'] }}</td>--}}
 {{--                        <td class="p-2">{{ $item['CardName'] }}</td>--}}
 {{--                        <td class="p-2">{{ number_format($item['TotalQuantitySale']) ?? 0 }}</td>--}}
-                    </tr>
-                    <tr  style="border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+{{--                    </tr>--}}
+{{--                    <tr  style=" background-color: #e4fbff; font-weight: bold; cursor: pointer">--}}
+{{--                        <td colspan="4" style=" border-left: 2px dashed #a8a8a8;" class="border p-1 whitespace-nowrap"  class="p-1 font-bold ">--}}
+{{--                            {{$item['ItemCode']  .' - '.  $item['ItemName'] }}</td>--}}
+{{--                    </tr>--}}
+                    <tr  style="border-bottom: 2px solid #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer " class="py-4">
                         {{--                <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $item["ItemCode"] }}" x-text="showBranches ? '-' : '+'">+</td>--}}
 {{--                        <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $item["ItemCode"] }}" x-text="showBranches === '{{ $item['ItemCode'] }}' ? '-' : '+'">+</td>--}}
-                        <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-1 whitespace-nowrap"
+                            {{--                            @click="$wire.loadBranches('{{ addslashes($item['ItemCode']) }}')"--}}
+
+                            @click="toggleItem('{{ addslashes($item['ItemCode']) }}')">
+                            <span x-text="expanded['{{ $item['ItemCode'] }}'] ? '-' : '+'"></span>
+                        </td>
+                        <td  style=" border-left: 2px dashed #a8a8a8;   word-wrap: break-word; " class="border p-1 "  class="p-1 font-bold ">
+                            {{$item['ItemCode']  .' - '.  $item['ItemName'] }}</td>
+                        <td    style=" border-left: 2px dashed #a8a8a8;" class="border p-2 py-6 whitespace-nowrap" >
                             <div class="flex flex-row justify-between">
+                                <div>اجمالي المبيعات:
+                                    <span style="color: #227dd7;">  {{number_format($item['TotalQuantitySale'])}} </span>
+                                </div>
                                 <div>قسم:
                                     <span style="color: #227dd7">{{__($item["mrkt_type"])}}</span>
 
@@ -96,6 +111,19 @@
                                 <div>نوع المادة:
                                     <span style="color: #227dd7">{{$item["ItemGroup"]}}</span>
                                 </div>
+                            </div>
+                        </td>
+                        <td  style="border-left: 2px solid black;" class="border p-1 whitespace-nowrap">
+
+
+                            <div class="flex flex-row justify-between">
+{{--                                <div>قسم:--}}
+{{--                                    <span style="color: #227dd7">{{__($item["mrkt_type"])}}</span>--}}
+
+{{--                                </div>--}}
+{{--                                <div>نوع المادة:--}}
+{{--                                    <span style="color: #227dd7">{{$item["ItemGroup"]}}</span>--}}
+{{--                                </div>--}}
                                 <div>الوحدة:
                                     <span style="color: #227dd7">
                                                     {{$item["Unit"]}}
@@ -114,31 +142,31 @@
                             </div>
 
                     </tr>
-                    <tr  style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  >
-                        {{--                                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}">+</td>--}}
-                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap"
+{{--                    <tr  style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer"  >--}}
+{{--                        --}}{{--                                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["ItemCode"] }}">+</td>--}}
+{{--                        <td colspan="5"  style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap"--}}
 {{--                            @click="$wire.loadBranches('{{ addslashes($item['ItemCode']) }}')"--}}
 
-                            @click="toggleItem('{{ addslashes($item['ItemCode']) }}')">
-                            <span x-text="expanded['{{ $item['ItemCode'] }}'] ? '-' : '+'"></span>
-                        </td>
+{{--                            @click="toggleItem('{{ addslashes($item['ItemCode']) }}')">--}}
+{{--                            <span x-text="expanded['{{ $item['ItemCode'] }}'] ? '-' : '+'"></span>--}}
+{{--                        </td>--}}
 
-                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                            <div class="flex flex-row justify-between">
-                                <div>اجمالي المبيعات:
-                                    <span style="color: #227dd7;">  {{number_format($item['TotalQuantitySale'])}} </span>
-                                </div>
+{{--                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                            <div class="flex flex-row justify-between">--}}
+{{--                                <div>اجمالي المبيعات:--}}
+{{--                                    <span style="color: #227dd7;">  {{number_format($item['TotalQuantitySale'])}} </span>--}}
+{{--                                </div>--}}
 
-                            </div>
-                            {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][4])}}--}}
-                            {{--                    {{$record['IsBestBranch']}}--}}
+{{--                            </div>--}}
+{{--                            --}}{{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][4])}}--}}
+{{--                            --}}{{--                    {{$record['IsBestBranch']}}--}}
 
-                        </td>
-                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
-                            <div class="flex flex-row justify-between">
-                                <div>الفرع الاكثر بيعا:
-                            <span x-text="' {{ $item['bestBranch']['BPLName'] ?? '-' }}'"></span>
-                                </div>
+{{--                        </td>--}}
+{{--                        <td style=" border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
+{{--                            <div class="flex flex-row justify-between">--}}
+{{--                                <div>الفرع الاكثر بيعا:--}}
+{{--                            <span x-text="' {{ $item['bestBranch']['BPLName'] ?? '-' }}'"></span>--}}
+{{--                                </div>--}}
 {{--                            @foreach($item['branches'] as $bindex =>$branch)--}}
 
 {{--                                @if($branch['IsBestBranch'] == 'Y')--}}
@@ -152,25 +180,27 @@
 {{--                                @endif--}}
 {{--                            @endforeach--}}
 
-                        </td>
-                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">الكمية التي باعها:
-                            @if(isset($item['bestBranch']['TotalQuantitySaleByBranch']))
-                            <span x-text="' {{ number_format($item['bestBranch']['TotalQuantitySaleByBranch']) ?? '-' }}'"></span>
-                            @endif
-                            {{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][0], 2)}}--}}
+{{--                        </td>--}}
+{{--                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                            الكمية التي باعها:--}}
+{{--                            --}}
+{{--                            @if(isset($item['bestBranch']['TotalQuantitySaleByBranch']))--}}
+{{--                            <span x-text="' {{ number_format($item['bestBranch']['TotalQuantitySaleByBranch']) ?? '-' }}'"></span>--}}
+{{--                            @endif--}}
+{{--                            --}}{{--                    {{number_format($totalSalesByItem[$record["ItemCode"]][0], 2)}}--}}
 
 
 
-                        </td>
-                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{--                    {{ $totalSalesByItem[$record["ItemCode"]][3] != 0? number_format($totalSalesByItem[$record["ItemCode"]][0]/$totalSalesByItem[$record["ItemCode"]][3], 2) : 0 }}--}}
-                        </td>
-                        {{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-                        {{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][1], 2)}}</td>--}}
-                        {{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][2], 2)}}</td>--}}
-                        {{--                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["ItemCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["ItemCode"]][2]/$totalSalesByItem[$record["ItemCode"]][0])*100, 2)}}</td>--}}
-                        {{--                @endif--}}
-                    </tr>
+{{--                        </td>--}}
+{{--                        <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                            --}}{{--                    {{ $totalSalesByItem[$record["ItemCode"]][3] != 0? number_format($totalSalesByItem[$record["ItemCode"]][0]/$totalSalesByItem[$record["ItemCode"]][3], 2) : 0 }}--}}
+{{--                        </td>--}}
+{{--                        --}}{{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                        --}}{{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][1], 2)}}</td>--}}
+{{--                        --}}{{--                    <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($totalSalesByItem[$record["ItemCode"]][2], 2)}}</td>--}}
+{{--                        --}}{{--                    <td style="color: #227dd7; border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $totalSalesByItem[$record["ItemCode"]][0] == 0 ? 0 : number_format(($totalSalesByItem[$record["ItemCode"]][2]/$totalSalesByItem[$record["ItemCode"]][0])*100, 2)}}</td>--}}
+{{--                        --}}{{--                @endif--}}
+{{--                    </tr>--}}
 
 
 
@@ -185,7 +215,11 @@
                                 <td class="cursor-pointer" @click="toggleEmployees('{{ $item['ItemCode'] }}', branch.BranchId)">
                                     <span x-text="expandedEmployees['{{ $item['ItemCode'] }}-' + branch.BranchId] ? '-' : '+'"></span>
                                 </td>
-                                <td class="pl-8 p-2" x-text="branch.BranchName"></td>
+                                <td class="pl-8 p-2" x-text="branch.BranchName">
+                                    <template x-if="branch.IsBestBranch == 'Y'">
+                                        ⭐
+                                    </template>
+                                    </td>
                                 <td class="p-2" x-text="branch.TotalQuantitySaleByBranch"></td>
                                 <td class="p-2" x-text="Math.round(branch.TotalSalesPer)"></td>
                                 {{--                                <td class="p-2" x-text="JSON.stringify(branch.employees)"></td>--}}

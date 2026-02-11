@@ -254,18 +254,25 @@ $vendor_code = "*";
             ->values();
 //        dd($this->allBranches);
         $this->salesIndex = collect($this->sap_results)
-            ->groupBy(function ($row) {
-                return trim((string) $row['ItemCode']);
-            })
-            ->map(function ($rows) {
-                return $rows->groupBy(function ($row) {
-                    return (int) $row['BPLId'];
-                });
-            });
+            ->groupBy(fn ($row) => trim((string) $row['ItemCode']))
+            ->map(fn ($rows) =>
+            $rows->groupBy(fn ($row) => (int) $row['BPLId'])
+            );
+
+//            });
+//            ->map(function ($rows) {
+//                return $rows->groupBy(function ($row) {
+//                    return (int) $row['BPLId'];
+//                });
+//            });
 //        dd($this->salesIndex);
 
             $itemSales = $this->salesIndex[$itemCode] ?? collect();
-           $totalQuantity = $itemSales->first()[0]['TotalQuantitySale'];
+
+        $totalQuantity = $itemSales
+            ->flatten(1)
+            ->sum('EmployeeTotalQty');
+//           $totalQuantity = $itemSales->first()?[0]['TotalQuantitySale']: 0 ;
            //dd($totalQuantity[0]['TotalQuantitySale']);
 
         $this->branches[$itemCode] = collect($this->allBranches)
@@ -736,8 +743,32 @@ ORDER BY "CardCode"';
             $categoryQuery = '';
 
             if ($search_type == "item_code_search") {
-                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'' . $product_code . '\' OR T0."U_UDF1" = \'' . $product_code . '\'';
-            } else if ($search_type == "advanced_search") {
+//                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'' . $product_code . '\' OR T0."U_UDF1" = \'' . $product_code . '\'';
+                if (!empty($product_code)) {
+
+                    if (is_array($product_code)) {
+                        $escaped = array_map(fn($v) =>
+                            "'" . str_replace("'", "''", $v) . "'",
+                            $product_code
+                        );
+
+                        $categoryQuery = '
+            SELECT DISTINCT
+                T0."ItemCode",
+                T0."U_UDF1" AS "ScribeCode"
+            FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
+            JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
+                ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
+            WHERE T0."ItemCode" IN ('.implode(',', $escaped).')
+               OR T0."U_UDF1" IN ('.implode(',', $escaped).')
+        ';
+                    }
+                }
+
+
+            }
+
+            else if ($search_type == "advanced_search") {
 
                 if ($group_type == "commerce") {
                     $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
@@ -1360,7 +1391,15 @@ ORDER BY "CardCode"';
 //            T0."ItemCode",
 //            T2."ItemName",
 //            T2."UgpEntry",
-//            V."CardName",
+//            V."CardName",                $customer_type = $this->customer_type ?? 'customer_all';
+//
+//
+//
+//                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+//
+//                    // Apply filter for a single value
+//
+//                    $sql .= ' AND c."CardCode" = \''.$customer_type.'\'' ;
 //            C."CardName",
 //            S."SlpName",
 //            B."BPLName",
@@ -1482,7 +1521,7 @@ WITH SalesAgg AS (
 //
 
                 if($this->product_code){
-                    $sql .= ' AND T0."ItemCode" = \'' . $this->product_code . '\' ';
+                    $sql .= ' AND T0."ItemCode" IN ( \'' . implode($this->product_code) . '\') ';
 
                 }
 // -------- Employee Filter --------
@@ -1496,7 +1535,7 @@ WITH SalesAgg AS (
 
                 if ($customer_type !== 'customer_all' && !empty($customer_type)) {
                     // Apply filter for a single value
-                    $sql .= ' AND C."CardCode" = \''.$customer_type.'\'' ;
+                    $sql .= ' AND c."CardCode" = \''.$customer_type.'\'' ;
 
                 }
 
@@ -1626,7 +1665,7 @@ WITH SalesAgg AS (
 
 
                 if($this->product_code){
-                    $sql .= ' AND T0."ItemCode" = \'' . $this->product_code . '\' ';
+                    $sql .= ' AND T0."ItemCode" IN ( \'' . implode($this->product_code) . '\') ';
 
                 }
 // -------- Employee Filter --------
@@ -1828,7 +1867,7 @@ LEFT JOIN SalesAgg S
  AND I."validFor" = \'Y\'';
 
                 if($this->product_code){
-                    $sql .= ' AND T0."ItemCode" = \'' . $this->product_code . '\' ';
+                    $sql .= ' AND T0."ItemCode" = \'IN (' . implode($this->product_code ). '\') ';
 
                 }
 // -------- Employee Filter --------
@@ -1908,6 +1947,12 @@ ORDER BY I."ItemCode", "BranchRank"
 
 //dd($sql);
 
+                $customerCondition = '';
+
+                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+                    $customerCondition = ' AND T1."CardCode" = \''.$customer_type.'\' ';
+                }
+
 //
             $sql = 'WITH SalesAgg AS (
     SELECT
@@ -1928,10 +1973,14 @@ ORDER BY I."ItemCode", "BranchRank"
             ON T0."DocEntry" = T1."DocEntry"
         WHERE
             T1."CANCELED" = \'N\'
-            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'
-            -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
-           -- AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
-        GROUP BY
+            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'';
+                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+                    $sql.= ' AND T1."CardCode" = \''.$customer_type.'\' ';
+                }
+
+//                -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
+//           -- AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
+       $sql.= 'GROUP BY
             T0."ItemCode",
             T1."BPLId",
             T1."SlpCode"
@@ -1950,8 +1999,11 @@ ORDER BY I."ItemCode", "BranchRank"
         WHERE
             T1."CANCELED" = \'N\'
             AND T0."NoInvtryMv" = \'N\'
-            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'
-           -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
+            AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'';
+                    if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+                        $sql.= ' AND T1."CardCode" = \''.$customer_type.'\'';
+                }
+                $sql.=' -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
           -- AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
         GROUP BY
             T0."ItemCode",
@@ -2147,7 +2199,7 @@ WHERE
     I."ItemType" = \'I\'
     AND I."validFor" = \'Y\'';
                 if($this->product_code){
-                    $sql .= ' AND T0."ItemCode" = \'' . $this->product_code . '\' ';
+                    $sql .= ' AND I."ItemCode" IN (' . implode(',',$this->product_code ). ') ';
 
                 }
 // -------- Employee Filter --------
@@ -2157,20 +2209,20 @@ WHERE
 
 // -------- Customer Filter --------
 // Ensure $customer_type is set
-                $customer_type = $this->customer_type ?? 'customer_all';
+//                $customer_type = $this->customer_type ?? 'customer_all';
 
-                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
-                    // Apply filter for a single value
-                    $sql .= ' AND C."CardCode" = \''.$customer_type.'\'' ;
-
-                }
+//                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+//                    // Apply filter for a single value
+//                    $sql .= ' AND T1."CardCode" = \''.$customer_type.'\'' ;
+//
+//                }
 
 
 // -------- Vendor Filter (multi) --------
 
                 if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type, true)) {
                     $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $vendor_type);
-                    $sql .= ' AND T2."CardCode" IN (' . implode(',', $escaped) . ') ';
+                    $sql .= ' AND I."CardCode" IN (' . implode(',', $escaped) . ') ';
                 }
 
 

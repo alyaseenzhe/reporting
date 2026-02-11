@@ -384,25 +384,39 @@
                 @error('customer_type')
                 <span class="error text-red-600 text-sm">{{ $message }}</span>
                 @enderror
+
             </div>
-            <div id="sales_container" class="w-full">
-                <label class="block font-bold mb-2">الموظفين
-                    <span class="text-red-500">*</span>
-                </label>
-                <div>
-                    <x-select_search id="emps_type" name="emps_type" wire:model.live="emps_type"
-                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            style="@error('emps_type') border: solid 1px #fda4af; @enderror">
-                        <option all_option="true" value="employees_all" selected>الكل</option>
-                        @foreach($emps as $employee)
-                            <option value="{{ $employee->emp_code }}" data-dept="{{ $employee->sales_dept_code }}">{{ $employee->name }}</option>
-                        @endforeach
-                    </x-select_search>
-                </div>
-                @error('emps_type')
-                <span class="error text-red-600 text-sm">{{ $message }}</span>
-                @enderror
+
+            <div class="mt-8 text-center w-full">
+                <button wire:click="generateReport" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
+                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
+                        <span></span>
+                        <span>إنشاء تقرير</span>
+                    </span>
+                    <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
+                    <span></span>
+                    <span>الرجاء الانتظار</span>
+                    </span>
+                </button>
             </div>
+{{--            <div id="sales_container" class="w-full">--}}
+{{--                <label class="block font-bold mb-2">الموظفين--}}
+{{--                    <span class="text-red-500">*</span>--}}
+{{--                </label>--}}
+{{--                <div>--}}
+{{--                    <x-select_search id="emps_type" name="emps_type" wire:model.live="emps_type"--}}
+{{--                            class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+{{--                            style="@error('emps_type') border: solid 1px #fda4af; @enderror">--}}
+{{--                        <option all_option="true" value="employees_all" selected>الكل</option>--}}
+{{--                        @foreach($emps as $employee)--}}
+{{--                            <option value="{{ $employee->emp_code }}" data-dept="{{ $employee->sales_dept_code }}">{{ $employee->name }}</option>--}}
+{{--                        @endforeach--}}
+{{--                    </x-select_search>--}}
+{{--                </div>--}}
+{{--                @error('emps_type')--}}
+{{--                <span class="error text-red-600 text-sm">{{ $message }}</span>--}}
+{{--                @enderror--}}
+{{--            </div>--}}
         </div>
     </div>
     <div id="product-code-row" x-show="itemSearch" style="padding: 20px" class="w-full flex flex-col gap-4 mt-3 hide" >
@@ -411,13 +425,13 @@
                 <label class="block font-bold mb-2">رقم الصنف
                     <span class="text-red-500">*</span>
                 </label>
-                <select id="product_code" name="product_code" wire:model="product_code"
+                <x-select_search id="product_code" name="product_code" wire:model="product_code"
                         class="form-input w-full @error('product_code') border-red-300 @enderror"
                         style="@error('products_code') border: solid 1px #fda4af; @enderror">
                     @foreach($products_codes as $item)
                         <option value="{{ $item['ItemCode'] }}">{{ $item['ScribeCode'] . ' | ' . $item['ItemCode'] . ' | ' . $item['ItemName']}}</option>
                     @endforeach
-                </select>
+                </x-select_search>
                 {{--                    <input type="text" id="product_code"--}}
                 {{--                           class="form-input w-full @error('product_code') border-red-300 @enderror">--}}
                 @error('product_code')
@@ -438,55 +452,55 @@
         </div>
     </div>
 
-    <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide" >
+{{--    <div id="submit-row" class="w-full flex flex-col gap-4 mt-3 hide" >--}}
 
-            <div class="w-full flex flex-col sm:flex-row gap-4" x-show="advancedSearch">
+{{--            <div class="w-full flex flex-col sm:flex-row gap-4" x-show="advancedSearch">--}}
 
-        <div id="sortBy" class="w-full" >
-            <!-- Sales -->
-            <label class="block font-bold mb-2">الترتيب بالأعمدة (Sorting)
+{{--        <div id="sortBy" class="w-full" >--}}
+{{--            <!-- Sales -->--}}
+{{--            <label class="block font-bold mb-2">الترتيب بالأعمدة (Sorting)--}}
 
-            </label>
-            <div class="flex flex-wrap gap-2">
+{{--            </label>--}}
+{{--            <div class="flex flex-wrap gap-2">--}}
 
 
-                <label class="cursor-pointer">
-                    <input
-                        type="radio"
-                        name="sortBy"
-                        value="ItemCode"
-                        wire:model.defer ="sortBy"
-                        wire:change="generateReport"
-                        class="sr-only peer"
-                    >
+{{--                <label class="cursor-pointer">--}}
+{{--                    <input--}}
+{{--                        type="radio"--}}
+{{--                        name="sortBy"--}}
+{{--                        value="ItemCode"--}}
+{{--                        wire:model.defer ="sortBy"--}}
+{{--                        wire:change="generateReport"--}}
+{{--                        class="sr-only peer"--}}
+{{--                    >--}}
 
-                    <span class="block px-3 py-1.5 text-sm rounded border
-        peer-checked:bg-gray-600
-        peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-400 transition">
-        بالكود
-    </span>
-                </label>
+{{--                    <span class="block px-3 py-1.5 text-sm rounded border--}}
+{{--        peer-checked:bg-gray-600--}}
+{{--        peer-checked:text-white peer-checked:border-blue-600--}}
+{{--        hover:bg-gray-400 transition">--}}
+{{--        بالكود--}}
+{{--    </span>--}}
+{{--                </label>--}}
 
-                <label class="cursor-pointer">
-                    <input
-                        type="radio"
-                        name="sortBy"
-                        value="TotalQuantitySale"
-                        wire:model.defer ="sortBy"
-                        wire:change="generateReport"
-                        class="hidden peer"
-                    >
+{{--                <label class="cursor-pointer">--}}
+{{--                    <input--}}
+{{--                        type="radio"--}}
+{{--                        name="sortBy"--}}
+{{--                        value="TotalQuantitySale"--}}
+{{--                        wire:model.defer ="sortBy"--}}
+{{--                        wire:change="generateReport"--}}
+{{--                        class="hidden peer"--}}
+{{--                    >--}}
 
-                    <span class="block px-3 py-1.5 text-sm rounded border
-        peer-checked:bg-gray-600
-        peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-400 transition">
-                                 اجمالي الكميات
-                            </span>
-                </label>
+{{--                    <span class="block px-3 py-1.5 text-sm rounded border--}}
+{{--        peer-checked:bg-gray-600--}}
+{{--        peer-checked:text-white peer-checked:border-blue-600--}}
+{{--        hover:bg-gray-400 transition">--}}
+{{--                                 اجمالي الكميات--}}
+{{--                            </span>--}}
+{{--                </label>--}}
 
-                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+{{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
 {{--                    <label class="cursor-pointer">--}}
 {{--                        <input--}}
 {{--                            type="radio"--}}
@@ -522,74 +536,74 @@
 {{--                            </span>--}}
 {{--                    </label>--}}
 
-                @endif
-            </div>
+{{--                @endif--}}
+{{--            </div>--}}
 
 
-        </div>
+{{--        </div>--}}
 
 
 
-        <div id="sortDir" class="w-full" >
-            <!-- Sales -->
-            <label class="block font-bold mb-2">نوع الترتيب</label>
+{{--        <div id="sortDir" class="w-full" >--}}
+{{--            <!-- Sales -->--}}
+{{--            <label class="block font-bold mb-2">نوع الترتيب</label>--}}
 
-            <div class="flex flex-wrap gap-2">
-                {{--                        <div class="flex gap-2">--}}
-                <!-- ASC -->
-                <label class="cursor-pointer">
-                    <input
-                        type="radio"
-                        name="sortDir"
-                        value="ASC"
-                        wire:model="sortDir"
-                        wire:change="generateReport"
-                        class="hidden peer"
-                    >
-                    <span class="px-2 py-1 text-sm
-                                rounded border
-            peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600
-            hover:bg-gray-400 transition flex items-center gap-1">
-                                    ASC ▲
-                                </span>
-                </label>
+{{--            <div class="flex flex-wrap gap-2">--}}
+{{--                --}}{{--                        <div class="flex gap-2">--}}
+{{--                <!-- ASC -->--}}
+{{--                <label class="cursor-pointer">--}}
+{{--                    <input--}}
+{{--                        type="radio"--}}
+{{--                        name="sortDir"--}}
+{{--                        value="ASC"--}}
+{{--                        wire:model="sortDir"--}}
+{{--                        wire:change="generateReport"--}}
+{{--                        class="hidden peer"--}}
+{{--                    >--}}
+{{--                    <span class="px-2 py-1 text-sm--}}
+{{--                                rounded border--}}
+{{--            peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600--}}
+{{--            hover:bg-gray-400 transition flex items-center gap-1">--}}
+{{--                                    ASC ▲--}}
+{{--                                </span>--}}
+{{--                </label>--}}
 
-                <!-- DESC -->
-
-
-                <label class="cursor-pointer">
-                    <input
-                        type="radio"
-                        name="sortDir"
-                        value="DESC"
-                        wire:model="sortDir"
-                        class="hidden peer"
-                        wire:change="generateReport"
-                    >
-                    <div class="px-2 py-1 text-sm rounded border
-            peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
-            hover:bg-gray-400 transition flex items-center gap-1">
-                        DESC ▼
-                    </div>
-                </label>
-                {{--                        </div>--}}
-            </div>
-        </div>
+{{--                <!-- DESC -->--}}
 
 
-        <div class="mt-8 text-center w-full">
-            <button wire:click="generateReport" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
-                        <span></span>
-                        <span>إنشاء تقرير</span>
-                    </span>
-                <span class="mr-2 font-bold" wire:loading wire:target="generateReport">
-                    <span></span>
-                    <span>الرجاء الانتظار</span>
-                    </span>
-            </button>
-        </div>
-    </div>
-</div>
+{{--                <label class="cursor-pointer">--}}
+{{--                    <input--}}
+{{--                        type="radio"--}}
+{{--                        name="sortDir"--}}
+{{--                        value="DESC"--}}
+{{--                        wire:model="sortDir"--}}
+{{--                        class="hidden peer"--}}
+{{--                        wire:change="generateReport"--}}
+{{--                    >--}}
+{{--                    <div class="px-2 py-1 text-sm rounded border--}}
+{{--            peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600--}}
+{{--            hover:bg-gray-400 transition flex items-center gap-1">--}}
+{{--                        DESC ▼--}}
+{{--                    </div>--}}
+{{--                </label>--}}
+{{--                --}}{{--                        </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+
+{{--        <div class="mt-8 text-center w-full">--}}
+{{--            <button wire:click="generateReport" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">--}}
+{{--                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">--}}
+{{--                        <span></span>--}}
+{{--                        <span>إنشاء تقرير</span>--}}
+{{--                    </span>--}}
+{{--                <span class="mr-2 font-bold" wire:loading wire:target="generateReport">--}}
+{{--                    <span></span>--}}
+{{--                    <span>الرجاء الانتظار</span>--}}
+{{--                    </span>--}}
+{{--            </button>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
 
 </div>
