@@ -429,6 +429,7 @@
                         class="form-input w-full @error('product_code') border-red-300 @enderror"
                         style="@error('products_code') border: solid 1px #fda4af; @enderror">
                     @foreach($products_codes as $item)
+                        <option></option>
                         <option value="{{ $item['ItemCode'] }}">{{ $item['ScribeCode'] . ' | ' . $item['ItemCode'] . ' | ' . $item['ItemName']}}</option>
                     @endforeach
                 </x-select_search>

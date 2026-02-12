@@ -4465,3 +4465,93 @@ span.flatpickr-weekday {
     }
 }
 [x-cloak] { display: none !important; }
+.select2-selection__rendered {
+    line-height: 31px !important;
+}
+.select2-container .select2-selection--single {
+    height: 38px !important;
+    width: 100%;
+    padding-right: 2.5rem;
+    padding-top: 0.2rem;
+}
+.select2-selection__arrow {
+    height: 34px !important;
+}
+
+.select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__arrow {
+    /* left: 1px; */
+    right: 9px;
+}
+
+.select-font-size {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem; /* 20px */
+}
+
+/*.hide {*/
+/*    display: none;*/
+/*}*/
+
+.record-row { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
+.record-row.hide-row {
+    opacity: 0; transform: translateY(-20px); /* Adjust vertical movement if needed */
+}
+
+#report-logo {
+    display: none;
+}
+
+.tbl-fixed {
+    overflow-x: scroll;
+    overflow-y: scroll;
+    height: fit-content;
+    max-height: 70vh;
+}
+
+table th {
+    position: sticky;
+    top: 0px;
+    background: #f8fafc;
+    border: 2px solid black;
+}
+
+
+
+
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 5px;
+    width: 100%;
+    border: none;
+    /*text-align: left;*/
+    outline: none;
+    font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+    background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+#branch-container {
+    padding: 18px 18px;
+    display: block;
+    /*overflow: hidden;*/
+    background-color: #f1f1f1;
+}
+
+.collapsible:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: white;
+    float: left;
+    margin-left: 5px;
+}
+
+button.active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
