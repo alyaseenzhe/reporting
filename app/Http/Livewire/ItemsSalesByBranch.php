@@ -99,6 +99,7 @@ $vendor_code = "*";
         'start_date' => 'required',
         'end_date' => 'required',
         'dept_id' => 'required',
+        'product_code' => 'required_if:search_type,item_code_search',
 
     ];
 
@@ -106,6 +107,7 @@ $vendor_code = "*";
         'start_date.required' => ' مطلوب',
         'end_date.required' => ' مطلوب',
         'dept_id.required' => ' مطلوب',
+        'product_code.required_if' => 'مطلوب'
 
     ];
     public $query;
@@ -124,6 +126,7 @@ $vendor_code = "*";
 
     public function generateReport()
     {
+        $this->resetExpandedData();
         foreach ($this->expanded as $itemCode => $expandedItems) {
             if ($expandedItems) {
                 $this->loadBranches($itemCode);
@@ -232,6 +235,13 @@ $vendor_code = "*";
         }
     }
     // Component property
+
+    protected function resetExpandedData()
+    {
+        $this->branches = [];
+        $this->expanded = [];
+
+    }
 
     public function loadBranches($itemCode)
     {
