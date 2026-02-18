@@ -1550,7 +1550,7 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
                 </g>
 
                 <g>
-0
+                    0
                     <g>
 
                         <path d="M57.398,398.097v26.682H36.125v-8.091h5.092c4.454,0,8.09-3.591,8.09-8.091v-10.5H57.398z" style="fill:#F96364;"/>
@@ -1657,7 +1657,93 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
     @endif
 </div>
 <div>
+    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
 
+
+        @if ((Auth::user()->user_group && in_array('profit-loss-stmt-report', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('items.sales') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" viewBox="0 0 64 64" version="1.1"
+                                     xmlns="http://www.w3.org/2000/svg">
+
+                                    <!-- Background window -->
+                                    <g transform="translate(0,0)">
+                                        <!-- Top bar -->
+                                        <path d="M8 8H56V14H8Z"
+                                              style="fill:#3e4f59;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Body -->
+                                        <path d="M8 14H56V50H8Z"
+                                              style="fill:#acbec2;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Right light panel -->
+                                        <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z"
+                                              style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Outer stroke / frame -->
+                                        <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                              style="fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Top dots -->
+                                        <circle cx="48" cy="11" r="1" style="fill:#ed7161"/>
+                                        <circle cx="44" cy="11" r="1" style="fill:#ecba16"/>
+                                        <circle cx="40" cy="11" r="1" style="fill:#42b05c"/>
+
+                                        <!-- Left bottom dot -->
+                                        <circle cx="6" cy="52" r="1" style="fill:#000000"/>
+
+                                        <!-- Small dot near body -->
+                                        <circle cx="11" cy="16" r="1" style="fill:#000000"/>
+
+                                        <!-- Trend line (items quantity over branches) -->
+                                        <path d="M16 42L23 32L30 36L38 26L46 30"
+                                              style="fill:none;stroke:#fe73c5;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Trend line highlight -->
+                                        <path d="M16 42L23 32L30 36L38 26L46 30"
+                                              style="fill:none;stroke:#fe93d3;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.5"/>
+
+                                        <!-- Bars: quantity by branch -->
+                                        <!-- Branch A -->
+                                        <rect x="18" y="34" width="6" height="12"
+                                              style="fill:#ffa221;fill-rule:evenodd"/>
+                                        <path d="M18 34c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                              style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Branch B -->
+                                        <rect x="28" y="30" width="6" height="16"
+                                              style="fill:#0075d3;fill-rule:evenodd"/>
+                                        <path d="M28 30c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                              style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Branch C -->
+                                        <rect x="38" y="24" width="6" height="22"
+                                              style="fill:#42b05c;fill-rule:evenodd"/>
+                                        <path d="M38 24c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v22c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                              style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- X axis -->
+                                        <path d="M14 48H50"
+                                              style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.7"/>
+
+                                        <!-- Branch labels (optional, minimal) -->
+                                        <circle cx="21" cy="51" r="1" style="fill:#000000"/>
+                                        <circle cx="31" cy="51" r="1" style="fill:#000000"/>
+                                        <circle cx="41" cy="51" r="1" style="fill:#000000"/>
+
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">23- تقرير كميات الأصناف بالفرع</div>
+                    </div>
+                </div>
+            </a>
+        @endif
     @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
         <a class="w-full" href="{{ route('visit-calendar') }}">
             <div
@@ -1699,6 +1785,8 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
             </div>
         </a>
     @endif
+
+
 </div>
 </div>
 
