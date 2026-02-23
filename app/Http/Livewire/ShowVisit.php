@@ -43,20 +43,20 @@ class ShowVisit extends Component
             $this->visit_id = $id;
             $this->branches =[
                 "0101"=> "فرع الاحساء",
-            "0102"=> "فرع جدة",
-            "0103"=> "فرع الرياض",
-            "0104"=> "فرع وادي الدواسر",
-            "0105"=> "فرع الجوف",
-            "0106"=> "فرع الدمام",
-            "0107"=> "فرع الخرج",
-            "0108"=> "فرع نجران",
-            "0109"=> "فرع حائل",
-            "0110"=> "فرع تبوك",
-            "0111"=> "فرع القصيم",
-            "0112"=> "فرع ساجر",
-            "0201"=> "مزرعة الدالوة",
-            "0202"=> "مزرعة الفضول",
-            "0203"=> "مزرعة الدلم"
+                "0102"=> "فرع جدة",
+                "0103"=> "فرع الرياض",
+                "0104"=> "فرع وادي الدواسر",
+                "0105"=> "فرع الجوف",
+                "0106"=> "فرع الدمام",
+                "0107"=> "فرع الخرج",
+                "0108"=> "فرع نجران",
+                "0109"=> "فرع حائل",
+                "0110"=> "فرع تبوك",
+                "0111"=> "فرع القصيم",
+                "0112"=> "فرع ساجر",
+                "0201"=> "مزرعة الدالوة",
+                "0202"=> "مزرعة الفضول",
+                "0203"=> "مزرعة الدلم"
             ];
 
 
@@ -158,10 +158,10 @@ class ShowVisit extends Component
 
         $visit->status = '1';
         $visit->status_notice = $visit_record["status_notice"];
-         $visit->approved_by = auth()->user()->id;
+        $visit->approved_by = auth()->user()->id;
 
         if($visit->save()) {
-           $this->connect($visit->id);
+            $this->connect($visit->id);
 
             $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
             $this->visitMail($visit, $emails, 'approve');
@@ -238,7 +238,7 @@ class ShowVisit extends Component
                 DB::table('visit_emps')->insert($records);
 
                 session()->flash('success', 'تم تحديث الزيارة بنجاح');
-              //  $branch_manger = $this->branchMangerByVisitId($visit->id);
+                //  $branch_manger = $this->branchMangerByVisitId($visit->id);
 
                 $this->visitMail($this->oneVisit($visit->id), null, 'update');
                 return redirect()->route('show.visit', ['id' => $event['id']]);
@@ -390,7 +390,7 @@ class ShowVisit extends Component
 //                        'status'=> '5'
 //                    ]);
 
-                    // send email and whatsapp to tell user that the rating has been finished by all the recipients
+                // send email and whatsapp to tell user that the rating has been finished by all the recipients
 //                    dd("تم الانتهاء من جميع التعليقات");
 
 //                    $this->visitMail($visit, null, 'reviews-done');
@@ -459,7 +459,11 @@ class ShowVisit extends Component
         return $this->can_rate = Visit::where('visits.id', $this->visit_id)
             ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
             ->where('visit_emps.user_id', Auth::id())
-            ->where('visits.status', '3')
+            ->where(function($query) {
+                $query->where('visits.status', '3')
+                    ->orWhere('visits.status','5');
+                    })
+
             ->where('visits.is_deleted', '0')
             ->where(function($query) {
                 $query->whereNull('reviews')

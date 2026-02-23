@@ -62,13 +62,13 @@ class VisitCalendar extends Component
         $authId = auth()->user()->id;
 
         // Check if the authenticated user exists in the requester list
-        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId) && !(Auth::user()->user_group->visits
-                && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits)) || Auth::user()->role == 'a') ) {
-
-            $this->user = $authId;
-        } else {
-            $this->user = 'all';   // fallback
-        }
+//        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId) && !(Auth::user()->user_group->visits
+//                && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits)) || Auth::user()->role == 'a') ) {
+//
+//            $this->user = $authId;
+//        } else {
+//            $this->user = 'all';   // fallback
+//        }
 
 //        dd($this->visits->emps_requester);
 //        dd($this->visits);
@@ -117,10 +117,10 @@ class VisitCalendar extends Component
             ->get();
 
 //            $this->visits = Visit::with(  [ 'requester',
-            $query = Visit::with(  [ 'requester',
-                'emps',
-                'emps_recipients.user',
-                'emps_requester.user', ])
+        $query = Visit::with(  [ 'requester',
+            'emps',
+            'emps_recipients.user',
+            'emps_requester.user', ])
 //                ['emps_requester.user', 'emps_recipients.user']) // or any other relationship
 //            ->with('requester')
 //                ->with('emps')
@@ -134,14 +134,14 @@ class VisitCalendar extends Component
 //            ->where('is_deleted', 0)
 
 
-                ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
-                ->orderBy('created_at', 'desc')
-                ->get([
-                    'id', 'title', 'requester_id', 'start', 'end',
+            ->orderByRaw('CASE WHEN status = 3 THEN 1 ELSE 0 END')
+            ->orderBy('created_at', 'desc')
+            ->get([
+                'id', 'title', 'requester_id', 'start', 'end',
 //                    'reason', 'goals', 'extra_services', 'branch', 'recipient_id',
-                    'reason', 'goals', 'branch', 'recipient_id',
-                    'status', 'is_deleted'
-                ]);
+                'reason', 'goals', 'branch', 'recipient_id',
+                'status', 'is_deleted', 'created_at'
+            ]);
 //->lazy()
 //                ->toArray(); // Now it's an array of visits
 //
@@ -151,7 +151,7 @@ class VisitCalendar extends Component
 //            dd($query);
 //        }
 
-            $this->visits = $query->lazy()->toArray();
+        $this->visits = $query->lazy()->toArray();
 
 
 //        dd($this->visits);
@@ -248,15 +248,15 @@ class VisitCalendar extends Component
         if ($visit_data) {
             if($data['employees'][0] == 'all'){
 //                            $records = collect($employees[$visit_data->branch])
-                            $records = collect($employees)
-                ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
-                    'visit_id' => $visit_data->id,
-                    'type' => 'recipient',
-                    'user_id' => $id,
-                ])
-                )
-                ->values()
-                ->toArray();
+                $records = collect($employees)
+                    ->flatMap(fn($user_ids) => collect($user_ids)->map(fn($id) => [
+                        'visit_id' => $visit_data->id,
+                        'type' => 'recipient',
+                        'user_id' => $id,
+                    ])
+                    )
+                    ->values()
+                    ->toArray();
             }
             else {
                 $records = collect($data['employees'])->map(fn($user_id) => ['visit_id' => $visit_data->id, 'type' => 'recipient', 'user_id' => $user_id])->toArray();
@@ -306,15 +306,15 @@ class VisitCalendar extends Component
 //            ->where('users.group', '8') // branch manager
             ->where('visit_emps.visit_id', $visit_record->id)
             ->select('users.email', 'users.name','users.id')
-          //  ->first();
-        ->pluck('users.email')->toArray();
-       // dd($this->branchMangerByVisitId($visit_record->id));
+            //  ->first();
+            ->pluck('users.email')->toArray();
+        // dd($this->branchMangerByVisitId($visit_record->id));
 
 
-      //  $emails = config('emails');
-      //  dd($emails);
+        //  $emails = config('emails');
+        //  dd($emails);
 
-     //   $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
+        //   $branchEmail = $emails['branches_employees'][$visit_record->branch] ?? null;
 
 
 //        if (empty($branchEmail)) {
@@ -418,35 +418,35 @@ class VisitCalendar extends Component
             $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
         });
 
-            if (auth()->check()){
-                $query->when(
-                    VisitEmp::where('user_id', auth()->id())
-                        ->where('type', 'requester') // adjust if you have type column
-                        ->exists(),
-                    function ($q) {
-                        $q->whereHas('emps_requester', fn($sub) => $sub->where('user_id', auth()->id())
-                        );
-                    }
-                )
+        if (auth()->check()){
+            $query->when(
+                VisitEmp::where('user_id', auth()->id())
+                    ->where('type', 'requester') // adjust if you have type column
+                    ->exists(),
+                function ($q) {
+                    $q->whereHas('emps_requester', fn($sub) => $sub->where('user_id', auth()->id())
+                    );
+                }
+            )
 
 
-                    ->orderBy('created_at', 'DESC');
-            }
+                ->orderBy('created_at', 'DESC');
+        }
 
         if($this->user !== 'all') {
 
             $query->whereHas('emps_requester.user', function ($q) {
                 $q->where('id', 'LIKE', $this->user);
             });
-                }
+        }
         if($this->branch !== 'all') {
             $query->where("branch", "LIKE", $this->branch);
 
-                }
+        }
 
         if($this->status !== 'all') {
             $query->where("status", "LIKE", $this->status);
-                }
+        }
         // Filter by date range if both start and end exist
         if ($this->start && $this->end) {
             $query->whereBetween('start', [$this->start, $this->end]);

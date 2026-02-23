@@ -436,7 +436,7 @@
 
                             <!-- Name + Status -->
                             {{--                                    {{ $branches[$record->branch]}}--}}
-                            {{$rec_record->user->name}}
+                            {{$rec_record->user?->name}}
                             @if(!$isReviewWritten )
                                 {{--                                    @if(!$isrRecipientReview )--}}
                                 <span style="color: #a40e3b;">(تحت الإجراء)</span>

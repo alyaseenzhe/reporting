@@ -172,6 +172,9 @@
                             </select>
                             @error('status') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                         </div>
+
+
+
                         <div class="mt-8 text-center w-full">
                             <button
                                 wire:click="search"
@@ -220,6 +223,9 @@
                             </th>
                             <th class="border p-2 whitespace-nowrap">
                                 <div class="text-sm">الحالة</div>
+                            </th>
+                            <th class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">تاريخ الانشاء</div>
                             </th>
                             <th class="border p-2 whitespace-nowrap">
                                 <div class="font-semibold"></div>
@@ -325,6 +331,12 @@
                                         @endif
                                     </div>
                                 </td>
+
+                                <td class="border p-2 whitespace-nowrap">
+                                    <div class="text-center text-gray-800 text-sm">
+                                        {{\Carbon\Carbon::parse($visit["created_at"], null)->format('d-m-Y')}}
+                                    </div>
+                                </td>
                                 <td class="p-2 whitespace-nowrap sm:flex justify-center">
                                     <div class="m-1.5">
                                         <a
@@ -353,10 +365,10 @@
                         @endforelse
                         </tbody>
                     </table>
-{{--                @else--}}
-{{--                    <div>--}}
-{{--                        <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد زيارات حتى الآن</div>--}}
-{{--                    </div>--}}
+                    {{--                @else--}}
+                    {{--                    <div>--}}
+                    {{--                        <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد زيارات حتى الآن</div>--}}
+                    {{--                    </div>--}}
                 @endif
             </div>
         </div>
