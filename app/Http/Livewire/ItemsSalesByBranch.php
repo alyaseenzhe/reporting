@@ -5,17 +5,17 @@ namespace App\Http\Livewire;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-//use Livewire\WithPagination;
-//use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\WithPagination;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ItemsSalesByBranch extends Component
 {
-//    use WithPagination;
+   use WithPagination;
 
-//    protected $paginationTheme = 'tailwind';
+   protected $paginationTheme = 'tailwind';
 
- //   public $page = 1;
- //   public $perPage = 20;
+    public $page = 1;
+    public $perPage = 20;
     public $start_date;
     public $end_date;
     public $dept_id = ['dept_all'];
@@ -126,6 +126,7 @@ $vendor_code = "*";
 
     public function generateReport()
     {
+
         $this->resetExpandedData();
         foreach ($this->expanded as $itemCode => $expandedItems) {
             if ($expandedItems) {
@@ -245,143 +246,210 @@ $vendor_code = "*";
 
     public function loadBranches($itemCode)
     {
-
-//        dd('here');
         $itemCode = trim((string) $itemCode);
-
-//dd($this->branches);
-
-//        $this->branches[$itemCode] = collect($this->sap_results)
-//            ->where('ItemCode', $itemCode)
-//            ->groupBy('BPLId')
-//        ->map(function ($branchRows, $branchName) {
-        $this->allBranches = collect($this->sap_results)
-            ->unique('BPLId')
-            ->map(fn ($r) => [
-                'BPLId'   => $r['BPLId'],
-                'BPLName' => $r['BPLName'],
+        $allBranchesFromDb = collect($this->depts)
+            ->filter(fn($id, $code) => in_array($id, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]))
+            ->map(fn($id, $code) => [
+                'BPLId' => $id,
+                'BPLName' => "Branch $id", // ضع هنا الاسم الصحيح إذا متاح
             ])
             ->values();
-//        dd($this->allBranches);
+        // جميع الفروع (حتى لو بدون مبيعات)
+        $this->allBranches = collect( $allBranchesFromDb )
+            ->pluck('BPLId')
+            ->unique()
+            ->map(fn($bplId) => [
+                'BPLId' => $bplId,
+                'BPLName' => collect($this->sap_results)->firstWhere('BPLId', $bplId)['BPLName'] ?? 'Unknown',
+            ])
+            ->values();
+
+        // تجميع المبيعات حسب ItemCode و BPLId
         $this->salesIndex = collect($this->sap_results)
-            ->groupBy(fn ($row) => trim((string) $row['ItemCode']))
-            ->map(fn ($rows) =>
-            $rows->groupBy(fn ($row) => (int) $row['BPLId'])
-            );
+            ->groupBy(fn($row) => trim((string) $row['ItemCode']))
+            ->map(fn($rows) => $rows->groupBy(fn($row) => (int)$row['BPLId']));
 
-//            });
-//            ->map(function ($rows) {
-//                return $rows->groupBy(function ($row) {
-//                    return (int) $row['BPLId'];
-//                });
-//            });
-//        dd($this->salesIndex);
-
-            $itemSales = $this->salesIndex[$itemCode] ?? collect();
-
-        $totalQuantity = $itemSales
-            ->flatten(1)
-            ->sum('EmployeeTotalQty');
-//           $totalQuantity = $itemSales->first()?[0]['TotalQuantitySale']: 0 ;
-           //dd($totalQuantity[0]['TotalQuantitySale']);
+        $itemSales = $this->salesIndex[$itemCode] ?? collect();
+        $totalQuantity = $itemSales->flatten(1)->sum('EmployeeTotalQty');
 
         $this->branches[$itemCode] = collect($this->allBranches)
-            ->map(function ($branch) use ($itemSales,  $totalQuantity ) {
+            ->map(function ($branch) use ($itemSales, $totalQuantity) {
+
+                // بيانات المبيعات للفرع (أو مجموعة فارغة إذا لا توجد مبيعات)
                 $branchRows = $itemSales->get($branch['BPLId'], collect());
 
-                // Employees inside this branch
-                $this->employees = $branchRows
+                // الموظفين
+                $employees = $branchRows
                     ->groupBy('SlpCode')
-                    ->map(function ($empRows) {
-                        $first = $empRows->first();
-
-                        return [
-                            'EmployeeCode' => $first['SlpCode'],
-                            'EmployeeName' => $first['SlpName'],
-                            'Quantity'     => $empRows->sum('EmpQty'),
-                        ];
-                    })
+                    ->map(fn($empRows) => [
+                        'EmployeeCode' => $empRows->first()['SlpCode'] ?? null,
+                        'EmployeeName' => $empRows->first()['SlpName'] ?? null,
+                        'Quantity' => $empRows->sum('EmpQty'),
+                    ])
                     ->values();
-//                dd($employees);
-//                dd($branchRows[0]['TotalQuantitySale']);
-//                $firstRow = $branchRows->first();
+
                 return [
                     'BranchId' => $branch['BPLId'],
                     'BranchName' => $branch['BPLName'],
                     'TotalQuantitySaleByBranch' => $branchRows->sum('EmployeeTotalQty'),
-                    'TotalSalesPer' => $totalQuantity? $branchRows->sum('EmployeeTotalQty')/$totalQuantity *100 : 0 ,
+                    'TotalSalesPer' => $totalQuantity ? ($branchRows->sum('EmployeeTotalQty') / $totalQuantity * 100) : 0,
                     'employees_loaded' => true,
-                    'employees' => $this->employees,
-
+                    'employees' => $employees,
                 ];
-
-
-
             })
             ->sortByDesc('TotalQuantitySaleByBranch')
             ->values()
             ->toArray();
 
-        $this->branches[$itemCode]['BranchId']['employees'] =$this->employees;
-        $this->branches = $this->branches;
-//        dd($this->branches[$itemCode]);
-//dd($this->branches[$itemCode]);
-//            $this->branches[$itemCode] = $this->allBranches->map(function ($branch) use ($itemSales) {
-//                $this->branches[$itemCode] = collect($this->allBranches)->map(function ($branch) use ($itemSales) {
-//                $branchRows = $itemSales[$branch['BPLId']] ?? collect();
-//                return [
-//                    'BranchId'   => $branch['BPLId'],
-//                    'BranchName' => $branch['BPLName'],
-//                    'BranchTotal'=> $branchRows->sum('TotalQuantitySaleByBranch'),
-//                    'TotalSalesPer' => $branchRows->sum('TotalSalesPer'),
-//
-//                    //  no employees here
-//                    'employees_loaded' => false,
-//                ];
-//            })->values()->toArray();
-//            dd($this->branches[$itemCode]);
-//          $this->expanded[$itemCode] = true;
-//          dd($this->expanded[$itemCode]);
-
-        // Group employees inside this branch
-//                $employees = $branchRows
-//                    ->groupBy('SlpName')  // group by employee
-//                    ->map(function ($empRows, $empName) {
-//                        return [
-//                            'EmployeeName' => $empName,
-//                            'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
-//                            'EmployeePer' =>$empRows->sum('TotalSalesPer'),
-//                            'IsBestBranch' =>$empRows->first()['IsBestBranch'],
-//
-//                        ];
-//                    })
-//                    ->values();
-
-//                return [
-//                    'BranchId' =>  $branchRows->first()['BPLId'],
-//                    'BranchName' => $branchRows->first()['BPLName'],
-//                    'BranchTotal' => $employees->sum('TotalQuantitySaleByBranch'), // optional: total branch quantity
-//                    'employees' => $employees,
-//                    'TotalQuantitySaleByBranch' =>
-//                        $branchRows->first()['TotalQuantitySaleByBranch'],
-//
-////                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
-//                    'TotalSalesPer' =>
-//                        $branchRows->sum('TotalSalesPer'),
-////                    'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
-//
-//                ];
-//            })
-//            ->values();
-
-//        dd($this->branches[$itemCode]);
+        // Toggle expanded
         foreach ($this->expanded as $key => $value) {
             $this->expanded[$key] = false;
         }
-        // Toggle expanded state
         $this->expanded[$itemCode] = !($this->expanded[$itemCode] ?? false);
-        info("Branches for $itemCode:", $this->branches[$itemCode]);
     }
+
+
+//    public function loadBranches($itemCode)
+//    {
+//
+////        dd('here');
+//        $itemCode = trim((string) $itemCode);
+//
+////dd($this->branches);
+//
+////        $this->branches[$itemCode] = collect($this->sap_results)
+////            ->where('ItemCode', $itemCode)
+////            ->groupBy('BPLId')
+////        ->map(function ($branchRows, $branchName) {
+//        $this->allBranches = collect($this->sap_results)
+//            ->unique('BPLId')
+//            ->map(fn ($r) => [
+//                'BPLId'   => $r['BPLId'],
+//                'BPLName' => $r['BPLName'],
+//            ])
+//            ->values();
+////        dd($this->allBranches);
+//        $this->salesIndex = collect($this->sap_results)
+//            ->groupBy(fn ($row) => trim((string) $row['ItemCode']))
+//            ->map(fn ($rows) =>
+//            $rows->groupBy(fn ($row) => (int) $row['BPLId'])
+//            );
+//
+////            });
+////            ->map(function ($rows) {
+////                return $rows->groupBy(function ($row) {
+////                    return (int) $row['BPLId'];
+////                });
+////            });
+////        dd($this->salesIndex);
+//
+//            $itemSales = $this->salesIndex[$itemCode] ?? collect();
+//
+//        $totalQuantity = $itemSales
+//            ->flatten(1)
+//            ->sum('EmployeeTotalQty');
+////           $totalQuantity = $itemSales->first()?[0]['TotalQuantitySale']: 0 ;
+//           //dd($totalQuantity[0]['TotalQuantitySale']);
+//
+//        $this->branches[$itemCode] = collect($this->allBranches)
+//            ->map(function ($branch) use ($itemSales,  $totalQuantity ) {
+//                $branchRows = $itemSales->get($branch['BPLId'], collect());
+//
+//                // Employees inside this branch
+//                $this->employees = $branchRows
+//                    ->groupBy('SlpCode')
+//                    ->map(function ($empRows) {
+//                        $first = $empRows->first();
+//
+//                        return [
+//                            'EmployeeCode' => $first['SlpCode'],
+//                            'EmployeeName' => $first['SlpName'],
+//                            'Quantity'     => $empRows->sum('EmpQty'),
+//                        ];
+//                    })
+//                    ->values();
+////                dd($employees);
+////                dd($branchRows[0]['TotalQuantitySale']);
+////                $firstRow = $branchRows->first();
+//                return [
+//                    'BranchId' => $branch['BPLId'],
+//                    'BranchName' => $branch['BPLName'],
+//                    'TotalQuantitySaleByBranch' => $branchRows->sum('EmployeeTotalQty'),
+//                    'TotalSalesPer' => $totalQuantity? $branchRows->sum('EmployeeTotalQty')/$totalQuantity *100 : 0 ,
+//                    'employees_loaded' => true,
+//                    'employees' => $this->employees,
+//
+//                ];
+//
+//
+//
+//            })
+//            ->sortByDesc('TotalQuantitySaleByBranch')
+//            ->values()
+//            ->toArray();
+//
+////        dd($this->branches[$itemCode]);
+//
+//        $this->branches[$itemCode]['BranchId']['employees'] =$this->employees;
+//        $this->branches = $this->branches;
+////        dd($this->branches[$itemCode]);
+////dd($this->branches[$itemCode]);
+////            $this->branches[$itemCode] = $this->allBranches->map(function ($branch) use ($itemSales) {
+////                $this->branches[$itemCode] = collect($this->allBranches)->map(function ($branch) use ($itemSales) {
+////                $branchRows = $itemSales[$branch['BPLId']] ?? collect();
+////                return [
+////                    'BranchId'   => $branch['BPLId'],
+////                    'BranchName' => $branch['BPLName'],
+////                    'BranchTotal'=> $branchRows->sum('TotalQuantitySaleByBranch'),
+////                    'TotalSalesPer' => $branchRows->sum('TotalSalesPer'),
+////
+////                    //  no employees here
+////                    'employees_loaded' => false,
+////                ];
+////            })->values()->toArray();
+////            dd($this->branches[$itemCode]);
+////          $this->expanded[$itemCode] = true;
+////          dd($this->expanded[$itemCode]);
+//
+//        // Group employees inside this branch
+////                $employees = $branchRows
+////                    ->groupBy('SlpName')  // group by employee
+////                    ->map(function ($empRows, $empName) {
+////                        return [
+////                            'EmployeeName' => $empName,
+////                            'Quantity'     => $empRows->sum('TotalQuantitySaleByBranch'), // sum multiple rows
+////                            'EmployeePer' =>$empRows->sum('TotalSalesPer'),
+////                            'IsBestBranch' =>$empRows->first()['IsBestBranch'],
+////
+////                        ];
+////                    })
+////                    ->values();
+//
+////                return [
+////                    'BranchId' =>  $branchRows->first()['BPLId'],
+////                    'BranchName' => $branchRows->first()['BPLName'],
+////                    'BranchTotal' => $employees->sum('TotalQuantitySaleByBranch'), // optional: total branch quantity
+////                    'employees' => $employees,
+////                    'TotalQuantitySaleByBranch' =>
+////                        $branchRows->first()['TotalQuantitySaleByBranch'],
+////
+//////                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
+////                    'TotalSalesPer' =>
+////                        $branchRows->sum('TotalSalesPer'),
+//////                    'IsBestBranch' =>$branchRows->first()['IsBestBranch'],
+////
+////                ];
+////            })
+////            ->values();
+//
+////        dd($this->branches[$itemCode]);
+//        foreach ($this->expanded as $key => $value) {
+//            $this->expanded[$key] = false;
+//        }
+//        // Toggle expanded state
+//        $this->expanded[$itemCode] = !($this->expanded[$itemCode] ?? false);
+//        info("Branches for $itemCode:", $this->branches[$itemCode]);
+//    }
 
     public function loadEmployees($itemCode, $branchId)
     {
@@ -423,13 +491,14 @@ $vendor_code = "*";
 
     public function render()
     {
+
         return view('livewire.items.items-sales-by-branch')->layout('layouts.dashboard');
     }
 
 //    public function create_report(){
     public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
 
-
+        $offset = ($this->page - 1) * $this->perPage;
 
 //        dd($this->vendor_type);
         $report_type ='byDepartment';
@@ -583,8 +652,15 @@ $vendor_code = "*";
                 ];
             })
             ->values();
-
-
+//        $page = request()->get('page', 1);
+//        $perPage = 25;
+//        $this->group_results = new LengthAwarePaginator(
+//            $this->group_results->forPage($page, $perPage),
+//            $items->count(),
+//            $perPage,
+//            $page,
+//            ['path' => request()->url(), 'query' => request()->query()]
+//        );
 
 //                $this->group_results = collect($sap_collection)
 //            ->groupBy('ItemCode')
@@ -1964,7 +2040,20 @@ ORDER BY I."ItemCode", "BranchRank"
                 }
 
 //
-            $sql = 'WITH SalesAgg AS (
+            $sql = 'WITH
+
+            ItemPaged AS (
+    SELECT "ItemCode"
+    FROM (
+        SELECT
+            I."ItemCode",
+            ROW_NUMBER() OVER (ORDER BY I."ItemCode") AS rn
+        FROM AL_YASEEN_AGRI_PLIVE.OITM I
+        WHERE I."ItemType" = \'I\' AND I."validFor" = \'Y\'
+    ) X
+   -- WHERE rn BETWEEN 1 AND 2000  -- �� الصفحة الحالية (يمكن تغييرها ديناميكيًا)
+),
+            SalesAgg AS (
     SELECT
         X."ItemCode",
         X."BPLId",
@@ -2174,10 +2263,10 @@ BR."BranchRank"
 --LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
 --    ON E."SlpCode" = S."SlpCode"
 
-FROM  BranchRanked BR
+--FROM  BranchRanked BR
 
-JOIN AL_YASEEN_AGRI_PLIVE.OITM I
-   ON I."ItemCode" = BR."ItemCode"
+--JOIN AL_YASEEN_AGRI_PLIVE.OITM I
+  -- ON I."ItemCode" = BR."ItemCode"
 
 --FROM ItemPaged IP
 
@@ -2187,24 +2276,59 @@ JOIN AL_YASEEN_AGRI_PLIVE.OITM I
 --JOIN BranchRanked BR
  --  ON BR."ItemCode" = I."ItemCode"
 
- JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
-    ON B."BPLId" = BR."BPLId"
-    LEFT JOIN SalesAgg S
-   ON S."ItemCode" = BR."ItemCode"
-   AND S."BPLId"   = BR."BPLId"
-LEFT JOIN TotalPerItem T
-    ON T."ItemCode" = I."ItemCode"
+ --JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
+  --  ON B."BPLId" = BR."BPLId"
+  --  LEFT JOIN SalesAgg S
+ --  ON S."ItemCode" = BR."ItemCode"
+--   AND S."BPLId"   = BR."BPLId"
+--LEFT JOIN TotalPerItem T
+ --   ON T."ItemCode" = I."ItemCode"
 
-JOIN AL_YASEEN_AGRI_PLIVE.OITB G
-    ON I."ItmsGrpCod" = G."ItmsGrpCod"
+--JOIN AL_YASEEN_AGRI_PLIVE.OITB G
+--    ON I."ItmsGrpCod" = G."ItmsGrpCod"
+--LEFT JOIN AL_YASEEN_AGRI_PLIVE.OUGP UG
+ --   ON I."UgpEntry" = UG."UgpEntry"
+
+--LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD V
+ --   ON I."CardCode" = V."CardCode"
+--LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
+ --   ON E."SlpCode" = S."SlpCode"
+
+
+FROM ItemPaged IP
+JOIN AL_YASEEN_AGRI_PLIVE.OITM I
+
+ON I."ItemCode" = IP."ItemCode"
+--FROM AL_YASEEN_AGRI_PLIVE.OITM I
+
+CROSS JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
+
+LEFT JOIN BranchAgg BA
+   ON BA."ItemCode" = I."ItemCode"
+   AND BA."BPLId" = B."BPLId"
+
+LEFT JOIN BranchRanked BR
+   ON BR."ItemCode" = I."ItemCode"
+   AND BR."BPLId" = B."BPLId"
+
+LEFT JOIN SalesAgg S
+   ON S."ItemCode" = I."ItemCode"
+   AND S."BPLId" = B."BPLId"
+
+LEFT JOIN TotalPerItem T
+   ON T."ItemCode" = I."ItemCode"
+
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OITB G
+   ON I."ItmsGrpCod" = G."ItmsGrpCod"
+
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OUGP UG
-    ON I."UgpEntry" = UG."UgpEntry"
+   ON I."UgpEntry" = UG."UgpEntry"
 
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD V
-    ON I."CardCode" = V."CardCode"
-LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
-    ON E."SlpCode" = S."SlpCode"
+   ON I."CardCode" = V."CardCode"
 
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
+   ON E."SlpCode" = S."SlpCode"
 WHERE
     I."ItemType" = \'I\'
     AND I."validFor" = \'Y\'';

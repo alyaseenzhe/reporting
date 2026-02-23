@@ -98,7 +98,13 @@
                             <span x-text="expanded['{{ $item['ItemCode'] }}'] ? '-' : '+'"></span>
                         </td>
                         <td  style=" border-left: 2px dashed #a8a8a8;   word-wrap: break-word; " class="border p-1 "  class="p-1 font-bold ">
-                            {{$item['ItemCode']  .' - '.  $item['ItemName'] }}</td>
+                            {{$item['ItemCode']  .' - '.  $item['ItemName'] }}
+                            <div>الوحدة:
+                                <span style="color: #227dd7">
+                                                    {{$item["Unit"]}}
+                                                    </span>
+                            </div>
+                        </td>
                         <td    style=" border-left: 2px dashed #a8a8a8;" class="border p-2 py-6 whitespace-nowrap" >
                             <div class="flex flex-row justify-between">
                                 <div>اجمالي المبيعات:
@@ -124,11 +130,7 @@
 {{--                                <div>نوع المادة:--}}
 {{--                                    <span style="color: #227dd7">{{$item["ItemGroup"]}}</span>--}}
 {{--                                </div>--}}
-                                <div>الوحدة:
-                                    <span style="color: #227dd7">
-                                                    {{$item["Unit"]}}
-                                                    </span>
-                                </div>
+
                                 <div>التميز:
                                     <span style="color: #227dd7">
                                                     {{$item['Speciality']}}
@@ -210,7 +212,8 @@
                             x-for="branch in branches['{{ $item['ItemCode'] }}']"
                             :key="branch.BranchId"
                         >
-                            <template x-if="branch.BranchId > 0 && branch.TotalQuantitySaleByBranch > 0">
+{{--                            <template x-if="branch.BranchId > 0 && branch.TotalQuantitySaleByBranch > 0">--}}
+                            <template x-if="branch.BranchId > 0 ">
                             <tr class="bg-white border-b">
                                 <td class="cursor-pointer" @click="toggleEmployees('{{ $item['ItemCode'] }}', branch.BranchId)">
                                     <span x-text="expandedEmployees['{{ $item['ItemCode'] }}-' + branch.BranchId] ? '-' : '+'"></span>
@@ -464,10 +467,17 @@
 {{--                    @endfor--}}
 {{--                </ul>--}}
 {{--            </nav>--}}
+{{--            {{ $group_results->links() }}--}}
         @endif
             @endif
     </div>
 {{--        {{ $items->links() }}--}}
+
+        <select wire:model="perPage">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+        </select>
 
 </div>
 </div>

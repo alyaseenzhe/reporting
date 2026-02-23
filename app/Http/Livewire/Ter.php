@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class ItemsSalesByBrancho2 extends Component
+class Ter extends Component
 {
     public $start_date;
     public $end_date;
