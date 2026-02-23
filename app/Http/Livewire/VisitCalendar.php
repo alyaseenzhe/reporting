@@ -42,6 +42,7 @@ class VisitCalendar extends Component
 
     public function mount()
     {
+
         $this->loadVisits();
         $this->loadEmps();
         $this->approve();
@@ -50,6 +51,7 @@ class VisitCalendar extends Component
                 return $visit['emps_requester'];
             })
             ->unique(fn($r) => $r['user']['id']);
+
         $user = Auth::user();
         $this->canViewAll = (
             ($user->user_group->visits
@@ -62,13 +64,13 @@ class VisitCalendar extends Component
         $authId = auth()->user()->id;
 
         // Check if the authenticated user exists in the requester list
-//        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId) && !(Auth::user()->user_group->visits
-//                && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits)) || Auth::user()->role == 'a') ) {
-//
-//            $this->user = $authId;
-//        } else {
-//            $this->user = 'all';   // fallback
-//        }
+        if (collect($this->uniqueRequesters)->pluck('user.id')->contains($authId) && !(Auth::user()->user_group->visits
+                && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits)) || Auth::user()->role == 'a') ) {
+
+            $this->user = $authId;
+        } else {
+            $this->user = 'all';   // fallback
+        }
 
 //        dd($this->visits->emps_requester);
 //        dd($this->visits);
