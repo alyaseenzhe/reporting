@@ -768,13 +768,138 @@ ORDER BY "CardCode"';
         }
     }
 
+//    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type)
+//    {
+//        $this->sap_codes = [];
+//
+//        if (!extension_loaded('odbc')) {
+//            die('ODBC extension not enabled / loaded');
+//        }
+//
+//        $driver   = env('DB_CONNECTION_FOURTH');
+//        $host     = env('DB_HOST_FOURTH');
+//        $db_name  = env('DB_DATABASE_FOURTH');
+//        $username = env('DB_USERNAME_FOURTH');
+//        $password = env('DB_PASSWORD_FOURTH');
+//
+//        $conn = odbc_connect(
+//            "Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;",
+//            $username,
+//            $password,
+//            SQL_CUR_USE_ODBC
+//        );
+//
+//        if (!$conn) {
+//            dd("ODBC Connection failed: " . odbc_errormsg());
+//        }
+//
+//        // -----------------------------
+//        // 1) Build Base Query
+//        // -----------------------------
+//        $categoryQuery = '
+//        SELECT DISTINCT T0."ItemCode"
+//        FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
+//        JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
+//            ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
+//        WHERE 1 = 1
+//    ';
+//
+//        // -----------------------------
+//        // 2) Search by Item Code
+//        // -----------------------------
+//        if ($search_type === "item_code_search" && !empty($product_code)) {
+//
+//            if (is_array($product_code)) {
+//                $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $product_code);
+//                $categoryQuery .= ' AND T0."ItemCode" IN (' . implode(',', $escaped) . ')';
+//            } else {
+//                $safe = "'" . str_replace("'", "''", $product_code) . "'";
+//                $categoryQuery .= " AND T0.\"ItemCode\" = $safe";
+//            }
+//        }
+//
+//        // -----------------------------
+//        // 3) Advanced Search
+//        // -----------------------------
+//        if ($search_type === "advanced_search") {
+//
+//            // Group type
+//            if ($group_type === "commerce") {
+//                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
+//                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
+//                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
+//                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+//            } elseif ($group_type === "farms") {
+//                $categoryQuery .= ' AND T0."ItemCode" LIKE \'30%\'';
+//            } elseif ($group_type === "sundries") {
+//                $categoryQuery .= ' AND T0."ItemCode" LIKE \'99%\'';
+//            } elseif ($group_type === "groups_all") {
+//                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
+//                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
+//                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
+//                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\'
+//                                    OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+//            }
+//
+//            // Category filter
+//            if (!empty($cat_type) && !in_array('cat_all', $cat_type)) {
+//                $categoryQuery .= ' AND T0."ItmsGrpCod" IN (' . implode(',', $cat_type) . ')';
+//            }
+//
+//            // Speciality filter
+//            if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
+//                $categoryQuery .= ' AND (';
+//                $conditions = [];
+//                foreach ($sp_type as $s) {
+//                    $conditions[] = 'T0."QryGroup' . (intval($s) + 1) . '" = \'Y\'';
+//                }
+//                $categoryQuery .= implode(' OR ', $conditions) . ')';
+//            }
+//
+//            // Marketing type
+//            if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type)) {
+//                $categoryQuery .= ' AND (';
+//                $conditions = [];
+//                foreach ($marketing_type as $m) {
+//                    $conditions[] = 'T0."QryGroup' . intval($m) . '" = \'Y\'';
+//                }
+//                $categoryQuery .= implode(' OR ', $conditions) . ')';
+//            }
+//
+//            // Vendor filter
+//            if (!empty($vendor_type) && $vendor_type !== 'vendor_all') {
+//                $safeVendor = "'" . str_replace("'", "''", $vendor_type[0]) . "'";
+//                $categoryQuery .= " AND T0.\"CardCode\" = $safeVendor";
+//            }
+//        }
+//
+//
+//        // -----------------------------
+//        // 4) Execute Query
+//        // -----------------------------
+//        $result = odbc_exec($conn, $categoryQuery);
+//
+//        while ($row = odbc_fetch_array($result)) {
+//            $this->sap_codes[] = "'" . $row['ItemCode'] . "'";
+//        }
+//
+//        odbc_close($conn);
+//    }
+
+
     public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type)
     {
-        $this->sap_codes = [];
+        // Clean filters
+        $cat_type       = array_filter((array) $cat_type);
+        $sp_type        = array_filter((array) $sp_type);
+        $vendor_type    = array_filter((array) $vendor_type);
+        $marketing_type = array_filter((array) $marketing_type);
+        $group_type= array_filter((array) $group_type);
+//        $product_code= array_filter((array) $product_code);
+        $marketing_type= array_filter((array) $marketing_type);
 
-        if (!extension_loaded('odbc')) {
-            die('ODBC extension not enabled / loaded');
-        }
+
+        $this->sap_codes = [];
 
         $driver   = env('DB_CONNECTION_FOURTH');
         $host     = env('DB_HOST_FOURTH');
@@ -793,89 +918,69 @@ ORDER BY "CardCode"';
             dd("ODBC Connection failed: " . odbc_errormsg());
         }
 
-        // -----------------------------
-        // 1) Build Base Query
-        // -----------------------------
+        // Base
         $categoryQuery = '
         SELECT DISTINCT T0."ItemCode"
         FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
         JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
             ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
-        WHERE 1 = 1
+        WHERE 1=1
     ';
 
-        // -----------------------------
-        // 2) Search by Item Code
-        // -----------------------------
+        // Conditions array
+        $conditions = [];
+
+        // Search by item code
         if ($search_type === "item_code_search" && !empty($product_code)) {
 
             if (is_array($product_code)) {
                 $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $product_code);
-                $categoryQuery .= ' AND T0."ItemCode" IN (' . implode(',', $escaped) . ')';
+                $conditions[] = 'T0."ItemCode" IN (' . implode(',', $escaped) . ')';
             } else {
                 $safe = "'" . str_replace("'", "''", $product_code) . "'";
-                $categoryQuery .= " AND T0.\"ItemCode\" = $safe";
+                $conditions[] = "T0.\"ItemCode\" = $safe";
             }
         }
 
-        // -----------------------------
-        // 3) Advanced Search
-        // -----------------------------
+        // Advanced search
         if ($search_type === "advanced_search") {
 
             // Group type
             if ($group_type === "commerce") {
-                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
-                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
-                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
-                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
-            } elseif ($group_type === "farms") {
-                $categoryQuery .= ' AND T0."ItemCode" LIKE \'30%\'';
-            } elseif ($group_type === "sundries") {
-                $categoryQuery .= ' AND T0."ItemCode" LIKE \'99%\'';
-            } elseif ($group_type === "groups_all") {
-                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
-                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
-                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
-                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\'
-                                    OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+                $conditions[] = '(T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
+                              OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
+                              OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
+                              OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
             }
 
-            // Category filter
             if (!empty($cat_type) && !in_array('cat_all', $cat_type)) {
-                $categoryQuery .= ' AND T0."ItmsGrpCod" IN (' . implode(',', $cat_type) . ')';
+                $conditions[] = 'T0."ItmsGrpCod" IN (' . implode(',', $cat_type) . ')';
             }
 
-            // Speciality filter
             if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
-                $categoryQuery .= ' AND (';
-                $conditions = [];
-                foreach ($sp_type as $s) {
-                    $conditions[] = 'T0."QryGroup' . (intval($s) + 1) . '" = \'Y\'';
-                }
-                $categoryQuery .= implode(' OR ', $conditions) . ')';
+                $sp = array_map(fn($s) => 'T0."QryGroup' . (intval($s) + 1) . '" = \'Y\'', $sp_type);
+                $conditions[] = '(' . implode(' OR ', $sp) . ')';
             }
 
-            // Marketing type
             if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type)) {
-                $categoryQuery .= ' AND (';
-                $conditions = [];
-                foreach ($marketing_type as $m) {
-                    $conditions[] = 'T0."QryGroup' . intval($m) . '" = \'Y\'';
-                }
-                $categoryQuery .= implode(' OR ', $conditions) . ')';
+                $mk = array_map(fn($m) => 'T0."QryGroup' . intval($m) . '" = \'Y\'', $marketing_type);
+                $conditions[] = '(' . implode(' OR ', $mk) . ')';
             }
 
-            // Vendor filter
-            if (!empty($vendor_type) && $vendor_type !== 'vendor_all') {
+            if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type)) {
                 $safeVendor = "'" . str_replace("'", "''", $vendor_type[0]) . "'";
-                $categoryQuery .= " AND T0.\"CardCode\" = $safeVendor";
+                $conditions[] = "T0.\"CardCode\" = $safeVendor";
             }
         }
 
-        // -----------------------------
-        // 4) Execute Query
-        // -----------------------------
+        // Add conditions to query
+        if (count($conditions) > 0) {
+            $categoryQuery .= ' AND ' . implode(' AND ', $conditions);
+        }
+
+//        dd($categoryQuery);
+
+        // Execute
         $result = odbc_exec($conn, $categoryQuery);
 
         while ($row = odbc_fetch_array($result)) {
