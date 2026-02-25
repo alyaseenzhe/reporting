@@ -14,8 +14,8 @@ class ItemsSalesByBranch extends Component
 
 //    protected $paginationTheme = 'tailwind';
 
- //   public $page = 1;
- //   public $perPage = 20;
+    //   public $page = 1;
+    //   public $perPage = 20;
     public $start_date;
     public $end_date;
     public $dept_id = ['dept_all'];
@@ -53,12 +53,12 @@ class ItemsSalesByBranch extends Component
     public $counter = 0,
 
 
-$item_code = "*",
-$item_group_code = "*",
-$item_group_itemCode_code = "*",
-$speciality_code = "*",
-$marketing_type_code = "*",
-$vendor_code = "*";
+        $item_code = "*",
+        $item_group_code = "*",
+        $item_group_itemCode_code = "*",
+        $speciality_code = "*",
+        $marketing_type_code = "*",
+        $vendor_code = "*";
     public  $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' => '5', '0104' => '6', '0105' => '7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' => '16', '0203' => '17'];
     public $expanded = [];
     public     $branchOptions = [
@@ -126,14 +126,18 @@ $vendor_code = "*";
 
     public function generateReport()
     {
+        $this->branches = [];
+        $this->expanded = [];
+
+
         $this->resetExpandedData();
         foreach ($this->expanded as $itemCode => $expandedItems) {
             if ($expandedItems) {
                 $this->loadBranches($itemCode);
             }
         }
-        $sql = '';        // RESET
-        $bindings = [];   // RESET
+//        $sql = '';        // RESET
+//        $bindings = [];   // RESET
         // Now all values are AVAILABLE
 //        dd([
 //            $this->start_date,
@@ -142,6 +146,7 @@ $vendor_code = "*";
 //            $this->group_type,
 //            $this->cat_type,
 //        ]);
+
 
 
         $this->create_report(
@@ -255,6 +260,24 @@ $vendor_code = "*";
 //            ->where('ItemCode', $itemCode)
 //            ->groupBy('BPLId')
 //        ->map(function ($branchRows, $branchName) {
+//        $this->allBranches = collect([
+//            ['BPLId' => 3, 'BPLName' => 'فرع الأحساء'],
+//            ['BPLId' => 4, 'BPLName' => 'فرع جدة'],
+//            ['BPLId' => 5, 'BPLName' => 'فرع الرياض'],
+//            ['BPLId' => 6, 'BPLName' => 'وادي الدواسر'],
+//            ['BPLId' => 7, 'BPLName' => 'الجوف'],
+//            ['BPLId' => 8, 'BPLName' => 'الدمام'],
+//            ['BPLId' => 9, 'BPLName' => 'الخرج'],
+//            ['BPLId' => 10, 'BPLName' => 'نجران'],
+//            ['BPLId' => 11, 'BPLName' => 'حائل'],
+//            ['BPLId' => 12, 'BPLName' => 'تبوك'],
+//            ['BPLId' => 13, 'BPLName' => 'القصيم'],
+//            ['BPLId' => 14, 'BPLName' => 'ساجر'],
+//
+//        ])->values();
+
+
+//
         $this->allBranches = collect($this->sap_results)
             ->unique('BPLId')
             ->map(fn ($r) => [
@@ -277,13 +300,13 @@ $vendor_code = "*";
 //            });
 //        dd($this->salesIndex);
 
-            $itemSales = $this->salesIndex[$itemCode] ?? collect();
+        $itemSales = $this->salesIndex[$itemCode] ?? collect();
 
         $totalQuantity = $itemSales
             ->flatten(1)
             ->sum('EmployeeTotalQty');
 //           $totalQuantity = $itemSales->first()?[0]['TotalQuantitySale']: 0 ;
-           //dd($totalQuantity[0]['TotalQuantitySale']);
+        //dd($totalQuantity[0]['TotalQuantitySale']);
 
         $this->branches[$itemCode] = collect($this->allBranches)
             ->map(function ($branch) use ($itemSales,  $totalQuantity ) {
@@ -416,7 +439,7 @@ $vendor_code = "*";
                 })
                 ->values()
                 ->toArray(); ;
-     //   dd($this->employees[$itemCode][$branchId]);
+        //   dd($this->employees[$itemCode][$branchId]);
 //        dd( $branchRows    ->groupBy('SlpName'));
     }
 
@@ -427,8 +450,25 @@ $vendor_code = "*";
     }
 
 //    public function create_report(){
-    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
+    public function resetProductCodes()
+    {
+        foreach ([
+                     'product_codes',
+                     'group_codes',
+                     'category_codes',
+                     'speciality_codes',
+                     'vendor_codes',
+                     'marketing_codes',
+                     'selected_products'
+                 ] as $property) {
 
+            if (property_exists($this, $property)) {
+                $this->{$property} = [];
+            }
+        }
+    }
+
+    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
 
 
 //        dd($this->vendor_type);
@@ -441,8 +481,9 @@ $vendor_code = "*";
 
         $this->validate();
         $this->show_msg = false;
-    //    $this->report_type = $report_type;
-      //  $this->scribes_results = [];
+        $this->resetProductCodes();
+        //    $this->report_type = $report_type;
+        //  $this->scribes_results = [];
         $this->sap_results = [];
         $this->group_results = [];
 
@@ -452,8 +493,9 @@ $vendor_code = "*";
         if (is_null($start_date) == false && is_null($end_date) == false) {
 
 
-             $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
+            $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
 
+            logger('SAP COUNT: ' . count($this->sap_results));
 //            dd($this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type));
 
         }
@@ -648,7 +690,7 @@ $vendor_code = "*";
 //dd($this->group_results);
         $this->show_msg = true;
         $this->emit('finished');
-}
+    }
 
     public function customers()
     {
@@ -726,174 +768,291 @@ ORDER BY "CardCode"';
         }
     }
 
-
     public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type)
     {
-//        dd($cat_type);
-
-        $this->scribes_codes = [];
         $this->sap_codes = [];
 
         if (!extension_loaded('odbc')) {
             die('ODBC extension not enabled / loaded');
         }
 
-        $driver = env('DB_CONNECTION_FOURTH');
-        $host = env('DB_HOST_FOURTH');
-        $db_name = env('DB_DATABASE_FOURTH');
+        $driver   = env('DB_CONNECTION_FOURTH');
+        $host     = env('DB_HOST_FOURTH');
+        $db_name  = env('DB_DATABASE_FOURTH');
         $username = env('DB_USERNAME_FOURTH');
         $password = env('DB_PASSWORD_FOURTH');
 
-        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+        $conn = odbc_connect(
+            "Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;",
+            $username,
+            $password,
+            SQL_CUR_USE_ODBC
+        );
 
         if (!$conn) {
-            echo "Connection failed.\n";
-            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-        } else {
-            $categoryQuery = '';
-
-            if ($search_type == "item_code_search") {
-//                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'' . $product_code . '\' OR T0."U_UDF1" = \'' . $product_code . '\'';
-                if (!empty($product_code)) {
-
-                    if (is_array($product_code)) {
-                        $escaped = array_map(fn($v) =>
-                            "'" . str_replace("'", "''", $v) . "'",
-                            $product_code
-                        );
-
-                        $categoryQuery = '
-            SELECT DISTINCT
-                T0."ItemCode",
-                T0."U_UDF1" AS "ScribeCode"
-            FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
-            JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
-                ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
-            WHERE T0."ItemCode" IN ('.implode(',', $escaped).')
-               OR T0."U_UDF1" IN ('.implode(',', $escaped).')
-        ';
-                    }
-                }
-
-
-            }
-
-            else if ($search_type == "advanced_search") {
-
-                if ($group_type == "commerce") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
-                } elseif ($group_type == "farms") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
-                } elseif ($group_type == "sundries") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
-                } elseif ($group_type == "groups_all") {
-                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
-                }
-
-                if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
-
-                    $categoryQuery .= ' AND T0."ItmsGrpCod" IN (' . implode(", ", $cat_type) . ')';
-                }
-
-                if ($sp_type != null && in_array('sp_all', $sp_type) == false && count($sp_type) != 0) {
-//                $categoryQuery .= ' AND (T0."QryGroup1" = \''. (in_array('0', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup2" = \''. (in_array('1', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup3" = \''. (in_array('2', $sp_type) ? 'Y': 'N') .'\')';
-//                dd($sp_type);
-                    if (count($sp_type) == 3) {
-                        $categoryQuery .= ' AND (T0."QryGroup1" = \'' . (in_array('0', $sp_type) ? 'Y' : 'N') . '\' OR T0."QryGroup2" = \'' . (in_array('1', $sp_type) ? 'Y' : 'N') . '\' OR T0."QryGroup3" = \'' . (in_array('2', $sp_type) ? 'Y' : 'N') . '\')';
-                    } else {
-                        //dd( $categoryQuery);
-                        $categoryQuery .= ' AND (';
-                        foreach ($sp_type as $key => $s) {
-                            if ($key === array_key_first($sp_type)) {
-                                $categoryQuery .= 'T0."QryGroup' . intval($s) + 1 . '" = \'Y\'';
-                            } else {
-                                $categoryQuery .= ' OR T0."QryGroup' . intval($s) + 1 . '" = \'Y\'';
-                            }
-                        }
-                        $categoryQuery .= ')';
-
-                        $difference = array_diff(['0', '1', '2'], $sp_type);
-//                    dd($difference);
-
-                        if (count($difference) > 0) {
-
-                            $categoryQuery .= ' AND (';
-                            foreach ($difference as $key => $s) {
-                                if ($key === array_key_first($difference)) {
-                                    $categoryQuery .= 'T0."QryGroup' . intval($s) + 1 . '" = \'N\'';
-                                } else {
-                                    $categoryQuery .= ' OR T0."QryGroup' . intval($s) + 1 . '" = \'N\'';
-                                }
-                            }
-                            $categoryQuery .= ')';
-
-                        }
-
-                    }
-//                    dd($categoryQuery);
-                }
-
-//                dd($marketing_type);
-                if ($marketing_type != null && in_array('marketing_all', $marketing_type) == false && count($marketing_type) != 0) {
-
-                    if (count($marketing_type) == 9) {
-
-                        $categoryQuery .= ' AND (T0."QryGroup30" = \'' . (in_array('30', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup31" = \'' . (in_array('31', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup32" = \'' . (in_array('32', $marketing_type) ? 'Y' : 'N') . '\'  OR T0."QryGroup40" = \'' . (in_array('40', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup41" = \'' . (in_array('41', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup50" = \'' . (in_array('50', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup51" = \'' . (in_array('51', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup52" = \'' . (in_array('52', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup53" = \'' . (in_array('53', $marketing_type) ? 'Y' : 'N') . '\')';
-                    } else {
-                        $categoryQuery .= ' AND (';
-                        foreach ($marketing_type as $key => $s) {
-                            if ($key === array_key_first($marketing_type)) {
-                                $categoryQuery .= 'T0."QryGroup' . intval($s) . '" = \'Y\'';
-                            } else {
-                                $categoryQuery .= ' OR T0."QryGroup' . intval($s) . '" = \'Y\'';
-                            }
-                        }
-                        $categoryQuery .= ')';
-
-                        $difference = array_diff(['30', '31', '32', '40', '41', '50', '51', '52', '53'], $marketing_type);
-//                    dd($difference);
-
-                        if (count($difference) > 0) {
-
-                            $categoryQuery .= ' AND (';
-                            foreach ($difference as $key => $s) {
-                                if ($key === array_key_first($difference)) {
-                                    $categoryQuery .= 'T0."QryGroup' . intval($s) . '" = \'N\'';
-                                } else {
-                                    $categoryQuery .= ' OR T0."QryGroup' . intval($s) . '" = \'N\'';
-                                }
-                            }
-                            $categoryQuery .= ')';
-
-                        }
-
-                    }
-                }
-//dd($vendor_type[0]);
-
-                if ($vendor_type != 'vendor_all' && $vendor_type != null) {
-                    $categoryQuery .= ' AND (T0."CardCode" = \'' . $vendor_type[0] . '\')';
-                }
-            }
-
-
-//            dd($categoryQuery);
-
-            $result = odbc_exec($conn, $categoryQuery);
-            if (!$result) {
-                echo "Error while sending SQL statement to the database server.\n";
-                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-            } else {
-                while ($row = odbc_fetch_array($result)) {
-                    array_push($this->sap_codes, "'" . $row['ItemCode'] . "'");
-                    array_push($this->scribes_codes, "'" . $row['ScribeCode'] . "'");
-                }
-            }
-
-//            dd($this->vendor_list);
-            odbc_close($conn);
+            dd("ODBC Connection failed: " . odbc_errormsg());
         }
+
+        // -----------------------------
+        // 1) Build Base Query
+        // -----------------------------
+        $categoryQuery = '
+        SELECT DISTINCT T0."ItemCode"
+        FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
+        JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
+            ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
+        WHERE 1 = 1
+    ';
+
+        // -----------------------------
+        // 2) Search by Item Code
+        // -----------------------------
+        if ($search_type === "item_code_search" && !empty($product_code)) {
+
+            if (is_array($product_code)) {
+                $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $product_code);
+                $categoryQuery .= ' AND T0."ItemCode" IN (' . implode(',', $escaped) . ')';
+            } else {
+                $safe = "'" . str_replace("'", "''", $product_code) . "'";
+                $categoryQuery .= " AND T0.\"ItemCode\" = $safe";
+            }
+        }
+
+        // -----------------------------
+        // 3) Advanced Search
+        // -----------------------------
+        if ($search_type === "advanced_search") {
+
+            // Group type
+            if ($group_type === "commerce") {
+                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
+                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
+                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
+                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+            } elseif ($group_type === "farms") {
+                $categoryQuery .= ' AND T0."ItemCode" LIKE \'30%\'';
+            } elseif ($group_type === "sundries") {
+                $categoryQuery .= ' AND T0."ItemCode" LIKE \'99%\'';
+            } elseif ($group_type === "groups_all") {
+                $categoryQuery .= ' AND (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\'
+                                    OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\'
+                                    OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\'
+                                    OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\'
+                                    OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+            }
+
+            // Category filter
+            if (!empty($cat_type) && !in_array('cat_all', $cat_type)) {
+                $categoryQuery .= ' AND T0."ItmsGrpCod" IN (' . implode(',', $cat_type) . ')';
+            }
+
+            // Speciality filter
+            if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
+                $categoryQuery .= ' AND (';
+                $conditions = [];
+                foreach ($sp_type as $s) {
+                    $conditions[] = 'T0."QryGroup' . (intval($s) + 1) . '" = \'Y\'';
+                }
+                $categoryQuery .= implode(' OR ', $conditions) . ')';
+            }
+
+            // Marketing type
+            if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type)) {
+                $categoryQuery .= ' AND (';
+                $conditions = [];
+                foreach ($marketing_type as $m) {
+                    $conditions[] = 'T0."QryGroup' . intval($m) . '" = \'Y\'';
+                }
+                $categoryQuery .= implode(' OR ', $conditions) . ')';
+            }
+
+            // Vendor filter
+            if (!empty($vendor_type) && $vendor_type !== 'vendor_all') {
+                $safeVendor = "'" . str_replace("'", "''", $vendor_type[0]) . "'";
+                $categoryQuery .= " AND T0.\"CardCode\" = $safeVendor";
+            }
+        }
+
+        // -----------------------------
+        // 4) Execute Query
+        // -----------------------------
+        $result = odbc_exec($conn, $categoryQuery);
+
+        while ($row = odbc_fetch_array($result)) {
+            $this->sap_codes[] = "'" . $row['ItemCode'] . "'";
+        }
+
+        odbc_close($conn);
     }
+
+//    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type)
+//    {
+//
+////        dd($cat_type);
+//
+//        $this->scribes_codes = [];
+//        $this->sap_codes = [];
+//
+//        if (!extension_loaded('odbc')) {
+//            die('ODBC extension not enabled / loaded');
+//        }
+//
+//        $driver = env('DB_CONNECTION_FOURTH');
+//        $host = env('DB_HOST_FOURTH');
+//        $db_name = env('DB_DATABASE_FOURTH');
+//        $username = env('DB_USERNAME_FOURTH');
+//        $password = env('DB_PASSWORD_FOURTH');
+//
+//        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+//
+//        if (!$conn) {
+//            echo "Connection failed.\n";
+//            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+//        } else {
+//            $categoryQuery = '';
+//
+//            if ($search_type == "item_code_search") {
+////                $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" = \'' . $product_code . '\' OR T0."U_UDF1" = \'' . $product_code . '\'';
+//                if (!empty($product_code)) {
+//
+//                    if (is_array($product_code)) {
+//                        $escaped = array_map(fn($v) =>
+//                            "'" . str_replace("'", "''", $v) . "'",
+//                            $product_code
+//                        );
+//
+//                        $categoryQuery = '
+//            SELECT DISTINCT
+//                T0."ItemCode",
+//                T0."U_UDF1" AS "ScribeCode"
+//            FROM AL_YASEEN_AGRI_PLIVE."OITM" T0
+//            JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1
+//                ON T0."ItmsGrpCod" = T1."ItmsGrpCod"
+//            WHERE T0."ItemCode" IN ('.implode(',', $escaped).')
+//               OR T0."U_UDF1" IN ('.implode(',', $escaped).')
+//        ';
+//                    }
+//                }
+//
+//
+//            }
+//
+//            else if ($search_type == "advanced_search") {
+//
+//                if ($group_type == "commerce") {
+//                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\')';
+//                } elseif ($group_type == "farms") {
+//                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'30%\'';
+//                } elseif ($group_type == "sundries") {
+//                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE T0."ItemCode" LIKE \'99%\'';
+//                } elseif ($group_type == "groups_all") {
+//                    $categoryQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+//                }
+//
+//                if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
+//
+//                    $categoryQuery .= ' AND T0."ItmsGrpCod" IN (' . implode(", ", $cat_type) . ')';
+//                }
+//
+//                if ($sp_type != null && in_array('sp_all', $sp_type) == false && count($sp_type) != 0) {
+////                $categoryQuery .= ' AND (T0."QryGroup1" = \''. (in_array('0', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup2" = \''. (in_array('1', $sp_type) ? 'Y': 'N') .'\' OR T0."QryGroup3" = \''. (in_array('2', $sp_type) ? 'Y': 'N') .'\')';
+////                dd($sp_type);
+//                    if (count($sp_type) == 3) {
+//                        $categoryQuery .= ' AND (T0."QryGroup1" = \'' . (in_array('0', $sp_type) ? 'Y' : 'N') . '\' OR T0."QryGroup2" = \'' . (in_array('1', $sp_type) ? 'Y' : 'N') . '\' OR T0."QryGroup3" = \'' . (in_array('2', $sp_type) ? 'Y' : 'N') . '\')';
+//                    } else {
+//                        //dd( $categoryQuery);
+//                        $categoryQuery .= ' AND (';
+//                        foreach ($sp_type as $key => $s) {
+//                            if ($key === array_key_first($sp_type)) {
+//                                $categoryQuery .= 'T0."QryGroup' . intval($s) + 1 . '" = \'Y\'';
+//                            } else {
+//                                $categoryQuery .= ' OR T0."QryGroup' . intval($s) + 1 . '" = \'Y\'';
+//                            }
+//                        }
+//                        $categoryQuery .= ')';
+//
+//                        $difference = array_diff(['0', '1', '2'], $sp_type);
+////                    dd($difference);
+//
+//                        if (count($difference) > 0) {
+//
+//                            $categoryQuery .= ' AND (';
+//                            foreach ($difference as $key => $s) {
+//                                if ($key === array_key_first($difference)) {
+//                                    $categoryQuery .= 'T0."QryGroup' . intval($s) + 1 . '" = \'N\'';
+//                                } else {
+//                                    $categoryQuery .= ' OR T0."QryGroup' . intval($s) + 1 . '" = \'N\'';
+//                                }
+//                            }
+//                            $categoryQuery .= ')';
+//
+//                        }
+//
+//                    }
+////                    dd($categoryQuery);
+//                }
+//
+////                dd($marketing_type);
+//                if ($marketing_type != null && in_array('marketing_all', $marketing_type) == false && count($marketing_type) != 0) {
+//
+//                    if (count($marketing_type) == 9) {
+//
+//                        $categoryQuery .= ' AND (T0."QryGroup30" = \'' . (in_array('30', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup31" = \'' . (in_array('31', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup32" = \'' . (in_array('32', $marketing_type) ? 'Y' : 'N') . '\'  OR T0."QryGroup40" = \'' . (in_array('40', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup41" = \'' . (in_array('41', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup50" = \'' . (in_array('50', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup51" = \'' . (in_array('51', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup52" = \'' . (in_array('52', $marketing_type) ? 'Y' : 'N') . '\' OR T0."QryGroup53" = \'' . (in_array('53', $marketing_type) ? 'Y' : 'N') . '\')';
+//                    } else {
+//                        $categoryQuery .= ' AND (';
+//                        foreach ($marketing_type as $key => $s) {
+//                            if ($key === array_key_first($marketing_type)) {
+//                                $categoryQuery .= 'T0."QryGroup' . intval($s) . '" = \'Y\'';
+//                            } else {
+//                                $categoryQuery .= ' OR T0."QryGroup' . intval($s) . '" = \'Y\'';
+//                            }
+//                        }
+//                        $categoryQuery .= ')';
+//
+//                        $difference = array_diff(['30', '31', '32', '40', '41', '50', '51', '52', '53'], $marketing_type);
+////                    dd($difference);
+//
+//                        if (count($difference) > 0) {
+//
+//                            $categoryQuery .= ' AND (';
+//                            foreach ($difference as $key => $s) {
+//                                if ($key === array_key_first($difference)) {
+//                                    $categoryQuery .= 'T0."QryGroup' . intval($s) . '" = \'N\'';
+//                                } else {
+//                                    $categoryQuery .= ' OR T0."QryGroup' . intval($s) . '" = \'N\'';
+//                                }
+//                            }
+//                            $categoryQuery .= ')';
+//
+//                        }
+//
+//                    }
+//                }
+////dd($vendor_type[0]);
+//
+//                if ($vendor_type != 'vendor_all' && $vendor_type != null) {
+//                    $categoryQuery .= ' AND (T0."CardCode" = \'' . $vendor_type[0] . '\')';
+//                }
+//            }
+//
+//
+////            dd($categoryQuery);
+//
+//            $result = odbc_exec($conn, $categoryQuery);
+//            if (!$result) {
+//                echo "Error while sending SQL statement to the database server.\n";
+//                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+//            } else {
+//                while ($row = odbc_fetch_array($result)) {
+//                    array_push($this->sap_codes, "'" . $row['ItemCode'] . "'");
+//                    array_push($this->scribes_codes, "'" . $row['ScribeCode'] . "'");
+//                }
+//            }
+//
+////            dd($this->vendor_list);
+//            odbc_close($conn);
+//        }
+//    }
     public function employees()
     {
 
@@ -1016,7 +1175,7 @@ ORDER BY "CardCode"';
 //
 //                dd($this->sp_type[0]);
 ////                dd($this->vendor_type[0]);
-    $sql = '';        // 🔥 RESET
+                $sql = '';        // 🔥 RESET
                 $bindings = [];   // 🔥 RESET
 
 //_____________________________________________________________________________________________________
@@ -1602,7 +1761,7 @@ WITH SalesAgg AS (
                 }
 
 
-                     $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
+                $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
 
 
         GROUP BY
@@ -1746,7 +1905,7 @@ WITH SalesAgg AS (
                 }
 
 
-                     $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
+                $sql .= ' AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
 
 
         GROUP BY
@@ -1876,79 +2035,79 @@ LEFT JOIN SalesAgg S
  WHERE I."ItemType" = \'I\'
  AND I."validFor" = \'Y\'';
 
-                if($this->product_code){
-                    $sql .= ' AND T0."ItemCode" = \'IN (' . implode($this->product_code ). '\') ';
+                if(!empty($this->product_code)){
+                    $codes = array_map(fn($c) => "'" . str_replace("'", "''", $c) . "'", $this->product_code);
+                    $sql .= ' AND T0."ItemCode" = \'IN (' . implode($codes ). '\') ';
 
                 }
 // -------- Employee Filter --------
-            if ($emps_type != 'employees_all') {
-                $sql .= ' AND S."Memo" = \'' . $emps_type[0] . '\' ';
-            }
+                if ($emps_type != 'employees_all') {
+                    $sql .= ' AND S."Memo" = \'' . $emps_type[0] . '\' ';
+                }
 
 // -------- Customer Filter --------
 // Ensure $customer_type is set
-            $customer_type = $this->customer_type ?? 'customer_all';
+                $customer_type = $this->customer_type ?? null;
 
-            if ($customer_type !== 'customer_all' && !empty($customer_type)) {
-                // Apply filter for a single value
-                $sql .= ' AND C."CardCode" = \''.$customer_type.'\'' ;
-
-            }
+                if (!empty($customer_type) && $customer_type !== 'customer_all') {
+                    // Apply filter for a single value
+                    $sql .= ' AND C."CardCode" = \'' . str_replace("'", "''", $customer_type) . '\' ';
+                }
 
 
 // -------- Vendor Filter (multi) --------
 
-            if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type, true)) {
-                $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $vendor_type);
-                $sql .= ' AND T2."CardCode" IN (' . implode(',', $escaped) . ') ';
-            }
+                if (!empty($vendor_type) && !in_array('vendor_all', $vendor_type, true)) {
+                    $escaped = array_map(fn($v) => "'" . str_replace("'", "''", $v) . "'", $vendor_type);
+                    $sql .= ' AND T2."CardCode" IN (' . implode(',', $escaped) . ') ';
+                }
 
 
 // -------- Speciality Filter (multi) --------
-            if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
-                $spConditions = [];
-                if (in_array('0', $sp_type)) $spConditions[] = 'I."QryGroup1" = \'Y\'';
-                if (in_array('1', $sp_type)) $spConditions[] = 'I."QryGroup2" = \'Y\'';
-                if (in_array('2', $sp_type)) $spConditions[] = 'I."QryGroup3" = \'Y\'';
-                if ($spConditions) $sql .= ' AND (' . implode(' OR ', $spConditions) . ') ';
-            }
+                if (!empty($sp_type) && !in_array('sp_all', $sp_type)) {
+                    $spConditions = [];
+                    if (in_array('0', $sp_type)) $spConditions[] = 'I."QryGroup1" = \'Y\'';
+                    if (in_array('1', $sp_type)) $spConditions[] = 'I."QryGroup2" = \'Y\'';
+                    if (in_array('2', $sp_type)) $spConditions[] = 'I."QryGroup3" = \'Y\'';
+                    if ($spConditions) $sql .= ' AND (' . implode(' OR ', $spConditions) . ') ';
+                }
 
 // -------- Marketing Type Filter (multi) --------
 //
 
-            if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type, true)) {
-                $mrktConditions = [];
+                if (!empty($marketing_type) && !in_array('marketing_all', $marketing_type, true)) {
+                    $mrktConditions = [];
 
-                $map = [
-                    '30' => 'I."QryGroup30"',
-                    '31' => 'I."QryGroup31"',
-                    '32' => 'I."QryGroup32"',
-                    '40' => 'I."QryGroup40"',
-                    '41' => 'I."QryGroup41"',
-                    '50' => 'I."QryGroup50"',
-                    '51' => 'I."QryGroup51"',
-                    '52' => 'I."QryGroup52"',
-                    '53' => 'I."QryGroup53"',
-                ];
+                    $map = [
+                        '30' => 'I."QryGroup30"',
+                        '31' => 'I."QryGroup31"',
+                        '32' => 'I."QryGroup32"',
+                        '40' => 'I."QryGroup40"',
+                        '41' => 'I."QryGroup41"',
+                        '50' => 'I."QryGroup50"',
+                        '51' => 'I."QryGroup51"',
+                        '52' => 'I."QryGroup52"',
+                        '53' => 'I."QryGroup53"',
+                    ];
 
-                foreach ($marketing_type as $val) {
-                    if (isset($map[$val])) {
-                        $mrktConditions[] = $map[$val] . " = 'Y'";
+                    foreach ($marketing_type as $val) {
+                        if (isset($map[$val])) {
+                            $mrktConditions[] = $map[$val] . " = 'Y'";
+                        }
+                    }
+
+                    if (!empty($mrktConditions)) {
+                        $sql .= ' AND (' . implode(' OR ', $mrktConditions) . ') ';
                     }
                 }
-
-                if (!empty($mrktConditions)) {
-                    $sql .= ' AND (' . implode(' OR ', $mrktConditions) . ') ';
-                }
-            }
 // -------- Marketing Type Filter (multi) --------
 
-            if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
-                $sql.= ' AND I."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
-            }
+                if ($cat_type != null && in_array('cat_all', $cat_type) == false && count($cat_type) != 0) {
+                    $sql.= ' AND I."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
+                }
 
 
-            $sql .= ' AND B."BPLId" IN ('. implode(', ', $sap_depts).')
+                $sql .= ' AND B."BPLId" IN ('. implode(', ', $sap_depts).')
 ORDER BY I."ItemCode", "BranchRank"
 
 
@@ -1964,7 +2123,7 @@ ORDER BY I."ItemCode", "BranchRank"
                 }
 
 //
-            $sql = 'WITH SalesAgg AS (
+                $sql = 'WITH SalesAgg AS (
     SELECT
         X."ItemCode",
         X."BPLId",
@@ -1990,7 +2149,7 @@ ORDER BY I."ItemCode", "BranchRank"
 
 //                -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
 //           -- AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
-       $sql.= 'GROUP BY
+                $sql.= 'GROUP BY
             T0."ItemCode",
             T1."BPLId",
             T1."SlpCode"
@@ -2010,9 +2169,15 @@ ORDER BY I."ItemCode", "BranchRank"
             T1."CANCELED" = \'N\'
             AND T0."NoInvtryMv" = \'N\'
             AND T1."DocDate" BETWEEN \'' . $start_date . '\' AND  \'' . $end_date . '\'';
-                    if ($customer_type !== 'customer_all' && !empty($customer_type)) {
-                        $sql.= ' AND T1."CardCode" = \''.$customer_type.'\'';
+                $customer_type = $this->customer_type ?? null;
+
+                if (!empty($customer_type) && $customer_type !== 'customer_all') {
+                    // Apply filter for a single value
+                    $sql .= ' AND T1."CardCode" = \'' . str_replace("'", "''", $customer_type) . '\' ';
                 }
+//                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
+//                    $sql.= ' AND T1."CardCode" = \''.$customer_type.'\'';
+//                }
                 $sql.=' -- AND T1."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
           -- AND T1."BPLId" IN ('. implode(', ', $sap_depts).')
         GROUP BY
@@ -2056,6 +2221,19 @@ TotalPerItem AS (
         SUM("EmpQty") AS "TotalQuantitySale"
     FROM SalesAgg
     GROUP BY "ItemCode"
+),
+ ItemList AS (
+    SELECT DISTINCT "ItemCode"
+    FROM SalesAgg
+),
+ItemBranches AS (
+    SELECT
+        I."ItemCode",
+        B."BPLId",
+        B."BPLName"
+    FROM ItemList I
+    CROSS JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
+    WHERE B."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
 )
 --ItemPaged AS (
  --   SELECT "ItemCode"
@@ -2174,10 +2352,10 @@ BR."BranchRank"
 --LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
 --    ON E."SlpCode" = S."SlpCode"
 
-FROM  BranchRanked BR
+--FROM  BranchRanked BR
 
-JOIN AL_YASEEN_AGRI_PLIVE.OITM I
-   ON I."ItemCode" = BR."ItemCode"
+--JOIN AL_YASEEN_AGRI_PLIVE.OITM I
+--   ON I."ItemCode" = BR."ItemCode"
 
 --FROM ItemPaged IP
 
@@ -2187,13 +2365,29 @@ JOIN AL_YASEEN_AGRI_PLIVE.OITM I
 --JOIN BranchRanked BR
  --  ON BR."ItemCode" = I."ItemCode"
 
- JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
-    ON B."BPLId" = BR."BPLId"
-    LEFT JOIN SalesAgg S
-   ON S."ItemCode" = BR."ItemCode"
-   AND S."BPLId"   = BR."BPLId"
+ --JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
+   -- ON B."BPLId" = BR."BPLId"
+   -- LEFT JOIN SalesAgg S
+  -- ON S."ItemCode" = BR."ItemCode"
+ --  AND S."BPLId"   = BR."BPLId"
+--LEFT JOIN TotalPerItem T
+ --   ON T."ItemCode" = I."ItemCode"
+
+FROM ItemBranches B
+JOIN AL_YASEEN_AGRI_PLIVE.OITM I
+    ON I."ItemCode" = B."ItemCode"
+
+LEFT JOIN SalesAgg S
+    ON S."ItemCode" = B."ItemCode"
+   AND S."BPLId"   = B."BPLId"
+
+LEFT JOIN BranchRanked BR
+    ON BR."ItemCode" = B."ItemCode"
+   AND BR."BPLId"    = B."BPLId"
+
 LEFT JOIN TotalPerItem T
-    ON T."ItemCode" = I."ItemCode"
+    ON T."ItemCode" = B."ItemCode"
+
 
 JOIN AL_YASEEN_AGRI_PLIVE.OITB G
     ON I."ItmsGrpCod" = G."ItmsGrpCod"
@@ -2208,19 +2402,20 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP E
 WHERE
     I."ItemType" = \'I\'
     AND I."validFor" = \'Y\'';
-                if($this->product_code){
-                    $sql .= ' AND I."ItemCode" IN (' . implode(',',$this->product_code ). ') ';
+                if(!empty($this->product_code)){
+                    $codes = array_map(fn($c) => "'" . str_replace("'", "''", $c) . "'", $this->product_code);
+                    $sql .= ' AND I."ItemCode" IN (' . implode(',',$codes ). ') ';
 
                 }
 // -------- Employee Filter --------
-                if ($emps_type != 'employees_all') {
-                    $sql .= ' AND S."Memo" = \'' . $emps_type[0] . '\' ';
-                }
+//                if ($emps_type != 'employees_all') {
+//                    $sql .= ' AND S."Memo" = \'' . $emps_type[0] . '\' ';
+//                }
 
 // -------- Customer Filter --------
 // Ensure $customer_type is set
 //                $customer_type = $this->customer_type ?? 'customer_all';
-
+//
 //                if ($customer_type !== 'customer_all' && !empty($customer_type)) {
 //                    // Apply filter for a single value
 //                    $sql .= ' AND T1."CardCode" = \''.$customer_type.'\'' ;
@@ -2279,8 +2474,11 @@ WHERE
                     $sql.= ' AND I."ItmsGrpCod" IN ('.implode(", ", $cat_type).')';
                 }
 
+                if (!empty($sap_depts)) {
+                    $sql .= ' AND B."BPLId" IN (' . implode(', ', $sap_depts) . ')';
+                }
+                $sql .= '
 
-                $sql .= ' AND B."BPLId" IN ('. implode(', ', $sap_depts).')
 --ORDER BY I."ItemCode",  BR."BranchRank",COALESCE(S."EmpQty", 0) DESC
     --S."EmpQty" DESC
     --LIMIT 25 OFFSET 0
