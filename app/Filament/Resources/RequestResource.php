@@ -19,7 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
-
+use App\Models\Settlement;
 
 class RequestResource extends Resource
 {
@@ -124,6 +124,9 @@ class RequestResource extends Resource
             'edit' => Pages\EditRequest::route('/{record}/edit'),
         ];
     }
+
+
+
 
 
 }

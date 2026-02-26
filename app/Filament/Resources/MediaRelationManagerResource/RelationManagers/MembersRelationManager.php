@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\MediaRelationManagerResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
@@ -23,7 +24,12 @@ class MembersRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                SpatieMediaLibraryFileUpload::make('attachments')
+                    ->collection('hr-files')
+                    ->multiple(),
+
             ]);
+
     }
 
     public static function table(Table $table): Table
@@ -45,5 +51,5 @@ class MembersRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }    
+    }
 }

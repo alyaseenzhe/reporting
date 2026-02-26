@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RequestResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
@@ -23,6 +24,9 @@ class AttachmentsRelationManagerRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                SpatieMediaLibraryFileUpload::make('attachments')
+                    ->collection('hr-files')
+                    ->multiple(),
             ]);
     }
 

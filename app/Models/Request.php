@@ -37,7 +37,7 @@ class Request extends Model implements HasMedia
     }
 
     public function settlements(){
-        return $this->belongsToMany(Settlement::class);
+        return $this->belongsToMany(Settlement::class)->withPivot('is_done');
 
     }
 

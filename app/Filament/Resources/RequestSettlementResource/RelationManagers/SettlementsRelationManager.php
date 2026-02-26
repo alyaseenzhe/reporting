@@ -31,6 +31,10 @@ class SettlementsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
+
+                Tables\Columns\CheckboxColumn::make('is_done')
+                    ->label('تمت')
+                    ->toggleable()
             ])
             ->filters([
                 //
@@ -45,5 +49,33 @@ class SettlementsRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }    
+    }
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = auth()->user();
+
+        if ($user->role == 'hr') {
+            $query->whereHas('type', fn ($q) =>
+            $q->where('department', 'hr')
+            );
+        }
+
+        if ($user->role == 'u') {
+            $query->whereHas('type', fn ($q) =>
+            $q->where('department', 'finance')
+            );
+        }
+
+        if ($user->type == 'it') {
+            $query->whereHas('type', fn ($q) =>
+            $q->where('department', 'it')
+            );
+        }
+
+        return $query;
+    }
 }
