@@ -107,20 +107,22 @@
 {{--                                    <span x-text="expanded['{{ $item['ItemCode'] }}'] ? '-' : '+'"></span>--}}
                                 </td>
                                 <td  style=" border-left: 2px dashed #a8a8a8;   word-wrap: break-word; " class="border p-1 "  class="p-1 font-bold ">
-                                    <div class="flex flex-row justify-between mx-2">
+                                    <div class="flex flex-row justify-between mx-2 " style="width: 300px">
 
                                     {{$item['ItemCode']  .' - '.  $item['ItemName'] }}
 
-                                    <div>الوحدة:
-                                        <span style="color: #227dd7">
-                                                    {{$item["Unit"]}}
-                                                    </span>
-                                    </div>
+
                                     </div>
                                 </td>
 
+
                                 <td    style=" border-left: 2px dashed #a8a8a8;" class="border p-2 py-6 whitespace-nowrap" >
                                     <div class="flex flex-row justify-between mx-2">
+                                        <div>الوحدة:
+                                            <span style="color: #227dd7">
+                                                    {{$item["Unit"]}}
+                                                    </span>
+                                        </div>
                                         <div>اجمالي المبيعات:
                                             <span style="color: #227dd7;">  {{number_format($item['TotalQuantitySale'])}} </span>
                                         </div>
@@ -133,7 +135,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td  style="border-left: 2px solid black;" class="border p-1 whitespace-nowrap">
+                                <td  style="border-left: 2px solid black;" class="border p-1 ">
 
 
                                     <div class="flex flex-row justify-between mx-2">
