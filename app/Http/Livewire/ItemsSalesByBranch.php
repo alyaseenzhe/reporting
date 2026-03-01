@@ -626,6 +626,53 @@ class ItemsSalesByBranch extends Component
             })
             ->values();
 
+        $this->group_results = $this->group_results->map(function ($item) {
+            $itemCode = $item['ItemCode'];
+
+            // Build all unique branches for this item
+            $itemSales = collect($this->sap_results)
+                ->where('ItemCode', $itemCode)
+                ->groupBy('BPLId');
+
+            $allBranches = collect($this->sap_results)
+                ->where('ItemCode', $itemCode)
+                ->unique('BPLId')
+                ->map(fn($r) => [
+                    'BPLId'   => $r['BPLId'],
+                    'BPLName' => $r['BPLName'],
+                ])
+                ->values();
+
+            $totalQuantity = $itemSales->flatten(1)->sum('EmployeeTotalQty');
+
+            $branches = $allBranches->map(function ($branch) use ($itemSales, $totalQuantity) {
+                $branchRows = $itemSales->get($branch['BPLId'], collect());
+
+                $employees = $branchRows
+                    ->groupBy('SlpCode')
+                    ->map(fn($empRows) => [
+                        'EmployeeCode' => $empRows->first()['SlpCode'],
+                        'EmployeeName' => $empRows->first()['SlpName'],
+                        'Quantity'     => $empRows->sum('EmpQty'),
+                    ])
+                    ->values();
+
+                return [
+                    'BranchId' => $branch['BPLId'],
+                    'BranchName' => $branch['BPLName'],
+                    'TotalQuantitySaleByBranch' => $branchRows->sum('EmployeeTotalQty'),
+                    'TotalSalesPer' => $totalQuantity ? $branchRows->sum('EmployeeTotalQty') / $totalQuantity * 100 : 0,
+                    'employees_loaded' => true,
+                    'employees' => $employees,
+                ];
+            })
+                ->sortByDesc('TotalQuantitySaleByBranch')
+                ->values();
+
+            $item['branches'] = $branches;
+
+            return $item;
+        });
 
 
 //                $this->group_results = collect($sap_collection)
@@ -1194,7 +1241,13 @@ ORDER BY "CardCode"';
         }
         else
         {
-            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\'';
+//            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\'';
+            $vendorQuery = 'SELECT
+                          "CardCode" AS "VendorCode",
+                           "CardName" AS "VendorName"
+                            FROM AL_YASEEN_AGRI_PLIVE.OCRD
+                            WHERE "CardType" = \'S\'
+                             AND "CardCode" LIKE \'99%\'';
 
             $result = odbc_exec($conn, $vendorQuery);
             if (!$result)
@@ -1227,7 +1280,7 @@ ORDER BY "CardCode"';
 
         if (count($this->sap_codes) > 0) {
 
-            $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' => '5', '0104' => '6', '0105' => '7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' => '16', '0203' => '17'];
+            $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' => '5', '0104' => '6', '0105' => '7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14'];
             $sap_depts = [];
 
             $scribe_depts = ['0001' => '2', '0101' => '3', '0102' => '10', '0103' => '7', '0104' => '13', '0105' => '4', '0106' => '6', '0107' => '5', '0108' => '12', '0109' => '11', '0110' => '9', '0111' => '8', '0112' => '505', '0201' => '15', '0202' => '500', '0203' => '504'];
@@ -2338,7 +2391,7 @@ ItemBranches AS (
         B."BPLName"
     FROM ItemList I
     CROSS JOIN AL_YASEEN_AGRI_PLIVE.OBPL B
-    WHERE B."BPLId" IN (1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)
+    WHERE B."BPLId" IN (3,4,5,6,7,8,9,10,11,12,13,14)
 )
 --ItemPaged AS (
  --   SELECT "ItemCode"
