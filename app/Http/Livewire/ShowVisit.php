@@ -375,6 +375,8 @@ class ShowVisit extends Component
 
                 if ( $hasRecipientReview && $hasRequesterReview) {
                     $visit->update(['status' => 5]);
+                    Mail::to(['sadekr@alyaseenagri.com','mohammedsr@alyaseenagri.com'])->bcc('zahra@alyaseenagri.com')->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+
                 }
 
 //                $checkReviews = VisitEmp::where('visit_id', $this->visit_id)
