@@ -166,10 +166,10 @@
         </p>
     @elseif($type == 'reviews-done')
 
-        <h2 style="text-align: center; color: #007C91; margin-top: 10px;">📋 تم الانتهاء من تقييم الزيارة</h2>
+        <h2 style="text-align: center; color: #007C91; margin-top: 10px;">📋 تم تقييم الزيارة</h2>
         <p style="color: #007C91; font-size: 16px; margin: 20px 0; background-color: #e6f7fb; padding: 15px; border-radius: 10px;">
             أهلاً،<br>
-            تم الانتهاء من تقييم الزيارة، يمكنك الاطلاع عليها من خلال الدخول على رابط الصفحة الموجود بالأسفل ✅
+            تم تقييم الزيارة، يمكنك الاطلاع على التفاصيل من خلال الدخول على رابط الصفحة الموجود بالأسفل ✅
         </p>
 
     @elseif($type == 'reminder')
