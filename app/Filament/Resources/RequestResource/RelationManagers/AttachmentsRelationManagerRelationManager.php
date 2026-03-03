@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RequestResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -24,9 +25,32 @@ class AttachmentsRelationManagerRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                SpatieMediaLibraryFileUpload::make('attachments')
-                    ->collection('hr-files')
-                    ->multiple(),
+                Forms\Components\TextInput::make('file_name')
+                    ->required()
+                    ->maxLength(255),
+                Select::make('collection_name')
+                    ->label('Collection')
+                    ->options([
+                        'hr-files' => 'HR Files',
+                        'it-files' => 'IT Files',
+                        'finance-files' => 'Finance Files',
+                        'accounting-files' => 'Accounting Files',
+                        'employee-files' => 'Employee Files',
+                    ])
+                    ->required()
+                    ->default('hr-files'),
+
+                SpatieMediaLibraryFileUpload::make('media')
+                    ->collection(function ($get) {
+                        $collection = $get('collection_name');
+                        // fallback to default if empty
+                        return $collection ?: 'hr-files';
+                    })
+                    ->multiple()
+                    ->preserveFilenames() // keeps original filename
+                    ->required()
+                    ->reactive(),
+
             ]);
     }
 

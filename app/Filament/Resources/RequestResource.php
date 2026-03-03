@@ -33,7 +33,7 @@ class RequestResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('type')->label('النوع')->default('اخلاء طرف'),
                 SpatieMediaLibraryFileUpload::make('attachments')
-                    ->collection('hr-files')
+                    ->collection('employee-files')
                     ->multiple(),
                 Forms\Components\Textarea::make('reasons')->label('الأسباب'),
 

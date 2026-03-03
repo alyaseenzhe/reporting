@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\MediaRelationManagerResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MembersRelationManager extends RelationManager
 {
+
     protected static string $relationship = 'members';
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -24,8 +26,22 @@ class MembersRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+
+
+                Select::make('collection_name')
+                    ->label('Collection')
+                    ->options([
+                        'hr-files' => 'HR Files',
+                        'it-files' => 'IT Files',
+                        'finance-files' => 'Finance Files',
+                        'accounting-files' => 'Accounting Files',
+                        'employee-files' => 'Employee Files',
+                    ])
+                    ->required()
+                    ->default('hr-files'),
+
                 SpatieMediaLibraryFileUpload::make('attachments')
-                    ->collection('hr-files')
+                    ->collection(fn ($get) => $get('collection_name'))
                     ->multiple(),
 
             ]);

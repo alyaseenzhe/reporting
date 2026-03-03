@@ -49,16 +49,32 @@ class SettlementsRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
+            
     }
 
+    protected function getTableQuery(): Builder
+    {
+        $user = auth()->user();
 
+        $query = $this->getRelationship()->getQuery();
+
+        if ($user->role === 'a') {
+            $query->where('department', 'it');
+        } elseif ($user->role === 'hr') {
+            $query->where('department', 'hr');
+        } elseif ($user->role === 'it') {
+            $query->where('department', 'it');
+        }
+
+        return $query;
+    }
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
 
         $user = auth()->user();
 
-        if ($user->role == 'hr') {
+        if ($user->role == 'm') {
             $query->whereHas('type', fn ($q) =>
             $q->where('department', 'hr')
             );
@@ -70,7 +86,7 @@ class SettlementsRelationManager extends RelationManager
             );
         }
 
-        if ($user->type == 'it') {
+        if ($user->role == 'a') {
             $query->whereHas('type', fn ($q) =>
             $q->where('department', 'it')
             );
@@ -78,4 +94,13 @@ class SettlementsRelationManager extends RelationManager
 
         return $query;
     }
+
+    protected static function canEditRecord($record): bool
+    {
+        $user = auth()->user();
+
+        return $user->role === $record->department;
+    }
 }
+
+
