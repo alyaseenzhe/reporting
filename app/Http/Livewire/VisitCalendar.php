@@ -46,11 +46,8 @@ class VisitCalendar extends Component
         $this->loadVisits();
         $this->loadEmps();
         $this->approve();
-        $this->uniqueRequesters = collect($this->visits)
-            ->flatMap(function ($visit) {
-                return $visit['emps_requester'];
-            })
-            ->unique(fn($r) => $r['user']['id']);
+//        $this->uniqueRequesters = collect($this->visits)
+
 
         $user = Auth::user();
         $this->canViewAll = (
@@ -59,6 +56,22 @@ class VisitCalendar extends Component
 //                && $user->user->g)
             || $user->role == 'a'
         );
+
+        if($this->canViewAll) {
+            $this->uniqueRequesters = collect($this->calendarVisit)
+                ->flatMap(function ($visit) {
+                    return $visit['emps_requester'];
+                })
+                ->unique(fn($r) => $r['user']['id']);
+        }
+            else{
+                $this->uniqueRequesters = collect($this->visits)
+                    ->flatMap(function ($visit) {
+                        return $visit['emps_requester'];
+                    })
+                    ->unique(fn($r) => $r['user']['id']);
+            
+        }
 
         // If the logged-in user is one of the requesters → select them
         $authId = auth()->user()->id;
