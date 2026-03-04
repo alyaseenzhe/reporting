@@ -50,6 +50,7 @@ class Report11 extends Component
     public $sortBy = "code";
     public $sortDir = 'ASC';
     public $toggleDirection = false;
+    public $totalSalesByItemGroup;
 
 //    public function updatedSortBy()
 //    {
@@ -355,6 +356,25 @@ class Report11 extends Component
                 $this->group_results = $flattened;
                 // Step 2: Group by OldCode
                 $groupedByItemName = $flattened->groupBy('OldCode');
+
+
+                $this->totalSalesByItemGroup = $flattened
+                    ->groupBy('ItemGroup')
+                    ->map(function ($group) {
+                        return [
+                            'TotalSalesAmount' => $group->sum('TotalSalesAmount'),
+                            'Cost' => $group->sum('Cost'),
+                            'GrossProfit' => $group->sum('GrossProfit'),
+                            'TotalQuantitySold' => $group->sum('TotalQuantitySold'),
+                            'TransCount' => $group->sum('TransCount'),
+                            'AverageUnitPrice' => $group->sum('TotalQuantitySold') != 0
+                                ? $group->sum('TotalSalesAmount') / $group->sum('TotalQuantitySold')
+                                : 0,
+                            'GrossProfitPer' => $group->sum('Cost') != 0
+                                ? ($group->sum('GrossProfit') / $group->sum('Cost')) * 100
+                                : 0,
+                        ];
+                    })->toArray();
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'),
