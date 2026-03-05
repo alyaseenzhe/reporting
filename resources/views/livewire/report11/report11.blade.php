@@ -396,22 +396,22 @@
                             </div>
                         </label>
 
-                        <label class="cursor-pointer">
-                            <input
-                                type="radio"
-                                name="sortBy"
-                                value="GroupGrossProfitPer"
-                                wire:model.defer="sortBy"
-                                class="hidden peer"
-                            >
+{{--                        <label class="cursor-pointer">--}}
+{{--                            <input--}}
+{{--                                type="radio"--}}
+{{--                                name="sortBy"--}}
+{{--                                value="GroupGrossProfitPer"--}}
+{{--                                wire:model.defer="sortBy"--}}
+{{--                                class="hidden peer"--}}
+{{--                            >--}}
 
-                            <span class="block px-3 py-1.5 text-sm rounded border
-        peer-checked:bg-gray-600
-        peer-checked:text-white peer-checked:border-blue-600
-        hover:bg-gray-400 transition">
-                               النسبة
-                            </span>
-                        </label>
+{{--                            <span class="block px-3 py-1.5 text-sm rounded border--}}
+{{--        peer-checked:bg-gray-600--}}
+{{--        peer-checked:text-white peer-checked:border-blue-600--}}
+{{--        hover:bg-gray-400 transition">--}}
+{{--                               النسبة--}}
+{{--                            </span>--}}
+{{--                        </label>--}}
 
                             @endif
                     </div>
@@ -571,7 +571,9 @@
 
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
-                    <span class="mr-2 font-bold" wire:loading.remove wire:target="generateReport">
+                    <span class="mr-2 font-bold"
+                          wire:click="generateReport"
+                          wire:loading.remove wire:target="generateReport">
                         <span></span>
                         <span>إنشاء تقرير</span>
                     </span>
@@ -992,33 +994,33 @@
                 @elseif($report_type == 'byItemGroup')
 {{--                    <x-grouping :group_results="$group_results->toArray()" recordGroup="ItemGroup" :currentGroup="$currentGroup"/>--}}
         @foreach($group_results as $record)
-            @if($currentGroup != $record["ItemGroup"])
-        {{-- Output subtotals for the previous group --}}
-                @if($currentGroup !== null)
-            <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                    مجموع جزئي
-                </td>
-                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>
-                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                    {{number_format($itemGroup_item_subtotal, 2)}}
-                </td>
-                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                    {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                </td>
-                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                @endif
-            </tr>
-        @endif
+{{--            @if($currentGroup != $record["ItemGroup"])--}}
+{{--         Output subtotals for the previous group--}}
+{{--                @if($currentGroup !== null)--}}
+{{--            <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                    مجموع جزئي--}}
+{{--                </td>--}}
+{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
+{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
+{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                    {{number_format($itemGroup_item_subtotal, 2)}}--}}
+{{--                </td>--}}
+{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                    {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
+{{--                </td>--}}
+{{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
+{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
+{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
+{{--                @endif--}}
+{{--            </tr>--}}
+{{--        @endif--}}
 
-                    @php $currentGroup = $record["ItemGroup"]; @endphp
+{{--                    @php $currentGroup = $record["ItemGroup"]; @endphp--}}
 {{--        @php $currentGroup = $recordGroup; @endphp--}}
-        @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0;  @endphp
-    @endif
+{{--        @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0;  @endphp--}}
+{{--    @endif--}}
 
 {{--    @if($record[$recordGroup] != $item_group_code)--}}
 {{--            <?php $item_group_code = $record[$recordGroup]; ?>--}}
@@ -1040,6 +1042,30 @@
                 </div>
             </td>
         </tr>
+
+
+                    @php
+                        $currentItemGroup= $record['ItemGroup'];
+                        $subtotal = $totalSalesByItemGroup[$currentItemGroup] ?? null;
+                    @endphp
+
+                    @if($subtotal)
+                        <tr style="background:#f1d56f;font-weight:bold">
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount']*100, 2) }}%</td>
+
+                            @endif
+                        </tr>
+                    @endif
     @endif
     @if($record["OldCode"] != $item_group_itemCode_code)
             <?php $item_group_itemCode_code = $record["OldCode"]; ?>
@@ -1254,33 +1280,33 @@
                 @elseif($report_type == 'bySpeciality')
 
                     @foreach($group_results as $record)
-                        @if($currentGroup != $record["Speciality"])
+{{--                        @if($currentGroup != $record["Speciality"])--}}
 
-                            {{-- Output subtotals for the previous group --}}
-                            @if($currentGroup !== null)
-                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        مجموع جزئي
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($itemGroup_item_subtotal, 2)}}
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                    </td>
-                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                    @endif
-                                </tr>
-                            @endif
+{{--                            --}}{{-- Output subtotals for the previous group --}}
+{{--                            @if($currentGroup !== null)--}}
+{{--                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                        مجموع جزئي--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{number_format($itemGroup_item_subtotal, 2)}}--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
+{{--                                    </td>--}}
+{{--                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
+{{--                                    @endif--}}
+{{--                                </tr>--}}
+{{--                            @endif--}}
 
-                            @php $currentGroup = $record["Speciality"]; @endphp
-                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp
-                        @endif
+{{--                            @php $currentGroup = $record["Speciality"]; @endphp--}}
+{{--                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
+{{--                        @endif--}}
 
                         @if($record["Speciality"] != $item_group_code)
                                 <?php $item_group_code = $record["Speciality"]; ?>
@@ -1296,6 +1322,29 @@
                                     </div>
                                 </td>
                             </tr>
+                                @php
+                                    $currentSpeciality = $record['Speciality'];
+                                    $subtotal = $totalSalesBySpeciality[$currentSpeciality] ?? null;
+                                @endphp
+
+
+                                @if($subtotal)
+                                    <tr style="background:#f1d56f;font-weight:bold">
+                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount'] *100, 2) }}%</td>
+
+                                        @endif
+                                    </tr>
+                                @endif
                         @endif
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
@@ -1464,33 +1513,33 @@
                 @elseif($report_type == 'byMarketingType')
 
                     @foreach($group_results as $record)
-                        @if($currentGroup != $record["mrkt_type"])
+{{--                        @if($currentGroup != $record["mrkt_type"])--}}
 
-                            {{-- Output subtotals for the previous group --}}
-                            @if($currentGroup !== null)
-                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        مجموع جزئي
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($itemGroup_item_subtotal, 2)}}
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                    </td>
-                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                    @endif
-                                </tr>
-                            @endif
+{{--                            --}}{{-- Output subtotals for the previous group --}}
+{{--                            @if($currentGroup !== null)--}}
+{{--                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                        مجموع جزئي--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{number_format($itemGroup_item_subtotal, 2)}}--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
+{{--                                    </td>--}}
+{{--                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
+{{--                                    @endif--}}
+{{--                                </tr>--}}
+{{--                            @endif--}}
 
-                            @php $currentGroup = $record["mrkt_type"]; @endphp
-                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0;  @endphp
-                        @endif
+{{--                            @php $currentGroup = $record["mrkt_type"]; @endphp--}}
+{{--                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0;  @endphp--}}
+{{--                        @endif--}}
 
                         @if($record["mrkt_type"] != $item_group_code)
                                 <?php $item_group_code = $record["mrkt_type"]; ?>
@@ -1527,6 +1576,31 @@
                                     </div>
                                 </td>
                             </tr>
+
+
+                                @php
+                                    $currentMarketingType= $record['mrkt_type'];
+                                    $subtotal = $totalSales[$currentMarketingType] ?? null;
+                                @endphp
+
+                                @if($subtotal)
+                                    <tr style="background:#f1d56f;font-weight:bold">
+                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount']*100, 2) }}%</td>
+
+                                        @endif
+                                    </tr>
+                                @endif
+
                         @endif
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
@@ -1674,33 +1748,33 @@
 
                     @foreach($group_results as $record)
 
-                        @if($currentGroup != $record["VendorName"])
+{{--                        @if($currentGroup != $record["VendorName"])--}}
 
-                            {{-- Output subtotals for the previous group --}}
-                            @if($currentGroup !== null)
-                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        مجموع جزئي
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{number_format($itemGroup_item_subtotal, 2)}}
-                                    </td>
-                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                    </td>
-                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                    @endif
-                                </tr>
-                            @endif
+{{--                            --}}{{-- Output subtotals for the previous group --}}
+{{--                            @if($currentGroup !== null)--}}
+{{--                                <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                        مجموع جزئي--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{number_format($itemGroup_item_subtotal, 2)}}--}}
+{{--                                    </td>--}}
+{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
+{{--                                    </td>--}}
+{{--                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
+{{--                                    @endif--}}
+{{--                                </tr>--}}
+{{--                            @endif--}}
 
-                            @php $currentGroup = $record["VendorName"]; @endphp
-                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp
-                        @endif
+{{--                            @php $currentGroup = $record["VendorName"]; @endphp--}}
+{{--                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
+{{--                        @endif--}}
 
                         @if($record["VendorName"] != $item_group_code)
                                 <?php $item_group_code = $record["VendorName"]; ?>
@@ -1717,6 +1791,30 @@
                                     </div>
                                 </td>
                             </tr>
+
+                                @php
+                                    $currentVendor = $record['VendorName'];
+                                    $subtotal = $totalSales[$currentVendor] ?? null;
+                                @endphp
+
+
+                                @if($subtotal)
+                                    <tr style="background:#f1d56f;font-weight:bold">
+                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount'] *100, 2) }}%</td>
+
+                                        @endif
+                                    </tr>
+                                @endif
                         @endif
                         @if($record["OldCode"] != $item_group_itemCode_code)
                                 <?php $item_group_itemCode_code = $record["OldCode"]; ?>
@@ -1893,33 +1991,33 @@
                         @endphp
                         @foreach($outer_record as $record)
 
-                            @if($currentGroup != $record["BusinessPartnerCode"])
+{{--                            @if($currentGroup != $record["BusinessPartnerCode"])--}}
 
-                                {{-- Output subtotals for the previous group --}}
-                                @if($currentGroup !== null)
-                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">
-                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                            مجموع جزئي
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{number_format($itemGroup_item_subtotal, 2)}}
-                                        </td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}
-                                        </td>
-                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>
-                                        @endif
-                                    </tr>
-                                @endif
+{{--                                --}}{{-- Output subtotals for the previous group --}}
+{{--                                @if($currentGroup !== null)--}}
+{{--                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
+{{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                            مجموع جزئي--}}
+{{--                                        </td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                            {{number_format($itemGroup_item_subtotal, 2)}}--}}
+{{--                                        </td>--}}
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
+{{--                                        </td>--}}
+{{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
+{{--                                        @endif--}}
+{{--                                    </tr>--}}
+{{--                                @endif--}}
 
-                                @php $currentGroup = $record["BusinessPartnerCode"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp
-                            @endif
+{{--                                @php $currentGroup = $record["BusinessPartnerCode"]; @endphp--}}
+{{--                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
+{{--                            @endif--}}
 
                             @if($record["BusinessPartnerCode"] != $item_group_code)
                                     <?php $item_group_code = $record["BusinessPartnerCode"]; ?>
@@ -1937,6 +2035,28 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                    @php
+                                        $currentCustomer = $record['BusinessPartnerCode'];
+                                        $subtotal = $totalSales[$currentCustomer] ?? null;
+                                    @endphp
+                                    @if($subtotal)
+                                        <tr style="background:#f1d56f;font-weight:bold">
+                                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfitPer'], 2) }}%</td>
+
+                                            @endif
+                                        </tr>
+                                    @endif
                             @endif
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>
@@ -2132,7 +2252,7 @@
                         @endphp
                         @foreach($outer_record as $key => $record)
 
-                            @if($currentGroup != $record["EmployeeCode"])
+{{--                            @if($currentGroup != $record["EmployeeCode"])--}}
 
                                 {{-- Output subtotals for the previous group --}}
 {{--                                @if($currentGroup !== null)--}}
@@ -2157,9 +2277,9 @@
 {{--                                    </tr>--}}
 {{--                                @endif--}}
 
-                                @php $currentGroup = $record["EmployeeCode"]; @endphp
-                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp
-                            @endif
+{{--                                @php $currentGroup = $record["EmployeeCode"]; @endphp--}}
+{{--                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
+{{--                            @endif--}}
 
                             @if($record["EmployeeCode"] != $item_group_code)
                                     <?php $item_group_code = $record["EmployeeCode"]; ?>
@@ -2177,6 +2297,30 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                    @php
+                                        $currentEmployee= $record['EmployeeCode'];
+                                        $subtotal = $totalSales[$currentEmployee] ?? null;
+                                    @endphp
+
+
+                                    @if($subtotal)
+                                        <tr style="background:#f1d56f;font-weight:bold">
+                                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+
+                                            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
+                                                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount']*100, 2) }}%</td>
+
+                                            @endif
+                                        </tr>
+                                    @endif
                             @endif
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>

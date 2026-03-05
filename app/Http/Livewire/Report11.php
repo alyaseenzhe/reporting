@@ -51,6 +51,8 @@ class Report11 extends Component
     public $sortDir = 'ASC';
     public $toggleDirection = false;
     public $totalSalesByItemGroup;
+    public $totalSalesBySpeciality;
+    public $totalSales;
 
 //    public function updatedSortBy()
 //    {
@@ -358,23 +360,7 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
 
 
-                $this->totalSalesByItemGroup = $flattened
-                    ->groupBy('ItemGroup')
-                    ->map(function ($group) {
-                        return [
-                            'TotalSalesAmount' => $group->sum('TotalSalesAmount'),
-                            'Cost' => $group->sum('Cost'),
-                            'GrossProfit' => $group->sum('GrossProfit'),
-                            'TotalQuantitySold' => $group->sum('TotalQuantitySold'),
-                            'TransCount' => $group->sum('TransCount'),
-                            'AverageUnitPrice' => $group->sum('TotalQuantitySold') != 0
-                                ? $group->sum('TotalSalesAmount') / $group->sum('TotalQuantitySold')
-                                : 0,
-                            'GrossProfitPer' => $group->sum('Cost') != 0
-                                ? ($group->sum('GrossProfit') / $group->sum('Cost')) * 100
-                                : 0,
-                        ];
-                    })->toArray();
+
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'),
@@ -429,6 +415,27 @@ class Report11 extends Component
                 $this->group_results = $flattened;
                 // Step 2: Group by OldCode
                 $groupedByItemName = $flattened->groupBy('OldCode');
+
+
+                //Calculate subtotals
+
+                $this->totalSalesByItemGroup = $flattened
+                    ->groupBy('ItemGroup')
+                    ->map(function ($group) {
+                        return [
+                            'TotalSalesAmount' => $group->sum('TotalSalesAmount'),
+                            'Cost' => $group->sum('Cost'),
+                            'GrossProfit' => $group->sum('GrossProfit'),
+                            'TotalQuantitySold' => $group->sum('TotalQuantitySold'),
+                            'TransCount' => $group->sum('TransCount'),
+                            'AverageUnitPrice' => $group->sum('TotalQuantitySold') != 0
+                                ? $group->sum('TotalSalesAmount') / $group->sum('TotalQuantitySold')
+                                : 0,
+                            'GrossProfitPer' => $group->sum('Cost') != 0
+                                ? ($group->sum('GrossProfit') / $group->sum('Cost')) * 100
+                                : 0,
+                        ];
+                    })->toArray();
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
@@ -483,6 +490,26 @@ class Report11 extends Component
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
                 })->toArray();
+
+                // Step 4: Calculate
+                $this->totalSalesBySpeciality = $flattened
+                    ->groupBy('Speciality')
+                    ->map(function ($group) {
+                        return [
+                            'TotalSalesAmount' => $group->sum('TotalSalesAmount'),
+                            'Cost' => $group->sum('Cost'),
+                            'GrossProfit' => $group->sum('GrossProfit'),
+                            'TotalQuantitySold' => $group->sum('TotalQuantitySold'),
+                            'TransCount' => $group->sum('TransCount'),
+                            'AverageUnitPrice' => $group->sum('TotalQuantitySold') != 0
+                                ? $group->sum('TotalSalesAmount') / $group->sum('TotalQuantitySold')
+                                : 0,
+                            'GrossProfitPer' => $group->sum('Cost') != 0
+                                ? ($group->sum('GrossProfit') / $group->sum('Cost')) * 100
+                                : 0,
+                        ];
+                    })->toArray();
+
             }
             else if ($this->report_type == "byMarketingType") {
 //                dd($merged_results);
@@ -535,6 +562,29 @@ class Report11 extends Component
                 // Step 3: Calculate total sales amount for each group
                 $this->totalSalesByItem = $groupedByItemName->map(function ($group) {
                     return [$group->sum('TotalSalesAmount'), $group->sum('Cost'), $group->sum('GrossProfit'), $group->sum('TotalQuantitySold'), $group->sum('TransCount') ];
+                })->toArray();
+
+                // Step 4: Calculate the subtotlas
+
+                $groupedByMarketing = $flattened->groupBy('mrkt_type');
+
+                $this->totalSales = $groupedByMarketing->map(function ($group) {
+
+                    $sales = $group->sum('TotalSalesAmount');
+                    $qty   = $group->sum('TotalQuantitySold');
+                    $cost  = $group->sum('Cost');
+                    $gross = $group->sum('GrossProfit');
+                    $trans = $group->sum('TransCount');
+
+                    return [
+                        'TotalSalesAmount'   => $sales,
+                        'TotalQuantitySold'  => $qty,
+                        'AverageUnitPrice'   => $qty != 0 ? $sales / $qty : 0,
+                        'Cost'               => $cost,
+                        'GrossProfit'        => $gross,
+                        'GrossProfitPer'     => $sales != 0 ? ($gross / $sales) * 100 : 0,
+                        'TransCount'         => $trans,
+                    ];
                 })->toArray();
             }
             else if ($this->report_type == "byVendor") { // bug
@@ -591,6 +641,30 @@ class Report11 extends Component
                 })
 //                    ->sortBy('GroupTotalSales')
                     ->toArray();
+
+
+                // Step 4: Calculate Subtotals
+
+                $groupedByVendor = $flattened->groupBy('VendorName');
+
+                $this->totalSales = $groupedByVendor->map(function ($group) {
+
+                    $sales = $group->sum('TotalSalesAmount');
+                    $qty   = $group->sum('TotalQuantitySold');
+                    $cost  = $group->sum('Cost');
+                    $gross = $group->sum('GrossProfit');
+                    $trans = $group->sum('TransCount');
+
+                    return [
+                        'TotalSalesAmount'   => $sales,
+                        'TotalQuantitySold'  => $qty,
+                        'AverageUnitPrice'   => $qty != 0 ? $sales / $qty : 0,
+                        'Cost'               => $cost,
+                        'GrossProfit'        => $gross,
+                        'GrossProfitPer'     => $sales != 0 ? ($gross / $sales) * 100 : 0,
+                        'TransCount'         => $trans,
+                    ];
+                })->toArray();
 
             }
 
@@ -661,12 +735,19 @@ class Report11 extends Component
                             });
                     });
 
+
+                $groupedByCustomer =  $flattenedItems->groupBy('BusinessPartnerCode');
+
+                $this->subtotals($groupedByCustomer);
+
                 $this->group_results = $this->group_results
 //                    ->sortBy(['totalSales','GroupGrossProfit'])
                     ->values(); // reset keys
 // Step 2: Convert to array if needed
                 $this->totalSalesByItem = $groupedByPartnerAndItem->toArray();
 //                dd($this->totalSalesByItem);
+
+
             }
             else if ($this->report_type == "byEmployee") { // bug
 
@@ -785,7 +866,15 @@ class Report11 extends Component
 //                dd($this->group_results);
 
 //                dd($this->totalSalesByItem);
+
+
+                $groupedByEmployee =  $flattenedItems->groupBy('EmployeeCode');
+
+                $this->subtotals($groupedByEmployee);
             }
+
+
+
 //            else if ($this->report_type == "byCustomerX") { // bug
 //                $groups = $merged_results->groupBy(['BusinessPartnerCode', function ($item) {
 ////                    dd(gettype($item));
@@ -854,6 +943,31 @@ class Report11 extends Component
         $this->emit('finished');
     }
 
+    public function subtotals($groupedBy){
+
+//        $groupedByMarketing = $flattened->groupBy('mrkt_type');
+
+        $this->totalSales = $groupedBy->map(function ($group) {
+
+            $sales = $group->sum('TotalSalesAmount');
+            $qty   = $group->sum('TotalQuantitySold');
+            $cost  = $group->sum('Cost');
+            $gross = $group->sum('GrossProfit');
+            $trans = $group->sum('TransCount');
+
+            return [
+                'TotalSalesAmount'   => $sales,
+                'TotalQuantitySold'  => $qty,
+                'AverageUnitPrice'   => $qty != 0 ? $sales / $qty : 0,
+                'Cost'               => $cost,
+                'GrossProfit'        => $gross,
+                'GrossProfitPer'     => $sales != 0 ? ($gross / $sales) * 100 : 0,
+                'TransCount'         => $trans,
+            ];
+        })->toArray();
+
+
+    }
     public function itemGroups() {
 
         $this->itemGrp = [];
@@ -923,7 +1037,9 @@ class Report11 extends Component
         }
         else
         {
-            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName" FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\'';
+            $vendorQuery = 'SELECT "CardCode" AS "VendorCode", "CardName" AS "VendorName"
+                            FROM AL_YASEEN_AGRI_PLIVE.OCRD WHERE "CardType" = \'S\'
+                             AND "CardCode" LIKE \'99%\'';
 
             $result = odbc_exec($conn, $vendorQuery);
             if (!$result)
@@ -2597,7 +2713,7 @@ GROUP BY
                }
                 }
 
-//                dd($sql);
+//               dd($sql);
 
                 $result = odbc_exec($conn, $sql);
                 if (!$result)
