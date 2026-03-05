@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RequestResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
@@ -22,34 +23,36 @@ class AttachmentsRelationManagerRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+       TextInput::make('name')
+                    ->label('Name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('file_name')
+       TextInput::make('file_name')
+                    ->label('Name')
                     ->required()
                     ->maxLength(255),
-                Select::make('collection_name')
-                    ->label('Collection')
-                    ->options([
-                        'hr-files' => 'HR Files',
-                        'it-files' => 'IT Files',
-                        'finance-files' => 'Finance Files',
-                        'accounting-files' => 'Accounting Files',
-                        'employee-files' => 'Employee Files',
-                    ])
-                    ->required()
-                    ->default('hr-files'),
+     Forms\Components\Hidden::make('disk')->default('public'),
 
-                SpatieMediaLibraryFileUpload::make('media')
-                    ->collection(function ($get) {
-                        $collection = $get('collection_name');
-                        // fallback to default if empty
-                        return $collection ?: 'hr-files';
-                    })
-                    ->multiple()
-                    ->preserveFilenames() // keeps original filename
-                    ->required()
-                    ->reactive(),
+     Select::make('collection_name')
+         ->label('Collection')
+         ->options([
+             'hr-files' => 'HR Files',
+             'it-files' => 'IT Files',
+             'finance-files' => 'Finance Files',
+             'accounting-files' => 'Accounting Files',
+             'employee-files' => 'Employee Files',
+         ])
+         ->default('hr-files')
+         ->required()
+         ->reactive(),
+
+     SpatieMediaLibraryFileUpload::make('attachments')
+         ->collection(fn($get) => $get('collection_name') ?: 'hr-files')
+         ->multiple()
+         ->preserveFilenames()
+         ->required()
+         ->disk('public')
+
 
             ]);
     }
@@ -59,23 +62,20 @@ class AttachmentsRelationManagerRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('file_name')
-                    ->label('اسم الملف')
-                    ->url(fn ($record) => $record->getUrl()) // رابط الملف
-                    ->openUrlInNewTab(),
-
-                Tables\Columns\TextColumn::make('mime_type'),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->label('File')
+                    ->formatStateUsing(fn ($record) =>
+                    "<a href='{$record->getUrl()}' target='_blank'>{$record->file_name}</a>"
+                    )
+                    ->html()
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+//                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

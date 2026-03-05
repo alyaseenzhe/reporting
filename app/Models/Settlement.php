@@ -25,6 +25,10 @@ class Settlement extends Model implements HasMedia
     $this->addMediaCollection('finance-files');
 }
 
+  public function request(){
+
+        return $this->belongsToMany(Request::class)->withPivot('is_done');
+  }
 
 }
 

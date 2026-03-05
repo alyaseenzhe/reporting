@@ -18,8 +18,8 @@ class CreateRequest extends CreateRecord
         $types = Settlement::all();
 
         foreach ($types as $type) {
-            $request->settlements()->attach([
-                'settlement_id' => $type->id,
+            $request->settlements()->attach(
+                $type->id,[
                 'is_done' => false,
             ]);
         }

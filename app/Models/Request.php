@@ -43,14 +43,26 @@ class Request extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('employee-files')
-        >useDisk('public');
-        $this->addMediaCollection('hr-files')
-        >useDisk('public');
-        $this->addMediaCollection('accounting-files');
-        $this->addMediaCollection('it-files');
-        $this->addMediaCollection('finance-files');
+        $this->addMediaCollection('hr-files')->useDisk('public');
+        $this->addMediaCollection('it-files')->useDisk('public');
+        $this->addMediaCollection('finance-files')->useDisk('public');
+        $this->addMediaCollection('accounting-files')->useDisk('public');
+        $this->addMediaCollection('employee-files')->useDisk('public');
+
+
+        $collections = [
+            'hr-files',
+            'it-files',
+            'finance-files',
+            'accounting-files',
+            'employee-files'
+        ];
+        foreach ($collections as $collection) {
+            $this->addMediaCollection($collection)
+                ->useDisk('public');
+        }
     }
+
 
 
 }

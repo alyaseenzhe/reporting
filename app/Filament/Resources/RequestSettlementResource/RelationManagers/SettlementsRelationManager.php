@@ -9,7 +9,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use Filament\Tables\Actions\Action;
 class SettlementsRelationManager extends RelationManager
 {
     protected static string $relationship = 'settlements';
@@ -30,12 +30,14 @@ class SettlementsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
 
-                Tables\Columns\CheckboxColumn::make('is_done')
-                    ->label('تمت')
-                    ->toggleable()
-            ])
+//                Tables\Columns\CheckboxColumn::make('is_done')
+//                    ->label('تمت')
+//                    ->toggleable()
+
+                        ])
+
             ->filters([
                 //
             ])
@@ -45,15 +47,26 @@ class SettlementsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('toggle_done')
+                    ->label('Toggle Done')
+                    ->icon('heroicon-o-refresh')
+                    ->action(function ($record) {
+                        if ($record && $record->pivot) {
+                            $record->pivot->update([
+                                'is_done' => !$record->pivot->is_done
+                            ]);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-            
+
     }
 
     protected function getTableQuery(): Builder
     {
+        $this->getRelationship()->getQuery();
         $user = auth()->user();
 
         $query = $this->getRelationship()->getQuery();
