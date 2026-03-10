@@ -1,4 +1,7 @@
-<div>
+@section('title')
+    18- تقرير عمليات الأصناف
+@stop
+<div x-data="{showCost:false, sortBy: @entangle('sortBy'), sortDir: @entangle('sortDir') }">
     <div class="mb-1">
         <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -349,6 +352,8 @@
                                 type="radio"
                                 name="sortBy"
                                 value="code"
+                                x-model="sortBy"
+                                @click="sortDir='ASC'"
                                 wire:model.defer="sortBy"
                                 class="sr-only peer"
                             >
@@ -366,7 +371,9 @@
                                 type="radio"
                                 name="sortBy"
                                 value="GroupTotalSales"
-                                wire:model.defer="sortBy"
+                                wire:model="sortBy"
+                                x-model="sortBy"
+                                @click="sortDir='desc'"
                                 class="hidden peer"
                             >
 
@@ -379,7 +386,7 @@
                         </label>
 
                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                        <label class="cursor-pointer">
+                        <label class="cursor-pointer " x-show="showCost">
                             <input
                                 type="radio"
                                 name="sortBy"
@@ -440,7 +447,7 @@
                                 rounded border
             peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600
             hover:bg-gray-400 transition flex items-center gap-1">
-                                    ASC ▲
+                                    تصاعدي ▲
                                 </span>
                             </label>
 
@@ -458,7 +465,7 @@
                                 <div class="px-2 py-1 text-sm rounded border
             peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
             hover:bg-gray-400 transition flex items-center gap-1">
-                                    DESC ▼
+                                    تنازلي ▼
                                 </div>
                             </label>
 {{--                        </div>--}}
@@ -572,7 +579,7 @@
                 <div class="mt-8 text-center w-full">
                     <button id="gen-report" style="background-color: #026832;" class="w-full btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold"
-                          wire:click="generateReport"
+
                           wire:loading.remove wire:target="generateReport">
                         <span></span>
                         <span>إنشاء تقرير</span>
@@ -598,7 +605,7 @@
                             <div><label class="font-bold mb-5 text-sm">خيارات اظهار الأعمدة الخاصة</label></div>
                             <div>
                                 <span class="text-xs">(</span>
-                                <input id="cost" type="checkbox" value="cost" onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="cost" type="checkbox" @click="showCost = !showCost" value="cost"  onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>
                                 <span class="text-xs">)</span>
                             </div>
@@ -1053,9 +1060,11 @@
                         <tr style="background:#f1d56f;font-weight:bold">
                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+{{--                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+{{--                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
+                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
 
                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -1332,9 +1341,11 @@
                                     <tr style="background:#f1d56f;font-weight:bold">
                                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
 
                                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -1587,9 +1598,11 @@
                                     <tr style="background:#f1d56f;font-weight:bold">
                                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
 
                                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -1802,9 +1815,11 @@
                                     <tr style="background:#f1d56f;font-weight:bold">
                                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
                                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
+{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
 
                                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -1890,6 +1905,7 @@
                                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                     {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
                                 </td>
+{{--                                <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">--}}
                                 <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                     {{number_format($totalSalesByItem[$record["OldCode"]][3])}}
                                 </td>
@@ -2044,9 +2060,11 @@
                                         <tr style="background:#f1d56f;font-weight:bold">
                                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
 
                                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -2061,8 +2079,11 @@
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <tr class="summary" {{--onclick="show_hide({{$record["OldCode"]}})"--}} style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">
+{{--                                        +--}}
+
+                                    </td>
                                     <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row justify-between">
                                             <div>نوع المادة:
@@ -2252,34 +2273,6 @@
                         @endphp
                         @foreach($outer_record as $key => $record)
 
-{{--                            @if($currentGroup != $record["EmployeeCode"])--}}
-
-                                {{-- Output subtotals for the previous group --}}
-{{--                                @if($currentGroup !== null)--}}
-{{--                                    <tr style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
-{{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                                            مجموع جزئي--}}
-{{--                                        </td>--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
-
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                            {{number_format($itemGroup_item_subtotal, 2)}}--}}
-{{--                                        </td>--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                            {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
-{{--                                        </td>--}}
-{{--                                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
-{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
-{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
-{{--                                        @endif--}}
-{{--                                    </tr>--}}
-{{--                                @endif--}}
-
-{{--                                @php $currentGroup = $record["EmployeeCode"]; @endphp--}}
-{{--                                @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
-{{--                            @endif--}}
 
                             @if($record["EmployeeCode"] != $item_group_code)
                                     <?php $item_group_code = $record["EmployeeCode"]; ?>
@@ -2308,9 +2301,11 @@
                                         <tr style="background:#f1d56f;font-weight:bold">
                                             <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">مجموع جزئي: </td>
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TransCount']) }}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalQuantitySold']) }}</td>--}}
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['TotalSalesAmount'], 2) }}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>
+{{--                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{ number_format($subtotal['AverageUnitPrice'], 2) }}</td>--}}
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap"></td>
 
                                             @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
 
@@ -2325,8 +2320,10 @@
                             @if($record["OldCode"] != $item_group_itemCode_code)
                                     <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                                <tr class="summary" onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
+                                <tr class="summary" {{-- onclick="show_hide({{$record["OldCode"]}})" --}} style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
+                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">
+{{--                                        +--}}
+                                    </td>
                                     <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                         <div class="flex flex-row justify-between">
                                             <div>نوع المادة:
@@ -2546,14 +2543,18 @@
                             {{number_format($itemGroup_trans_total)}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{number_format($itemGroup_quantity_total)}}
                         </td>
+{{--                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{number_format($itemGroup_quantity_total)}}--}}
+{{--                        </td>--}}
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
                             {{number_format($itemGroup_item_total, 2)}}
                         </td>
                         <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">
-                            {{ $itemGroup_quantity_total != 0 ? number_format($itemGroup_item_total/$itemGroup_quantity_total, 2) : 0 }}
                         </td>
+{{--                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
+{{--                            {{ $itemGroup_quantity_total != 0 ? number_format($itemGroup_item_total/$itemGroup_quantity_total, 2) : 0 }}--}}
+{{--                        </td>--}}
                         @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_total, 2)}}</td>
                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_total, 2)}}</td>
@@ -2577,8 +2578,8 @@
     @endif
 </div>
 
-@section('fixed-title')
-    <span style="text-align: center">تقرير عمليات الأصناف</span>
-@stop
+{{--@section('fixed-title')--}}
+{{--    <span style="text-align: center">تقرير عمليات الأصناف</span>--}}
+{{--@stop--}}
 @include('livewire.report11.script')
 

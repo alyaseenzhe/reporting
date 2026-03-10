@@ -74,7 +74,16 @@ class Report11 extends Component
 //    protected $listeners = ['setCatType'];
 
 
-
+//    public function updatedSortBy($value)
+//    {
+//        if ($value === 'GroupTotalSales') {
+//            $this->sortDir = 'desc';
+//        }
+//
+//        if ($value === 'code') {
+//            $this->sortDir = 'ASC';
+//        }
+//    }
 
 //    public function sortBy($field)
 //    {
@@ -104,6 +113,9 @@ class Report11 extends Component
     }
 
     public function mount() {
+        $this->sortBy = 'code';
+        $this->sortDir = 'ASC';
+
         $this->product_lists();
         $this->employees();
 
