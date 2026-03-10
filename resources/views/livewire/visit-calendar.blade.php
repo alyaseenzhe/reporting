@@ -227,16 +227,19 @@
                             <th class="border p-2 whitespace-nowrap">
                                 <div class="text-sm">تاريخ الانشاء</div>
                             </th>
-                            <th class="border p-2 whitespace-nowrap">
-                                <div class="font-semibold"></div>
-                            </th>
+{{--                            <th class="border p-2 whitespace-nowrap">--}}
+{{--                                <div class="font-semibold"></div>--}}
+{{--                            </th>--}}
                         </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-gray-100">
 
 
                         @forelse($visits as $visit)
-                            <tr style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
+                            <tr
+                                class="h-16"
+                                onclick="window.open('{{ route('show.visit', ['id' => $visit['id']]) }}', '_blank')"
+                                style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
 
                                 <td class="border p-2 whitespace-nowrap">
                                     <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
@@ -337,25 +340,25 @@
                                         {{\Carbon\Carbon::parse($visit["created_at"], null)->format('d-m-Y')}}
                                     </div>
                                 </td>
-                                <td class="p-2 whitespace-nowrap sm:flex justify-center">
-                                    <div class="m-1.5">
-                                        <a
-                                            {{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
-                                            href="{{ route('show.visit', ['id' => $visit["id"]]) }}"
-                                            class="btn border-gray-200 hover:border-gray-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"
-                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
-                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                <circle cx="12" cy="12" r="2"/>
-                                                <path
-                                                    d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>
-                                            </svg>
+{{--                                <td class="p-2 whitespace-nowrap sm:flex justify-center">--}}
+{{--                                    <div class="m-1.5">--}}
+{{--                                        <a--}}
+{{--                                            --}}{{--                                        href="{{ route('show.daily-report', ['id' => $record->id]) }}"--}}
+{{--                                            href="{{ route('show.visit', ['id' => $visit["id"]]) }}"--}}
+{{--                                            class="btn border-gray-200 hover:border-gray-300">--}}
+{{--                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 shrink-0"--}}
+{{--                                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"--}}
+{{--                                                 stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>--}}
+{{--                                                <circle cx="12" cy="12" r="2"/>--}}
+{{--                                                <path--}}
+{{--                                                    d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"/>--}}
+{{--                                            </svg>--}}
 
-                                        </a>
-                                    </div>
+{{--                                        </a>--}}
+{{--                                    </div>--}}
 
-                                </td>
+{{--                                </td>--}}
                             </tr>
                         @empty
                             <tr>
@@ -863,7 +866,8 @@
                     console.log(visit)
                     if (isAllowed || canViewAll) {
                         // ✅ Go to the URL
-                        window.location.href = `/show-visit/${info.event.id}`;
+                        // window.location.href = `/show-visit/${info.event.id}`;
+                        window.open(`/show-visit/${info.event.id}`, '_blank');
                     } else {
                         // 🚫 Show alert or popup
                         Swal.fire({

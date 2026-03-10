@@ -57,12 +57,26 @@ class VisitCalendar extends Component
             || $user->role == 'a'
         );
 
+//        if($this->canViewAll) {
+//            $this->uniqueRequesters = collect($this->calendarVisit)
+//                ->flatMap(function ($visit) {
+//                    return $visit['emps_requester'];
+//                })
+//                ->unique(fn($r) => $r['user']['id']);
+//        }
         if($this->canViewAll) {
-            $this->uniqueRequesters = collect($this->calendarVisit)
+            $this->uniqueRequesters = Visit::with([
+                'requester',
+                'emps',
+                'emps_recipients.user',
+                'emps_requester.user',
+            ])
+                ->get()
                 ->flatMap(function ($visit) {
                     return $visit['emps_requester'];
                 })
-                ->unique(fn($r) => $r['user']['id']);
+                ->unique(fn($r) => $r['user']['id'])
+                ->values();
         }
             else{
                 $this->uniqueRequesters = collect($this->visits)
@@ -70,7 +84,7 @@ class VisitCalendar extends Component
                         return $visit['emps_requester'];
                     })
                     ->unique(fn($r) => $r['user']['id']);
-            
+
         }
 
         // If the logged-in user is one of the requesters → select them
