@@ -220,9 +220,7 @@
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">الموظف</th>
                             <th style="border: 2px solid black; background-color: #fff8ef" class="col-id-no fixed-header border p-2 whitespace-nowrap">النسبة</th>
                         </tr>
-{{--                        @dd($employee_branch_names)--}}
                         @foreach($employee_branch_names as $branch_key => $branch_emps)
-
                             <tr wire:key="branch-code-{{$branch_key}}-{{time()}}" style="background-color: #dcdcdc;">
                                 <td colspan="3">
                                     @if($branch_key == "0101")
@@ -256,9 +254,9 @@
                             </tr>
                             @foreach($branch_emps as $key => $emp)
 
-                                @dd($emp_code = $emps->where('id', $emp)->first()['emp_code'], $emp_code = $emps->where('id', $emp)->first()->emp_code)
-{{--                                @php $emp_code = $emps->where('id', $emp)->first()['emp_code']; @endphp--}}
-                                @php  $emp_code = $emps->where('id', $emp)->first()->emp_code; @endphp
+
+                                {{--                                @php $emp_code = $emps->where('id', $emp)->first()['emp_code']; @endphp--}}
+                                @php  $emp_code = $emps->where('id', $emp)->first()?->emp_code; @endphp
                                 <tr wire:key="emp-code-{{$key}}-{{time()}}" style="background-color: #FFFFFF">
                                     {{--                                <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $employee->name }}</td>--}}
                                     <td style="border: 2px solid black; z-index: 10; padding: 10px;" class="border">{{ $emps->where('id', $emp)->first() ? $emps->where('id', $emp)->first()['emp_code'] : null}}</td>
