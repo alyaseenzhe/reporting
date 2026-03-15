@@ -265,7 +265,9 @@
         <div class="w-full">
             <label class="block font-bold mb-6 text-xs">ابلاغ الموظفين</label>
             @foreach($record->emps_recipients as $req)
+                @if($req->user?->is_active)
                 <span style="color: #5222e1">{{ $req->user?->name }}@if (!$loop->last), @endif</span>
+                @endif
             @endforeach
         </div>
     </div>
@@ -280,16 +282,34 @@
             <label class="block font-bold mb-6 text-xs">تاريخ نهاية الزيارة</label>
             <div
                 {{--                        style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->addDays(-1)->format('Y-m-d') }}</div>--}}
-                style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->format('Y-m-d') }}</div>
+                style="color: #5222e1">
+
+                {{ \Carbon\Carbon::parse($record->end)->format('Y-m-d') }}
+
+            </div>
         </div>
         <div class="w-full">
             <label class="block font-bold mb-6 text-xs">وقت الزيارة</label>
-            <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->start)->format('h:i A') }}</div>
+            <div style="color: #5222e1">
+
+                @if(\Carbon\Carbon::parse($record->start)->format('h:i A') == '12:00 AM')
+
+                @else
+                {{ \Carbon\Carbon::parse($record->start)->format('h:i A') }}
+                @endif
+            </div>
         </div>
 
         <div class="w-full">
             <label class="block font-bold mb-6 text-xs">وقت الانتهاء</label>
-            <div style="color: #5222e1">{{ \Carbon\Carbon::parse($record->end)->format('h:i A') }}</div>
+            <div style="color: #5222e1">
+                @if(\Carbon\Carbon::parse($record->start)->format('h:i A') == '12:00 AM')
+
+                @else
+                {{ \Carbon\Carbon::parse($record->end)->format('h:i A') }}
+
+                @endif
+            </div>
         </div>
     </div>
 

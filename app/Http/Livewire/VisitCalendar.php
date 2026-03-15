@@ -194,6 +194,7 @@ class VisitCalendar extends Component
                     ->orWhere('group', 8)
                     ->orWhere('group', 12);
             })
+            ->where('is_active', 1)
             ->select('id', 'sales_dept_code', 'name', 'group')
             ->orderBy('sales_dept_code', 'asc')
             ->get()
