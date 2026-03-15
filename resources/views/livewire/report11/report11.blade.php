@@ -1001,51 +1001,21 @@
                 @elseif($report_type == 'byItemGroup')
 {{--                    <x-grouping :group_results="$group_results->toArray()" recordGroup="ItemGroup" :currentGroup="$currentGroup"/>--}}
         @foreach($group_results as $record)
-{{--            @if($currentGroup != $record["ItemGroup"])--}}
-{{--         Output subtotals for the previous group--}}
-{{--                @if($currentGroup !== null)--}}
-{{--            <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
-{{--                <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                    مجموع جزئي--}}
-{{--                </td>--}}
-{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
-{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
-{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                    {{number_format($itemGroup_item_subtotal, 2)}}--}}
-{{--                </td>--}}
-{{--                <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                    {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
-{{--                </td>--}}
-{{--                @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
-{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
-{{--                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
-{{--                @endif--}}
-{{--            </tr>--}}
-{{--        @endif--}}
 
-{{--                    @php $currentGroup = $record["ItemGroup"]; @endphp--}}
-{{--        @php $currentGroup = $recordGroup; @endphp--}}
-{{--        @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0;  @endphp--}}
-{{--    @endif--}}
-
-{{--    @if($record[$recordGroup] != $item_group_code)--}}
-{{--            <?php $item_group_code = $record[$recordGroup]; ?>--}}
                 @if($record["ItemGroup"] != $item_group_code)
                     <?php $item_group_code = $record["ItemGroup"]; ?>
 
         <tr style="background-color: #faebd7; font-weight: bold; color: red;">
-            {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-            {{--                                        {{$record["OldCode"]}}--}}
-            {{--                                    </td>--}}
+
             <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                 <div class="flex flex-row">
 {{--                    <div>{{$record[$recordGroup]}}</div>--}}
-                                            <div>{{$record["ItemGroup"]}}</div>
-                    {{--                                            <div>الصنف: {{$record["ItemName"]}}</div>--}}
-                    {{--                                            <div>الوحدة: {{$record["SalUnitMsr"]}}</div>--}}
-                    {{--                                            <div>التميز: {{$record['Speciality']}}</div>--}}
-                    {{--                                            <div>المورد: {{$record["VendorName"]}}</div>--}}
+{{--                    @dd($numberOfItems[$record["ItemGroup"]])--}}
+                <div class="flex ">{{$record["ItemGroup"]}} </div>
+                    <div class="mx-6">
+                        <p  class="mx-6 text-gray-700">   عدد الأصناف : <span style="color: #227dd7">{{$numberOfItems[$record["ItemGroup"]]}}</span></p>
+                    </div>
+
                 </div>
             </td>
         </tr>
@@ -1289,33 +1259,7 @@
                 @elseif($report_type == 'bySpeciality')
 
                     @foreach($group_results as $record)
-{{--                        @if($currentGroup != $record["Speciality"])--}}
 
-{{--                            --}}{{-- Output subtotals for the previous group --}}
-{{--                            @if($currentGroup !== null)--}}
-{{--                                <tr wire:key="rec-{{ now() }}" style="border-top: 2px solid black; background-color: #f1d56f; font-weight: bold">--}}
-{{--                                    <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
-{{--                                        مجموع جزئي--}}
-{{--                                    </td>--}}
-{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_trans_subtotal)}}</td>--}}
-{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">{{number_format($itemGroup_quantity_subtotal)}}</td>--}}
-{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                        {{number_format($itemGroup_item_subtotal, 2)}}--}}
-{{--                                    </td>--}}
-{{--                                    <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap">--}}
-{{--                                        {{ $itemGroup_quantity_subtotal != 0 ? number_format($itemGroup_item_subtotal/$itemGroup_quantity_subtotal, 2) : 0 }}--}}
-{{--                                    </td>--}}
-{{--                                    @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_cost_subtotal, 2)}}</td>--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{number_format($itemGroup_gross_subtotal, 2)}}</td>--}}
-{{--                                        <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ $itemGroup_item_subtotal == 0 ? 0 : number_format(($itemGroup_gross_subtotal/$itemGroup_item_subtotal)*100, 2)}}</td>--}}
-{{--                                    @endif--}}
-{{--                                </tr>--}}
-{{--                            @endif--}}
-
-{{--                            @php $currentGroup = $record["Speciality"]; @endphp--}}
-{{--                            @php $itemGroup_item_subtotal = 0; $itemGroup_cost_subtotal = 0; $itemGroup_gross_subtotal = 0; $itemGroup_quantity_subtotal = 0; $itemGroup_trans_subtotal = 0  @endphp--}}
-{{--                        @endif--}}
 
                         @if($record["Speciality"] != $item_group_code)
                                 <?php $item_group_code = $record["Speciality"]; ?>
@@ -1327,6 +1271,9 @@
                                 <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
                                     <div class="flex flex-row">
                                         <div>مميز {{$record["Speciality"]}}</div>
+                                        <div class="mx-6">
+                                            <p  class="mx-6 text-gray-700">   عدد الأصناف : <span style="color: #227dd7">{{$numberOfItems[$record["Speciality"]]}}</span></p>
+                                        </div>
 
                                     </div>
                                 </td>
@@ -1800,6 +1747,10 @@
                                     <div class="flex flex-row">
                                         <div>
                                             {{ $record["VendorName"] }}
+                                        </div>
+
+                                        <div class="mx-6">
+                                            <p  class="mx-6 text-gray-700">   عدد الأصناف : <span style="color: #227dd7">{{$numberOfItems[$record["VendorName"]]}}</span></p>
                                         </div>
                                     </div>
                                 </td>
@@ -2286,6 +2237,11 @@
                                             <div>
                                                 {{--                                                {{ $record["VendorName"] }}--}}
                                                 {{ $record["EmployeeCode"] }} - {{ $record["EmployeeName"] .'- '. __($record["Department"] )}}
+                                            </div>
+
+
+                                            <div class="mx-6">
+                                                <p  class="mx-6 text-gray-700">   عدد الأصناف : <span style="color: #227dd7">{{$numberOfItems[$record["EmployeeCode"]]}}</span></p>
                                             </div>
                                         </div>
                                     </td>

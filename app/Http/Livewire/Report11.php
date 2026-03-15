@@ -53,6 +53,7 @@ class Report11 extends Component
     public $totalSalesByItemGroup;
     public $totalSalesBySpeciality;
     public $totalSales;
+    public $numberOfItems;
 
 //    public function updatedSortBy()
 //    {
@@ -429,6 +430,22 @@ class Report11 extends Component
                 $groupedByItemName = $flattened->groupBy('OldCode');
 
 
+                $numberOfItemsByGroup = $flattened
+                    ->groupBy('ItemGroup')      // group all rows by ItemGroup
+                    ->map(function ($group) {
+                        return $group->pluck('OldCode')->unique()->count(); // count distinct items
+                    });
+
+// Example output:
+// [
+//   'Group A' => 12,   // 12 different items sold
+//   'Group B' => 8,    // 8 different items sold
+//   'Group C' => 20,   // 20 different items sold
+// ]
+
+                $this->numberOfItems = $numberOfItemsByGroup;
+
+
                 //Calculate subtotals
 
                 $this->totalSalesByItemGroup = $flattened
@@ -521,6 +538,15 @@ class Report11 extends Component
                                 : 0,
                         ];
                     })->toArray();
+
+                // step 5: count the number of items sold
+                $numberOfItems = $flattened
+                    ->groupBy('Speciality')      // group all rows by Speciality
+                    ->map(function ($group) {
+                        return $group->pluck('OldCode')->unique()->count(); // count distinct items
+                    });
+
+                $this->numberOfItems = $numberOfItems;
 
             }
             else if ($this->report_type == "byMarketingType") {
@@ -677,6 +703,18 @@ class Report11 extends Component
                         'TransCount'         => $trans,
                     ];
                 })->toArray();
+
+
+                // step 5: count the number of items sold
+                $numberOfItems = $flattened
+                    ->groupBy('VendorName')      // group all rows by Vendor
+                    ->map(function ($group) {
+                        return $group->pluck('OldCode')->unique()->count(); // count distinct items
+                    });
+
+                $this->numberOfItems = $numberOfItems;
+
+
 
             }
 
@@ -883,7 +921,19 @@ class Report11 extends Component
                 $groupedByEmployee =  $flattenedItems->groupBy('EmployeeCode');
 
                 $this->subtotals($groupedByEmployee);
+
+                // step 5: count the number of items sold
+                $numberOfItems = $flattenedItems
+                    ->groupBy('EmployeeCode')      // group all rows by Vendor
+                    ->map(function ($group) {
+                        return $group->pluck('OldCode')->unique()->count(); // count distinct items
+                    });
+
+                $this->numberOfItems = $numberOfItems;
+
+
             }
+
 
 
 
