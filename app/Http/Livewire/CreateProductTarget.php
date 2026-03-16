@@ -22,7 +22,6 @@ use Livewire\Component;
 
 class CreateProductTarget extends Component
 {
-
     public $dept_id = ["-1"];
     public $selected_month;
     public $employee_ids_in_my_branch = [];
@@ -116,7 +115,10 @@ class CreateProductTarget extends Component
         ini_set('memory_limit', '-1');
 
         $this->query = User::where('id', Auth::id())->first();
+//
 
+//        $this->vendor_list = User::all();
+//        dd($this->vendor_list);
 
         $this->vendorsList();
         $this->get_filters();
@@ -270,26 +272,7 @@ class CreateProductTarget extends Component
             $this->dept_id = $this->user_branches;
         }
 
-//        if ($this->filter_type == 'vendor') {
-//            $this->validate([
-//                'dept_id' => 'required|not_in:-1',
-//                'selected_month' => 'required',
-//                'vendor_id' => 'required|not_in:-1'
-//            ]);
-//        }
-//        else if ($this->filter_type == 'product') {
-//            $this->validate([
-//                'dept_id' => 'required|not_in:-1',
-//                'selected_month' => 'required',
-//                'prod_id' => 'required'
-//            ]);
-//        }
-//        else {
-//            $this->validate([
-//                'dept_id' => 'required|not_in:-1',
-//                'selected_month' => 'required',
-//            ]);
-//        }
+
 
         $this->emit('show-container');
         $this->btn_generate = false;
@@ -373,6 +356,7 @@ class CreateProductTarget extends Component
         else {
 
 
+
         }
 
 
@@ -418,7 +402,6 @@ class CreateProductTarget extends Component
             $year = Carbon::parse($this->selected_month)->addMonth($i)->format('Y');
             $this->current_year_list[$year][] = $month;
         }
-
 
 
 
@@ -494,8 +477,6 @@ class CreateProductTarget extends Component
 
         $cat_stmt .= ") ";
         $cat_stmt2 .= ") ";
-        // end of cat_type
-
 
 
         $sp_txt = in_array('sp_all', $this->sp_type) ?  ('products.SpecialityCode IN (0,1,2)') : ('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')');
@@ -601,18 +582,7 @@ CASE
 	WHEN "BranchCode" = \'12\' THEN \'9\'
 	WHEN "BranchCode" = \'13\' THEN \'8\'
 	WHEN "BranchCode" = \'4\' THEN \'10\'
---	WHEN "BranchCode" = \'7\' THEN \'5\'
---	WHEN "BranchCode" = \'12\' THEN \'10\'
---	WHEN "BranchCode" = \'3\' THEN \'3\'
---	WHEN "BranchCode" = \'4\' THEN \'7\'
---	WHEN "BranchCode" = \'11\' THEN \'11\'
---	WHEN "BranchCode" = \'5\' THEN \'9\'
---	WHEN "BranchCode" = \'505\' THEN \'14\'
---	WHEN "BranchCode" = \'13\' THEN \'6\'
---	WHEN "BranchCode" = \'6\' THEN \'8\'
---	WHEN "BranchCode" = \'9\' THEN \'12\'
---	WHEN "BranchCode" = \'8\' THEN \'13\'
---	WHEN "BranchCode" = \'10\' THEN \'4\'
+
 
 END AS "Department"
 
@@ -723,6 +693,8 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
             }
         }
 
+//        dd($this->employee_branch_names);
+//        dd($this->employee_ids_in_my_branch);
 
 
         $this->emit('show-container');
@@ -764,36 +736,23 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
         $this->keys = array_keys($this->list);
         if (count($this->keys) > 1) {
 
-//            $stmt = "SELECT [Date] ,[Department] ,[month] ,[Year] ,ProductMast.[Pricelist] ,[ProductNo], ProductMast.Code,[Taget] ,[Revision]
-//                        FROM ProductsTarget, ProductMast
-//                        WHERE ProductMast.NodeNo = ProductsTarget.ProductNo
-//                        and ((Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]]).")))
-//                        and Department in (". implode(',', $this->dept_id) .")
-//                        and ProductMast.[Pricelist] = 1
-//                        and (Taget <> 0 or Revision <> 0)
-//                        order by Date desc";
 
-//            dd($stmt);
 
-//            dd(implode(',', $this->dept_id));
-//            dd("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))");
-//            $this->old_targets = ProductTargetBranchTotal::where('branch', $this->dept_id[0])
+        }
+        else {
 
-            //// goooood
-//            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[1]."' and month in (". implode(',',$this->list[$this->keys[1]]).")) or (Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
-////                ->whereRaw("branch in (". implode(',', $this->dept_id) .")")
-////                ->whereIn("branch", $this->dept_id)
-//                ->whereRaw("branch IN (" . implode($this->dept_id) . ")")
-////                ->whereIn("branch", [7])
+
+            // gooooooooood
+//            $this->old_targets = ProductTargetBranchTotal::whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+//                ->whereRaw("branch in (". implode(',',$this->dept_id) .")")
 //                ->select('product_id', 'month', 'year', 'branch', 'target')
+////                ->limit(10)
+////                    ->toSql();
 //                ->get();
 
-            //// end of goooood
+//            $kk = DB::select("select `product_id`, `month`, `year`, `branch`, `target` from `product_target_branch_totals` where (Year = '2024' and month in (1,2,3,4,5,6,7,8,9,10,11,12)) and branch in (3,7)");
 
-//            dd($this->old_targets);
-
-
-//            dd($this->old_targets->where('product_id', '170458')->where("month", '1')->where('year', '2024')->where('branch', '7')->first());
+//            dd($kk);
 //            dd($this->old_targets);
 
 //            $query = DB::connection('sqlsrv')->select($stmt);
@@ -802,21 +761,10 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 //            $this->old_targets = collect($fetch_query);
 
         }
-        else {
 
 
 
 
-        }
-
-
-
-        // End of getting old data from Scribe
-
-        // target data from reporting
-        // good
-//        $this->current_target = ProductTarget::whereIn('user_id', $this->employee_ids_in_my_branch)
-//            ->get();
 
         $this->emps_percentage = ProductTargetEmpPercent::join('users', 'product_target_emp_percents.user_id', 'users.id')
 //            ->whereIn('users.id', $this->employee_ids_in_my_branch)
@@ -864,37 +812,13 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
         }
 
 
-
+//        dd($this->current_year_list);
 
 
 
         $month_counter = 1;
 
 
-
-
-        /*$month_stmt .= " FROM (
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, SIDate as 'voucher_date', sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[SInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and SIDate>='" . $start_of_period . "' and  SIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, SIDate
-            union all
-            SELECT ProductNo, NodeNo, Code, Arabic_Name, PIDate as 'voucher_date', -sum(ActualQty) as svalue
-              FROM [AccountsC5].[dbo].[PInvoice], accmast
-            where partyno=nodeno and accmast.[type]=10
-            and PIDate>='" . $start_of_period . "' and  PIDate<='" . $end_of_period . " 23:59:59'
-            and Department in (" . $current_dept_id .
-            ") group by ProductNo, NodeNo, Code, Arabic_Name, PIDate
-            ) as tbl
-            group by ProductNo) as tbl2
-            RIGHT JOIN ProductMast
-            on tbl2.ProductNo = ProductMast.NodeNo
-            WHERE ProductMast.Pricelist = 1) as tbl3
-            LEFT JOIN accmast ON tbl3.VendorNo = accmast.NodeNo
-            WHERE VendorNo = '" . $this->vendor_id . "'
-            ORDER BY VendorNo";*/
 
         //// gooooooooood
         // cat_type
@@ -1000,7 +924,20 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
         $sales_year_keys = array_keys($this->list);
 //        dd($sales_year_keys);
         if (count($sales_year_keys) > 1) {
-
+//            $this->results = Sales::join('products', 'sales.ProductCode', 'products.product_code')
+//                ->whereRaw("year = '" . $sales_year_keys[0]. "' or year = '". $sales_year_keys[1]."'")
+////            ->whereRaw("(Year = '".$this->keys[0]."' and month in (". implode(',',$this->list[$this->keys[0]])."))")
+////            ->where('products.VendorNo', $this->vendor_type)
+//                ->whereRaw($this->vendor_type == "vendor_all" ? "products.VendorNo is not null"  : "products.VendorNo ='" . $this->vendor_type . "'")
+//                ->whereRaw('sales.Department IN (' . implode(',',$this->dept_id) . ')')
+////            ->whereIn('sales.Department', $this->dept_id)
+////            ->whereRaw('products.SpecialityCode IN (' . implode(',' , $this->sp_type) . ')')
+//                ->whereRaw($sp_txt)
+////            ->whereIn('products.SpecialityCode', $this->sp_type)
+////            ->whereRaw($cat_stmt)
+//                ->whereRaw($cat_txt1)
+////                ->toSql();
+//            ->get();
 //            dd($this->results);
 
             /// end of gooooooood
@@ -1026,9 +963,6 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
         }
 
 
-//        $kk = DB::select(DB::raw("SELECT DISTINCT * FROM `products` Left JOIN sales ON products.product_code = sales.ProductCode Left JOIN product_target_branch_totals ON product_target_branch_totals.product_id = products.product_code"));
-////            ->get();
-//        dd($kk);
 
 
 
@@ -1041,18 +975,87 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 //            ->whereIn('products.SpecialityCode', $this->sp_type)
 //            ->whereRaw($cat_stmt2)
             ->whereRaw($cat_txt2)
-            ->selectRaw('product_code as ProductCode, sap_code, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
+            ->selectRaw('product_code as ProductCode, product_name as ProductName, SpecialityCode, BaseUnits, Currency, Description, Pricelist, Retail, WholeSale, MaxDiscount, LeadTime, VendorNo, vendor_code as VendorCode, vendor_name as VendorName')
 //            ->toSql();
             ->get()->toArray();
-
-
+//        dd($this->items);
+//        dd($this->items);
 
 
         $this->show_msg = true;
         $this->emit('finished');
     }
 
-
+//    public function processData()
+//    {
+//        dd($this->emp_target);
+//        dd($this->target);
+//
+////        $hasTargetSavedForUser = ProductTarget::query()
+////            ->where('', $request->input('date'))
+////            ->where('user_id', $request->input('user_id'))
+////            ->exists();
+////
+////        if ($hasTargetSavedForUser) {
+////            return back()->withErrors([
+////                'date' => 'Expense already saved for this user on this date'
+////            ]);
+////        }
+//
+//
+//        if ($this->target) {
+//            foreach ($this->target as $product_key => $target) {
+//                foreach ($target as $monthyear_key => $monthyear) {
+//                    $str = explode('-', $monthyear_key);
+//                    $year = $str[0];
+//                    $month = $str[1];
+//
+//                    foreach ($monthyear as $target) {
+//                        if ($target != "") {
+//                            $fetch = ProductTarget::where('product_id', $product_key)
+//                                ->where('month', $month)
+//                                ->where('year', $year)
+//                                ->where('branch', $this->dept_id)
+//                                ->where('user_id', Auth::id())
+//                                ->first();
+//
+//                            if ($fetch) {
+//                                $record = ProductTarget::where('product_id', $product_key)
+//                                    ->where('month', $month)
+//                                    ->where('year', $year)
+//                                    ->where('branch', $this->dept_id)
+//                                    ->where('user_id', Auth::id())
+//                                    ->update(['target' => $target]);
+//                            } else {
+//                                $record = ProductTarget::create([
+//                                    'product_id' => $product_key,
+//                                    'month' => $month,
+//                                    'year' => $year,
+//                                    'branch' => $this->dept_id,
+//                                    'user_id' => Auth::id(),
+//                                    'target' => $target
+//                                ]);
+//                            }
+//
+//                            $record = ProductTargetLog::create([
+//                                'product_id' => $product_key,
+//                                'month' => $month,
+//                                'year' => $year,
+//                                'branch' => $this->dept_id,
+//                                'user_id' => Auth::id(),
+//                                'target' => $target
+//                            ]);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            $this->emit('msg');
+//            $this->reset('target');
+////            $this->generateReport();
+//        }
+//
+//    }
 
     public function historicalThreeYearsSales() {
 
@@ -1217,6 +1220,7 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 
     // function to save the data
     public function test($targets, $emps_percents, $products_codes, $totaltargets) {
+
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 //        dd('test debug');
@@ -1234,27 +1238,14 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 
                 $emp_code_percent = $details[1];
 
-                array_push($final_emp_percent_data, ['user_id' => $this->employee_ids_in_my_branch[$emp_code_percent], 'emp_percentage' => intval($percent_num), 'branch' => $this->dept_id[0],'added_by' => Auth::id()]);
+                array_push($final_emp_percent_data, [
+                    'user_id' => $this->employee_ids_in_my_branch[$emp_code_percent],
+                    'emp_percentage' => intval($percent_num),
+                    'branch' => $this->dept_id[0],
+                    'added_by' => Auth::id()
+                ]);
 
-//                $user_record = User::where('emp_code', $emp_code_percent)->first();
-//                $user = ProductTargetEmpPercent::where('user_id', $user_record->id)->first();
-//
-//                if ($user) {
-//                    $record = ProductTargetEmpPercent::where('user_id', $user_record->id)
-//                        ->update([
-//                            'emp_percentage' => $percent_num,
-//                            'branch' => $this->dept_id[0],
-//                            'added_by' => Auth::id()
-//                        ]);
-//                }
-//                else {
-//                    $record = ProductTargetEmpPercent::create([
-//                            'user_id' => $user_record->id,
-//                            'emp_percentage' => $percent_num,
-//                            'branch' => $this->dept_id[0],
-//                            'added_by' => Auth::id()
-//                        ]);
-//                }
+
             }
 
             ProductTargetEmpPercent::upsert(
@@ -1273,32 +1264,11 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 //                dd($product_bool_val);
                 $details = explode('--', $details);
 
+
                 $product_code_val = $details[1];
 
                 array_push($final_special_data, ['product_id' => $product_code_val, 'added_by' => Auth::id()]);
 
-//                $record = SpecialProduct::where('product_id', $product_code_val)->first();
-
-//                if ($record) {
-//                    if ($product_bool_val == 'true') {
-//                        $record = SpecialProduct::where('product_id', $product_code_val)
-//                            ->update([
-//                                'product_id' => $product_code_val,
-//                                'added_by' => Auth::id(),
-//                            ]);
-//                    }
-//                    else {
-//                        $record = SpecialProduct::where('product_id', $product_code_val)->delete();
-//                    }
-//                }
-//                else {
-//                  if ($product_bool_val == 'true') {
-//                      $record = SpecialProduct::create([
-//                          'product_id' => $product_code_val,
-//                          'added_by' => Auth::id(),
-//                      ]);
-//                  }
-//                }
             }
 
             SpecialProduct::upsert(
@@ -1317,11 +1287,15 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
                 $target_num = $txt[1];
                 $details = explode('--', $details);
 
+
                 $product_code = $details[1];
+                $sap_code = Products::where('product_code', $details[1] )->pluck('sap_code')->first();
                 $target_date = explode('-', $details[2]);
                 $target_year = $target_date[0];
                 $target_month = $target_date[1];
-
+                $sap_code = Products::where('product_code', $product_code)->first();
+//                dd($final_totaltarget_data);
+//                dd($sap_code->sap_code);
                 array_push($final_totaltarget_data, [
                     'product_id' => $product_code,
                     'month' => $target_month,
@@ -1339,10 +1313,9 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
                 ['target'],
             );
 
-//            $this->emit('msg');
-//            $this->reset('target', 'emps_percentage', 'emp_target');
-//            $this->generateReport();
+
         }
+
 
         if ($targets) {
 
@@ -1360,6 +1333,7 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
 
                 array_push($final_targets_data, [
                     'product_id' => $product_code,
+                    'sap_code' =>$sap_code->sap_code,
                     'month' => intval($target_month),
                     'year' => intval($target_year),
                     'branch' => $this->dept_id[0],
@@ -1372,11 +1346,12 @@ GROUP BY "BranchName", "ItemCode", "ItemDescription","Year"
             }
 
 //            dd($final_targets_data);
-            ProductTarget::upsert(
+            $data =  ProductTarget::upsert(
                 $final_targets_data,
-                ['product_id', 'month', 'year', 'branch', 'user_id'],
+                ['product_id', 'sap_code','month', 'year', 'branch', 'user_id'],
                 ['target'],
             );
+//            dd($data);
 
             $this->emit('msg');
             $this->reset('target', 'emps_percentage', 'emp_target');
