@@ -4,12 +4,14 @@ namespace App\Http\Livewire;
 
 use App\Mail\VisitCreated;
 use App\Mail\WeeklyReport;
+use App\Models\MsToken;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\VisitEmp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attribute\On;
@@ -33,12 +35,17 @@ class VisitCalendar extends Component
     public $activePanel = 'calendar';
     public $calendarVisit;
     public $canViewAll;
+    public $can_close_visit;
+    public $can_recipient_approve;
+    public $can_rate;
+    public  $branches;
+    public $visit_id;
 
 
 //    protected $wati;
 
 
-    protected $listeners = ['addVisit' => 'addVisit', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit', 'approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit'];
+    protected $listeners = ['addVisit' => 'addVisit', 'updateVisit' => 'updateVisit', 'deleteVisit' => 'deleteVisit', 'approveVisit' => 'approveVisit', 'rejectVisit' => 'rejectVisit', 'closeVisit' => 'closeVisit', 'review' => 'review'];
 
     public function mount()
     {
@@ -56,6 +63,7 @@ class VisitCalendar extends Component
 //                && $user->user->g)
             || $user->role == 'a'
         );
+
 
 //        if($this->canViewAll) {
 //            $this->uniqueRequesters = collect($this->calendarVisit)
@@ -101,6 +109,25 @@ class VisitCalendar extends Component
 
 //        dd($this->visits->emps_requester);
 //        dd($this->visits);
+
+        $this->branches =[
+            "0101"=> "فرع الاحساء",
+            "0102"=> "فرع جدة",
+            "0103"=> "فرع الرياض",
+            "0104"=> "فرع وادي الدواسر",
+            "0105"=> "فرع الجوف",
+            "0106"=> "فرع الدمام",
+            "0107"=> "فرع الخرج",
+            "0108"=> "فرع نجران",
+            "0109"=> "فرع حائل",
+            "0110"=> "فرع تبوك",
+            "0111"=> "فرع القصيم",
+            "0112"=> "فرع ساجر",
+            "0201"=> "مزرعة الدالوة",
+            "0202"=> "مزرعة الفضول",
+            "0203"=> "مزرعة الدلم"
+        ];
+
     }
 
     public function booted() {
@@ -494,6 +521,161 @@ class VisitCalendar extends Component
 
 
 //        $this->emit('finished');
+
+    }
+    public function can_close() {
+
+        return $this->can_close_visit = Visit::where('visits.id', $this->visit_id)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->where('visit_emps.type', 'requester')
+            ->where('visit_emps.user_id', Auth::id())
+            ->where('visits.status', '1')
+            ->where('visits.is_deleted', '0')
+            ->exists();
+
+    }
+
+    public function can_rate() {
+
+//        return  $this->can_rate = Visit::where('visits.id', $this->visit_id)
+//            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+//            ->where('visit_emps.user_id', Auth::id())
+//            ->where('visits.status', '3')
+//            ->where('visits.is_deleted', '0')
+//            ->where(function ($query) {
+//                $query->where(function ($q) {
+//                    $q->where('visit_emps.type', 'requester')
+//                        ->whereNull('requester_reviews');
+//                })
+//                    ->orWhere(function ($q) {
+//                        $q->where('visit_emps.type', 'recipient')
+//                            ->whereNull('recipient_reviews');
+//                    });
+//            })
+//            ->exists();
+        return $this->can_rate = Visit::where('visits.id', $this->visit_id)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->where('visit_emps.user_id', Auth::id())
+            ->where(function($query) {
+                $query->where('visits.status', '3')
+                    ->orWhere('visits.status','5');
+            })
+
+            ->where('visits.is_deleted', '0')
+            ->where(function($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->exists();
+    }
+
+    public function reviews_done() {
+        $check = VisitEmp::where('visit_id', $this->visit_id)
+            ->where(function($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->count();
+
+        $this->reviews_done = $check == 0;
+
+        return $this->reviews_done;
+    }
+
+    public function updateVisit($event) {
+//
+        $visit = Visit::find($event['id']);
+        if(isset($visit->ms_event_id)){
+            $this->deleteEvent($visit->ms_event_id, $visit->id);
+        }
+        if ($visit) {
+
+//            $recipient = User::where('sales_dept_code', $event['branch'])
+//                ->where('group', 8) // branch manger group
+//                ->select('id')->first();
+            $visit->title = $event['title'];
+            $visit->start = Carbon::parse($event['start'])->format('Y-m-d H:i:s');
+            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
+//            $visit->end = Carbon::parse($event['end'])->format('Y-m-d H:i:s');
+            $visit->reason =  $event['reason'];
+            $visit->goals = $event['goals'];
+            $visit->branch =  $event['branch'];
+            $visit->attendants =  $event['attendants'];
+            $visit->status = 0;
+//            $visit->recipient_id =  $recipient->id;
+
+            $visit->save();
+
+            if ($visit->save()) {
+
+                VisitEmp::where('visit_id', $event['id'])->delete();
+//
+                $records = collect($event['employees'])->map(fn($user_id) => ['visit_id' => $event['id'], 'type' => 'recipient', 'user_id' => $user_id ])->toArray();
+                $requester_record = ['visit_id' => $event['id'], 'type' => 'requester', 'user_id' => Auth::id() ];
+                array_push($records, $requester_record);
+//                array_push( $requester_record);
+
+                DB::table('visit_emps')->insert($records);
+
+                session()->flash('success', 'تم تحديث الزيارة بنجاح');
+                //  $branch_manger = $this->branchMangerByVisitId($visit->id);
+
+                $this->visitMail($this->oneVisit($visit->id), null, 'update');
+                return redirect()->route('show.visit', ['id' => $event['id']]);
+
+//                $this->loadVisits();
+
+//                $this->emit("visitsLoaded", $this->visits);
+            }
+        }
+
+//        $this->loadVisits();
+//
+//        $this->emit("visitsLoaded", $this->visits);
+    }
+
+    public function deleteEvent($event, $visitId)
+    {
+        $token = MsToken::where('visit_id', $visitId)->value('access_token');
+//        $token = session('ms_access_token');
+//        dd($token);
+
+        if (!$token) {
+            logger()->error('MS Delete Failed: Token missing');
+            return;
+        }
+//        if ($this->visit->ms_event_id) {
+
+        if ($event) {
+            Http::withToken($token)->delete(
+                "https://graph.microsoft.com/v1.0/me/events/{$event}"
+            );
+        }
+    }
+
+    public function deleteVisit($event) {
+
+        $visit = Visit::find($event['id']);
+
+        if ($visit) {
+            $visit->delete_reason =  $event['delete_reason'];
+            $visit->is_deleted =  1;
+            $visit->status ='4';
+
+            $visit->save();
+            $this->visitMail($visit, null, 'cancel');
+
+            session()->flash('success', 'تم الغاء الزيارة بنجاح');
+
+            if(isset($visit->ms_event_id)){
+                $this->deleteEvent($visit->ms_event_id, $visit->id);
+            }
+//            $branch_manger = $this->branchMangerByVisitId($visit->id);
+            return redirect()->route('visit-calendar');
+        } else {
+            // Optional: handle the case if event not found
+            session()->flash('error', 'Visit not found.');
+        }
 
     }
 

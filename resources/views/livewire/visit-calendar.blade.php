@@ -236,10 +236,12 @@
 
 
                         @forelse($visits as $visit)
+
                             <tr
                                 class="h-16"
-                                onclick="window.open('{{ route('show.visit', ['id' => $visit['id']]) }}', '_blank')"
+{{--                                onclick="window.open('{{ route('show.visit', ['id' => $visit['id']]) }}', '_blank')"--}}
                                 style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
+
 
                                 <td class="border p-2 whitespace-nowrap">
                                     <div class="text-center text-gray-800 text-sm">{{ $visit["id"] }}</div>
@@ -359,7 +361,21 @@
 {{--                                    </div>--}}
 
 {{--                                </td>--}}
+                                <td wire:key="visit-modal-{{ $visit['id'] }}">
+{{--                                    @dd($visit)--}}
+                                    <p>{{$visit['id']}}</p>
+                                <x-modal>
+                                   @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])
+
+                                </x-modal>
+
+                                </td>
                             </tr>
+{{--                            <tr>--}}
+{{--                               <td colspan="8"> @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])--}}
+{{--                               </td>--}}
+{{--                            </tr>--}}
+
                         @empty
                             <tr>
                                 <td colspan="2" class="border text-center p-6 text-lg font-bold">لا يوجد زيارات حتى الآن
@@ -429,6 +445,8 @@
         async function checkDuplicate(branch, visitDate) {
             return await @this.call('checkDuplicate', branch, visitDate);
         }
+
+        let currentVisit = null;
 
         const branchMap = {
             "0101": "فرع الاحساء",
@@ -1005,6 +1023,968 @@
         (Auth::user()->user_group->visits && in_array('view-all-visits', json_decode(Auth::user()->user_group->visits, true)))
         || Auth::user()->role == 'a'
     );
+
+
+
+
+
+
+        // document.addEventListener('alpine:init', () => {--}}
+        {{--                Alpine.data('reviewComponent', () => ({--}}
+        {{--                    questions: [--}}
+        {{--                        {text: 'جودة التحضير للزيارة', id: 'preparation-quality', type: 'rating'},--}}
+        {{--                        {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},--}}
+        {{--                        {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},--}}
+        {{--                        {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},--}}
+        {{--                        {text: 'ملاحظات', id: 'notes', type: 'textarea'}--}}
+        {{--                    ],--}}
+
+        {{--                    showRecipientReviewWithNotes() {--}}
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'تقييم الزيارة',--}}
+        {{--                            html: this.questions.map(q => {--}}
+        {{--                                if (q.type === 'rating') {--}}
+        {{--                                    return `--}}
+        {{--                                <div class="rating-block" id="block-${q.id}">--}}
+        {{--                                    <label>${q.text}</label><br/>--}}
+        {{--                                    ${[1, 2, 3, 4, 5].map(i =>--}}
+        {{--                                        `<i class="star" data-question="${q.id}" data-value="${i}">&#9733;</i>`--}}
+        {{--                                    ).join('')}--}}
+        {{--                                </div>`;--}}
+        {{--                                } else if (q.type === 'textarea') {--}}
+        {{--                                    return `--}}
+        {{--                                <div class="textarea-block" id="block-${q.id}">--}}
+        {{--                                    <label>${q.text}</label><br/>--}}
+        {{--                                    <textarea id="textarea-${q.id}" rows="3"--}}
+        {{--                                        style="width: 100%; padding: 4px; text-align: right; direction: rtl"></textarea>--}}
+        {{--                                </div>`;--}}
+        {{--                                }--}}
+        {{--                            }).join(''),--}}
+        {{--                            confirmButtonText: 'إرسال',--}}
+
+        {{--                            didOpen: () => {--}}
+        {{--                                const ratings = {};--}}
+        {{--                                const stars = Swal.getPopup().querySelectorAll('.star');--}}
+
+        {{--                                stars.forEach(star => {--}}
+        {{--                                    star.addEventListener('click', () => {--}}
+        {{--                                        const qid = star.dataset.question;--}}
+        {{--                                        const value = parseInt(star.dataset.value);--}}
+        {{--                                        ratings[qid] = value;--}}
+        {{--                                        updateStarStyles(qid, value);--}}
+        {{--                                    });--}}
+        {{--                                });--}}
+
+        {{--                                function updateStarStyles(questionId, rating) {--}}
+        {{--                                    const groupStars = Swal.getPopup().querySelectorAll(`.star[data-question="${questionId}"]`);--}}
+        {{--                                    groupStars.forEach(s => {--}}
+        {{--                                        s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);--}}
+        {{--                                    });--}}
+        {{--                                }--}}
+
+        {{--                                Swal._formResults = ratings;--}}
+        {{--                            },--}}
+
+        {{--                            preConfirm: () => {--}}
+        {{--                                const ratings = Swal._formResults || {};--}}
+        {{--                                const finalResults = [];--}}
+        {{--                                let ratingSum = 0;--}}
+
+        {{--                                this.questions.forEach(q => {--}}
+        {{--                                    let value;--}}
+        {{--                                    if (q.type === 'rating') {--}}
+        {{--                                        value = ratings[q.id] || null;--}}
+        {{--                                        if (value !== null) ratingSum += value;--}}
+        {{--                                    } else if (q.type === 'textarea') {--}}
+        {{--                                        const val = document.getElementById(`textarea-${q.id}`).value.trim();--}}
+        {{--                                        value = val;--}}
+        {{--                                    }--}}
+
+        {{--                                    finalResults.push({--}}
+        {{--                                        text: q.text,--}}
+        {{--                                        value: value--}}
+        {{--                                    });--}}
+        {{--                                });--}}
+
+        {{--                                const missing = finalResults.find(r => {--}}
+        {{--                                    const question = this.questions.find(q => q.text === r.text);--}}
+        {{--                                    return question.type === 'rating' && (r.value === null || r.value === undefined);--}}
+        {{--                                });--}}
+
+        {{--                                if (missing) {--}}
+        {{--                                    Swal.showValidationMessage(`الرجاء تقييم: "${missing.text}"`);--}}
+        {{--                                    return false;--}}
+        {{--                                }--}}
+
+        {{--                                return {--}}
+        {{--                                    answers: finalResults,--}}
+        {{--                                    totalRating: ratingSum--}}
+        {{--                                };--}}
+        {{--                            }--}}
+        {{--                        }).then(result => {--}}
+        {{--                            if (result.isConfirmed) {--}}
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'الرجاء الإنتظار',--}}
+        {{--                                    allowOutsideClick: false,--}}
+        {{--                                    showCancelButton: false,--}}
+        {{--                                    showConfirmButton: false,--}}
+        {{--                                    willOpen: () => Swal.showLoading(),--}}
+        {{--                                });--}}
+
+        {{--                                Livewire.emit('review', result.value);--}}
+        {{--                            }--}}
+        {{--                        });--}}
+        {{--                    }--}}
+        {{--                }));--}}
+        {{--            });--}}
+        {{--        </script>--}}
+        {{--        <script src="{{ asset('js/jquery.min.js') }}"></script>--}}
+        {{--        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>--}}
+        {{--        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>--}}
+
+        {{--        <script>--}}
+
+        {{--            const branchMap = {--}}
+        {{--                "0101": "فرع الاحساء",--}}
+        {{--                "0102": "فرع جدة",--}}
+        {{--                "0103": "فرع الرياض",--}}
+        {{--                "0104": "فرع وادي الدواسر",--}}
+        {{--                "0105": "فرع الجوف",--}}
+        {{--                "0106": "فرع الدمام",--}}
+        {{--                "0107": "فرع الخرج",--}}
+        {{--                "0108": "فرع نجران",--}}
+        {{--                "0109": "فرع حائل",--}}
+        {{--                "0110": "فرع تبوك",--}}
+        {{--                "0111": "فرع القصيم",--}}
+        {{--                "0112": "فرع ساجر",--}}
+        {{--                // "0201": "مزرعة الدالوة",--}}
+        {{--                // "0202": "مزرعة الفضول",--}}
+        {{--                // "0203": "مزرعة الدلم"--}}
+        {{--            };--}}
+
+        {{--            const employeesByBranch = @json($emps);--}}
+
+        {{--            const timeOptions = [--}}
+        {{--                "08:00 AM", "08:30 AM", "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",--}}
+        {{--                "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM",--}}
+        {{--                "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM",--}}
+        {{--                "08:00 PM", "08:30 PM", "09:00 PM", "09:30 PM", "10:00 PM"--}}
+        {{--            ];--}}
+
+        {{--            --}}{{--        ratings --}}
+        {{--            function showArabicReviewWithNotes() {--}}
+        {{--                const questions = [--}}
+
+
+        {{--                    {text: 'جودة التحضير للزيارة', id: 'preparation-quality', type: 'rating'},--}}
+        {{--                    {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},--}}
+        {{--                    {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},--}}
+        {{--                    {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},--}}
+        {{--                    {text: 'ملاحظات', id: 'notes', type: 'textarea'}--}}
+        {{--                ];--}}
+
+        {{--                Swal.fire({--}}
+        {{--                    title: 'تقييم الزيارة',--}}
+        {{--                    html: questions.map(q => {--}}
+        {{--                        if (q.type === 'rating') {--}}
+        {{--                            return `--}}
+        {{--          <div class="rating-block" id="block-${q.id}">--}}
+        {{--            <label>${q.text}</label><br/>--}}
+        {{--            ${[1, 2, 3, 4, 5].map(i =>--}}
+        {{--                                `<i class="star" data-question="${q.id}" data-value="${i}">&#9733;</i>`--}}
+        {{--                            ).join('')}--}}
+        {{--          </div>`;--}}
+        {{--                        } else if (q.type === 'textarea') {--}}
+        {{--                            return `--}}
+        {{--          <div class="textarea-block" id="block-${q.id}">--}}
+        {{--            <label>${q.text}</label><br/>--}}
+        {{--            <textarea id="textarea-${q.id}" rows="3" style="width: 100%; padding: 4px;"></textarea>--}}
+        {{--          </div>`;--}}
+        {{--                        }--}}
+        {{--                    }).join(''),--}}
+        {{--                    confirmButtonText: 'إرسال',--}}
+        {{--                    didOpen: () => {--}}
+        {{--                        const ratings = {};--}}
+
+        {{--                        const stars = Swal.getPopup().querySelectorAll('.star');--}}
+        {{--                        stars.forEach(star => {--}}
+        {{--                            star.addEventListener('click', () => {--}}
+        {{--                                const qid = star.dataset.question;--}}
+        {{--                                const value = parseInt(star.dataset.value);--}}
+        {{--                                ratings[qid] = value;--}}
+        {{--                                updateStarStyles(qid, value);--}}
+        {{--                            });--}}
+        {{--                        });--}}
+
+        {{--                        function updateStarStyles(questionId, rating) {--}}
+        {{--                            const groupStars = Swal.getPopup().querySelectorAll(`.star[data-question="${questionId}"]`);--}}
+        {{--                            groupStars.forEach(s => {--}}
+        {{--                                s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);--}}
+        {{--                            });--}}
+        {{--                        }--}}
+
+        {{--                        Swal._formResults = ratings;--}}
+        {{--                    },--}}
+        {{--                    preConfirm: () => {--}}
+        {{--                        const ratings = Swal._formResults || {};--}}
+        {{--                        const finalResults = [];--}}
+        {{--                        let ratingSum = 0;--}}
+
+        {{--                        questions.forEach(q => {--}}
+        {{--                            let value;--}}
+        {{--                            if (q.type === 'rating') {--}}
+        {{--                                value = ratings[q.id] || null;--}}
+        {{--                                if (value !== null) {--}}
+        {{--                                    ratingSum += value;--}}
+        {{--                                }--}}
+        {{--                            } else if (q.type === 'textarea') {--}}
+        {{--                                const val = document.getElementById(`textarea-${q.id}`).value.trim();--}}
+        {{--                                value = val;--}}
+        {{--                            }--}}
+
+        {{--                            finalResults.push({--}}
+        {{--                                text: q.text,--}}
+        {{--                                value: value--}}
+        {{--                            });--}}
+        {{--                        });--}}
+
+        {{--                        const missing = finalResults.find(r => {--}}
+        {{--                            const question = questions.find(q => q.text === r.text);--}}
+        {{--                            return question.type === 'rating' && (r.value === null || r.value === undefined);--}}
+        {{--                        });--}}
+
+        {{--                        if (missing) {--}}
+        {{--                            Swal.showValidationMessage(`الرجاء تقييم: "${missing.text}"`);--}}
+        {{--                            return false;--}}
+        {{--                        }--}}
+
+        {{--                        return {--}}
+        {{--                            answers: finalResults,--}}
+        {{--                            totalRating: ratingSum--}}
+        {{--                        };--}}
+        {{--                    }--}}
+        {{--                }).then(result => {--}}
+        {{--                    if (result.isConfirmed) {--}}
+        {{--                        console.log('Arabic Feedback With Sum:', result.value);--}}
+        {{--                        // Submit to server here--}}
+
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'الرجاء الإنتظار',--}}
+        {{--                            allowOutsideClick: false,--}}
+        {{--                            showCancelButton: false,--}}
+        {{--                            showConfirmButton: false,--}}
+        {{--                            willOpen: () => {--}}
+        {{--                                Swal.showLoading()--}}
+        {{--                            },--}}
+        {{--                        });--}}
+
+        {{--                        Livewire.emit('review', result.value);--}}
+        {{--                    }--}}
+        {{--                });--}}
+        {{--            }--}}
+
+        {{--            function showRecipientReviewWithNotes() {--}}
+        {{--                const questions = [--}}
+        {{--                    {text: 'جودة التحضير  للزيارة', id: 'preparation-quality', type: 'rating'},--}}
+        {{--                    {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},--}}
+        {{--                    {text: 'القيمة الفنية للزيارة', id: 'technical_value', type: 'rating'},--}}
+        {{--                    // {text: 'مستوى الدعم الفني المقدم', id: 'technical_support', type: 'rating'},--}}
+        {{--                    // {text: 'مستوى الرضا عن الزيارة', id: 'customer_satisfaction', type: 'rating'},--}}
+        {{--                    {text: 'تحقيق الزيارة لأهدافها', id: 'visit_goals', type: 'rating'},--}}
+        {{--                    {text: 'ملاحظات', id: 'notes', type: 'textarea'}--}}
+        {{--                ];--}}
+
+        {{--                Swal.fire({--}}
+        {{--                    title: 'تقييم الزيارة',--}}
+        {{--                    html: questions.map(q => {--}}
+        {{--                        if (q.type === 'rating') {--}}
+        {{--                            return `--}}
+        {{--          <div class="rating-block" id="block-${q.id}">--}}
+        {{--            <label>${q.text}</label><br/>--}}
+        {{--            ${[1, 2, 3, 4, 5].map(i =>--}}
+        {{--                                `<i class="star" data-question="${q.id}" data-value="${i}">&#9733;</i>`--}}
+        {{--                            ).join('')}--}}
+        {{--          </div>`;--}}
+        {{--                        } else if (q.type === 'textarea') {--}}
+        {{--                            return `--}}
+        {{--          <div class="textarea-block" id="block-${q.id}">--}}
+        {{--            <label>${q.text}</label><br/>--}}
+        {{--            <textarea id="textarea-${q.id}" rows="3" style="width: 100%; padding: 4px;text-align: right; direction: rtl"></textarea>--}}
+        {{--          </div>`;--}}
+        {{--                        }--}}
+        {{--                    }).join(''),--}}
+        {{--                    confirmButtonText: 'إرسال',--}}
+        {{--                    didOpen: () => {--}}
+        {{--                        const ratings = {};--}}
+
+        {{--                        const stars = Swal.getPopup().querySelectorAll('.star');--}}
+        {{--                        stars.forEach(star => {--}}
+        {{--                            star.addEventListener('click', () => {--}}
+        {{--                                const qid = star.dataset.question;--}}
+        {{--                                const value = parseInt(star.dataset.value);--}}
+        {{--                                ratings[qid] = value;--}}
+        {{--                                updateStarStyles(qid, value);--}}
+        {{--                            });--}}
+        {{--                        });--}}
+
+        {{--                        function updateStarStyles(questionId, rating) {--}}
+        {{--                            const groupStars = Swal.getPopup().querySelectorAll(`.star[data-question="${questionId}"]`);--}}
+        {{--                            groupStars.forEach(s => {--}}
+        {{--                                s.classList.toggle('selected', parseInt(s.dataset.value) <= rating);--}}
+        {{--                            });--}}
+        {{--                        }--}}
+
+        {{--                        Swal._formResults = ratings;--}}
+        {{--                    },--}}
+        {{--                    preConfirm: () => {--}}
+        {{--                        const ratings = Swal._formResults || {};--}}
+        {{--                        const finalResults = [];--}}
+        {{--                        let ratingSum = 0;--}}
+
+        {{--                        questions.forEach(q => {--}}
+        {{--                            let value;--}}
+        {{--                            if (q.type === 'rating') {--}}
+        {{--                                value = ratings[q.id] || null;--}}
+        {{--                                if (value !== null) {--}}
+        {{--                                    ratingSum += value;--}}
+        {{--                                }--}}
+        {{--                            } else if (q.type === 'textarea') {--}}
+        {{--                                const val = document.getElementById(`textarea-${q.id}`).value.trim();--}}
+        {{--                                value = val;--}}
+        {{--                            }--}}
+
+        {{--                            finalResults.push({--}}
+        {{--                                text: q.text,--}}
+        {{--                                value: value--}}
+        {{--                            });--}}
+        {{--                        });--}}
+
+        {{--                        const missing = finalResults.find(r => {--}}
+        {{--                            const question = questions.find(q => q.text === r.text);--}}
+        {{--                            return question.type === 'rating' && (r.value === null || r.value === undefined);--}}
+        {{--                        });--}}
+
+        {{--                        if (missing) {--}}
+        {{--                            Swal.showValidationMessage(`الرجاء تقييم: "${missing.text}"`);--}}
+        {{--                            return false;--}}
+        {{--                        }--}}
+
+        {{--                        return {--}}
+        {{--                            answers: finalResults,--}}
+        {{--                            totalRating: ratingSum--}}
+        {{--                        };--}}
+        {{--                    }--}}
+        {{--                }).then(result => {--}}
+        {{--                    if (result.isConfirmed) {--}}
+        {{--                        // Submit to server here--}}
+
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'الرجاء الإنتظار',--}}
+        {{--                            allowOutsideClick: false,--}}
+        {{--                            showCancelButton: false,--}}
+        {{--                            showConfirmButton: false,--}}
+        {{--                            willOpen: () => {--}}
+        {{--                                Swal.showLoading()--}}
+        {{--                            },--}}
+        {{--                        });--}}
+
+        {{--                        Livewire.emit('review', result.value);--}}
+        {{--                    }--}}
+        {{--                });--}}
+        {{--            }--}}
+
+        {{--            // Run it--}}
+
+
+        {{--            --}}{{--    end of ratings --}}
+
+        {{--            document.addEventListener('DOMContentLoaded', () => {--}}
+
+        {{--                const x_requester = {!! $record->emps_requester !!};--}}
+        {{--                const x_recipients = {!! $record->emps_recipients !!};--}}
+
+        {{--                const currentUserId = {{ \Illuminate\Support\Facades\Auth::id()  }};--}}
+        {{--                --}}{{--const isRecipient = {!! $record->recipient_id !!} === currentUserId;--}}
+        {{--                --}}{{--const isOwner = {!! $record->requester_id !!} === currentUserId;--}}
+
+        {{--                const isRecipient = x_recipients.some(obj => obj.user_id === currentUserId);--}}
+        {{--                const isOwner = x_requester.some(obj => obj.user_id === currentUserId);--}}
+        {{--                const isDeleted = {!! $record->is_deleted !!};--}}
+        {{--                const status = {!! $record->status !!};--}}
+
+        {{--                const visit = {!! json_encode($record) !!};--}}
+        {{--                console.log(formatTime(visit.start));--}}
+
+        {{--                console.log('rec: ' + isRecipient);--}}
+        {{--                console.log('owner:' + isOwner);--}}
+
+        {{--                const approveBtn = document.getElementById('approve-btn');--}}
+        {{--                const rejectBtn = document.getElementById('reject-btn');--}}
+        {{--                const reqRateBtn = document.getElementById('req-rate-btn');--}}
+        {{--                const recRateBtn = document.getElementById('rec-rate-btn');--}}
+        {{--                const closeBtn = document.getElementById('close-btn');--}}
+        {{--                const editBtn = document.getElementById('edit-btn');--}}
+        {{--                const deleteBtn = document.getElementById('delete-btn');--}}
+
+
+        {{--                if (approveBtn || rejectBtn) {--}}
+        {{--                    document.getElementById('approve-btn').addEventListener('click', () => {--}}
+
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'الموافقة',--}}
+        {{--                            html: `--}}
+        {{--<label for="approve-reason" style="min-width: 120px;">يرجى كتابة الملاحظات إن وجد</label>--}}
+        {{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+        {{--    <textarea id="approve-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+        {{--                 border: 1px solid #64748b;--}}
+        {{--                 padding: 0.625em;--}}
+        {{--                 border-radius: 0em;--}}
+        {{--                 font-family: inherit;--}}
+        {{--                 font-size: 10pt;"></textarea>--}}
+        {{--    </div>`,--}}
+        {{--                            preConfirm: () => {--}}
+        {{--                                const reason = document.getElementById('approve-reason').value.trim();--}}
+        {{--                                return reason;--}}
+        {{--                            },--}}
+        {{--                            showCancelButton: true,--}}
+        {{--                            confirmButtonText: 'تأكيد الموافقة',--}}
+        {{--                            cancelButtonText: 'عودة',--}}
+        {{--                        }).then((res) => {--}}
+        {{--                            if (res.isConfirmed) {--}}
+
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'الرجاء الإنتظار',--}}
+        {{--                                    allowOutsideClick: false,--}}
+        {{--                                    showCancelButton: false,--}}
+        {{--                                    showConfirmButton: false,--}}
+        {{--                                    willOpen: () => {--}}
+        {{--                                        Swal.showLoading()--}}
+        {{--                                    },--}}
+        {{--                                });--}}
+
+        {{--                                Livewire.emit('approveVisit', {--}}
+        {{--                                    status_notice: res.value--}}
+        {{--                                });--}}
+
+        {{--                                // Swal.fire({--}}
+        {{--                                //     title: 'تمت الموافقة!',--}}
+        {{--                                //     icon: 'success',--}}
+        {{--                                //     timer: 2000,--}}
+        {{--                                //     showConfirmButton: false,--}}
+        {{--                                //     timerProgressBar: true--}}
+        {{--                                // });--}}
+
+        {{--                            }--}}
+        {{--                        });--}}
+
+
+        {{--                    });--}}
+
+        {{--                    document.getElementById('reject-btn').addEventListener('click', () => {--}}
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'سبب الرفض',--}}
+        {{--                            html: `--}}
+        {{--<label for="reject-reason" style="min-width: 120px;">يرجى إدخال سبب رفض الزيارة</label>--}}
+        {{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+        {{--    <textarea id="reject-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+        {{--                 border: 1px solid #64748b;--}}
+        {{--                 padding: 0.625em;--}}
+        {{--                 border-radius: 0em;--}}
+        {{--                 font-family: inherit;--}}
+        {{--                 font-size: 10pt;"></textarea>--}}
+        {{--    </div>`,--}}
+        {{--                            preConfirm: () => {--}}
+        {{--                                const reason = document.getElementById('reject-reason').value.trim();--}}
+        {{--                                if (!reason) {--}}
+        {{--                                    Swal.showValidationMessage('يرجى كتابة سبب الرفض');--}}
+        {{--                                    return false;--}}
+        {{--                                }--}}
+        {{--                                return reason;--}}
+        {{--                            },--}}
+        {{--                            showCancelButton: true,--}}
+        {{--                            confirmButtonText: 'تأكيد الرفض',--}}
+        {{--                            cancelButtonText: 'عودة',--}}
+        {{--                        }).then((res) => {--}}
+        {{--                            if (res.isConfirmed) {--}}
+
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'الرجاء الإنتظار',--}}
+        {{--                                    allowOutsideClick: false,--}}
+        {{--                                    showCancelButton: false,--}}
+        {{--                                    showConfirmButton: false,--}}
+        {{--                                    willOpen: () => {--}}
+        {{--                                        Swal.showLoading()--}}
+        {{--                                    },--}}
+        {{--                                });--}}
+
+        {{--                                Livewire.emit('rejectVisit', {--}}
+        {{--                                    status_notice: res.value--}}
+        {{--                                });--}}
+
+        {{--                                // Swal.fire({--}}
+        {{--                                //     title: 'تم الرفض!',--}}
+        {{--                                //     icon: 'info',--}}
+        {{--                                //     timer: 2000,--}}
+        {{--                                //     showConfirmButton: false,--}}
+        {{--                                //     timerProgressBar: true--}}
+        {{--                                // });--}}
+        {{--                            }--}}
+        {{--                        });--}}
+        {{--                    });--}}
+        {{--                }--}}
+
+        {{--                if (reqRateBtn) {--}}
+        {{--                    document.getElementById('req-rate-btn').addEventListener('click', () => {--}}
+        {{--                        showArabicReviewWithNotes();--}}
+        {{--                    });--}}
+        {{--                }--}}
+
+        {{--                if (recRateBtn) {--}}
+        {{--                    document.getElementById('rec-rate-btn').addEventListener('click', () => {--}}
+        {{--                        showRecipientReviewWithNotes();--}}
+        {{--                    });--}}
+        {{--                }--}}
+
+        {{--                if (closeBtn) {--}}
+        {{--                    document.getElementById('close-btn').addEventListener('click', () => {--}}
+
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'إنجاز الزيارة',--}}
+        {{--                            text: 'هل تم الانتهاء من عمل الزيارة؟',--}}
+        {{--                            showCancelButton: true,--}}
+        {{--                            confirmButtonText: 'نعم',--}}
+        {{--                            cancelButtonText: 'لا',--}}
+        {{--                        }).then((res) => {--}}
+        {{--                            if (res.isConfirmed) {--}}
+
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'الرجاء الإنتظار',--}}
+        {{--                                    allowOutsideClick: false,--}}
+        {{--                                    showCancelButton: false,--}}
+        {{--                                    showConfirmButton: false,--}}
+        {{--                                    willOpen: () => {--}}
+        {{--                                        Swal.showLoading()--}}
+        {{--                                    },--}}
+        {{--                                });--}}
+
+        {{--                                Livewire.emit('closeVisit');--}}
+
+        {{--                                // Swal.fire({--}}
+        {{--                                //     title: 'تمت الموافقة!',--}}
+        {{--                                //     icon: 'success',--}}
+        {{--                                //     timer: 2000,--}}
+        {{--                                //     showConfirmButton: false,--}}
+        {{--                                //     timerProgressBar: true--}}
+        {{--                                // });--}}
+
+        {{--                            }--}}
+        {{--                        });--}}
+
+
+        {{--                    });--}}
+        {{--                }--}}
+
+        {{--                if (editBtn) {--}}
+        {{--                    editBtn.addEventListener('click', () => {--}}
+        {{--                        // Paste your entire Swal.fire({...}) code here--}}
+        {{--                        // (the one you shared with styling, form, preConfirm, etc.)--}}
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'تعديل الزيارة',--}}
+        {{--                            html:`<style>--}}
+        {{--  .edit-form {--}}
+        {{--    display: grid;--}}
+        {{--    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));--}}
+        {{--    gap: 20px;--}}
+        {{--    direction: rtl;--}}
+        {{--    width: 100%;--}}
+        {{--    box-sizing: border-box;--}}
+        {{--  }--}}
+
+        {{--  .edit-form-group {--}}
+        {{--    display: flex;--}}
+        {{--    flex-direction: column;--}}
+        {{--  }--}}
+
+        {{--  .edit-form-group label {--}}
+        {{--    font-weight: bold;--}}
+        {{--    margin-bottom: 6px;--}}
+        {{--    font-size: 14px;--}}
+        {{--  }--}}
+
+        {{--  .edit-form-group input,--}}
+        {{--  .edit-form-group select,--}}
+        {{--  .edit-form-group textarea {--}}
+        {{--    padding: 10px;--}}
+        {{--    font-size: 14px;--}}
+        {{--    border: 1px solid #ccc;--}}
+        {{--    border-radius: 6px;--}}
+        {{--    font-family: inherit;--}}
+        {{--    box-sizing: border-box;--}}
+        {{--    width: 100%;--}}
+        {{--  }--}}
+
+        {{--  .edit-form-group textarea {--}}
+        {{--    resize: none;--}}
+        {{--    height: 120px;--}}
+        {{--  }--}}
+
+        {{--  /* Mobile: force single column */--}}
+        {{--  @media (max-width: 600px) {--}}
+        {{--    .edit-form {--}}
+        {{--      grid-template-columns: 1fr !important;--}}
+        {{--    }--}}
+
+        {{--    .edit-form-group[style*="grid-column"] {--}}
+        {{--      grid-column: span 1 !important;--}}
+        {{--    }--}}
+        {{--  }--}}
+        {{--</style>--}}
+
+        {{--<div dir="rtl" class="text-center">--}}
+        {{--<!--  <div class="edit-form-group" style="grid-column: span 2;">-->--}}
+        {{--  <div class="text-center">--}}
+        {{--    <label for="edit-title" style="min-width: 120px;text-align:right;" class="text-sm font-bold" >عنوان الزيارة</label>--}}
+        {{--    <input type="text" id="edit-title" class="form-input w-full" value="${visit.title || ''}">--}}
+        {{--  </div>--}}
+
+        {{--  <div class="text-center">--}}
+        {{--    <label for="edit-reason"  class="text-sm font-bold">سبب الزيارة</label>--}}
+        {{--    <input class="form-input w-full" type="text" id="edit-reason" value="${visit.reason || ''}">--}}
+        {{--  </div>--}}
+
+        {{--  <div  class="text-center" >--}}
+        {{--    <label for="edit-goals" class="text-sm font-bold">التحضيرات المطلوبه من الفرع</label>--}}
+        {{--    <input class="form-input w-full" id="edit-goals" value="${visit.goals || ''}">--}}
+        {{--  </div>--}}
+
+        {{--  <div class="text-center">--}}
+        {{--    <label for="edit-branch" class="text-sm font-bold">مكان الزيارة</label>--}}
+        {{--    <select class="form-select w-full" id="edit-branch" disabled >--}}
+        {{--      <option value="" disabled>اختر المكان</option>--}}
+        {{--      ${Object.entries(branchMap).map(([key, name]) =>--}}
+        {{--                                `<option value="${key}" ${visit.branch === key ? 'selected' : ''}>${name}</option>`--}}
+        {{--                            ).join('')}--}}
+        {{--    </select>--}}
+        {{--  </div>--}}
+
+        {{--  <div class="text-center my-2">--}}
+        {{--    <label for="edit-employees" class="text-sm font-bold">الموظفين</label>--}}
+        {{--    <select class="form-select w-full" id="edit-employees" multiple></select>--}}
+        {{--  </div>--}}
+
+
+        {{--<div class="flex w-full gap-2">--}}
+        {{--   <div class="text-center" >--}}
+        {{--     <label class="text-sm font-bold" style="">تاريخ البداية</label>--}}
+        {{--     <input class="form-input w-full" type="date" id="start" value="${visit.start ? new Date(visit.start).toISOString().split('T')[0] : ''}"  >--}}
+        {{--   </div>--}}
+        {{--     <div class="text-center">--}}
+        {{--    <label class="text-sm font-bold" for="edit-visit-time w-full">وقت الزيارة</label>--}}
+        {{--    <select class="form-select w-full" id="edit-visit-time">--}}
+        {{--      <option value="" disabled>اختر الوقت</option>--}}
+        {{--      ${timeOptions.map(time =>--}}
+        {{--                                `<option value="${time}" ${formatTime(visit.start) == time ? 'selected' : ''}>${time}</option>`--}}
+        {{--                            ).join('')}--}}
+        {{--    </select>--}}
+
+        {{--</div>--}}
+        {{--  </div>--}}
+        {{--<div class="flex w-full gap-2">--}}
+        {{--   <div class="text-center" >--}}
+        {{--     <label class="text-sm font-bold" style="min-width: 120px;">تاريخ النهاية</label>--}}
+        {{--     <input class="form-input w-full" type="date" id="end" value="${visit.end ? new Date(visit.end).toISOString().split('T')[0] : ''}"  >--}}
+        {{--   </div>--}}
+
+        {{--     <div class="text-center">--}}
+        {{--    <label class="text-sm font-bold" for="edit-ene-time w-full">وقت الانتهاء</label>--}}
+        {{--    <select class="form-select w-full" id="edit-end-time">--}}
+        {{--      <option value="" disabled>اختر الوقت</option>--}}
+
+        {{--      ${timeOptions.map(time =>--}}
+        {{--                                `<option value="${time}" ${formatTime(visit.end) === time ? 'selected' : ''}>${time}</option>`--}}
+        {{--                            ).join('')}--}}
+        {{--    </select>--}}
+
+        {{--</div>--}}
+        {{--</div>--}}
+        {{--   <div class="text-center w-full" style="grid-column: span 2;">--}}
+        {{--     <label class="text-sm font-bold" style="min-width: 120px;">المرافقون</label>--}}
+        {{--     <input class="form-input w-full" type="text" id="attendants" value="${visit.attendants || ''}" >--}}
+        {{--   </div>--}}
+
+        {{--</div>--}}
+        {{--`,--}}
+        {{--                            focusConfirm: false,--}}
+        {{--                            showCancelButton: true,--}}
+        {{--                            confirmButtonText: 'تحديث',--}}
+        {{--                            cancelButtonText: 'عودة',--}}
+        {{--                            reverseButtons: true,--}}
+        {{--                            didOpen: () => {--}}
+        {{--                                const branchSelect = document.getElementById('edit-branch');--}}
+        {{--                                const employeeSelect = document.getElementById('edit-employees');--}}
+
+        {{--                                $(employeeSelect).select2({--}}
+        {{--                                    dir: "rtl",--}}
+        {{--                                    dropdownCssClass: "select-font-size",--}}
+        {{--                                    dropdownParent: document.querySelector('.swal2-popup'),--}}
+        {{--                                    placeholder: "اختر الموظفين"--}}
+        {{--                                });--}}
+
+        {{--                                const populateEmployees = (branchId, selected = []) => {--}}
+        {{--                                    const employees = employeesByBranch[branchId] || [];--}}
+        {{--                                    $(employeeSelect).empty();--}}
+        {{--                                    disabledEmployees = []; // Reset--}}
+
+        {{--                                    employees.forEach(emp => {--}}
+        {{--                                        const isGroup8 = emp.group == 8;--}}
+        {{--                                        const shouldBeSelected = selected.includes(emp.id.toString()) ; // SELECT if previously selected OR group 8--}}
+        {{--                                        // const shouldBeSelected = selected.includes(emp.id.toString()) || isGroup8; // SELECT if previously selected OR group 8--}}
+
+        {{--                                        const option = new Option(emp.name, emp.id, shouldBeSelected, shouldBeSelected);--}}
+        {{--                                        // const option = new Option(emp.name, emp.id);--}}
+
+        {{--                                        // if (isGroup8) {--}}
+        {{--                                        //     option.disabled = true;--}}
+        {{--                                        //     disabledEmployees.push(emp.id.toString());--}}
+        {{--                                        // }--}}
+
+        {{--                                        $(employeeSelect).append(option);--}}
+        {{--                                    });--}}
+
+        {{--                                    $(employeeSelect).trigger('change');--}}
+        {{--                                };--}}
+
+
+        {{--                                const initialBranchId = branchSelect.value;--}}
+        {{--                                // const selectedEmpIds = (info.event.extendedProps.emps_recipients || []).map(emp => emp.user_id.toString());--}}
+        {{--                                const selectedEmpIds = (x_recipients || []).map(emp => emp.user_id.toString());--}}
+
+        {{--                                console.log('======= employees =======')--}}
+        {{--                                // console.log(info.event.extendedProps.employees);--}}
+        {{--                                // console.log(info.event);--}}
+        {{--                                console.log(x_recipients);--}}
+
+        {{--                                populateEmployees(initialBranchId, selectedEmpIds);--}}
+
+        {{--                                branchSelect.addEventListener('change', () => {--}}
+        {{--                                    const newBranchId = branchSelect.value;--}}
+        {{--                                    populateEmployees(newBranchId);--}}
+        {{--                                });--}}
+
+        {{--                                $(employeeSelect).on('select2:unselecting', function (e) {--}}
+        {{--                                    const id = e.params.args.data.id;--}}
+        {{--                                    const option = $(this).find(`option[value="${id}"]`);--}}
+        {{--                                    if (option.prop('disabled')) {--}}
+        {{--                                        e.preventDefault();--}}
+        {{--                                    }--}}
+        {{--                                });--}}
+        {{--                            },--}}
+        {{--                            preConfirm: () => {--}}
+        {{--                                const title = document.getElementById('edit-title').value;--}}
+        {{--                                const reason = document.getElementById('edit-reason').value;--}}
+        {{--                                const goals = document.getElementById('edit-goals').value;--}}
+        {{--                                const branch = document.getElementById('edit-branch').value;--}}
+        {{--                                const visitTime = document.getElementById('edit-visit-time').value;--}}
+        {{--                                const endTime = document.getElementById('edit-end-time').value;--}}
+        {{--                                const attendants = document.getElementById('attendants').value;--}}
+        {{--                                const start = document.getElementById('start').value;--}}
+        {{--                                const end = document.getElementById('end').value;--}}
+        {{--                                const selectedEmployees = $('#edit-employees').val();--}}
+        {{--                                // let selectedEmployees = $('#edit-employees').val() || [];--}}
+        {{--                                // disabledEmployees.forEach(id => {--}}
+        {{--                                //     if (!selectedEmployees.includes(id)) {--}}
+        {{--                                //         selectedEmployees.push(id);--}}
+        {{--                                //     }--}}
+        {{--                                // });--}}
+
+        {{--                                if (--}}
+        {{--                                    !title.trim() ||--}}
+        {{--                                    !reason.trim() ||--}}
+        {{--                                    // !goals.trim() ||--}}
+        {{--                                    !branch ||--}}
+        {{--                                    !visitTime ||--}}
+        {{--                                    !selectedEmployees ||--}}
+        {{--                                    selectedEmployees.length === 0--}}
+        {{--                                ) {--}}
+        {{--                                    Swal.showValidationMessage('الرجاء تعبئة جميع الحقول');--}}
+        {{--                                    return false;--}}
+        {{--                                }--}}
+
+        {{--                                // const startDateTime = combineDateAndTime(info.event.startStr, visitTime);--}}
+        {{--                                //  beginningDate = visit.start;--}}
+        {{--                                // endingDate =visit.end;--}}
+        {{--                                beginningDate = start;--}}
+        {{--                                endingDate =end;--}}
+        {{--                                // const formatted = beginningDate.toLocaleDateString('en-GB');--}}
+
+        {{--                                const startDateTime = combineDateAndTime( beginningDate.split(' ')[0], visitTime);--}}
+        {{--                                const endDateTime = combineDateAndTime( endingDate.split(' ')[0], endTime);--}}
+
+        {{--                                return {--}}
+        {{--                                    title,--}}
+        {{--                                    reason,--}}
+        {{--                                    goals,--}}
+        {{--                                    branch,--}}
+        {{--                                    employees: selectedEmployees,--}}
+        {{--                                    // start,--}}
+        {{--                                    start: startDateTime,--}}
+        {{--                                    // end: visit.end,--}}
+        {{--                                    end: endDateTime,--}}
+        {{--                                    attendants: attendants--}}
+        {{--                                    // end: info.event.endStr--}}
+        {{--                                };--}}
+        {{--                            }--}}
+        {{--                        }).then((result) => {--}}
+        {{--                            if (result.isConfirmed) {--}}
+
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'الرجاء الإنتظار',--}}
+        {{--                                    allowOutsideClick: false,--}}
+        {{--                                    showCancelButton: false,--}}
+        {{--                                    showConfirmButton: false,--}}
+        {{--                                    willOpen: () => {--}}
+        {{--                                        Swal.showLoading()--}}
+        {{--                                    },--}}
+        {{--                                });--}}
+
+        {{--                                Livewire.emit('updateVisit', {--}}
+        {{--                                    // id: info.event.id,--}}
+        {{--                                    id: visit.id,--}}
+        {{--                                    title: result.value.title,--}}
+        {{--                                    reason: result.value.reason,--}}
+        {{--                                    goals: result.value.goals,--}}
+        {{--                                    branch: result.value.branch,--}}
+        {{--                                    employees: result.value.employees,--}}
+        {{--                                    start: result.value.start,--}}
+        {{--                                    end: result.value.end,--}}
+        {{--                                    attendants: result.value.attendants--}}
+        {{--                                });--}}
+        {{--                            }--}}
+        {{--                        });--}}
+        {{--                    });--}}
+        {{--                }--}}
+
+        {{--                if(deleteBtn) {--}}
+        {{--                    deleteBtn.addEventListener('click', () => {--}}
+
+        {{--                        Swal.fire({--}}
+        {{--                            title: 'هل متأكد من ذلك؟',--}}
+        {{--                            text: "سوف يتم إلغاء هذه الزيارة وإبلاغ الشخص المسؤول بمكان الزيارة",--}}
+        {{--                            icon: 'warning',--}}
+        {{--                            showCancelButton: true,--}}
+        {{--                            confirmButtonText: 'نعم، الغي الزيارة',--}}
+        {{--                            cancelButtonText: 'إلغاء الامر'--}}
+        {{--                        }).then((delResult) => {--}}
+        {{--                            if (delResult.isConfirmed) {--}}
+        {{--                                // Livewire.emit('deleteVisit', info.event.id);--}}
+        {{--                                // Swal.fire({--}}
+        {{--                                //     title: 'تم الحذف!',--}}
+        {{--                                //     text: 'هذه الزيارة تم حذفها',--}}
+        {{--                                //     icon: 'success',--}}
+        {{--                                //     timer: 2000,--}}
+        {{--                                //     showConfirmButton: false,--}}
+        {{--                                //     timerProgressBar: true--}}
+        {{--                                // });--}}
+
+        {{--                                Swal.fire({--}}
+        {{--                                    title: 'سبب الإلغاء',--}}
+        {{--                                    html: `--}}
+        {{--<label for="delete-reason" style="min-width: 120px;">يرجى إدخال سبب إلغاء الزيارة</label>--}}
+        {{--<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">--}}
+        {{--    <textarea id="delete-reason" class="swal2-textarea" style="flex: 1; height: 150px; resize: none; direction: rtl;--}}
+        {{--                 border: 1px solid #64748b;--}}
+        {{--                 padding: 0.625em;--}}
+        {{--                 border-radius: 0em;--}}
+        {{--                 font-family: inherit;--}}
+        {{--                 font-size: 10pt;"></textarea>--}}
+        {{--    </div>--}}
+        {{--  `,--}}
+        {{--                                    focusConfirm: false,--}}
+        {{--                                    showCancelButton: true,--}}
+        {{--                                    confirmButtonText: 'إلغاء الزيارة',--}}
+        {{--                                    cancelButtonText: 'عودة',--}}
+        {{--                                    customClass: {--}}
+        {{--                                        popup: 'responsive-modal'--}}
+        {{--                                    },--}}
+        {{--                                    preConfirm: () => {--}}
+        {{--                                        const reason = document.getElementById('delete-reason').value.trim();--}}
+        {{--                                        if (!reason) {--}}
+        {{--                                            Swal.showValidationMessage('يجب إدخال السبب قبل الإلغاء');--}}
+        {{--                                            return false;--}}
+        {{--                                        }--}}
+        {{--                                        return reason;--}}
+        {{--                                    }--}}
+        {{--                                }).then((result) => {--}}
+        {{--                                    if (result.isConfirmed) {--}}
+        {{--                                        const reason = result.value;--}}
+
+        {{--                                        Livewire.emit('deleteVisit', {--}}
+        {{--                                            id: visit.id,--}}
+        {{--                                            delete_reason: reason--}}
+        {{--                                        });--}}
+
+        {{--                                        // Swal.fire({--}}
+        {{--                                        //     title: 'تم الحذف!',--}}
+        {{--                                        //     text: 'هذه الزيارة تم حذفها',--}}
+        {{--                                        //     icon: 'success',--}}
+        {{--                                        //     timer: 2000,--}}
+        {{--                                        //     showConfirmButton: false,--}}
+        {{--                                        //     timerProgressBar: true--}}
+        {{--                                        // });--}}
+        {{--                                    }--}}
+        {{--                                });--}}
+
+
+        {{--                            }--}}
+        {{--                        });--}}
+
+        {{--                    });--}}
+        {{--                }--}}
+
+
+        {{--                document.querySelectorAll('.collapse-toggle').forEach(toggle => {--}}
+        {{--                    toggle.addEventListener('click', function () {--}}
+        {{--                        const content = this.nextElementSibling;--}}
+        {{--                        const arrow = this.querySelector('.collapse-arrow');--}}
+
+        {{--                        if (content) {--}}
+        {{--                            content.classList.toggle('hidden');--}}
+        {{--                        }--}}
+
+        {{--                        if (arrow) {--}}
+        {{--                            arrow.classList.toggle('rotate-180');--}}
+        {{--                        }--}}
+        {{--                    });--}}
+        {{--                });--}}
+
+        {{--            });--}}
+
+        {{--            function combineDateAndTime(dateStr, timeStr) {--}}
+        {{--                const [year, month, day] = dateStr.split("T")[0].split("-").map(Number);--}}
+        {{--                const [time, modifier] = timeStr.split(" ");--}}
+        {{--                let [hours, minutes] = time.split(":").map(Number);--}}
+
+        {{--                if (modifier === "PM" && hours !== 12) hours += 12;--}}
+        {{--                if (modifier === "AM" && hours === 12) hours = 0;--}}
+
+        {{--                const localDate = new Date(year, month - 1, day, hours, minutes);--}}
+
+        {{--                // Instead of .toISOString(), format it manually to keep local time--}}
+        {{--                const pad = n => String(n).padStart(2, '0');--}}
+        {{--                const localDateTimeString = `${year}-${pad(month)}-${pad(day)}T${pad(hours)}:${pad(minutes)}:00`;--}}
+
+        {{--                return localDateTimeString;--}}
+        {{--            }--}}
+
+        {{--            function formatTime(dateObj) {--}}
+        {{--                if (!dateObj) return '';--}}
+        {{--                return new Date(dateObj).toLocaleTimeString('en-US', {--}}
+        {{--                    timeZone: 'Asia/Riyadh',--}}
+        {{--                    hour: '2-digit',--}}
+        {{--                    minute: '2-digit',--}}
+        {{--                    hour12: true--}}
+        {{--                });--}}
+        {{--            }--}}
 
     </script>
 @stop
