@@ -61,34 +61,44 @@ class CommissionReport extends Component
         '10253' =>	'store_manager',
         '10264' =>	'store_manager',
         '10248' =>	'store_manager',
-        '10042' =>	'store_manager',
+        '10042' =>	'area_manager',
         '10159' =>	'mat_dev_manager1',
         '10261' =>	'mat_dev_manager1',
         // '10295' =>	'mat_dev_manager2',
         '10182' =>	'mat_dev_manager1',
-        '10059' =>	'area_manager',
+//        '10059' =>	'area_manager',
         '10279' =>	'mat_dev_manager1',
         '10068' =>	'mat_dev_manager1',
         '10190' =>	'mat_dev_manager1',
         '10079' =>	'mat_dev_manager1',
-        '10263' =>	'mat_dev_manager1',
+        '10263' =>	'mat_dev_manager2',
         '10286' =>	'mat_dev_manager1',
         '10266' =>	'mat_dev_manager1',
         '10232' =>	'mat_dev_manager2',
         '10272' =>	'mat_dev_manager2',
-        '10261' =>	'mat_dev_manager2',
+//        '10261' =>	'mat_dev_manager2',
         '10083' =>	'mat_dev_manager2',
         '10300' =>	'mat_dev_manager2',
         '10239' =>	'mat_dev_manager1',
         '10299' =>	'mat_dev_manager1',
         '10276' =>	'store_manager',
         '10297' =>	'store_manager',
-        '10312' =>	'store_manager',
+//        '10312' =>	'store_manager',
         '10309' =>	'store_manager',
         '10330' =>	'store_manager',
         '10328' =>	'store_manager',
         '10340' =>	'mat_dev_manager2',
         '10339' =>	'mat_dev_manager2',
+        '10342' =>	'area_manager',
+//        '10348' =>	'store_manager',
+        '10348' =>	'store_manager',
+        '10346' =>	'mat_dev_manager2',
+        '10353' =>  'mat_dev_manager2',
+        '10349' => 'mat_dev_manager1',
+        '10347' => 'mat_dev_manager1',
+        '408'=>'store_manager',
+        '10354' => 'mat_dev_manager2'
+//        ''=>'store_manager'
     ];
     public $position_commission = [
         "sales_manager" => ["sales_manager" => 0,	"area_manager" => 0, "store_manager"=>	0, "mat_dev_manager1" =>	0, "mat_dev_manager2" => 0	],
@@ -106,6 +116,7 @@ class CommissionReport extends Component
     public $slp_balance = [];
     public $branch_balance = 0;
     public $profitAndLoss = 0;
+    public $commission_days = 180;
 
     protected $rules = [
         'area_id' => 'required|not_in:-1',
@@ -447,7 +458,7 @@ AND "BPLId" IS NOT NULL';
                 // }
             }
 
-
+//dd($sql2);
             $result2 = odbc_exec($conn, $sql2);
             if (!$result2)
             {
@@ -463,10 +474,14 @@ AND "BPLId" IS NOT NULL';
 //                $this->sap_results
                 while ($row = odbc_fetch_array($result2)) {
                     array_push($this->sap_results2, $row);
-                    array_push($this->slp_code, $row["SlpCode"]);
-                }
 
-//                dd($this->sap_results2);
+
+//                    array_push($this->slp_code, $row["SlpCode"]); // issue
+
+                    array_push($this->slp_code, $row["SalesEmployeeCode"]);
+                }
+//dd($this->slp_code);
+// 408               dd($this->sap_results2);
 
                 $gross_collect = collect($this->sap_results2);
                 $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');
@@ -1175,4 +1190,3 @@ LIMIT 1';
         return [$customer_balance, $aging_balance, $oldest_inv, $c_code];
     }
 }
-
