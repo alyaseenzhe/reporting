@@ -85,8 +85,11 @@
                     </div>
                     @endif
                 </div>
+
+{{--                @if($can_recipient_approve)--}}
                 @if($can_recipient_approve)
 
+                    @dd('true')
                     <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
                         <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمشرف المنطقة</p>
                         <div>

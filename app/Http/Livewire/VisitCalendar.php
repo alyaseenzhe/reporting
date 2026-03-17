@@ -40,7 +40,12 @@ class VisitCalendar extends Component
     public $can_rate;
     public  $branches;
     public $visit_id;
-
+    public $reviews_done;
+    public  $isReviewWritten;
+    public  $isMyReview;
+    public  $allReviewsDone;
+    public  $parsedReview;
+    public  $reviews; //
 
 //    protected $wati;
 
@@ -55,6 +60,10 @@ class VisitCalendar extends Component
         $this->approve();
 //        $this->uniqueRequesters = collect($this->visits)
 
+        $this->can_approve($this->visit_id);
+        $this->can_close();
+        $this->can_rate();
+        $this->reviews_done();
 
         $user = Auth::user();
         $this->canViewAll = (
@@ -411,22 +420,22 @@ class VisitCalendar extends Component
         return $branch_manger;
     }
 
-    public function can_approve($visit_id)
-    {
-
-        $x = Visit::where('visits.id', $visit_id)
-            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
-            ->leftJoin('users', 'users.id', 'visit_emps.user_id')
-            ->where('visit_emps.type', 'recipient')
-            ->where('visit_emps.user_id', Auth::id())
-//            ->where('users.group', '8')
-            ->where('visits.status', '0')
-            ->where('visits.is_deleted', '0')
-            ->exists();
-
-        return $x;
-
-    }
+//    public function can_approve($visit_id)
+//    {
+//
+//        $x = Visit::where('visits.id', $visit_id)
+//            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+//            ->leftJoin('users', 'users.id', 'visit_emps.user_id')
+//            ->where('visit_emps.type', 'recipient')
+//            ->where('visit_emps.user_id', Auth::id())
+////            ->where('users.group', '8')
+//            ->where('visits.status', '0')
+//            ->where('visits.is_deleted', '0')
+//            ->exists();
+//
+//        return $x;
+//
+//    }
 
     public function approve()
     {
@@ -678,6 +687,87 @@ class VisitCalendar extends Component
         }
 
     }
+
+    public function approveVisit($visit_record)
+    {
+
+        $visit = Visit::findOrFail($this->visit_id);
+
+//        $rec = $visit->emps_recipients()
+//            ->where('user_id', Auth::id())
+//            ->whereHas('user', function ($query) {
+//                $query->where('group', 8);
+//            })
+//            ->exists();
+
+
+        if (!$this->can_recipient_approve) {
+            abort(403);
+        }
+
+        $visit->status = '1';
+        $visit->status_notice = $visit_record["status_notice"];
+        $visit->approved_by = auth()->user()->id;
+
+        if($visit->save()) {
+            $this->connect($visit->id);
+
+            $emails = $visit->emps->pluck('user.email')->filter()->values()->toArray();
+            $this->visitMail($visit, $emails, 'approve');
+
+
+            session()->flash('success', 'تمت الموافقة على الزيارة');
+//            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+        }
+        else {
+            session()->flash('error-message', 'حدث خطأ ما عند الموافقة على الزيارة');
+            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+        }
+    }
+
+    public function rejectVisit($visit_record)
+    {
+        $visit = Visit::findOrFail($this->visit_id);
+
+        if (!$this->can_recipient_approve) {
+            abort(403);
+        }
+
+        $visit->status = '2';
+        $visit->status_notice = $visit_record["status_notice"];
+
+        $visit->approved_by = auth()->user()->id;
+        if($visit->save()) {
+
+            $emails = $visit->emps_requester->pluck('user.email')->filter()->values()->toArray();
+            $this->visitMail($visit, $emails, 'reject');
+
+            session()->flash('success', 'تم رفض الزيارة');
+            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+        }
+        else {
+            session()->flash('error-message', 'حدث خطأ ما عند رفض الزيارة');
+            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+        }
+    }
+    public function can_approve($visit_id) {
+
+
+        return $this->can_recipient_approve = Visit::where('visits.id', $visit_id)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->leftJoin('users', 'users.id', 'visit_emps.user_id')
+            ->where('visit_emps.type', 'recipient')
+            ->where('visit_emps.user_id', Auth::id())
+//            ->where('users.group', '8')
+            ->where('visits.status', '0')
+            ->where('visits.is_deleted', '0')
+            ->exists();
+
+    }
+
+
+
+
 
 
 }

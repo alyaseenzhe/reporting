@@ -20,7 +20,7 @@
             x-show="openModal"
             x-transition.scale
 {{--            class="bg-white w-full max-w-md rounded-lg shadow-lg p-6"--}}
-            class="bg-white w-full max-w-6xl  rounded-lg shadow-lg p-6"
+            class="bg-white w-full max-w-4xl   rounded-lg shadow-lg p-6"
         >
             {{$slot}}
 

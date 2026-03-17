@@ -363,7 +363,7 @@
 {{--                                </td>--}}
                                 <td wire:key="visit-modal-{{ $visit['id'] }}">
 {{--                                    @dd($visit)--}}
-                                    <p>{{$visit['id']}}</p>
+
                                 <x-modal>
                                    @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])
 
