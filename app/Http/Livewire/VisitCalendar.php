@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Traits\MsGraphAuthTrait;
 use App\Mail\VisitCreated;
 use App\Mail\WeeklyReport;
 use App\Models\MsToken;
@@ -20,7 +21,7 @@ use Dcblogdev\MsGraph\Facades\MsGraph;
 
 class VisitCalendar extends Component
 {
-
+    use MsGraphAuthTrait;
     public $visits;
     public $emps;
 
@@ -136,6 +137,8 @@ class VisitCalendar extends Component
             "0202"=> "مزرعة الفضول",
             "0203"=> "مزرعة الدلم"
         ];
+
+
 
     }
 
@@ -680,7 +683,7 @@ class VisitCalendar extends Component
                 $this->deleteEvent($visit->ms_event_id, $visit->id);
             }
 //            $branch_manger = $this->branchMangerByVisitId($visit->id);
-            return redirect()->route('visit-calendar');
+            return redirect()->route('show.visit', ['id' => $visit->id]);
         } else {
             // Optional: handle the case if event not found
             session()->flash('error', 'Visit not found.');
@@ -691,7 +694,10 @@ class VisitCalendar extends Component
     public function approveVisit($visit_record)
     {
 
-        $visit = Visit::findOrFail($this->visit_id);
+        $visitId = $visit_record['id'] ?? $this->visit_id;
+        $visit = Visit::findOrFail($visitId);
+        $this->visit_id = $visit->id;
+        $this->can_approve($visit->id);
 
 //        $rec = $visit->emps_recipients()
 //            ->where('user_id', Auth::id())
@@ -721,13 +727,16 @@ class VisitCalendar extends Component
         }
         else {
             session()->flash('error-message', 'حدث خطأ ما عند الموافقة على الزيارة');
-            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+            return redirect()->route('show.visit', ['id' => $visit->id]);
         }
     }
 
     public function rejectVisit($visit_record)
     {
-        $visit = Visit::findOrFail($this->visit_id);
+        $visitId = $visit_record['id'] ?? $this->visit_id;
+        $visit = Visit::findOrFail($visitId);
+        $this->visit_id = $visit->id;
+        $this->can_approve($visit->id);
 
         if (!$this->can_recipient_approve) {
             abort(403);
@@ -743,11 +752,11 @@ class VisitCalendar extends Component
             $this->visitMail($visit, $emails, 'reject');
 
             session()->flash('success', 'تم رفض الزيارة');
-            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+            return redirect()->route('show.visit', ['id' => $visit->id]);
         }
         else {
             session()->flash('error-message', 'حدث خطأ ما عند رفض الزيارة');
-            return redirect()->route('show.visit', ['id' => $this->visit_id]);
+            return redirect()->route('show.visit', ['id' => $visit->id]);
         }
     }
     public function can_approve($visit_id) {
@@ -765,6 +774,102 @@ class VisitCalendar extends Component
 
     }
 
+    public function closeVisit($payload = [])
+    {
+        $visitId = $payload['id'] ?? $this->visit_id;
+        $visit = Visit::findOrFail($visitId);
+        $this->visit_id = $visit->id;
+
+        if (!$visit->is_requester()) {
+            abort(403);
+        }
+
+        $visit->status = '3';
+
+        if($visit->save()) {
+
+//            dd($visit->ms_event_id);
+            if(isset($visit->ms_event_id)){
+                $this->deleteEvent($visit->ms_event_id, $visit->id);
+            }
+
+            session()->flash('success', 'تم إنجاز الزيارة');
+            $this->visitMail($visit, null, 'review');
+
+            return redirect()->route('visit-calendar');
+        }
+        else {
+            session()->flash('error-message', 'حدث خطأ ما عند إنجاز الزيارة');
+            return redirect()->route('visit-calendar');
+        }
+    }
+
+    public function review($data)
+    {
+        $visitId = $data['id'] ?? $this->visit_id;
+        $visit = Visit::find($visitId);
+
+        if (!$visit) {
+            session()->flash('error-message', 'خطأ في الزيارة');
+            return redirect()->route('visit-calendar');
+        }
+
+        $this->visit_id = $visit->id;
+        $reviewerType = $data['reviewer_type'] ?? null;
+        $reviewPayload = $data;
+        unset($reviewPayload['id'], $reviewPayload['reviewer_type']);
+
+        $visitEmps = VisitEmp::where('visit_id', $visit->id)
+            ->where('user_id', Auth::id())
+            ->when($reviewerType, function ($query) use ($reviewerType) {
+                $query->where('type', $reviewerType);
+            })
+            ->where(function($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->first();
+
+        if ($visitEmps) {
+            $editRecord = VisitEmp::findOrFail($visitEmps->id);
+            $editRecord->reviews = json_encode($reviewPayload);
+
+            if($editRecord->save()) {
+                $requester_emails = $visit->emps_requester->pluck('user.email');
+                $recipent_emails = $visit->emps_recipients->pluck('user.email');
+
+                if($editRecord->type == 'recipient') {
+                    Mail::to($requester_emails)->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+                } elseif($editRecord->type == 'requester') {
+                    Mail::to($recipent_emails)->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+                }
+
+                $hasRecipientReview = $visit->emps_recipients()
+                    ->whereNotNull('reviews')
+                    ->exists();
+
+                $hasRequesterReview = $visit->emps_requester()
+                    ->whereNotNull('reviews')
+                    ->exists();
+
+                if ($hasRecipientReview && $hasRequesterReview) {
+                    $visit->update(['status' => 5]);
+                    Mail::to(['sadekr@alyaseenagri.com','mohammedsr@alyaseenagri.com'])
+                        ->bcc('zahra@alyaseenagri.com')
+                        ->queue(new VisitCreated($visit, $editRecord->user()->first()->name, 'reviews-done'));
+                }
+
+                session()->flash('success', 'تم التقييم بنجاح');
+                return redirect()->route('visit-calendar');
+            }
+
+            session()->flash('error-message', 'حدث خطأ اثناء التقييم');
+            return redirect()->route('visit-calendar');
+        }
+
+        session()->flash('error-message', 'حدث خطأ');
+        return redirect()->route('visit-calendar');
+    }
 
 
 

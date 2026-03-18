@@ -3,6 +3,42 @@
 {{--@stop--}}
 {{--<input type="hidden" name="visit_id" value="{{$record->id}}">--}}
 {{--<div class="mb-5">--}}
+    @php
+        $visitId = $record->id;
+        $currentUserId = \Illuminate\Support\Facades\Auth::id();
+
+        $can_recipient_approve = \App\Models\Visit::where('visits.id', $visitId)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->leftJoin('users', 'users.id', 'visit_emps.user_id')
+            ->where('visit_emps.type', 'recipient')
+            ->where('visit_emps.user_id', $currentUserId)
+            ->where('visits.status', '0')
+            ->where('visits.is_deleted', '0')
+            ->exists();
+
+        $can_close_visit = \App\Models\Visit::where('visits.id', $visitId)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->where('visit_emps.type', 'requester')
+            ->where('visit_emps.user_id', $currentUserId)
+            ->where('visits.status', '1')
+            ->where('visits.is_deleted', '0')
+            ->exists();
+
+        $can_rate = \App\Models\Visit::where('visits.id', $visitId)
+            ->leftJoin('visit_emps', 'visits.id', 'visit_emps.visit_id')
+            ->where('visit_emps.user_id', $currentUserId)
+            ->where(function ($query) {
+                $query->where('visits.status', '3')
+                    ->orWhere('visits.status', '5');
+            })
+            ->where('visits.is_deleted', '0')
+            ->where(function ($query) {
+                $query->whereNull('reviews')
+                    ->orWhere('reviews', '');
+            })
+            ->exists();
+    @endphp
+
     <nav class="sm:flex justify-between" aria-label="Breadcrumb">
 {{--        <ol class="inline-flex items-center space-x-1 md:space-x-3">--}}
 {{--            <li class="inline-flex items-center">--}}
@@ -49,10 +85,11 @@
 
 
         <div class="flex gap-4 my-4">
+
             @if($can_close_visit)
                 <div wire:ignore class=" text-center  mx-4 flex sm:flex-row flex-col gap-4 justify-end">
                     <div>
-                        <button id="close-btn"
+                        <button id="close-btn-{{ $record->id }}"
                                 style="background-color: #484f4a;" class="btn hover:bg-indigo-600 text-white">
                         <span class="mr-2 font-bold">
                             <span>إنجاز الزيارة</span>
@@ -86,14 +123,11 @@
                     @endif
                 </div>
 
-{{--                @if($can_recipient_approve)--}}
                 @if($can_recipient_approve)
-
-                    @dd('true')
                     <div wire:ignore class="mt-8 text-center flex sm:flex-row flex-col gap-4 justify-end">
                         <p style="color: #72001a;" class="text-sm">أولوية القبول والرفض هي لمشرف المنطقة</p>
                         <div>
-                            <button id="approve-btn"
+                            <button id="approve-btn-{{ $record->id }}"
                                     style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>قبول</span>
@@ -102,7 +136,7 @@
                         </div>
 
                         <div>
-                            <button id="reject-btn"
+                            <button id="reject-btn-{{ $record->id }}"
                                     style="background-color: #72001a;" class="btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>رفض</span>
@@ -117,7 +151,7 @@
                     @if($record->is_requester())
                         <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
                             <div>
-                                <button id="req-rate-btn"
+                                <button id="req-rate-btn-{{ $record->id }}"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>تقييم</span>
@@ -130,7 +164,7 @@
                     @if($record->is_recipient())
                         <div wire:ignore class="mt-8 text-center  flex sm:flex-row flex-col gap-4 justify-end">
                             <div>
-                                <button id="rec-rate-btn"
+                                <button id="rec-rate-btn-{{ $record->id }}"
                                         style="background-color: #026832;" class="btn hover:bg-indigo-600 text-white">
                 <span class="mr-2 font-bold">
                     <span>تقييم</span>
@@ -685,7 +719,11 @@
                                     willOpen: () => Swal.showLoading(),
                                 });
 
-                                Livewire.emit('review', result.value);
+                                Livewire.emit('review', {
+                                    ...result.value,
+                                    id: {{ $record->id }},
+                                    reviewer_type: 'requester'
+                                });
                             }
                         });
                     }
@@ -832,7 +870,11 @@
                         },
                     });
 
-                    Livewire.emit('review', result.value);
+                    Livewire.emit('review', {
+                        ...result.value,
+                        id: {{ $record->id }},
+                        reviewer_type: 'requester'
+                    });
                 }
             });
         }
@@ -942,7 +984,11 @@
                         },
                     });
 
-                    Livewire.emit('review', result.value);
+                    Livewire.emit('review', {
+                        ...result.value,
+                        id: {{ $record->id }},
+                        reviewer_type: 'recipient'
+                    });
                 }
             });
         }
@@ -972,17 +1018,17 @@
             console.log('rec: ' + isRecipient);
             console.log('owner:' + isOwner);
 
-            const approveBtn = document.getElementById('approve-btn');
-            const rejectBtn = document.getElementById('reject-btn');
-            const reqRateBtn = document.getElementById('req-rate-btn');
-            const recRateBtn = document.getElementById('rec-rate-btn');
-            const closeBtn = document.getElementById('close-btn');
+            const approveBtn = document.getElementById('approve-btn-{{ $record->id }}');
+            const rejectBtn = document.getElementById('reject-btn-{{ $record->id }}');
+            const reqRateBtn = document.getElementById('req-rate-btn-{{ $record->id }}');
+            const recRateBtn = document.getElementById('rec-rate-btn-{{ $record->id }}');
+            const closeBtn = document.getElementById('close-btn-{{ $record->id }}');
             const editBtn = document.getElementById('edit-btn');
             const deleteBtn = document.getElementById('delete-btn');
 
 
-            if (approveBtn || rejectBtn) {
-                document.getElementById('approve-btn').addEventListener('click', () => {
+            if (approveBtn && rejectBtn) {
+                approveBtn.onclick = () => {
 
                     Swal.fire({
                         title: 'الموافقة',
@@ -1017,6 +1063,7 @@
                             });
 
                             Livewire.emit('approveVisit', {
+                                id: visit.id,
                                 status_notice: res.value
                             });
 
@@ -1030,11 +1077,9 @@
 
                         }
                     });
+                };
 
-
-                });
-
-                document.getElementById('reject-btn').addEventListener('click', () => {
+                rejectBtn.onclick = () => {
                     Swal.fire({
                         title: 'سبب الرفض',
                         html: `
@@ -1072,6 +1117,7 @@
                             });
 
                             Livewire.emit('rejectVisit', {
+                                id: visit.id,
                                 status_notice: res.value
                             });
 
@@ -1084,23 +1130,23 @@
                             // });
                         }
                     });
-                });
+                };
             }
 
             if (reqRateBtn) {
-                document.getElementById('req-rate-btn').addEventListener('click', () => {
+                reqRateBtn.onclick = () => {
                     showArabicReviewWithNotes();
-                });
+                };
             }
 
             if (recRateBtn) {
-                document.getElementById('rec-rate-btn').addEventListener('click', () => {
+                recRateBtn.onclick = () => {
                     showRecipientReviewWithNotes();
-                });
+                };
             }
 
             if (closeBtn) {
-                document.getElementById('close-btn').addEventListener('click', () => {
+                closeBtn.onclick = () => {
 
                     Swal.fire({
                         title: 'إنجاز الزيارة',
@@ -1121,7 +1167,9 @@
                                 },
                             });
 
-                            Livewire.emit('closeVisit');
+                            Livewire.emit('closeVisit', {
+                                id: visit.id
+                            });
 
                             // Swal.fire({
                             //     title: 'تمت الموافقة!',
@@ -1135,7 +1183,7 @@
                     });
 
 
-                });
+                };
             }
 
             if (editBtn) {
