@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\SapCustomerLookupServiceInterface;
+use App\Services\SapCustomerLookupService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            SapCustomerLookupServiceInterface::class,
+            SapCustomerLookupService::class
+        );
     }
 
     /**
