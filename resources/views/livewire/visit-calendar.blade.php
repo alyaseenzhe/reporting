@@ -238,8 +238,8 @@
                         @forelse($visits as $visit)
 
                             <tr
-                                class="h-16"
-{{--                                onclick="window.open('{{ route('show.visit', ['id' => $visit['id']]) }}', '_blank')"--}}
+                                class="h-16 cursor-pointer"
+                                @click="window.dispatchEvent(new CustomEvent('open-modal', { detail: { id: {{ $visit['id'] }} } }))"
                                 style="@if($visit['status'] == 0) background-color:/*#fffddc*/ #dceeff; @elseif($visit['status'] == 1) background-color: #edffe9; @elseif($visit['status'] == 2) background-color: #fff0f8; @elseif($visit['status'] == 3) background-color: #dadada; @elseif($visit['status'] == 4) background-color:#ffd7b5; @elseif($visit['status'] == 5) background-color:#b9f0ea; @endif">
 
 
@@ -361,14 +361,10 @@
 {{--                                    </div>--}}
 
 {{--                                </td>--}}
-                                <td wire:key="visit-modal-{{ $visit['id'] }}">
-{{--                                    @dd($visit)--}}
-
-                                <x-modal>
-                                   @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])
-
-                                </x-modal>
-
+                                <td class="p-0 border-0" style="width:0; height:0; padding:0; margin:0;">
+                                    <x-modal :modal-id="$visit['id']" :open-button="false">
+                                       @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])
+                                    </x-modal>
                                 </td>
                             </tr>
 {{--                            <tr>--}}
