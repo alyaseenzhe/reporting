@@ -63,10 +63,10 @@ class AttachmentsRelationManagerRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('file_name')
                     ->label('File')
-                    ->formatStateUsing(fn ($record) =>
-                    "<a href='{$record->getUrl()}' target='_blank'>{$record->file_name}</a>"
+                    ->getStateUsing(fn ($record) =>
+                        "<a href='{$record->getUrl()}' target='_blank'>{$record->file_name}</a>"
                     )
-                    ->html()
+                    ->html(),
             ])
             ->filters([
                 //

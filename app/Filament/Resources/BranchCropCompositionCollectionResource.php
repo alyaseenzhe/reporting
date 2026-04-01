@@ -26,6 +26,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BranchCropCompositionCollectionResource extends Resource
 {
@@ -86,7 +87,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         Select::make('customer_code')
                             ->label('العميل')
                             ->searchable()
-                            ->required()
+                            // ->required()
                             ->helperText('ابحث باسم العميل أو رقمه من SAP. عند تعذر الاتصال سيتم عرض نتائج فارغة فقط.')
                             ->getSearchResultsUsing(function (string $search): array {
                                 return app(SapCustomerLookupServiceInterface::class)
@@ -247,9 +248,12 @@ class BranchCropCompositionCollectionResource extends Resource
                 TextColumn::make('created_at')
                     ->label('تاريخ الجمع')
                     ->date(),
-                TextColumn::make('branch_name')
+                TextColumn::make('branch.name')
                     ->label('الفرع')
                     ->searchable(),
+                // TextColumn::make('branch_name')
+                //     ->label('الفرع')
+                //     ->searchable(),
                 TextColumn::make('customer_name')
                     ->label('العميل')
                     ->searchable(),
@@ -258,9 +262,9 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->searchable(),
                 TextColumn::make('farms_count')
                     ->label('عدد المزارع'),
-                TextColumn::make('cropItems_count')
-                    ->counts('cropItems')
-                    ->label('عدد المحاصيل'),
+                // TextColumn::make('cropItems_count')
+                //     ->counts('cropItems')
+                //     ->label('عدد المحاصيل'),
             ])
             ->filters([
                 //

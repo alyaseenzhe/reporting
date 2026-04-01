@@ -25,13 +25,18 @@ class RequestResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('type')
-                    ->label('Type')
-                    ->default('Clearance'),
-                SpatieMediaLibraryFileUpload::make('attachments')
-                    ->collection('employee-files')
-                    ->multiple(),
+                    ->label('النوع')
+                    ->columnSpan(2)
+                    ->default('اخلاء طرف'),
+
                 Forms\Components\Textarea::make('reasons')
-                    ->label('Reasons'),
+                    ->columnSpan(2)
+                    ->label('الأسباب'),
+                SpatieMediaLibraryFileUpload::make('attachments')
+                    ->label('المرفقات')
+                    ->collection('employee-files')
+                    ->columnSpan(2)
+                    ->multiple(),
             ]);
     }
 
@@ -45,10 +50,10 @@ class RequestResource extends Resource
                     ->label('Created By')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('hr-file')
+                TextColumn::make('attachments')
                     ->label('Files')
-                    ->formatStateUsing(function ($record) {
-                        return $record->getMedia('hr-files')
+                    ->getStateUsing(function ($record) {
+                        return collect($record->getMedia())
                             ->map(function ($media) {
                                 return "<a href='{$media->getUrl()}' target='_blank'>{$media->file_name}</a>";
                             })
@@ -61,16 +66,16 @@ class RequestResource extends Resource
             ])
             ->actions([
                 Action::make('settlements')
-                    ->label('Settlements')
+                    ->label('العهد')
                     ->icon('heroicon-o-check-circle')
                     ->url(fn ($record): string => static::getUrl('settlements', ['record' => $record])),
-                Action::make('attachments')
-                    ->label('Attachments')
-                    ->icon('heroicon-o-paper-clip')
-                    ->modalHeading('Attachments')
-                    ->modalContent(fn ($record) => view('filament.modals.request-attachments', [
-                        'record' => $record,
-                    ])),
+//                Action::make('attachments')
+//                    ->label('Attachments')
+//                    ->icon('heroicon-o-paper-clip')
+//                    ->modalHeading('Attachments')
+//                    ->modalContent(fn ($record) => view('filament.modals.request-attachments', [
+//                        'record' => $record,
+//                    ])),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

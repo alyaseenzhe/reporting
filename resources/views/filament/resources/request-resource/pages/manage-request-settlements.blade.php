@@ -30,15 +30,15 @@
                 </div>
             </div>
 
-            <div class="mt-6">
-                <div class="mb-2 flex items-center justify-between text-sm">
-                    <span class="font-medium text-slate-600">Progress</span>
-                    <span class="font-semibold text-slate-900">{{ $progress }}%</span>
-                </div>
-                <div class="h-3 overflow-hidden rounded-full bg-slate-200">
-                    <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-300" style="width: {{ $progress }}%;"></div>
-                </div>
-            </div>
+{{--            <div class="mt-6">--}}
+{{--                <div class="mb-2 flex items-center justify-between text-sm">--}}
+{{--                    <span class="font-medium text-slate-600">Progress</span>--}}
+{{--                    <span class="font-semibold text-slate-900">{{ $progress }}%</span>--}}
+{{--                </div>--}}
+{{--                <div class="h-3 overflow-hidden rounded-full bg-slate-200">--}}
+{{--                    <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-300" style="width: {{ $progress }}%;"></div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

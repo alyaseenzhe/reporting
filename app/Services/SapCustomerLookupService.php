@@ -41,7 +41,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     }
 
     /**
-     * Resolve a single SAP customer by code, ODBC first then local AccMast fallback.
+     * Resolve a single SAP customer by code.
      */
     public function findCustomerByCode(?string $customerCode): ?array
     {
@@ -206,9 +206,6 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         ];
     }
 
-    /**
-     * Build the display label shown in the Filament select.
-     */
     protected function formatLabel(string $code, string $name): string
     {
         return trim($code . ' - ' . $name);
