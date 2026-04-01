@@ -25,9 +25,11 @@ class SettlementResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required(),
+                Forms\Components\TextInput::make('name')
+                    ->label('اسم التسوية')->required(),
 //                Forms\Components\TextInput::make('department')->email()->required(),
                 Select::make('department')
+                    ->label('القسم')
                     ->options([
                         'employee'=> 'الموظف',
                         'hr'=> 'الموارد البشرية',

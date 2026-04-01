@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ class BranchCropCompositionCollection extends Model
 
     protected $fillable = [
         'collection_date',
+        'branch_id',
         'branch_name',
         'engineer_id',
         'customer_code',
@@ -35,6 +37,11 @@ class BranchCropCompositionCollection extends Model
     public function engineer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'engineer_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     /**

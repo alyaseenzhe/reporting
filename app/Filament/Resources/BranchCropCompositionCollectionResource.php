@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Contracts\SapCustomerLookupServiceInterface;
 use App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
+use App\Models\Branch;
 use App\Models\BranchCropCollectionCultivationType;
 use App\Models\BranchCropCollectionItem;
 use App\Models\BranchCropCompositionCollection;
@@ -49,13 +50,23 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
                     Grid::make(2)->schema([
-                        DatePicker::make('collection_date')
-                            ->label('تاريخ جمع البيانات')
-                            ->required(),
-                        TextInput::make('branch_name')
+//                        DatePicker::make('collection_date')
+//                            ->label('تاريخ جمع البيانات')
+//                            ->required(),
+//                        TextInput::make('branch_name')
+//                            ->label('الفرع')
+//                            ->required()
+//                            ->maxLength(255),
+                        Select::make('branch_id')
                             ->label('الفرع')
                             ->required()
-                            ->maxLength(255),
+                            ->searchable()
+                            ->options(function () {
+                                return Branch::query()
+                                    ->orderBy('name')
+                                    ->pluck('name', 'id')
+                                    ->toArray();
+                            }),
                         Select::make('engineer_id')
                             ->label('المهندس المسؤول')
                             ->searchable()
@@ -233,7 +244,7 @@ class BranchCropCompositionCollectionResource extends Resource
         return $table
             ->defaultSort('collection_date', 'desc')
             ->columns([
-                TextColumn::make('collection_date')
+                TextColumn::make('created_at')
                     ->label('تاريخ الجمع')
                     ->date(),
                 TextColumn::make('branch_name')
