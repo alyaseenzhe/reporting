@@ -12,6 +12,7 @@ use App\Models\CropCatalogItem;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -116,19 +117,34 @@ class BranchCropCompositionCollectionResource extends Resource
                                         'ري غمر' => 'ري غمر',
                                         'أشجار مثمرة' => 'أشجار مثمرة',
                                         'حدائق' => 'حدائق',
-                                    ]),
-                                TextInput::make('detail_type')
-                                    ->label('تفصيل النوع')
-                                    ->maxLength(255),
-                                TextInput::make('unit_count')
-                                    ->label('عدد الوحدات')
-                                    ->numeric()
-                                    ->rules(['nullable', 'numeric', 'min:0']),
-                                TextInput::make('total_area_hectares')
+                                    ])
+                                    ->columnSpan(2),
+                                                                    TextInput::make('total_area_hectares')
                                     ->label('مساحة اجمالية (هـ)')
                                     ->required()
                                     ->numeric()
-                                    ->rules(['numeric', 'min:0.01']),
+                                    ->rules(['numeric', 'min:0.01'])
+                                      ->columnSpan(2),
+
+                                Checkbox::make('show_detail_type')
+                                    ->label('اظهار التفاصيل')
+                                    ->reactive()
+                                    ->default(false)
+                                    ->columnSpan(4),
+                                TextInput::make('detail_type')
+                                    ->label('تفصيل النوع')
+                                    ->maxLength(255)
+                                    ->reactive()
+                                    ->hidden(fn (callable $get): bool => ! $get('show_detail_type'))
+                                     ->columnSpan(2)
+                                    ,
+                                TextInput::make('unit_count')
+                                    ->label('عدد الوحدات')
+                                    ->numeric()
+                                    ->reactive()
+                                    ->hidden(fn (callable $get): bool => ! $get('show_detail_type'))
+                                    ->rules(['nullable', 'numeric', 'min:0'])
+                                    ->columnSpan(2),
                             ]),
                         ]),
                 ]),
@@ -175,15 +191,22 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->rules(['integer', 'min:1']),
-                                TextInput::make('trees_count')
-                                    ->label('عدد الأشجار')
-                                    ->numeric()
-                                    ->rules(['nullable', 'integer', 'min:0']),
+
                                 TextInput::make('total_area_hectares')
                                     ->label('مساحة كل العروات (هكتار)')
                                     ->required()
                                     ->numeric()
                                     ->rules(['numeric', 'min:0.01']),
+                                Checkbox::make('show_tree_count')
+                                    ->label('إضافة عدد الأشجار')
+                                    ->reactive()
+                                    ->default(false)
+                                    ->columnSpan(4),
+                                TextInput::make('trees_count')
+                                    ->label('عدد الأشجار')
+                                    ->numeric()
+                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
+                                    ->rules(['nullable', 'integer', 'min:0']),
                             ]),
                         ]),
                 ]),

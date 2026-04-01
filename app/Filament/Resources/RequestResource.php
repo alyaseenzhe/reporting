@@ -2,24 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MediaRelationManagerResource\RelationManagers\MembersRelationManager;
 use App\Filament\Resources\RequestResource\Pages;
-use App\Filament\Resources\RequestResource\RelationManagers;
-use App\Filament\Resources\RequestSettlementResource\RelationManagers\SettlementsRelationManager;
 use App\Filament\Resources\RequestResource\RelationManagers\AttachmentsRelationManagerRelationManager;
 use App\Models\Request;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
-use App\Models\Settlement;
+use Filament\Tables\Columns\TextColumn;
 
 class RequestResource extends Resource
 {
@@ -31,75 +24,53 @@ class RequestResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('type')->label('النوع')->default('اخلاء طرف'),
+                Forms\Components\TextInput::make('type')
+                    ->label('Type')
+                    ->default('Clearance'),
                 SpatieMediaLibraryFileUpload::make('attachments')
                     ->collection('employee-files')
                     ->multiple(),
-                Forms\Components\Textarea::make('reasons')->label('الأسباب'),
-
-
-
-
+                Forms\Components\Textarea::make('reasons')
+                    ->label('Reasons'),
             ]);
-
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('type')->label('النوع'),
-
+                TextColumn::make('type')
+                    ->label('Type'),
                 TextColumn::make('user.name')
-                    ->label('انشأ بواسطة')
+                    ->label('Created By')
                     ->searchable()
                     ->sortable(),
-                //
                 TextColumn::make('hr-file')
                     ->label('Files')
                     ->formatStateUsing(function ($record) {
-
                         return $record->getMedia('hr-files')
                             ->map(function ($media) {
-                                return "<a href='{$media->getUrl()}' target='_blank'>
-                            {$media->file_name}
-                        </a>";
+                                return "<a href='{$media->getUrl()}' target='_blank'>{$media->file_name}</a>";
                             })
                             ->implode('<br>');
                     })
-                    ->html()
-//                Tables\Columns\TextColumn::make('attachments_count')
-//                    ->label('Files')
-//                    ->counts('media'),
-
-//                TextColumn::make('attachments')
-//                    ->label('Files')
-//                    ->formatStateUsing(function ($record) {
-//
-//                        return $record->getMedia('hr-file')
-//                            ->map(function ($media) {
-//                                return "<a href='{$media->getUrl()}' target='_blank'>
-//                            {$media->file_name}
-//                        </a>";
-//                            })
-//                            ->implode('<br>');
-//                    })
-//                    ->html()
-
-
+                    ->html(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Action::make('settlements')
+                    ->label('Settlements')
+                    ->icon('heroicon-o-check-circle')
+                    ->url(fn ($record): string => static::getUrl('settlements', ['record' => $record])),
                 Action::make('attachments')
-                    ->label('عرض المرفقات')
+                    ->label('Attachments')
                     ->icon('heroicon-o-paper-clip')
-                    ->modalHeading('المرفقات')
-                    ->modalContent(fn ($record) => view(
-                        'filament.modals.request-attachments',
-                        ['record' => $record]
-                    )),
+                    ->modalHeading('Attachments')
+                    ->modalContent(fn ($record) => view('filament.modals.request-attachments', [
+                        'record' => $record,
+                    ])),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -107,12 +78,10 @@ class RequestResource extends Resource
             ]);
     }
 
-
     public static function getRelations(): array
     {
         return [
             AttachmentsRelationManagerRelationManager::class,
-            SettlementsRelationManager::class
         ];
     }
 
@@ -122,11 +91,7 @@ class RequestResource extends Resource
             'index' => Pages\ListRequests::route('/'),
             'create' => Pages\CreateRequest::route('/create'),
             'edit' => Pages\EditRequest::route('/{record}/edit'),
+            'settlements' => Pages\ManageRequestSettlements::route('/{record}/settlements'),
         ];
     }
-
-
-
-
-
 }

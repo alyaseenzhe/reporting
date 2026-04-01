@@ -15,10 +15,10 @@ class CreateBranchCropCollectionItemsTable extends Migration
     {
         Schema::create('branch_crop_collection_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branch_crop_composition_collection_id');
-            $table->unsignedBigInteger('crop_catalog_category_id');
-            $table->unsignedBigInteger('crop_catalog_item_id');
-            $table->unsignedInteger('cycles_per_year');
+            $table->unsignedBigInteger('branch_crop_composition_collection_id')->nullable();
+            $table->unsignedBigInteger('crop_catalog_category_id')->nullable();
+            $table->unsignedBigInteger('crop_catalog_item_id')->nullable();
+            $table->unsignedInteger('cycles_per_year')->nullable();
             $table->unsignedInteger('trees_count')->nullable();
             $table->decimal('total_area_hectares', 12, 2);
             $table->unsignedInteger('sort_order')->default(0);

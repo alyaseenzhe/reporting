@@ -15,12 +15,12 @@ class CreateBranchCropCompositionCollectionsTable extends Migration
     {
         Schema::create('branch_crop_composition_collections', function (Blueprint $table) {
             $table->id();
-            $table->date('collection_date');
-            $table->string('branch_name');
+            $table->date('collection_date')->nullable();
+            $table->string('branch_name')->nullable();
             $table->foreignId('engineer_id')->constrained('users')->restrictOnDelete();
-            $table->string('customer_code');
-            $table->string('customer_name');
-            $table->unsignedInteger('farms_count');
+            $table->string('customer_code')->nullable();
+            $table->string('customer_name')->nullable();
+            $table->unsignedInteger('farms_count')->default(0);
             $table->decimal('total_farm_area_hectares', 12, 2);
             $table->text('opportunities')->nullable();
             $table->text('challenges')->nullable();

@@ -8,8 +8,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\Action;
+
 class SettlementsRelationManager extends RelationManager
 {
     protected static string $relationship = 'settlements';
@@ -30,14 +29,12 @@ class SettlementsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-
-//                Tables\Columns\CheckboxColumn::make('is_done')
-//                    ->label('تمت')
-//                    ->toggleable()
-
-                        ])
-
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\IconColumn::make('is_done')
+                    ->label('Done')
+                    ->boolean()
+                    ->getStateUsing(fn ($record): bool => (bool) ($record->pivot?->is_done)),
+            ])
             ->filters([
                 //
             ])
@@ -45,28 +42,31 @@ class SettlementsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('toggle_done')
+                    ->label(fn ($record): string => ($record?->pivot?->is_done) ? 'Undo' : 'Done')
+                    ->icon('heroicon-o-check-circle')
+                    ->color(fn ($record): string => ($record?->pivot?->is_done) ? 'gray' : 'success')
+                    ->action(function ($record, self $livewire): void {
+                        if (! $record) {
+                            return;
+                        }
+
+                        $livewire->ownerRecord
+                            ->settlements()
+                            ->updateExistingPivot($record->getKey(), [
+                                'is_done' => ! ((bool) ($record->pivot?->is_done)),
+                            ]);
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('toggle_done')
-                    ->label('Toggle Done')
-                    ->icon('heroicon-o-refresh')
-                    ->action(function ($record) {
-                        if ($record && $record->pivot) {
-                            $record->pivot->update([
-                                'is_done' => !$record->pivot->is_done
-                            ]);
-                        }
-                    }),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-
     }
 
     protected function getTableQuery(): Builder
     {
-        $this->getRelationship()->getQuery();
         $user = auth()->user();
 
         $query = $this->getRelationship()->getQuery();
@@ -81,28 +81,23 @@ class SettlementsRelationManager extends RelationManager
 
         return $query;
     }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
 
         $user = auth()->user();
 
-        if ($user->role == 'm') {
-            $query->whereHas('type', fn ($q) =>
-            $q->where('department', 'hr')
-            );
+        if ($user->role == 'hr') {
+            $query->whereHas('type', fn ($q) => $q->where('department', 'hr'));
         }
 
         if ($user->role == 'u') {
-            $query->whereHas('type', fn ($q) =>
-            $q->where('department', 'finance')
-            );
+            $query->whereHas('type', fn ($q) => $q->where('department', 'finance'));
         }
 
         if ($user->role == 'a') {
-            $query->whereHas('type', fn ($q) =>
-            $q->where('department', 'it')
-            );
+            $query->whereHas('type', fn ($q) => $q->where('department', 'it'));
         }
 
         return $query;
@@ -112,8 +107,6 @@ class SettlementsRelationManager extends RelationManager
     {
         $user = auth()->user();
 
-        return $user->role === $record->department;
+        return $record ? $user->role === $record->department : false;
     }
 }
-
-
