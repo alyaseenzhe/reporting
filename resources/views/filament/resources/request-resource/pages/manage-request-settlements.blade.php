@@ -1,6 +1,14 @@
 ﻿<x-filament::page>
     <div class="space-y-6">
-        <div class="rounded-2xl border border-slate-200 bg-gradient-to-r from-white via-slate-50 to-emerald-50 p-6 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-gradient-to-r from-white via-slate-50 to-emerald-50 p-6 shadow-sm"
+             style=" border: 1px solid #e2e8f0; /* slate-200 */
+
+    background: linear-gradient(
+        to right,
+        #ffffff,  /* white */
+        #f8fafc,  /* slate-50 */
+        #ecfdf5   /* emerald-50 */
+    );">
             <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="space-y-3">
                     <div class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -9,7 +17,7 @@
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900">{{ $requestRecord['type'] ?? 'Request' }}</h2>
                         <p class="mt-1 text-sm text-slate-600">
-                            رقم الطلب #{{ $requestRecord['id'] }} تم انشاءه بواسطة {{ $requestRecord['user_name'] ?? '-' }}
+                            رقم الطلب #{{ $requestRecord['id'] }} تم انشاؤه بواسطة {{ $requestRecord['user_name'] ?? '-' }}
                         </p>
                     </div>
                 </div>
