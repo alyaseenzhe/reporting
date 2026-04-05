@@ -71,9 +71,13 @@ class ListAgingSap extends Component
         else
         {
 
+            $branchFilter = $this->area_id === 'all'
+                ? ''
+                : 'AND T0."CardCode" LIKE \''.$this->area_id.'%\'';
+
             $sql_customer = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
 WHERE T0."CardType" = \'C\'
-AND T0."CardCode" LIKE \''.$this->area_id.'%\'';
+' . $branchFilter;
 
 
             $result = odbc_exec($conn, $sql_customer);

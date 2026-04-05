@@ -17,6 +17,7 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار الفرع</option>
+                        <option value="all">الكل</option>
                         @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
                             <option value="01">فرع الاحساء</option>
                         @endif
