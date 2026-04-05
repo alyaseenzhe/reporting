@@ -420,6 +420,7 @@ class ItemsSalesByBranch extends Component
                     'mrkt_type'  => $itemRows->first()['mrkt_type'],
                     'Speciality' => $itemRows->first()['Speciality'],
                     'ItemGroup'  => $itemRows->first()['ItemGroup'],
+                    'TransCount' => $itemRows->sum('EmployeeTransCount'),
 
                     // ✅ unchanged
                     'TotalQuantitySale' => $totalQuantitySale,
@@ -460,12 +461,14 @@ class ItemsSalesByBranch extends Component
                         'EmployeeCode' => $empRows->first()['SlpCode'],
                         'EmployeeName' => $empRows->first()['SlpName'],
                         'Quantity'     => $empRows->sum('EmpQty'),
+                        'TransCount'   => $empRows->sum('EmployeeTransCount'),
                     ])
                     ->values();
 
                 return [
                     'BranchId' => $branch['BPLId'],
                     'BranchName' => $branch['BPLName'],
+                    'TransCount' => $branchRows->sum('EmployeeTransCount'),
                     'TotalQuantitySaleByBranch' => $branchRows->sum('EmployeeTotalQty'),
                     'TotalSalesPer' => $totalQuantity ? $branchRows->sum('EmployeeTotalQty') / $totalQuantity * 100 : 0,
                     'employees_loaded' => true,
@@ -2087,20 +2090,21 @@ ORDER BY I."ItemCode", "BranchRank"
                 }
 
 //
-                $sql = 'WITH SalesAgg AS (
+$sql = 'WITH SalesAgg AS (
     SELECT
         X."ItemCode",
         X."BPLId",
         X."SlpCode",
-       -- SUM(X."Qty") AS "BranchQty"
-        SUM(X."Qty") AS "EmpQty"
+        SUM(X."Qty") AS "EmpQty",
+        SUM(X."TransCount") AS "EmpTransCount"
     FROM (
         -- Invoices
         SELECT
             T0."ItemCode",
             T1."BPLId",
             T1."SlpCode",
-            SUM(T0."Quantity") AS "Qty"
+            SUM(T0."Quantity") AS "Qty",
+            COUNT(DISTINCT T1."DocEntry") AS "TransCount"
         FROM AL_YASEEN_AGRI_PLIVE.INV1 T0
         JOIN AL_YASEEN_AGRI_PLIVE.OINV T1
             ON T0."DocEntry" = T1."DocEntry"
@@ -2125,7 +2129,8 @@ ORDER BY I."ItemCode", "BranchRank"
             T0."ItemCode",
             T1."BPLId",
             T1."SlpCode",
-            SUM(T0."Quantity") * -1 AS "Qty"
+            SUM(T0."Quantity") * -1 AS "Qty",
+            COUNT(DISTINCT T1."DocEntry") * -1 AS "TransCount"
         FROM AL_YASEEN_AGRI_PLIVE.RIN1 T0
         JOIN AL_YASEEN_AGRI_PLIVE.ORIN T1
             ON T0."DocEntry" = T1."DocEntry"
@@ -2160,7 +2165,8 @@ ORDER BY I."ItemCode", "BranchRank"
     SELECT
         "ItemCode",
         "BPLId",
-        SUM("EmpQty") AS "BranchQty"
+        SUM("EmpQty") AS "BranchQty",
+        SUM("EmpTransCount") AS "BranchTransCount"
     FROM SalesAgg
     GROUP BY
         "ItemCode",
@@ -2182,7 +2188,8 @@ BranchRanked AS (
 TotalPerItem AS (
     SELECT
         "ItemCode",
-        SUM("EmpQty") AS "TotalQuantitySale"
+        SUM("EmpQty") AS "TotalQuantitySale",
+        SUM("EmpTransCount") AS "TotalTransCount"
     FROM SalesAgg
     GROUP BY "ItemCode"
 ),
@@ -2230,9 +2237,11 @@ SELECT
     B."BPLId",
     B."BPLName",
     T."TotalQuantitySale",
+    T."TotalTransCount",
     E."SlpName",
     E."SlpCode",
     COALESCE(S."EmpQty", 0) AS "EmployeeTotalQty",
+    COALESCE(S."EmpTransCount", 0) AS "EmployeeTransCount",
     ROUND(
     COALESCE(S."EmpQty", 0) * 100.0 /
     NULLIF(BR."BranchQty", 0),
@@ -2259,6 +2268,7 @@ SELECT
     END AS "mrkt_type",
     --COALESCE(S."BranchQty", 0) AS "TotalQuantitySaleByBranch",
     COALESCE(BR."BranchQty", 0) AS "TotalQuantitySaleByBranch",
+    COALESCE(BR."BranchTransCount", 0) AS "TransCount",
 
 ROUND(
     BR."BranchQty" * 100.0 /

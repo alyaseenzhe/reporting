@@ -62,9 +62,14 @@
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="text-sm">الفرع</div>
                             </th>
+
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">اجمالي العمليات</div>
+                            </th>
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="text-sm">اجمالي الكمية</div>
                             </th>
+
 
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="text-sm" >النسبة%
@@ -135,7 +140,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td  style="border-left: 2px solid black;" class="border p-1 ">
+                                <td  style="border-left: 2px solid black;" class="border p-1 " colspan="2">
 
 
                                     <div class="flex flex-row justify-between mx-2">
@@ -160,6 +165,8 @@
                                     {{--                                <tr x-show="activeItem === {{ json_encode($item["ItemCode"]) }}" class="bg-white border-b"  wire:key="item-{{ $item['ItemCode'] }}">--}}
                                     <td></td>
                                     <td class="pl-8 p-2 " >{{ $branch['BranchName'] }}</td>
+                                    <td class="pl-8 p-2">{{ $branch['TransCount'] }}</td>
+                                    
                                     <td class="pl-8 p-2">{{ $branch['TotalQuantitySaleByBranch'] }}</td>
                                     <td class="pl-8 p-2">{{ number_format($branch['TotalSalesPer']) }}</td>
                                     {{--                                    <td>--}}
