@@ -53,7 +53,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
 
         try {
             return Cache::remember(
-                'sap_customer_' . md5($customerCode),
+                'sap_customer_v2_' . md5($customerCode),
                 now()->addMinutes(30),
                 function () use ($customerCode) {
                     $customer = $this->findCustomerByCodeFromSap($customerCode);
@@ -88,10 +88,11 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     protected function findCustomerByCodeFromSap(string $customerCode): ?array
     {
         $customerCodeEscaped = str_replace("'", "''", $customerCode);
-        $query = 'SELECT T0."CardCode", T0."CardName"'
+        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName"'
             . ' FROM AL_YASEEN_AGRI_PLIVE.OCRD T0'
+            . ' LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP T1 ON T0."SlpCode" = T1."SlpCode"'
             . ' WHERE T0."CardType" = \'C\''
-            . ' AND T0."CardCode" = \\' . $customerCodeEscaped . '\'';
+            . ' AND T0."CardCode" = \'' . $customerCodeEscaped . '\'';
 
         $rows = $this->querySapRows($query);
 
@@ -104,6 +105,8 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         return [
             'code' => $row['CardCode'],
             'name' => $row['CardName'],
+            'slp_code' => $row['SlpCode'] ?? null,
+            'slp_name' => $row['SlpName'] ?? null,
             'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
         ];
     }

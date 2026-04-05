@@ -14,9 +14,11 @@ class BranchCropCompositionCollection extends Model
 
     protected $fillable = [
         'collection_date',
+        'user_id',
         'branch_id',
         'branch_name',
         'engineer_id',
+        'engineer_name',
         'customer_code',
         'customer_name',
         'farms_count',
@@ -37,6 +39,14 @@ class BranchCropCompositionCollection extends Model
     public function engineer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'engineer_id');
+    }
+
+    /**
+     * Get the user who created the collection.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function branch(): BelongsTo

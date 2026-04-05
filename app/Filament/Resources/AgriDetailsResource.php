@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CropCatalogCategoryResource\Pages;
-use App\Filament\Resources\CropCatalogCategoryResource\RelationManagers;
-use App\Models\CropCatalogCategory;
+use App\Filament\Resources\AgriDetailsResource\Pages;
+use App\Filament\Resources\AgriDetailsResource\RelationManagers;
+use App\Models\AgriDetais;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
@@ -15,29 +15,28 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CropCatalogCategoryResource extends Resource
+class AgriDetailsResource extends Resource
 {
-    protected static ?string $model = CropCatalogCategory::class;
+    protected static ?string $model = AgriDetais::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
-
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'طبيعة المحصول';
+    protected static ?string $navigationLabel = 'تفاصيل نوع الزراعة';
 
-    protected static ?string $pluralLabel = 'طبيعة المحصول';
+    protected static ?string $pluralLabel = 'تفصيل النوع';
 
-    protected static ?string $label = ' نوع الزراعة';
-//
+    protected static ?string $label = 'تفصيل النوع';
+
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('اسم نوع الزراعة')
+                TextInput::make('details')
+                    ->label('تفصيل النوع')
                     ->required(),
-
             ]);
     }
 
@@ -45,9 +44,10 @@ class CropCatalogCategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label('اسم نوع الزراعة')
-                    ,
+                TextColumn::make('details')
+                    ->label('تفصيل النوع')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -70,9 +70,9 @@ class CropCatalogCategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCropCatalogCategories::route('/'),
-            'create' => Pages\CreateCropCatalogCategory::route('/create'),
-            'edit' => Pages\EditCropCatalogCategory::route('/{record}/edit'),
+            'index' => Pages\ListAgriDetails::route('/'),
+            'create' => Pages\CreateAgriDetails::route('/create'),
+            'edit' => Pages\EditAgriDetails::route('/{record}/edit'),
         ];
     }
 }

@@ -8,9 +8,10 @@ use App\Models\Branch;
 use App\Models\BranchCropCollectionCultivationType;
 use App\Models\BranchCropCollectionItem;
 use App\Models\BranchCropCompositionCollection;
+use App\Models\AgriDetais;
+use App\Models\AgriType;
 use App\Models\CropCatalogCategory;
 use App\Models\CropCatalogItem;
-use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Checkbox;
@@ -51,9 +52,11 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
                     Grid::make(2)->schema([
-//                        DatePicker::make('collection_date')
-//                            ->label('تاريخ جمع البيانات')
-//                            ->required(),
+                        DatePicker::make('created_at')
+                            ->label('تاريخ جمع البيانات')
+                            ->hiddenOn('create')
+                            ->disabled()
+                            ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
 //                            ->required()
@@ -68,30 +71,25 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->pluck('name', 'id')
                                     ->toArray();
                             }),
-                        Select::make('engineer_id')
-                            ->label('المهندس المسؤول')
-                            ->searchable()
-                            ->required()
-                            ->getSearchResultsUsing(function (string $search): array {
-                                return User::query()
-                                    ->where('is_active', 1)
-                                    ->where('name', 'like', '%' . $search . '%')
-                                    ->orderBy('name')
-                                    ->limit(50)
-                                    ->pluck('name', 'id')
-                                    ->toArray();
-                            })
-                            ->getOptionLabelUsing(function ($value): ?string {
-                                return User::query()->whereKey($value)->value('name');
-                            }),
+
                         Select::make('customer_code')
                             ->label('العميل')
                             ->searchable()
-                            // ->required()
+                             ->required()
+                            ->reactive()
                             ->helperText('ابحث باسم العميل أو رقمه من SAP. عند تعذر الاتصال سيتم عرض نتائج فارغة فقط.')
                             ->getSearchResultsUsing(function (string $search): array {
                                 return app(SapCustomerLookupServiceInterface::class)
                                     ->searchCustomers($search);
+                            })
+                            ->afterStateUpdated(function ($state, callable $set): void {
+                                $customer = app(SapCustomerLookupServiceInterface::class)
+                                    ->findCustomerByCode($state);
+
+                                $set(
+                                    'engineer_name',
+                                    $customer['slp_name'] ?? null
+                                );
                             })
                             ->getOptionLabelUsing(function ($value): ?string {
                                 $customer = app(SapCustomerLookupServiceInterface::class)
@@ -99,6 +97,14 @@ class BranchCropCompositionCollectionResource extends Resource
 
                                 return $customer['label'] ?? $value;
                             }),
+
+                        TextInput::make('engineer_name')
+                            ->label('المهندس المسؤول')
+                            ->disabled()
+                            ->dehydrated()
+//                            ->required()
+                            ->helperText('يتم تحديد المهندس المسؤول تلقائيا من العميل المختار في SAP.')
+                            ->formatStateUsing(fn ($state): string => (string) $state),
                         TextInput::make('farms_count')
                             ->label('عدد المزارع الخاصة بالعميل')
                             ->required()
@@ -119,44 +125,69 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->defaultItems(1)
                         ->schema([
                             Grid::make(4)->schema([
-                                Select::make('cultivation_type')
+
+
+                                Select::make('agri_type_id')
                                     ->label('نوع الزراعة')
                                     ->required()
-                                    ->options([
-                                        'محميات' => 'محميات',
-                                        'رشاشات محورية' => 'رشاشات محورية',
-                                        'ري ليات' => 'ري ليات',
-                                        'ري غمر' => 'ري غمر',
-                                        'أشجار مثمرة' => 'أشجار مثمرة',
-                                        'حدائق' => 'حدائق',
-                                    ])
-                                    ->columnSpan(2),
-                                                                    TextInput::make('total_area_hectares')
-                                    ->label('مساحة اجمالية (هـ)')
-                                    ->required()
-                                    ->numeric()
-                                    ->rules(['numeric', 'min:0.01'])
-                                      ->columnSpan(2),
+                                    ->searchable()
+                                    ->preload()
+                                    ->options(function (): array {
+                                        return AgriType::query()
+                                            ->orderBy('name')
+                                            ->pluck('name', 'id')
+                                            ->toArray();
+                                    })
+                                    ->columnSpan(2)
+                                    ->reactive()
+                                    ->afterStateUpdated(function (callable $set) {
+                                        $set('agri_detail_id', null);
+                                    }),
 
-                                Checkbox::make('show_detail_type')
-                                    ->label('اظهار التفاصيل')
-                                    ->reactive()
-                                    ->default(false)
-                                    ->columnSpan(4),
-                                TextInput::make('detail_type')
-                                    ->label('تفصيل النوع')
-                                    ->maxLength(255)
-                                    ->reactive()
-                                    ->hidden(fn (callable $get): bool => ! $get('show_detail_type'))
-                                     ->columnSpan(2)
-                                    ,
+                                Select::make('agri_detail_id')
+                                    ->label('تفاصيل الزراعة')
+                                    ->searchable()
+                                    ->preload()
+                                    ->options(function (): array {
+                                        return AgriDetais::query()
+                                            ->orderBy('details')
+                                            ->pluck('details', 'id')
+                                            ->toArray();
+                                    })
+
+                                    ->hidden(function (callable $get): bool {
+                                        $agriDetailId = $get('agri_type_id');
+
+                                        if (! $agriDetailId) {
+                                            return true;
+                                        }
+
+                                        return ! optional(AgriType::find($agriDetailId))->has_details;
+                                    })
+                                    ->columnSpan(2),
+
                                 TextInput::make('unit_count')
                                     ->label('عدد الوحدات')
                                     ->numeric()
                                     ->reactive()
-                                    ->hidden(fn (callable $get): bool => ! $get('show_detail_type'))
+                                    ->hidden(function (callable $get): bool {
+                                        $agriTypeId = $get('agri_type_id');
+
+                                        if (! $agriTypeId) {
+                                            return true;
+                                        }
+
+                                        return ! optional(AgriType::find($agriTypeId))->has_units;
+                                    })
                                     ->rules(['nullable', 'numeric', 'min:0'])
                                     ->columnSpan(2),
+                                TextInput::make('total_area_hectares')
+                                    ->label('مساحة اجمالية (هـ)')
+                                    ->required()
+                                    ->numeric()
+                                    ->rules(['numeric', 'min:0.01'])
+                                    ->columnSpan(2),
+
                             ]),
                         ]),
                 ]),
@@ -245,20 +276,24 @@ class BranchCropCompositionCollectionResource extends Resource
         return $table
             ->defaultSort('collection_date', 'desc')
             ->columns([
-                TextColumn::make('created_at')
-                    ->label('تاريخ الجمع')
-                    ->date(),
-                TextColumn::make('branch.name')
-                    ->label('الفرع')
-                    ->searchable(),
+//                TextColumn::make('created_at')
+//                    ->label('تاريخ الجمع')
+//                    ->date(),
+
                 // TextColumn::make('branch_name')
                 //     ->label('الفرع')
                 //     ->searchable(),
                 TextColumn::make('customer_name')
                     ->label('العميل')
                     ->searchable(),
-                TextColumn::make('engineer.name')
-                    ->label('المهندس')
+                TextColumn::make('branch.name')
+                    ->label('الفرع')
+                    ->searchable(),
+//                TextColumn::make('engineer.name')
+//                    ->label('المهندس')
+//                    ->searchable(),
+                TextColumn::make('engineer_name')
+                    ->label('المهندس المسؤول')
                     ->searchable(),
                 TextColumn::make('farms_count')
                     ->label('عدد المزارع'),
@@ -307,7 +342,10 @@ class BranchCropCompositionCollectionResource extends Resource
         $customer = app(SapCustomerLookupServiceInterface::class)
             ->findCustomerByCode($data['customer_code'] ?? null);
 
+        $data['user_id'] = auth()->id();
         $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
+        $data['engineer_name'] = $customer['slp_name'] ?? ($data['engineer_name'] ?? null);
+        $data['engineer_id'] = null;
 
         return $data;
     }
@@ -341,8 +379,8 @@ class BranchCropCompositionCollectionResource extends Resource
 
         foreach ($cultivationRows as $index => $row) {
             $record->cultivationTypes()->create([
-                'cultivation_type' => $row['cultivation_type'],
-                'detail_type' => $row['detail_type'] ?? null,
+                'agri_type_id' => $row['agri_type_id'] ?? null,
+                'agri_detail_id' => $row['agri_detail_id'] ?? null,
                 'unit_count' => $row['unit_count'] ?? null,
                 'total_area_hectares' => $row['total_area_hectares'],
                 'sort_order' => $index + 1,
@@ -369,8 +407,8 @@ class BranchCropCompositionCollectionResource extends Resource
         $data['cultivation_types'] = $record->cultivationTypes
             ->map(function (BranchCropCollectionCultivationType $row): array {
                 return [
-                    'cultivation_type' => $row->cultivation_type,
-                    'detail_type' => $row->detail_type,
+                    'agri_type_id' => $row->agri_type_id,
+                    'agri_detail_id' => $row->agri_detail_id,
                     'unit_count' => $row->unit_count,
                     'total_area_hectares' => $row->total_area_hectares,
                 ];

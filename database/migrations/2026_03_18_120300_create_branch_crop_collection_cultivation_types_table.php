@@ -16,8 +16,10 @@ class CreateBranchCropCollectionCultivationTypesTable extends Migration
         Schema::create('branch_crop_collection_cultivation_types', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_crop_composition_collection_id');
-            $table->string('cultivation_type');
-            $table->string('detail_type')->nullable();
+//            $table->string('cultivation_type');
+//            $table->string('detail_type')->nullable();
+            $table->foreignId('agri_type_id')->nullable();
+            $table->foreignId('agri_detail_id')->nullable();
             $table->decimal('unit_count', 12, 2)->nullable();
             $table->decimal('total_area_hectares', 12, 2);
             $table->unsignedInteger('sort_order')->default(0);

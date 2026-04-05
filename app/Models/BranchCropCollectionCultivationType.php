@@ -12,7 +12,8 @@ class BranchCropCollectionCultivationType extends Model
 
     protected $fillable = [
         'branch_crop_composition_collection_id',
-        'cultivation_type',
+        'agri_type_id',
+        'agri_detail_id',
         'detail_type',
         'unit_count',
         'total_area_hectares',
@@ -33,5 +34,13 @@ class BranchCropCollectionCultivationType extends Model
             BranchCropCompositionCollection::class,
             'branch_crop_composition_collection_id'
         );
+    }
+
+    public function agriDetails(){
+        return $this->belongsTo(AgriDetais::class);
+    }
+
+    public function agriType(){
+        return $this->belongsTo(AgriType::class);
     }
 }
