@@ -2,10 +2,10 @@
     6- تعمير العملاء
 @stop
 <div>
-{{--    <div--}}
-{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
-{{--        <div class="w-full">التعمير</div>--}}
-{{--    </div>--}}
+    {{--    <div--}}
+    {{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+    {{--        <div class="w-full">التعمير</div>--}}
+    {{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -18,6 +18,7 @@
                             class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                             style="@error('item_id') border: solid 1px #fda4af; @enderror">
                         <option value="-1">الرجاء اختيار الفرع</option>
+                        <option value="all">الكل</option>
                         @if(in_array("3", json_decode(\Illuminate\Support\Facades\Auth::user()->branches)))
                             <option value="0101">فرع الاحساء</option>
                         @endif

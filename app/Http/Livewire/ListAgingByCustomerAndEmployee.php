@@ -103,11 +103,15 @@ class ListAgingByCustomerAndEmployee extends Component
         else
         {
 
+            $branchFilter = $this->area_id === 'all'
+                ? ''
+                : 'AND T0."CardCode" LIKE \''.$this->area_id.'%\'';
+
             $sql_customer = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T0."CreditLine", T0."validFor", T1."PymntGroup" FROM AL_YASEEN_AGRI_PLIVE.OCRD T0
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCTG T1
 ON T0."GroupNum" = T1."GroupNum"
 WHERE T0."CardType" = \'C\'
-AND T0."CardCode" LIKE \''.$this->area_id.'%\'
+' . $branchFilter . '
 ORDER BY T0."SlpCode", T0."CardCode"';
 
 
@@ -582,6 +586,10 @@ ORDER BY "Posting Date" ASC, "Transaction Number" ASC
         else
         {
 
+            $branchFilter = $this->area_id === 'all'
+                ? ''
+                : 'WHERE "BranchCode" = \''. $this->area_id .'\'';
+
             $sql_aging = 'SELECT * FROM (
 SELECT "BusinessPartnerCode", "BusinessPartnerName", OT."PymntGroup", OC."CreditLine", OC."validFor", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) "121+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
 CASE
@@ -600,9 +608,9 @@ WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
 ELSE \'0001\'
 END as "BranchCode" FROM (
 
-SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN /*"days" >=0 AND*/ "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 /*OR "days" < 0*/ THEN "AgingBalanceDueLC" END) as "121+" FROM (
 
-select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery"
+select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
 
 )
 
@@ -618,8 +626,7 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCTG OT ON OC."GroupNum" = OT."GroupNum"
 ORDER BY "SlpCode", "BusinessPartnerCode"
 
 )
-
-WHERE "BranchCode" = \''. $this->area_id .'\'';
+' . $branchFilter;
 
 //                dd($sql_aging);
 
