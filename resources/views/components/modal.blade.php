@@ -18,14 +18,17 @@
 
     <!-- Modal Backdrop -->
     <div
+        x-cloak
         x-show="openModal"
         x-transition.opacity
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        class="fixed inset-0 flex items-center justify-center z-50"
+        style="background: rgba(255, 255, 255, 0.28); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
         @click.self.stop="openModal = false"
     >
 
         <!-- Modal Box -->
         <div
+            x-cloak
             x-show="openModal"
             x-transition.scale
             class="bg-white w-full max-w-4xl rounded-lg shadow-lg p-6 relative"

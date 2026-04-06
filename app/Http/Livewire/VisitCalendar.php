@@ -633,7 +633,11 @@ class VisitCalendar extends Component
                 //  $branch_manger = $this->branchMangerByVisitId($visit->id);
 
                 $this->visitMail($this->oneVisit($visit->id), null, 'update');
-                return redirect()->route('show.visit', ['id' => $event['id']]);
+//                return redirect()->route('show.visit', ['id' => $event['id']]);
+                $this->loadVisits();
+                $this->emit("visitsLoaded", $this->calendarVisit);
+                $this->dispatchBrowserEvent('visit-updated');
+                return;
 
 //                $this->loadVisits();
 
@@ -683,7 +687,11 @@ class VisitCalendar extends Component
                 $this->deleteEvent($visit->ms_event_id, $visit->id);
             }
 //            $branch_manger = $this->branchMangerByVisitId($visit->id);
-            return redirect()->route('show.visit', ['id' => $visit->id]);
+//            return redirect()->route('show.visit', ['id' => $visit->id]);
+            $this->loadVisits();
+            $this->emit("visitsLoaded", $this->calendarVisit);
+            $this->dispatchBrowserEvent('visit-updated');
+            return;
         } else {
             // Optional: handle the case if event not found
             session()->flash('error', 'Visit not found.');
@@ -815,7 +823,9 @@ class VisitCalendar extends Component
         }
 
         $this->visit_id = $visit->id;
-        $reviewerType = $data['reviewer_type'] ?? null;
+        $reviewerType = $data['reviewer_type'] ?? VisitEmp::where('visit_id', $visit->id)
+            ->where('user_id', Auth::id())
+            ->value('type');
         $reviewPayload = $data;
         unset($reviewPayload['id'], $reviewPayload['reviewer_type']);
 

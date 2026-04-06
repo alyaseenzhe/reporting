@@ -81,6 +81,13 @@
         <div  class="w-full"  x-show="panel === 'calendar'" x-cloak>
             <div wire:ignore id='calendar'></div>
         </div>
+        <div style="width: 0; height: 0; overflow: visible;">
+            @foreach(collect($calendarVisit)->merge(collect($visits))->unique('id')->values() as $visit)
+                <x-modal :modal-id="$visit['id']" :open-button="false">
+                    @include('livewire.modal_visit', ['record' => \App\Models\Visit::findOrFail($visit['id']), 'visit_id' => $visit['id']])
+                </x-modal>
+            @endforeach
+        </div>
         <div  x-show="panel === 'list'" x-cloak
 
               class="p-4 ">
@@ -361,11 +368,6 @@
 {{--                                    </div>--}}
 
 {{--                                </td>--}}
-                                <td class="p-0 border-0" style="width:0; height:0; padding:0; margin:0;">
-                                    <x-modal :modal-id="$visit['id']" :open-button="false">
-                                       @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])
-                                    </x-modal>
-                                </td>
                             </tr>
 {{--                            <tr>--}}
 {{--                               <td colspan="8"> @include('livewire.modal_visit', ['record'=> \App\Models\Visit::findOrFail($visit['id']), 'visit_id'=>$visit['id']])--}}
@@ -474,6 +476,16 @@
 
 
         document.addEventListener('DOMContentLoaded', function () {
+
+            window.addEventListener('visit-updated', () => {
+                Swal.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم تحديث الزيارة بنجاح',
+                    timer: 1800,
+                    showConfirmButton: false
+                });
+            });
 
 
 
@@ -873,15 +885,16 @@
                     info.jsEvent.preventDefault(); // prevent default link behavior
 
                     const visit = info.event.extendedProps;
+                    const modalId = info.event.id || visit.id;
                     const authUserId = {{auth()->user()->id}}
                     // 👇 Example condition:
                     // Replace this with your actual logic
                     const isAllowed = visit.emps.some(emp => emp.user_id === authUserId); // for example, something you send from backend
                     console.log(visit)
-                    if (isAllowed || canViewAll) {
-                        // ✅ Go to the URL
-                        // window.location.href = `/show-visit/${info.event.id}`;
-                        window.open(`/show-visit/${info.event.id}`, '_blank');
+                    if ((isAllowed || canViewAll) && modalId) {
+                        window.dispatchEvent(new CustomEvent('open-modal', {
+                            detail: { id: modalId }
+                        }));
                     } else {
                         // 🚫 Show alert or popup
                         Swal.fire({

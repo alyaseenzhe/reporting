@@ -313,6 +313,11 @@ class ShowVisit extends Component
 
 //
         $visit = Visit::find($this->visit_id);
+        $reviewerType = $data['reviewer_type'] ?? VisitEmp::where('visit_id', $this->visit_id)
+            ->where('user_id', Auth::id())
+            ->value('type');
+        $reviewPayload = $data;
+        unset($reviewPayload['id'], $reviewPayload['reviewer_type']);
 //
 //        $is_requester = $visit->where('requester_id', Auth::id())->count();
 ////        dd($is_recipient);
@@ -334,6 +339,9 @@ class ShowVisit extends Component
 
         $visitEmps = VisitEmp::where('visit_id', $this->visit_id)
             ->where('user_id', Auth::id())
+            ->when($reviewerType, function ($query) use ($reviewerType) {
+                $query->where('type', $reviewerType);
+            })
             ->where(function($query) {
                 $query->whereNull('reviews')
                     ->orWhere('reviews', '');
@@ -345,7 +353,7 @@ class ShowVisit extends Component
         if ($visitEmps) {
             $editRecord = VisitEmp::findOrFail($visitEmps->id);
 //            dd($editRecord->user()->first()->name);
-            $editRecord->reviews = json_encode($data);
+            $editRecord->reviews = json_encode($reviewPayload);
 
 //            if ($visit->recipient_reviews->save()) {
             if($editRecord->save())

@@ -104,7 +104,7 @@
                 <div class="flex flex-row gap-4 justify-center">
                     <div class="flex flex-row gap-4 justify-center">
                         <div>
-                            <button  data-id="{{ $visit['id'] }}"
+                            <button id="edit-btn-{{ $record->id }}"
                                     style="background-color: #5b53b5;" class="edit-btn btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>تعديل</span>
@@ -112,7 +112,7 @@
                             </button>
                         </div>
                         <div>
-                            <button  data-id="{{ $visit['id'] }}"
+                            <button id="delete-btn-{{ $record->id }}"
                                     style="background-color: #dc3741;" class=" cancel-btn btn hover:bg-indigo-600 text-white">
                     <span class="mr-2 font-bold">
                         <span>الغاء الزيارة</span>
@@ -396,11 +396,12 @@
                 @php
                     $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection
                 @endphp
-                <div class="border rounded-xl shadow p-4">
-                    <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
+                <div x-data="{ expanded: false }" class="border rounded-xl shadow p-4">
+                    <h2 class="text-sm font-semibold cursor-pointer" @click="expanded = !expanded">
                         <div class="flex items-center gap-2">
                             <!-- Arrow Icon -->
-                            <svg class="w-4 h-4 text-gray-600 transition-transform transform collapse-arrow"
+                            <svg class="w-4 h-4 text-gray-600 transition-transform transform"
+                                 :class="{ 'rotate-180': expanded }"
                                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -442,7 +443,7 @@
                     @if($isReviewWritten  )
                         {{--                            @if($isrRequesterReview  )--}}
 
-                        <div class="collapse-content mt-9 text-gray-600 hidden">
+                        <div x-show="expanded" class="mt-9 text-gray-600">
                             @foreach($reviews['answers'] as $answer)
                                 <div class="mb-4">
                                     <label class="font-semibold">{{ $answer['text'] }}</label><br>
@@ -480,11 +481,12 @@
                     $parsedReview = $isReviewWritten ? json_decode($rec_record->reviews, true) : null;
                 @endphp
 
-                <div class="border rounded-xl shadow p-4">
-                    <h2 class="text-sm font-semibold cursor-pointer collapse-toggle">
+                <div x-data="{ expanded: false }" class="border rounded-xl shadow p-4">
+                    <h2 class="text-sm font-semibold cursor-pointer" @click="expanded = !expanded">
                         <div class="flex items-center gap-2">
                             <!-- Arrow Icon -->
-                            <svg class="w-4 h-4 text-gray-600 transition-transform transform collapse-arrow"
+                            <svg class="w-4 h-4 text-gray-600 transition-transform transform"
+                                 :class="{ 'rotate-180': expanded }"
                                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -517,7 +519,7 @@
                         {{--                            @dd($parsedReviewRecipient)--}}
                         {{--                            @dd($rec_record)--}}
                         {{--                            @if($isrRecipientReview)--}}
-                        <div class="collapse-content mt-9 text-gray-600 hidden">
+                        <div x-show="expanded" class="mt-9 text-gray-600">
                             {{--                                    @foreach($parsedReviewRecipient['answers'] as $answer)--}}
                             @foreach($parsedReview['answers'] as $answer)
                                 <div class="mb-4">
@@ -722,7 +724,7 @@
                                 Livewire.emit('review', {
                                     ...result.value,
                                     id: {{ $record->id }},
-                                    reviewer_type: 'requester'
+                                    reviewer_type: 'recipient'
                                 });
                             }
                         });
@@ -764,7 +766,7 @@
 //        ];
 
         {{--        ratings --}}
-        function showArabicReviewWithNotes() {
+        function showArabicReviewWithNotes(visitId) {
             const questions = [
 
 
@@ -872,14 +874,14 @@
 
                     Livewire.emit('review', {
                         ...result.value,
-                        id: {{ $record->id }},
+                        id: visitId,
                         reviewer_type: 'requester'
                     });
                 }
             });
         }
 
-        function showRecipientReviewWithNotes() {
+        function showRecipientReviewWithNotes(visitId) {
             const questions = [
                 {text: 'جودة التحضير  للزيارة', id: 'preparation-quality', type: 'rating'},
                 {text: 'القيمة التسويقية للزيارة', id: 'marketing_value', type: 'rating'},
@@ -986,7 +988,7 @@
 
                     Livewire.emit('review', {
                         ...result.value,
-                        id: {{ $record->id }},
+                        id: visitId,
                         reviewer_type: 'recipient'
                     });
                 }
@@ -1023,8 +1025,8 @@
             const reqRateBtn = document.getElementById('req-rate-btn-{{ $record->id }}');
             const recRateBtn = document.getElementById('rec-rate-btn-{{ $record->id }}');
             const closeBtn = document.getElementById('close-btn-{{ $record->id }}');
-            const editBtn = document.getElementById('edit-btn');
-            const deleteBtn = document.getElementById('delete-btn');
+            const editBtn = document.getElementById('edit-btn-{{ $record->id }}');
+            const deleteBtn = document.getElementById('delete-btn-{{ $record->id }}');
 
 
             if (approveBtn && rejectBtn) {
@@ -1135,13 +1137,13 @@
 
             if (reqRateBtn) {
                 reqRateBtn.onclick = () => {
-                    showArabicReviewWithNotes();
+                    showArabicReviewWithNotes(visit.id);
                 };
             }
 
             if (recRateBtn) {
                 recRateBtn.onclick = () => {
-                    showRecipientReviewWithNotes();
+                    showRecipientReviewWithNotes(visit.id);
                 };
             }
 
@@ -1545,22 +1547,6 @@
                 });
             }
 
-
-            document.querySelectorAll('.collapse-toggle').forEach(toggle => {
-                toggle.addEventListener('click', function () {
-                    const content = this.nextElementSibling;
-                    const arrow = this.querySelector('.collapse-arrow');
-
-                    if (content) {
-                        content.classList.toggle('hidden');
-                    }
-
-                    if (arrow) {
-                        arrow.classList.toggle('rotate-180');
-                    }
-                });
-            });
-
         });
 
         function combineDateAndTime(dateStr, timeStr) {
@@ -1589,32 +1575,6 @@
                 hour12: true
             });
         }
-
-
-
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Get the visit ID from the clicked row
-                const visitId = this.dataset.id;
-
-                // Get the visit object by ID from your visits array (or wherever you store them)
-                const visit = visits.find(v => v.id == visitId);
-
-                // Call your existing Swal code, but pass this visit object
-                openEditModal(visit);
-            });
-        });
-
-        document.querySelectorAll('.cancel-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const visitId = this.dataset.id;
-                const visit = visits.find(v => v.id == visitId);
-
-                openDeleteModal(visit);
-            });
-        });
-
-
         function openEditModal(visit) {
             Swal.fire({
                 title: 'تعديل الزيارة',
