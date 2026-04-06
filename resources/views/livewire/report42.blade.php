@@ -543,7 +543,7 @@
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap" x-text="formatNumber((totals.outstanding /(totals.year_total))*100)">
                         </td>
-                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap" x-text="formatNumber(totals.due_value/totals.outstanding)">
+                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap" x-text="formatNumber((totals.due_value/totals.outstanding)*100/1000 )">
                         </td>
                         <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap" x-text="formatNumber(totals.due_value)">
 

@@ -787,27 +787,51 @@ T3."BPLId",
 T3."BPLName",
 T3."GlblLocNum" as "Location",
 0,0,0,0,0,0,0,0,
-SUM(T0."Debit"-T0."Credit"),
-SUM(
-CASE WHEN DAYS_BETWEEN(T0."DueDate",\'' . $end_date . '\') >= 120 THEN (
-(CASE WHEN T0."DebCred" = \'D\' THEN (T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)
-WHEN T0."DebCred" = \'C\' THEN -((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)) END)) ELSE 0 END)
+SUM(T0."Balance Due"),
+SUM(T0."121+")
 ,0,0,0,0,0,0
 
-FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
-
-JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
-JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."ShortName" = T2."CardCode" AND T2."CardType" = \'C\'
-JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
-LEFT JOIN (SELECT SUM("ReconSum") AS "ReconSum",SUM("ReconSumSC") AS "ReconSumSC",SUM("ReconSumFC") AS "ReconSumFC","TransRowId","TransId" FROM AL_YASEEN_AGRI_PLIVE.ITR1 T0 JOIN AL_YASEEN_AGRI_PLIVE.OITR T1 ON T0."ReconNum" = T1."ReconNum" AND T1."ReconDate" <= \'' . $end_date . '\'
-GROUP BY "TransRowId","TransId") T4 ON T0."TransId" = T4."TransId" AND T0."Line_ID" = T4."TransRowId"
-
-WHERE T1."RefDate" <= \'' . $end_date . '\'
+FROM (
+SELECT
+CASE
+WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
+WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
+WHEN "BusinessPartnerCode" LIKE \'03%\' THEN \'0103\'
+WHEN "BusinessPartnerCode" LIKE \'04%\' THEN \'0104\'
+WHEN "BusinessPartnerCode" LIKE \'05%\' THEN \'0105\'
+WHEN "BusinessPartnerCode" LIKE \'06%\' THEN \'0106\'
+WHEN "BusinessPartnerCode" LIKE \'07%\' THEN \'0107\'
+WHEN "BusinessPartnerCode" LIKE \'08%\' THEN \'0108\'
+WHEN "BusinessPartnerCode" LIKE \'09%\' THEN \'0109\'
+WHEN "BusinessPartnerCode" LIKE \'10%\' THEN \'0110\'
+WHEN "BusinessPartnerCode" LIKE \'11%\' THEN \'0111\'
+WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
+ELSE \'0001\'
+END as "BranchCode",
+IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0) as "Balance Due",
+IFNULL("121+",0) as "121+"
+FROM (
+SELECT
+"BusinessPartnerCode",
+SUM(CASE WHEN "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30",
+SUM(CASE WHEN "days" >= 31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60",
+SUM(CASE WHEN "days" >= 61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90",
+SUM(CASE WHEN "days" >= 91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120",
+SUM(CASE WHEN "days" >= 121 THEN "AgingBalanceDueLC" END) as "121+"
+FROM (
+select DAYS_BETWEEN("PostingDate", \'' . $end_date . '\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \'' . $end_date . '\'))
+)
+GROUP BY "BusinessPartnerCode"
+)
+JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON "BusinessPartnerCode" = OC."CardCode"
+    AND OC."QryGroup4" = \'N\'
+    AND OC."QryGroup5" = \'N\'
+) T0
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BranchCode" = T3."TaxIdNum"
 
 GROUP BY
 
 T3."BPLId",
-T0."DebCred",
 T3."BPLName",
 T3."GlblLocNum"
 
@@ -1183,11 +1207,35 @@ T3."BPLId",
 T3."BPLName",
 T3."GlblLocNum" as "Location",
 0,0,0,0,0,0,0,0,
-SUM(T0."Debit"-T0."Credit"),
+SUM(
+CASE
+WHEN T0."DebCred" = \'D\' THEN
+    CASE
+    WHEN ((T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)) > 0 THEN ((T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0))
+    ELSE 0
+    END
+WHEN T0."DebCred" = \'C\' THEN
+    CASE
+    WHEN (-((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0))) > 0 THEN (-((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)))
+    ELSE 0
+    END
+ELSE 0
+END),
 SUM(
 CASE WHEN DAYS_BETWEEN(T0."DueDate",\'' . $end_date . '\') >= 120 THEN (
-(CASE WHEN T0."DebCred" = \'D\' THEN (T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)
-WHEN T0."DebCred" = \'C\' THEN -((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)) END)) ELSE 0 END)
+(CASE
+WHEN T0."DebCred" = \'D\' THEN
+    CASE
+    WHEN ((T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)) > 0 THEN ((T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0))
+    ELSE 0
+    END
+WHEN T0."DebCred" = \'C\' THEN
+    CASE
+    WHEN (-((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0))) > 0 THEN (-((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)))
+    ELSE 0
+    END
+ELSE 0
+END)) ELSE 0 END)
 ,0,0,0,0,0,0
 
 FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
@@ -1894,27 +1942,51 @@ T3."BPLId",
 T3."BPLName",
 T3."GlblLocNum" as "Location",
 0,0,0,0,0,0,0,0,
-SUM(T0."Debit"-T0."Credit"),
-SUM(
-CASE WHEN DAYS_BETWEEN(T0."DueDate",\'' . $end_date . '\') >= 120 THEN (
-(CASE WHEN T0."DebCred" = \'D\' THEN (T0."Debit"-T0."Credit")-ifnull(T4."ReconSum",0)
-WHEN T0."DebCred" = \'C\' THEN -((T0."Credit"-T0."Debit")-ifnull(T4."ReconSum",0)) END)) ELSE 0 END)
+SUM(T0."Balance Due"),
+SUM(T0."121+")
 ,0,0,0,0,0,0
 
-FROM AL_YASEEN_AGRI_PLIVE.JDT1 T0
-
-JOIN AL_YASEEN_AGRI_PLIVE.OJDT T1 ON T0."TransId" = T1."TransId"
-JOIN AL_YASEEN_AGRI_PLIVE.OCRD T2 ON T0."ShortName" = T2."CardCode" AND T2."CardType" = \'C\'
-JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BPLId" = T3."BPLId"
-LEFT JOIN (SELECT SUM("ReconSum") AS "ReconSum",SUM("ReconSumSC") AS "ReconSumSC",SUM("ReconSumFC") AS "ReconSumFC","TransRowId","TransId" FROM AL_YASEEN_AGRI_PLIVE.ITR1 T0 JOIN AL_YASEEN_AGRI_PLIVE.OITR T1 ON T0."ReconNum" = T1."ReconNum" AND T1."ReconDate" <= \'' . $end_date . '\'
-GROUP BY "TransRowId","TransId") T4 ON T0."TransId" = T4."TransId" AND T0."Line_ID" = T4."TransRowId"
-
-WHERE T1."RefDate" <= \'' . $end_date . '\'
+FROM (
+SELECT
+CASE
+WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
+WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
+WHEN "BusinessPartnerCode" LIKE \'03%\' THEN \'0103\'
+WHEN "BusinessPartnerCode" LIKE \'04%\' THEN \'0104\'
+WHEN "BusinessPartnerCode" LIKE \'05%\' THEN \'0105\'
+WHEN "BusinessPartnerCode" LIKE \'06%\' THEN \'0106\'
+WHEN "BusinessPartnerCode" LIKE \'07%\' THEN \'0107\'
+WHEN "BusinessPartnerCode" LIKE \'08%\' THEN \'0108\'
+WHEN "BusinessPartnerCode" LIKE \'09%\' THEN \'0109\'
+WHEN "BusinessPartnerCode" LIKE \'10%\' THEN \'0110\'
+WHEN "BusinessPartnerCode" LIKE \'11%\' THEN \'0111\'
+WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
+ELSE \'0001\'
+END as "BranchCode",
+IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0) as "Balance Due",
+IFNULL("121+",0) as "121+"
+FROM (
+SELECT
+"BusinessPartnerCode",
+SUM(CASE WHEN "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30",
+SUM(CASE WHEN "days" >= 31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60",
+SUM(CASE WHEN "days" >= 61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90",
+SUM(CASE WHEN "days" >= 91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120",
+SUM(CASE WHEN "days" >= 121 THEN "AgingBalanceDueLC" END) as "121+"
+FROM (
+select DAYS_BETWEEN("PostingDate", \'' . $end_date . '\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \'' . $end_date . '\'))
+)
+GROUP BY "BusinessPartnerCode"
+)
+JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON "BusinessPartnerCode" = OC."CardCode"
+    AND OC."QryGroup4" = \'N\'
+    AND OC."QryGroup5" = \'N\'
+) T0
+JOIN AL_YASEEN_AGRI_PLIVE.OBPL T3 ON T0."BranchCode" = T3."TaxIdNum"
 
 GROUP BY
 
 T3."BPLId",
-T0."DebCred",
 T3."BPLName",
 T3."GlblLocNum"
 
