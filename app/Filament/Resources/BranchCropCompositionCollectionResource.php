@@ -26,8 +26,10 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 class BranchCropCompositionCollectionResource extends Resource
 {
@@ -66,7 +68,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->required()
                             ->searchable()
                             ->options(function () {
-                                return Branch::query()
+                                return static::getAuthorizedBranchesQuery()
                                     ->orderBy('name')
                                     ->pluck('name', 'id')
                                     ->toArray();
@@ -320,6 +322,47 @@ class BranchCropCompositionCollectionResource extends Resource
         return [];
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::getAuthorizedBranchesQuery()
+            ->whereKey($record->branch_id)
+            ->exists();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::getAuthorizedBranchesQuery()
+            ->whereKey($record->branch_id)
+            ->exists();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $authorizedBranchIds = static::getAuthorizedBranchesQuery()->pluck('id');
+
+        if ($authorizedBranchIds->isEmpty()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn('branch_id', $authorizedBranchIds);
+    }
+
     /**
      * Get the resource pages.
      */
@@ -338,6 +381,13 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function extractParentData(array $data): array
     {
         unset($data['cultivation_types'], $data['crop_composition_items']);
+
+        abort_unless(
+            static::getAuthorizedBranchesQuery()
+                ->whereKey($data['branch_id'] ?? null)
+                ->exists(),
+            403
+        );
 
         $customer = app(SapCustomerLookupServiceInterface::class)
             ->findCustomerByCode($data['customer_code'] ?? null);
@@ -428,5 +478,80 @@ class BranchCropCompositionCollectionResource extends Resource
             ->toArray();
 
         return $data;
+    }
+
+    protected static function resolveBranchCodeFromState($branchId): ?string
+    {
+        if (blank($branchId)) {
+            return null;
+        }
+
+        return static::getAuthorizedBranchesQuery()
+            ->whereKey($branchId)
+            ->value('code');
+    }
+
+    protected static function getAuthorizedBranchesQuery(): Builder
+    {
+        return Branch::query()->whereIn('code', static::getAuthorizedBranchCodes());
+    }
+
+    protected static function getAuthorizedBranchCodes(): array
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return [];
+        }
+
+        $assignedBranches = json_decode($user->branches ?? '[]', true);
+
+        if (! is_array($assignedBranches)) {
+            return [];
+        }
+
+        $branchCodeMap = [
+            '1' => '0001',
+            '2' => '0001',
+            '3' => '0101',
+            '4' => '0105',
+            '5' => '0107',
+            '6' => '0106',
+            '7' => '0103',
+            '8' => '0111',
+            '9' => '0110',
+            '10' => '0102',
+            '11' => '0109',
+            '12' => '0108',
+            '13' => '0104',
+            '14' => '0112',
+            '15' => '0201',
+            '16' => '0202',
+            '17' => '0203',
+            '500' => '0202',
+            '504' => '0203',
+            '505' => '0112',
+            '0001' => '0001',
+            '0101' => '0101',
+            '0102' => '0102',
+            '0103' => '0103',
+            '0104' => '0104',
+            '0105' => '0105',
+            '0106' => '0106',
+            '0107' => '0107',
+            '0108' => '0108',
+            '0109' => '0109',
+            '0110' => '0110',
+            '0111' => '0111',
+            '0112' => '0112',
+            '0201' => '0201',
+            '0202' => '0202',
+            '0203' => '0203',
+        ];
+
+        return array_values(array_unique(array_filter(array_map(
+            fn ($branch) => $branchCodeMap[(string) $branch] ?? null,
+            $assignedBranches
+        ))));
     }
 }
