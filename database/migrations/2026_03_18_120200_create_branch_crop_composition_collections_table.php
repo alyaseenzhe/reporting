@@ -17,7 +17,8 @@ class CreateBranchCropCompositionCollectionsTable extends Migration
             $table->id();
             $table->date('collection_date')->nullable();
             $table->string('branch_name')->nullable();
-            $table->foreignId('engineer_id')->constrained('users')->restrictOnDelete();
+            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
+            $table->string('engineer_name')->nullable();
             $table->string('customer_code')->nullable();
             $table->string('customer_name')->nullable();
             $table->unsignedInteger('farms_count')->default(0);

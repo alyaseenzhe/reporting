@@ -26,6 +26,8 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,10 +57,20 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
                     Grid::make(2)->schema([
-                        DatePicker::make('created_at')
+                        DatePicker::make('updated_at')
                             ->label('تاريخ جمع البيانات')
                             ->hiddenOn('create')
                             ->disabled()
+                            ->required(),
+
+                        TextInput::make('updated_by')
+                            ->label('آخر تعديل بواسطة')
+                            ->hiddenOn('create')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(function ($state, ?Model $record): string {
+                                return (string) optional(optional($record)->userUpdate)->name;
+                            })
                             ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
@@ -294,6 +306,10 @@ class BranchCropCompositionCollectionResource extends Resource
         return $table
             ->defaultSort('collection_date', 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->searchable(),
 //                TextColumn::make('created_at')
 //                    ->label('تاريخ الجمع')
 //                    ->date(),
@@ -301,6 +317,9 @@ class BranchCropCompositionCollectionResource extends Resource
                 // TextColumn::make('branch_name')
                 //     ->label('الفرع')
                 //     ->searchable(),
+                TextColumn::make('customer_code')
+                    ->label('كود العميل')
+                    ->searchable(),
                 TextColumn::make('customer_name')
                     ->label('العميل')
                     ->searchable(),
@@ -320,13 +339,28 @@ class BranchCropCompositionCollectionResource extends Resource
                 //     ->label('عدد المحاصيل'),
             ])
             ->filters([
-                //
+                Filter::make('customer_code')
+                    ->form([
+                        TextInput::make('customer_code')
+                            ->label('رقم العميل')
+                            ->placeholder('اكتب رقم العميل'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['customer_code'] ?? null,
+                            fn (Builder $query, $name) => $query->where('customer_code', 'like', "%{$name}%")
+                        );
+                    }),
+                SelectFilter::make('branch')->label('الفرع')
+                    ->relationship('branch', 'name')
+
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\EditAction::make(),
+//                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+//                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
@@ -408,7 +442,6 @@ class BranchCropCompositionCollectionResource extends Resource
         $customer = app(SapCustomerLookupServiceInterface::class)
             ->findCustomerByCode($data['customer_code'] ?? null);
 
-        $data['user_id'] = auth()->id();
         $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
         $data['engineer_name'] = $customer['slp_name'] ?? ($data['engineer_name'] ?? null);
         $data['engineer_id'] = null;
