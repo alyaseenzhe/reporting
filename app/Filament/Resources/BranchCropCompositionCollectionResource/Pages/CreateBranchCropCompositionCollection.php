@@ -19,6 +19,7 @@ class CreateBranchCropCompositionCollection extends CreateRecord
     {
         $cultivationRows = BranchCropCompositionCollectionResource::extractCultivationRows($data);
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
+        BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
         $parentData = BranchCropCompositionCollectionResource::extractParentData($data);
 
         return DB::transaction(function () use ($parentData, $cultivationRows, $cropRows) {

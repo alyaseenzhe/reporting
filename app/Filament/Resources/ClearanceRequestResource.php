@@ -43,14 +43,14 @@ class ClearanceRequestResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -58,5 +58,9 @@ class ClearanceRequestResource extends Resource
             'create' => Pages\CreateClearanceRequest::route('/create'),
             'edit' => Pages\EditClearanceRequest::route('/{record}/edit'),
         ];
-    }    
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 }

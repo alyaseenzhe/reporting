@@ -27,6 +27,7 @@ class EditBranchCropCompositionCollection extends EditRecord
     {
         $cultivationRows = BranchCropCompositionCollectionResource::extractCultivationRows($data);
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
+        BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
         $parentData = BranchCropCompositionCollectionResource::extractParentData($data);
 
         return DB::transaction(function () use ($record, $parentData, $cultivationRows, $cropRows) {

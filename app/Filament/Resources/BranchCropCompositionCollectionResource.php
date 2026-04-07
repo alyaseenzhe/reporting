@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class BranchCropCompositionCollectionResource extends Resource
 {
@@ -150,11 +151,25 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('تفاصيل الزراعة')
                                     ->searchable()
                                     ->preload()
-                                    ->options(function (): array {
-                                        return AgriDetais::query()
-                                            ->orderBy('details')
-                                            ->pluck('details', 'id')
-                                            ->toArray();
+                                    ->reactive()
+                                    ->options(function (callable $get): array {
+                                        $currentAgriDetailId = $get('agri_detail_id');
+                                        $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
+                                            ->pluck('agri_detail_id')
+                                            ->filter()
+                                            ->reject(function ($agriDetailId) use ($currentAgriDetailId) {
+                                                return (string) $agriDetailId === (string) $currentAgriDetailId;
+                                            })
+                                            ->values()
+                                            ->all();
+
+                                        $query = AgriDetais::query()->orderBy('details');
+
+                                        if (count($selectedAgriDetailIds)) {
+                                            $query->whereNotIn('id', $selectedAgriDetailIds);
+                                        }
+
+                                        return $query->pluck('details', 'id')->toArray();
                                     })
 
                                     ->hidden(function (callable $get): bool {
@@ -406,6 +421,36 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function extractCultivationRows(array $data): array
     {
         return array_values($data['cultivation_types'] ?? []);
+    }
+
+    /**
+     * Ensure cultivation rows don't repeat the same agri type/detail combination.
+     */
+    public static function validateCultivationRowsUnique(array $cultivationRows): void
+    {
+        $seen = [];
+
+        foreach ($cultivationRows as $index => $row) {
+            $agriTypeId = $row['agri_type_id'] ?? null;
+            $agriDetailId = $row['agri_detail_id'] ?? null;
+
+            if (blank($agriTypeId)) {
+                continue;
+            }
+
+            $uniqueKey = implode(':', [
+                (string) $agriTypeId,
+                $agriDetailId === null ? 'null' : (string) $agriDetailId,
+            ]);
+
+            if (isset($seen[$uniqueKey])) {
+                throw ValidationException::withMessages([
+                    'data.cultivation_types' => 'The same agri type and agri detail combination cannot be added more than once.',
+                ]);
+            }
+
+            $seen[$uniqueKey] = $index;
+        }
     }
 
     /**
