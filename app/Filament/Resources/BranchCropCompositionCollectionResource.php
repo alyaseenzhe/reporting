@@ -78,7 +78,8 @@ class BranchCropCompositionCollectionResource extends Resource
                         Select::make('customer_code')
                             ->label('العميل')
                             ->searchable()
-                             ->required()
+                            ->required()
+                            ->unique(ignoreRecord: true)
                             ->reactive()
                             ->helperText('ابحث باسم العميل أو رقمه من SAP. عند تعذر الاتصال سيتم عرض نتائج فارغة فقط.')
                             ->getSearchResultsUsing(function (string $search): array {
