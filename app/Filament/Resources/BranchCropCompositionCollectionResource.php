@@ -95,8 +95,10 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->reactive()
                             ->helperText('ابحث باسم العميل أو رقمه من SAP. عند تعذر الاتصال سيتم عرض نتائج فارغة فقط.')
                             ->getSearchResultsUsing(function (string $search): array {
-                                return app(SapCustomerLookupServiceInterface::class)
+                                $customers = app(SapCustomerLookupServiceInterface::class)
                                     ->searchCustomers($search);
+
+                                return static::filterCustomersForCreatePermission($customers);
                             })
                             ->afterStateUpdated(function ($state, callable $set): void {
                                 $customer = app(SapCustomerLookupServiceInterface::class)
@@ -667,6 +669,32 @@ class BranchCropCompositionCollectionResource extends Resource
         $cropPermissions = json_decode($user->user_group->crops ?? '[]', true);
 
         return is_array($cropPermissions) && in_array($permission, $cropPermissions, true);
+    }
+
+    protected static function filterCustomersForCreatePermission(array $customers): array
+    {
+        if (static::isAdminUser() || static::userHasCropPermission('create-others-crop')) {
+            return $customers;
+        }
+
+        if (! static::userHasCropPermission('create-only-own-crop')) {
+            return $customers;
+        }
+
+        $user = Auth::user();
+
+        if (! $user) {
+            return [];
+        }
+
+        return collect($customers)
+            ->filter(function ($label, $customerCode) use ($user): bool {
+                $customer = app(SapCustomerLookupServiceInterface::class)
+                    ->findCustomerByCode($customerCode);
+
+                return trim((string) ($customer['slp_name'] ?? '')) === trim((string) $user->name);
+            })
+            ->toArray();
     }
 
     protected static function isAdminUser(): bool
