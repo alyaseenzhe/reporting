@@ -93,10 +93,25 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->reactive()
-                            ->helperText('ابحث باسم العميل أو رقمه من SAP. عند تعذر الاتصال سيتم عرض نتائج فارغة فقط.')
-                            ->getSearchResultsUsing(function (string $search): array {
+                            ->placeholder('اختر الفرع أولاً ثم ابحث عن العميل')
+                            ->helperText(function (callable $get): string {
+                                if (blank($get('branch_id'))) {
+                                    return 'اختر الفرع أولاً، ثم ابحث باسم العميل أو رقمه من SAP.';
+                                }
+
+                                return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
+                            })
+                            ->getSearchResultsUsing(function (string $search, callable $get): array {
+                                $branchCode = static::resolveBranchCodeFromState($get('branch_id'));
+
+                                if (blank($branchCode)) {
+                                    return [];
+                                }
+
                                 $customers = app(SapCustomerLookupServiceInterface::class)
                                     ->searchCustomers($search);
+
+                                $customers = static::filterCustomersForSelectedBranch($customers, $branchCode);
 
                                 return static::filterCustomersForCreatePermission($customers);
                             })
@@ -695,6 +710,59 @@ class BranchCropCompositionCollectionResource extends Resource
                 return trim((string) ($customer['slp_name'] ?? '')) === trim((string) $user->name);
             })
             ->toArray();
+    }
+
+    protected static function filterCustomersForSelectedBranch(array $customers, ?string $branchCode): array
+    {
+        if (blank($branchCode)) {
+            return [];
+        }
+
+        return collect($customers)
+            ->filter(fn ($label, $customerCode): bool => static::customerBelongsToBranch($customerCode, $branchCode))
+            ->toArray();
+    }
+
+    protected static function customerBelongsToBranch(?string $customerCode, ?string $branchCode): bool
+    {
+        $customerCode = trim((string) $customerCode);
+        $branchCode = trim((string) $branchCode);
+
+        if ($customerCode === '' || $branchCode === '') {
+            return false;
+        }
+
+        foreach (static::getCustomerPrefixesForBranchCode($branchCode) as $prefix) {
+            if (str_starts_with($customerCode, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected static function getCustomerPrefixesForBranchCode(string $branchCode): array
+    {
+        $branchToCustomerPrefixes = [
+            '0001' => ['01'],
+            '0101' => ['01'],
+            '0102' => ['02'],
+            '0103' => ['03'],
+            '0104' => ['04'],
+            '0105' => ['05'],
+            '0106' => ['06'],
+            '0107' => ['07'],
+            '0108' => ['08'],
+            '0109' => ['09'],
+            '0110' => ['10'],
+            '0111' => ['11'],
+            '0112' => ['12'],
+            '0201' => ['01'],
+            '0202' => ['01'],
+            '0203' => ['01'],
+        ];
+
+        return $branchToCustomerPrefixes[$branchCode] ?? [];
     }
 
     protected static function isAdminUser(): bool
