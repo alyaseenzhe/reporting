@@ -16,7 +16,9 @@ use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class AgriTypeResource extends Resource
 {
@@ -85,6 +87,31 @@ class AgriTypeResource extends Resource
         ];
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::isAdminUser() || static::userHasCropPermission('list-agri-type');
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
     public static function getPages(): array
     {
         return [
@@ -92,5 +119,23 @@ class AgriTypeResource extends Resource
             'create' => Pages\CreateAgriType::route('/create'),
             'edit' => Pages\EditAgriType::route('/{record}/edit'),
         ];
+    }
+
+    protected static function userHasCropPermission(string $permission): bool
+    {
+        $user = Auth::user();
+
+        if (! $user || ! $user->user_group) {
+            return false;
+        }
+
+        $cropPermissions = json_decode($user->user_group->crops ?? '[]', true);
+
+        return is_array($cropPermissions) && in_array($permission, $cropPermissions, true);
+    }
+
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
     }
 }

@@ -393,6 +393,10 @@ class UserGroupResource extends Resource
             'delete-others-crop' => 'حذف النموذج المحصولي للأخرين',
             'view-only-own-crop' => 'عرض النموذج المحصولي فقط الخاص به',
             'view-others-crop' => 'عرض النموذج المحصولي للأخرين',
+            'list-crop-collection'=>'جدول المحاصيل',
+            'list-crop-category'=>'جدول طبيعة المحصول',
+            'list-agri-type'=>'جدول أنواع الزراعة',
+            'list-agri-details'=>'جدول تفاصيل أنواع الزراعة',
         ];
     }
 }
