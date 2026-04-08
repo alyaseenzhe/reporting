@@ -60,8 +60,8 @@ class BranchCropCompositionCollectionResource extends Resource
                         DatePicker::make('updated_at')
                             ->label('تاريخ جمع البيانات')
                             ->hiddenOn('create')
-                            ->disabled()
-                            ->required(),
+                            ->disabled(),
+                          //  ->required(),
 
                         TextInput::make('updated_by')
                             ->label('آخر تعديل بواسطة')
@@ -70,8 +70,8 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->dehydrated(false)
                             ->formatStateUsing(function ($state, ?Model $record): string {
                                 return (string) optional(optional($record)->userUpdate)->name;
-                            })
-                            ->required(),
+                            }),
+                          //  ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
 //                            ->required()
@@ -348,7 +348,12 @@ class BranchCropCompositionCollectionResource extends Resource
 //                    ->searchable(),
                 TextColumn::make('engineer_name')
                     ->label('المهندس المسؤول')
-                    ->searchable(),
+                    ->formatStateUsing(function ($state, Model $record): string {
+                        $customer = app(SapCustomerLookupServiceInterface::class)
+                            ->findCustomerByCode($record->customer_code);
+
+                        return (string) ($customer['slp_name'] ?? $state ?? '');
+                    }),
                 TextColumn::make('farms_count')
                     ->label('عدد المزارع'),
                 // TextColumn::make('cropItems_count')
