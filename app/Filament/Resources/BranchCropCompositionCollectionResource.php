@@ -357,7 +357,7 @@ class BranchCropCompositionCollectionResource extends Resource
             ])
             ->actions([
 //                Tables\Actions\EditAction::make(),
-//                Tables\Actions\ViewAction::make(),
+               // Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
 //                Tables\Actions\DeleteBulkAction::make(),
@@ -374,31 +374,58 @@ class BranchCropCompositionCollectionResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+        return auth()->check()
+            && static::getAuthorizedBranchesQuery()->exists()
+            && static::canViewAny();
     }
 
     public static function canViewAny(): bool
     {
-        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+        return auth()->check()
+            && static::getAuthorizedBranchesQuery()->exists()
+            && (
+                static::userCanManageOthersCropRecords()
+                || static::userCanManageOwnCropRecords()
+            );
     }
 
     public static function canCreate(): bool
     {
-        return auth()->check() && static::getAuthorizedBranchesQuery()->exists();
+        return auth()->check()
+            && static::getAuthorizedBranchesQuery()->exists()
+            && (
+                static::userHasCropPermission('create-only-own-crop')
+                || static::userHasCropPermission('create-others-crop')
+                || static::isAdminUser()
+            );
     }
 
     public static function canEdit(Model $record): bool
     {
-        return static::getAuthorizedBranchesQuery()
-            ->whereKey($record->branch_id)
-            ->exists();
+        if (! static::canAccessRecordBranch($record)) {
+            return false;
+        }
+
+        if (static::userHasCropPermission('edit-others-crop') || static::isAdminUser()) {
+            return true;
+        }
+
+        return static::userHasCropPermission('edit-only-own-crop')
+            && static::recordBelongsToCurrentUser($record);
     }
 
     public static function canDelete(Model $record): bool
     {
-        return static::getAuthorizedBranchesQuery()
-            ->whereKey($record->branch_id)
-            ->exists();
+        if (! static::canAccessRecordBranch($record)) {
+            return false;
+        }
+
+        if (static::userHasCropPermission('delete-others-crop') || static::isAdminUser()) {
+            return true;
+        }
+
+        return static::userHasCropPermission('delete-only-own-crop')
+            && static::recordBelongsToCurrentUser($record);
     }
 
     public static function getEloquentQuery(): Builder
@@ -410,7 +437,17 @@ class BranchCropCompositionCollectionResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        return $query->whereIn('branch_id', $authorizedBranchIds);
+        $query->whereIn('branch_id', $authorizedBranchIds);
+
+        if (static::userCanManageOthersCropRecords()) {
+            return $query;
+        }
+
+        if (static::userCanManageOwnCropRecords()) {
+            return $query->where('engineer_name', Auth::user()->name);
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     /**
@@ -578,6 +615,63 @@ class BranchCropCompositionCollectionResource extends Resource
     protected static function getAuthorizedBranchesQuery(): Builder
     {
         return Branch::query()->whereIn('code', static::getAuthorizedBranchCodes());
+    }
+
+    protected static function canAccessRecordBranch(Model $record): bool
+    {
+        return static::getAuthorizedBranchesQuery()
+            ->whereKey($record->branch_id)
+            ->exists();
+    }
+
+    protected static function recordBelongsToCurrentUser(Model $record): bool
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return false;
+        }
+
+        $customer = app(SapCustomerLookupServiceInterface::class)
+            ->findCustomerByCode($record->customer_code);
+
+        $engineerName = $customer['slp_name'] ?? $record->engineer_name;
+
+        return trim((string) $engineerName) === trim((string) $user->name);
+    }
+
+    protected static function userCanManageOthersCropRecords(): bool
+    {
+        return static::isAdminUser()
+            || static::userHasCropPermission('view-others-crop')
+            || static::userHasCropPermission('edit-others-crop')
+            || static::userHasCropPermission('delete-others-crop');
+    }
+
+    protected static function userCanManageOwnCropRecords(): bool
+    {
+        return static::isAdminUser()
+            || static::userHasCropPermission('view-only-own-crop')
+            || static::userHasCropPermission('edit-only-own-crop')
+            || static::userHasCropPermission('delete-only-own-crop');
+    }
+
+    protected static function userHasCropPermission(string $permission): bool
+    {
+        $user = Auth::user();
+
+        if (! $user || ! $user->user_group) {
+            return false;
+        }
+
+        $cropPermissions = json_decode($user->user_group->crops ?? '[]', true);
+
+        return is_array($cropPermissions) && in_array($permission, $cropPermissions, true);
+    }
+
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
     }
 
     protected static function getAuthorizedBranchCodes(): array
