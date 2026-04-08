@@ -368,6 +368,18 @@ class BranchCropCompositionCollectionResource extends Resource
                             fn (Builder $query, $name) => $query->where('customer_code', 'like', "%{$name}%")
                         );
                     }),
+                Filter::make('customer_name')
+                    ->form([
+                        TextInput::make('customer_name')
+                            ->label('اسم العميل')
+                            ->placeholder('اكتب اسم العميل'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['customer_name'] ?? null,
+                            fn (Builder $query, $name) => $query->where('customer_name', 'like', "%{$name}%")
+                        );
+                    }),
                 SelectFilter::make('branch')->label('الفرع')
                     ->relationship('branch', 'name')
 
@@ -445,6 +457,24 @@ class BranchCropCompositionCollectionResource extends Resource
             && static::recordBelongsToCurrentUser($record);
     }
 
+    public static function canView(Model $record): bool
+    {
+        if (! static::canAccessRecordBranch($record)) {
+            return false;
+        }
+
+        if (static::canEdit($record)) {
+            return true;
+        }
+
+        if (static::userHasCropPermission('view-others-crop') || static::isAdminUser()) {
+            return true;
+        }
+
+        return static::userHasCropPermission('view-only-own-crop')
+            && static::recordBelongsToCurrentUser($record);
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
@@ -475,6 +505,7 @@ class BranchCropCompositionCollectionResource extends Resource
         return [
             'index' => Pages\ListBranchCropCompositionCollections::route('/'),
             'create' => Pages\CreateBranchCropCompositionCollection::route('/create'),
+            'view' => Pages\ViewBranchCropCompositionCollection::route('/{record}'),
             'edit' => Pages\EditBranchCropCompositionCollection::route('/{record}/edit'),
         ];
     }
