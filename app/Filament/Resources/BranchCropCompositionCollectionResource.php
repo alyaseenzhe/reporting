@@ -533,6 +533,11 @@ class BranchCropCompositionCollectionResource extends Resource
      */
     public static function mutateDataBeforeFill(array $data, Model $record): array
     {
+        $customer = app(SapCustomerLookupServiceInterface::class)
+            ->findCustomerByCode($record->customer_code);
+
+        $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
+
         $data['cultivation_types'] = $record->cultivationTypes
             ->map(function (BranchCropCollectionCultivationType $row): array {
                 return [
