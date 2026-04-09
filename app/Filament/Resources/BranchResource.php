@@ -13,7 +13,9 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class BranchResource extends Resource
 {
@@ -70,14 +72,14 @@ class BranchResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -85,5 +87,40 @@ class BranchResource extends Resource
             'create' => Pages\CreateBranch::route('/create'),
             'edit' => Pages\EditBranch::route('/{record}/edit'),
         ];
-    }    
+    }
+
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::isAdminUser();
+    }
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return static::isAdminUser();
+    }
+
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
+    }
 }

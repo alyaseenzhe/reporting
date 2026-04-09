@@ -16,6 +16,8 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class UserGroupResource extends Resource
 {
@@ -197,58 +199,58 @@ class UserGroupResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('name')
-                    ->label('Group Name')
+                    ->label('اسم الصلاحية')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('users_count')
-                    ->label('Users')
+                    ->label('المستخدمين')
                     ->counts('users')
                     ->sortable(),
 
-                TextColumn::make('report_type')
-                    ->label('Reports')
-                    ->formatStateUsing(function ($state): string {
-                        $reportKeys = is_string($state) ? json_decode($state, true) : $state;
-
-                        if (! is_array($reportKeys) || empty($reportKeys)) {
-                            return '-';
-                        }
-
-                        $labels = collect($reportKeys)
-                            ->map(fn ($key) => static::getReportTypeOptions()[$key] ?? $key)
-                            ->values()
-                            ->all();
-
-                        return implode(', ', $labels);
-                    })
-                    ->limit(60)
-                    ->toggleable(),
-
-                TextColumn::make('visits')
-                    ->label('Visits')
-                    ->formatStateUsing(function ($state): string {
-                        $visitKeys = is_string($state) ? json_decode($state, true) : $state;
-
-                        if (! is_array($visitKeys) || empty($visitKeys)) {
-                            return '-';
-                        }
-
-                        $labels = collect($visitKeys)
-                            ->map(fn ($key) => static::getVisitOptions()[$key] ?? $key)
-                            ->values()
-                            ->all();
-
-                        return implode(', ', $labels);
-                    })
-                    ->limit(40)
-                    ->toggleable(),
+//                TextColumn::make('report_type')
+//                    ->label('Reports')
+//                    ->formatStateUsing(function ($state): string {
+//                        $reportKeys = is_string($state) ? json_decode($state, true) : $state;
+//
+//                        if (! is_array($reportKeys) || empty($reportKeys)) {
+//                            return '-';
+//                        }
+//
+//                        $labels = collect($reportKeys)
+//                            ->map(fn ($key) => static::getReportTypeOptions()[$key] ?? $key)
+//                            ->values()
+//                            ->all();
+//
+//                        return implode(', ', $labels);
+//                    })
+//                    ->limit(60)
+//                    ->toggleable(),
+//
+//                TextColumn::make('visits')
+//                    ->label('Visits')
+//                    ->formatStateUsing(function ($state): string {
+//                        $visitKeys = is_string($state) ? json_decode($state, true) : $state;
+//
+//                        if (! is_array($visitKeys) || empty($visitKeys)) {
+//                            return '-';
+//                        }
+//
+//                        $labels = collect($visitKeys)
+//                            ->map(fn ($key) => static::getVisitOptions()[$key] ?? $key)
+//                            ->values()
+//                            ->all();
+//
+//                        return implode(', ', $labels);
+//                    })
+//                    ->limit(40)
+//                    ->toggleable(),
 
                 BadgeColumn::make('cost')
-                    ->label('Cost')
+                    ->label('التكلفة')
                     ->enum([
-                        '0' => 'No',
-                        '1' => 'Yes',
+                        '0' => 'لا',
+                        '1' => 'نعم',
                     ])
                     ->colors([
                         'secondary' => '0',
@@ -256,36 +258,36 @@ class UserGroupResource extends Resource
                     ]),
 
                 BadgeColumn::make('read_type')
-                    ->label('Read Scope')
+                    ->label('صلاحية القراءة')
                     ->enum([
-                        '1' => 'Own',
-                        '0' => 'Branch',
+                        '1' => 'بيانات المستخدم نفسه فقط',
+                        '0' => 'بيانات الفرع التابعة للمستخدم',
                     ])
                     ->colors([
                         'primary' => '1',
                         'warning' => '0',
                     ]),
 
-                BadgeColumn::make('write_product_target')
-                    ->label('Target Access')
-                    ->enum(static::getWriteProductTargetOptions())
-                    ->colors([
-                        'secondary' => '0',
-                        'success' => '1',
-                        'warning' => '2',
-                        'primary' => '3',
-                    ]),
+//                BadgeColumn::make('write_product_target')
+//                    ->label('صلاحية المستهدف')
+//                    ->enum(static::getWriteProductTargetOptions())
+//                    ->colors([
+//                        'secondary' => '0',
+//                        'success' => '1',
+//                        'warning' => '2',
+//                        'primary' => '3',
+//                    ]),
 
-                BadgeColumn::make('calculate_all_product_target')
-                    ->label('Calc All')
-                    ->enum([
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ])
-                    ->colors([
-                        'secondary' => '0',
-                        'success' => '1',
-                    ]),
+//                BadgeColumn::make('calculate_all_product_target')
+//                    ->label('Calc All')
+//                    ->enum([
+//                        '0' => 'No',
+//                        '1' => 'Yes',
+//                    ])
+//                    ->colors([
+//                        'secondary' => '0',
+//                        'success' => '1',
+//                    ]),
 
                 BadgeColumn::make('choose_special_product')
                     ->label('Choose Special')
@@ -321,7 +323,7 @@ class UserGroupResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -333,6 +335,31 @@ class UserGroupResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::isAdminUser();
     }
 
     public static function getPages(): array
@@ -369,17 +396,17 @@ class UserGroupResource extends Resource
     protected static function getWriteProductTargetOptions(): array
     {
         return [
-            '0' => 'Read only',
-            '1' => 'Edit own only',
-            '2' => 'Edit all in branch',
-            '3' => 'Update all in branch',
+            '0' => 'ستطيع المستخدم قراءة مستهدف الأصناف للفروع التابعة له',
+            '1' => 'يستطيع المستخدم اضافة\تعديل مستهدف الأصناف لنفسه فقط',
+            '2' => 'يستطيع المستخدم اضافة\تعديل مستهدف الأصناف لجميع موظفين الفروع التابع لهم',
+            '3' => 'يستطيع المستخدم التعديل فقط لمستهدف الأصناف لجميع موظفين الفروع التابع لهم',
         ];
     }
 
     protected static function getVisitOptions(): array
     {
         return [
-            'enter-visit' => 'Enter Visit',
+            'enter-visit' => 'الدخول على منصة الزيارات',
         ];
     }
     protected static function getCropOptions(): array
@@ -398,5 +425,15 @@ class UserGroupResource extends Resource
             'list-agri-type'=>'جدول أنواع الزراعة',
             'list-agri-details'=>'جدول تفاصيل أنواع الزراعة',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return static::isAdminUser();
+    }
+
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
     }
 }

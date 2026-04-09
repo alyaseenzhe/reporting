@@ -142,11 +142,13 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->label('عدد المزارع الخاصة بالعميل')
                             ->required()
                             ->numeric()
+                            ->maxValue(9999999999)
                             ->rules(['integer', 'min:1']),
                         TextInput::make('total_farm_area_hectares')
                             ->label('المساحة الاجمالية للمزارع (هكتار)')
                             ->required()
                             ->numeric()
+                            ->maxValue(9999999999.99)
                             ->rules(['numeric', 'min:0.01']),
                     ]),
                 ]),
@@ -232,6 +234,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('مساحة اجمالية (هـ)')
                                     ->required()
                                     ->numeric()
+                                    ->maxValue(9999999999.99)
                                     ->rules(['numeric', 'min:0.01'])
                                     ->columnSpan(2),
 
@@ -286,6 +289,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('مساحة كل العروات (هكتار)')
                                     ->required()
                                     ->numeric()
+                                    ->maxValue(9999999999.99)
                                     ->rules(['numeric', 'min:0.01']),
                                 Checkbox::make('show_tree_count')
                                     ->label('إضافة عدد الأشجار')
@@ -295,6 +299,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                 TextInput::make('trees_count')
                                     ->label('عدد الأشجار')
                                     ->numeric()
+                                    ->maxValue(9999999999)
                                     ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
                                     ->rules(['nullable', 'integer', 'min:0']),
                             ]),

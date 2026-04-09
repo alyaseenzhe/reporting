@@ -13,6 +13,8 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class RequestResource extends Resource
 {
@@ -98,5 +100,39 @@ class RequestResource extends Resource
             'edit' => Pages\EditRequest::route('/{record}/edit'),
             'settlements' => Pages\ManageRequestSettlements::route('/{record}/settlements'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::isAdminUser();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::isAdminUser();
+    }
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return static::isAdminUser();
+    }
+
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
     }
 }
