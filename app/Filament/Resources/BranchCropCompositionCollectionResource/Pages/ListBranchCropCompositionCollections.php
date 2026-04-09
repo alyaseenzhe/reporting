@@ -10,6 +10,13 @@ class ListBranchCropCompositionCollections extends ListRecords
 {
     protected static string $resource = BranchCropCompositionCollectionResource::class;
 
+    protected int $defaultTableRecordsPerPageSelectOption = 25;
+
+    protected function getTableRecordsPerPageSelectOptions(): array
+    {
+        return [25, -1];
+    }
+
     protected function getTableRecordUrlUsing(): ?\Closure
     {
         return function (Model $record): ?string {
