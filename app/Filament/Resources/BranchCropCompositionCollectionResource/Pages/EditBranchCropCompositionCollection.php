@@ -50,7 +50,15 @@ class EditBranchCropCompositionCollection extends EditRecord
     protected function getActions(): array
     {
         return [
+            $this->getSaveFormAction(),
             Actions\DeleteAction::make(),
+            $this->getCancelFormAction(),
+
         ];
+    }
+
+    protected function getFormActions(): array
+    {
+        return [];
     }
 }

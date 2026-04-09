@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
+use Filament\Pages\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewBranchCropCompositionCollection extends ViewRecord
@@ -16,6 +17,15 @@ class ViewBranchCropCompositionCollection extends ViewRecord
 
     protected function getActions(): array
     {
-        return [];
+        return [
+            Actions\EditAction::make(),
+            
+            Actions\DeleteAction::make(),
+
+            Actions\Action::make('cancel')
+                ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+                ->url(static::getResource()::getUrl('index'))
+                ->color('secondary'),
+        ];
     }
 }

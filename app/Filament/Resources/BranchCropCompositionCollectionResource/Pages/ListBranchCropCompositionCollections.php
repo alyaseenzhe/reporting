@@ -20,10 +20,6 @@ class ListBranchCropCompositionCollections extends ListRecords
     protected function getTableRecordUrlUsing(): ?\Closure
     {
         return function (Model $record): ?string {
-            if (static::getResource()::canEdit($record)) {
-                return static::getResource()::getUrl('edit', ['record' => $record]);
-            }
-
             if (static::getResource()::canView($record)) {
                 return static::getResource()::getUrl('view', ['record' => $record]);
             }
