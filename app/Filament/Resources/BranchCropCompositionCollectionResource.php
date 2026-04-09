@@ -112,6 +112,10 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->searchCustomers($search);
 
                                 $customers = static::filterCustomersForSelectedBranch($customers, $branchCode);
+                                $customers = static::filterExistingCollectionCustomers(
+                                    $customers,
+                                    $get('customer_code')
+                                );
 
                                 return static::filterCustomersForCreatePermission($customers);
                             })
@@ -761,6 +765,36 @@ class BranchCropCompositionCollectionResource extends Resource
 
         return collect($customers)
             ->filter(fn ($label, $customerCode): bool => static::customerBelongsToBranch($customerCode, $branchCode))
+            ->toArray();
+    }
+
+    protected static function filterExistingCollectionCustomers(
+        array $customers,
+        ?string $currentCustomerCode = null
+    ): array {
+        $customerCodes = array_keys($customers);
+
+        if (! count($customerCodes)) {
+            return $customers;
+        }
+
+        $existingCustomerCodes = BranchCropCompositionCollection::query()
+            ->whereIn('customer_code', $customerCodes)
+            ->when(
+                filled($currentCustomerCode),
+                fn (Builder $query) => $query->where('customer_code', '!=', $currentCustomerCode)
+            )
+            ->pluck('customer_code')
+            ->map(fn ($customerCode): string => trim((string) $customerCode))
+            ->filter()
+            ->all();
+
+        if (! count($existingCustomerCodes)) {
+            return $customers;
+        }
+
+        return collect($customers)
+            ->reject(fn ($label, $customerCode): bool => in_array(trim((string) $customerCode), $existingCustomerCodes, true))
             ->toArray();
     }
 
