@@ -330,7 +330,7 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultSort('collection_date', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
@@ -362,7 +362,11 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->findCustomerByCode($record->customer_code);
 
                         return (string) ($customer['slp_name'] ?? $state ?? '');
-                    }),
+                    })
+                    ->searchable(
+                        query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search),
+//                        isIndividual: true
+                    ),
                 TextColumn::make('farms_count')
                     ->label('عدد المزارع'),
                 // TextColumn::make('cropItems_count')
@@ -392,6 +396,18 @@ class BranchCropCompositionCollectionResource extends Resource
                         return $query->when(
                             $data['customer_name'] ?? null,
                             fn (Builder $query, $name) => $query->where('customer_name', 'like', "%{$name}%")
+                        );
+                    }),
+                Filter::make('engineer_name')
+                    ->form([
+                        TextInput::make('engineer_name')
+                            ->label('اسم المهندس')
+                            ->placeholder('اكتب اسم المهندس'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['engineer_name'] ?? null,
+                            fn (Builder $query, $engineerName) => static::applySapEngineerNameSearch($query, $engineerName)
                         );
                     }),
                 SelectFilter::make('branch')->label('الفرع')
@@ -766,6 +782,42 @@ class BranchCropCompositionCollectionResource extends Resource
         return collect($customers)
             ->filter(fn ($label, $customerCode): bool => static::customerBelongsToBranch($customerCode, $branchCode))
             ->toArray();
+    }
+
+    protected static function applySapEngineerNameSearch(Builder $query, ?string $engineerName): Builder
+    {
+        $matchingCustomerCodes = static::getCustomerCodesForSapEngineerName($engineerName);
+
+        if (! count($matchingCustomerCodes)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn('customer_code', $matchingCustomerCodes);
+    }
+
+    protected static function getCustomerCodesForSapEngineerName(?string $engineerName): array
+    {
+        $engineerName = trim(mb_strtolower((string) $engineerName));
+
+        if ($engineerName === '') {
+            return [];
+        }
+
+        return BranchCropCompositionCollection::query()
+            ->whereNotNull('customer_code')
+            ->pluck('customer_code')
+            ->unique()
+            ->filter(function ($customerCode) use ($engineerName): bool {
+                $customer = app(SapCustomerLookupServiceInterface::class)
+                    ->findCustomerByCode($customerCode);
+
+                $sapEngineerName = trim(mb_strtolower((string) ($customer['slp_name'] ?? '')));
+
+                return $sapEngineerName !== ''
+                    && mb_strpos($sapEngineerName, $engineerName) !== false;
+            })
+            ->values()
+            ->all();
     }
 
     protected static function filterExistingCollectionCustomers(
