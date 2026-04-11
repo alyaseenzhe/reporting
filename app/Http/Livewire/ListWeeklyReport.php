@@ -176,40 +176,40 @@ class ListWeeklyReport extends Component
 
         if ($this->area_id == '01') {
 //            Mail::to($ahsa_branch)->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
-            Mail::to($ahsa_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($ahsa_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '02') {
-            Mail::to($jeddah_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($jeddah_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '03') {
-            Mail::to($riyadh_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($riyadh_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '04') {
-            Mail::to($wadi_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($wadi_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '05') {
-            Mail::to($jouf_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($jouf_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '06') {
-            Mail::to($dammam_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($dammam_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '07') {
-            Mail::to($kharaj_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($kharaj_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '08') {
-            Mail::to($najran_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($najran_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '09') {
-            Mail::to($hail_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($hail_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '10') {
-            Mail::to($tabouk_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($tabouk_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '11') {
-            Mail::to($qaseem_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($qaseem_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
         elseif ($this->area_id == '12') {
-            Mail::to($sajer_branch)->cc(['zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
+            Mail::to($sajer_branch)->cc(['IT.Department@alyaseenagri.com','zahra@alyaseenagri.com'])->queue(new WeeklyReport($this->sap_results, $this->area_id, $this->start_date, $this->end_date, $this->visits));
         }
 
         return 0;

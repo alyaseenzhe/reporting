@@ -20,25 +20,21 @@ class WeeklyReport extends Mailable
     protected $visits;
     protected $category_qty;
     protected $category_qty_total;
+    protected $overFiftyThousand;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data, $branch, $start_date, $end_date, $emp_codes, $customer_purchased, $visits, $category_qty, $category_qty_total)
+    public function __construct($data, $branch, $start_date, $end_date, $visits)
     {
         //
         $this->data = $data;
         $this->branch = $branch;
         $this->start_date = $start_date;
         $this->end_date= $end_date;
-        $this->emp_codes = $emp_codes;
-        $this->customer_purchased = $customer_purchased;
         $this->visits = $visits;
-        $this->category_qty = $category_qty;
-        $this->category_qty_total = $category_qty_total;
-
     }
 
     /**
@@ -91,7 +87,7 @@ class WeeklyReport extends Mailable
 //        return $this->subject('ملخص مبيعات ' . $branch_name)
         return $this->subject($subject_txt)
             ->view('mails.weekly-report-email')
-            ->with(['data' => $this->data, 'branch' => $branch_name, 'start_date' => $this->start_date, 'end_date' => $this->end_date, 'emp_codes' => $this->emp_codes, 'customer_purchased' => $this->customer_purchased, 'visits' => $this->visits, 'category_qty' => $this->category_qty, 'category_qty_total' => $this->category_qty_total]);
+            ->with(['data' => $this->data, 'branch' => $branch_name, 'start_date' => $this->start_date, 'end_date' => $this->end_date, 'visits' => $this->visits]);
 
 //        return $this->view('view.name');
     }
