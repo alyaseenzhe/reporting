@@ -19,7 +19,7 @@ class ViewBranchCropCompositionCollection extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
-            
+
             Actions\DeleteAction::make(),
 
             Actions\Action::make('cancel')
