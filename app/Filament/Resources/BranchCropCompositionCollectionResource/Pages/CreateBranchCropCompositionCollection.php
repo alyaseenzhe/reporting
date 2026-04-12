@@ -4,6 +4,7 @@ namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
 use App\Models\BranchCropCompositionCollection;
+use Filament\Pages\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,17 @@ use Illuminate\Support\Facades\DB;
 class CreateBranchCropCompositionCollection extends CreateRecord
 {
     protected static string $resource = BranchCropCompositionCollectionResource::class;
+
+    protected function getActions(): array
+    {
+        return [
+            Actions\Action::make('back')
+                ->label('عودة')
+                ->url(static::getResource()::getUrl('index'))
+                ->color('secondary')
+                ->icon('heroicon-o-arrow-left'),
+        ];
+    }
 
     /**
      * Persist the parent and child rows in one transaction.
