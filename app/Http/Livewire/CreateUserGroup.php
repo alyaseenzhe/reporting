@@ -17,9 +17,11 @@ class CreateUserGroup extends Component
 
     public $report_type = [];
     public $visits = [];
+    public $crops = [];
 
     protected $rules = [
         'name' => 'required',
+        'crops' => 'array',
     ];
 
     protected $messages = [
@@ -28,7 +30,9 @@ class CreateUserGroup extends Component
 
     public function render()
     {
-        return view('livewire.create-user-group')
+        $cropOptions = $this->cropOptions();
+
+        return view('livewire.create-user-group', compact('cropOptions'))
             ->layout('layouts.dashboard');
     }
 
@@ -47,6 +51,7 @@ class CreateUserGroup extends Component
             'choose_special_product' => $this->choose_special_product,
             'edit_special_product' => $this->edit_special_product,
             'visits' => json_encode($this->visits),
+            'crops' => json_encode(array_values($this->crops ?? [])),
         ]);
 
         if($record) {
@@ -57,5 +62,10 @@ class CreateUserGroup extends Component
             session()->flash('error-message', 'حدث خطأ ما عند إنشاء المجموعة');
             return redirect()->route('list.groups');
         }
+    }
+
+    public function cropOptions(): array
+    {
+        return \App\Filament\Resources\UserGroupResource::getCropOptions();
     }
 }

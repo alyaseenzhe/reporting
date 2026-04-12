@@ -286,6 +286,25 @@
             </div>
         </div>
     </div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">اجراءات نموذج المحاصيل المسموح به</label>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @foreach($cropOptions as $cropPermission => $cropLabel)
+                        <div class="flex items-center mb-2 w-full">
+                            <input name="crops" wire:model.lazy="crops" type="checkbox" value="{{ $cropPermission }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $cropLabel }}</label>
+                        </div>
+                    @endforeach
+                </div>
+
+                @error('crops')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
     <div class="mt-8 text-center">
         <button wire:click.prevent="create" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">

@@ -20,9 +20,11 @@ class EditUserGroups extends Component
     public $calculate_all_product_target;
     public $report_type = [];
     public $visits = [];
+    public $crops = [];
 
     protected $rules = [
         'name' => 'required',
+        'crops' => 'array',
     ];
 
     protected $messages = [
@@ -44,6 +46,7 @@ class EditUserGroups extends Component
             $this->choose_special_product = $this->record->choose_special_product;
             $this->edit_special_product = $this->record->edit_special_product;
             $this->visits = json_decode($this->record->visits, true) ?? [];
+            $this->crops = json_decode($this->record->crops, true) ?? [];
 
 
         } catch (ModelNotFoundException $exception) {
@@ -55,7 +58,9 @@ class EditUserGroups extends Component
 
     public function render()
     {
-        return view('livewire.edit-user-groups')
+        $cropOptions = $this->cropOptions();
+
+        return view('livewire.edit-user-groups', compact('cropOptions'))
             ->layout('layouts.dashboard');
     }
 
@@ -77,6 +82,7 @@ class EditUserGroups extends Component
             $record->choose_special_product = $this->choose_special_product;
             $record->edit_special_product = $this->edit_special_product;
             $record->visits = json_encode($this->visits);
+            $record->crops = json_encode(array_values($this->crops ?? []));
 
 
             if($record->save()) {
@@ -93,5 +99,10 @@ class EditUserGroups extends Component
             session()->flash('message', 'هذه المجموعة غير موجودة');
             return redirect()->route('list.groups');
         }
+    }
+
+    public function cropOptions(): array
+    {
+        return \App\Filament\Resources\UserGroupResource::getCropOptions();
     }
 }

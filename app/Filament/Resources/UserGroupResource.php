@@ -409,7 +409,7 @@ class UserGroupResource extends Resource
             'enter-visit' => 'الدخول على منصة الزيارات',
         ];
     }
-    protected static function getCropOptions(): array
+    public static function getCropOptions(): array
     {
         return [
             'create-only-own-crop' => 'إنشاء نموذج محصولي فقط خاص به',
