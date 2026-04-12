@@ -252,12 +252,29 @@
             <div class="w-full">
                 <label class="block font-bold mb-5">اجراءات نموذج المحاصيل المسموح به</label>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    @foreach($cropOptions as $cropPermission => $cropLabel)
-                        <div class="flex items-center mb-2 w-full">
-                            <input name="crops" wire:model.lazy="crops" type="checkbox" value="{{ $cropPermission }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $cropLabel }}</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach($cropActionOptions as $action => $options)
+                        <div>
+                            <label class="block font-bold mb-3">{{ __($action) }}</label>
+                            <div class="flex flex-col gap-3">
+                                @foreach($options as $permission => $label)
+                                    <label class="flex items-center">
+                                        <input wire:model="crop_{{ $action }}_permission" type="radio" name="crop_{{ $action }}_permission" value="{{ $permission }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                                        <span class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $label }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
+                    @endforeach
+                </div>
+
+                <label class="block font-bold mt-6 mb-3">صلاحيات جداول التركيب المحصولي</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @foreach($cropListOptions as $cropPermission => $cropLabel)
+                        <label class="flex items-center mb-2 w-full">
+                            <input name="crop_list_permissions" wire:model.lazy="crop_list_permissions" type="checkbox" value="{{ $cropPermission }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <span class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $cropLabel }}</span>
+                        </label>
                     @endforeach
                 </div>
 

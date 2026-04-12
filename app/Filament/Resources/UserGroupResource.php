@@ -100,30 +100,32 @@ class UserGroupResource extends Resource
                     ]),
                 Section::make('التركيب المحصولي')
                     ->schema([
-                        CheckboxList::make('crops')
-                            ->label('اجراءات نموذج المحاصيل المسموح به')
-                            ->options(static::getCropOptions())
-                            ->columns(1)
-                            ->afterStateHydrated(function (CheckboxList $component, $state): void {
-                                if (blank($state)) {
-                                    $component->state([]);
+                        Grid::make(2)->schema([
+                            Radio::make('crop_create_permission')
+                                ->label('صلاحية إنشاء النموذج المحصولي')
+                                ->options(static::getCropActionOptions('create'))
+                                ->inline(),
 
-                                    return;
-                                }
+                            Radio::make('crop_edit_permission')
+                                ->label('صلاحية تعديل النموذج المحصولي')
+                                ->options(static::getCropActionOptions('edit'))
+                                ->inline(),
 
-                                if (is_string($state)) {
-                                    $decodedState = json_decode($state, true);
+                            Radio::make('crop_delete_permission')
+                                ->label('صلاحية حذف النموذج المحصولي')
+                                ->options(static::getCropActionOptions('delete'))
+                                ->inline(),
 
-                                    $component->state(is_array($decodedState) ? $decodedState : []);
+                            Radio::make('crop_view_permission')
+                                ->label('صلاحية عرض النموذج المحصولي')
+                                ->options(static::getCropActionOptions('view'))
+                                ->inline(),
+                        ]),
 
-                                    return;
-                                }
-
-                                $component->state(is_array($state) ? $state : []);
-                            })
-                            ->dehydrateStateUsing(function ($state): string {
-                                return json_encode(array_values($state ?? []));
-                            }),
+                        CheckboxList::make('crop_list_permissions')
+                            ->label('صلاحيات جداول التركيب المحصولي')
+                            ->options(static::getCropListOptions())
+                            ->columns(1),
                     ]),
 
                 Section::make('Permissions')
@@ -425,6 +427,102 @@ class UserGroupResource extends Resource
             'list-agri-type'=>'جدول أنواع الزراعة',
             'list-agri-details'=>'جدول تفاصيل أنواع الزراعة',
         ];
+    }
+
+    public static function getCropActionOptions(string $action): array
+    {
+        return match ($action) {
+            'create' => [
+                'create-only-own-crop' => static::getCropOptions()['create-only-own-crop'],
+                'create-others-crop' => static::getCropOptions()['create-others-crop'],
+            ],
+            'edit' => [
+                'edit-only-own-crop' => static::getCropOptions()['edit-only-own-crop'],
+                'edit-others-crop' => static::getCropOptions()['edit-others-crop'],
+            ],
+            'delete' => [
+                'delete-only-own-crop' => static::getCropOptions()['delete-only-own-crop'],
+                'delete-others-crop' => static::getCropOptions()['delete-others-crop'],
+            ],
+            'view' => [
+                'view-only-own-crop' => static::getCropOptions()['view-only-own-crop'],
+                'view-others-crop' => static::getCropOptions()['view-others-crop'],
+            ],
+            default => [],
+        };
+    }
+
+    public static function getCropListOptions(): array
+    {
+        return array_intersect_key(static::getCropOptions(), array_flip([
+            'list-crop-collection',
+            'list-crop-category',
+            'list-agri-type',
+            'list-agri-details',
+        ]));
+    }
+
+    public static function fillCropPermissionFields(array $data): array
+    {
+        $cropPermissions = static::decodeCropPermissions($data['crops'] ?? []);
+
+        $data['crop_create_permission'] = static::selectedCropActionPermission($cropPermissions, 'create');
+        $data['crop_edit_permission'] = static::selectedCropActionPermission($cropPermissions, 'edit');
+        $data['crop_delete_permission'] = static::selectedCropActionPermission($cropPermissions, 'delete');
+        $data['crop_view_permission'] = static::selectedCropActionPermission($cropPermissions, 'view');
+        $data['crop_list_permissions'] = array_values(array_intersect($cropPermissions, array_keys(static::getCropListOptions())));
+
+        return $data;
+    }
+
+    public static function mergeCropPermissionFields(array $data): array
+    {
+        $cropPermissions = array_values(array_filter([
+            $data['crop_create_permission'] ?? null,
+            $data['crop_edit_permission'] ?? null,
+            $data['crop_delete_permission'] ?? null,
+            $data['crop_view_permission'] ?? null,
+        ]));
+
+        $cropPermissions = array_merge($cropPermissions, $data['crop_list_permissions'] ?? []);
+
+        unset(
+            $data['crop_create_permission'],
+            $data['crop_edit_permission'],
+            $data['crop_delete_permission'],
+            $data['crop_view_permission'],
+            $data['crop_list_permissions']
+        );
+
+        $data['crops'] = json_encode(array_values(array_unique(array_map('strval', $cropPermissions))));
+
+        return $data;
+    }
+
+    public static function decodeCropPermissions($permissions): array
+    {
+        if (blank($permissions)) {
+            return [];
+        }
+
+        if (is_string($permissions)) {
+            $permissions = json_decode($permissions, true);
+        }
+
+        return is_array($permissions)
+            ? array_values(array_unique(array_filter(array_map('strval', $permissions))))
+            : [];
+    }
+
+    protected static function selectedCropActionPermission(array $permissions, string $action): ?string
+    {
+        foreach (array_keys(static::getCropActionOptions($action)) as $permission) {
+            if (in_array($permission, $permissions, true)) {
+                return $permission;
+            }
+        }
+
+        return null;
     }
 
     public function canAccessPanel(Panel $panel): bool

@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateUserGroup extends CreateRecord
 {
     protected static string $resource = UserGroupResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return UserGroupResource::mergeCropPermissionFields($data);
+    }
 }
