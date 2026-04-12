@@ -898,7 +898,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
 "DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
 "ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
 "SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-LEFT JOIN SETC ON T1."BusinessPartnerCode" = TC."CardCode"
+LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD TC ON T1."BusinessPartnerCode" = TC."CardCode"
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP TS ON TC."SlpCode" = TS."SlpCode"
 RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
 ON T1."ItemCode" = T2."ItemCode"
