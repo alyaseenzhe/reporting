@@ -3,24 +3,24 @@
 @stop
 
 <div>
-{{--    <div class="mb-6">--}}
-{{--        <div class="flex flex-col sm:flex-row gap-4">--}}
-{{--            <div class="w-full">--}}
-{{--                <label class="block font-bold mb-2">نوع المستخدم--}}
-{{--                    <span class="text-red-500">*</span>--}}
-{{--                </label>--}}
-{{--                <select name="user_type" wire:model="role"--}}
-{{--                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
-{{--                        style="@error('role') border: solid 1px #fda4af; @enderror">--}}
-{{--                    <option value="e">مهندسين فروع</option>--}}
-{{--                    <option value="m">مدراء مبيعات</option>--}}
-{{--                    <option value="u">الإدارة العليا</option>--}}
-{{--                    <option value="a">IT</option>--}}
-{{--                </select>--}}
-{{--            </div>--}}
+    {{--    <div class="mb-6">--}}
+    {{--        <div class="flex flex-col sm:flex-row gap-4">--}}
+    {{--            <div class="w-full">--}}
+    {{--                <label class="block font-bold mb-2">نوع المستخدم--}}
+    {{--                    <span class="text-red-500">*</span>--}}
+    {{--                </label>--}}
+    {{--                <select name="user_type" wire:model="role"--}}
+    {{--                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"--}}
+    {{--                        style="@error('role') border: solid 1px #fda4af; @enderror">--}}
+    {{--                    <option value="e">مهندسين فروع</option>--}}
+    {{--                    <option value="m">مدراء مبيعات</option>--}}
+    {{--                    <option value="u">الإدارة العليا</option>--}}
+    {{--                    <option value="a">IT</option>--}}
+    {{--                </select>--}}
+    {{--            </div>--}}
 
-{{--        </div>--}}
-{{--    </div>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="w-full">
@@ -32,7 +32,7 @@
                 <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
 
-{{--            <h1 class="mt-4 bold text-2xl mb-6">نوع التقرير</h1>--}}
+            {{--            <h1 class="mt-4 bold text-2xl mb-6">نوع التقرير</h1>--}}
         </div>
     </div>
     <div class="mb-10">
@@ -46,8 +46,8 @@
                         <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير العمولة</label>
                     </div>
                     <div class="flex items-center mb-4 w-full">
-                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.non-paid-vouchers" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الفواتير المستحقة</label>
+                        <input name="report_type" wire:model="report_type" type="checkbox" value="list.aging" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الفواتير المعلقة</label>
                     </div>
                 </div>
                 <div class="flex flex-row">
@@ -88,14 +88,6 @@
                     <div class="flex items-center mb-4 w-full">
                         <input name="report_type" wire:model="report_type" type="checkbox" value="list.distribution-calc" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حاسبة التوزيع</label>
-                    </div>
-                </div>
-
-                <label class="block font-bold mt-6 mb-4">تقارير ساب</label>
-                <div class="flex flex-row">
-                    <div class="flex items-center mb-4 w-full">
-                        <input name="report_type" wire:model="report_type" type="checkbox" value="report-11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تقرير عمليات الأصناف</label>
                     </div>
                 </div>
 
@@ -242,7 +234,58 @@
             </div>
         </div>
     </div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <div class="w-full">
+                <label class="block font-bold mb-5">صلاحيات الزيارات</label>
 
+                <div class="flex flex-row">
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="visits" wire:model.lazy="visits" type="checkbox" value="enter-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدخول على منصة الزيارات</label>
+                    </div>
+
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="visits" wire:model.lazy="visits" type="checkbox" value="create-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">انشاء الزيارة</label>
+                    </div>
+
+                    <div class="flex items-center mb-4 w-full">
+                        <input name="visits" wire:model.lazy="visits" type="checkbox" value="view-all-visits" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الإطلاع على جميع الزيارات</label>
+                    </div>
+                    {{--                    <div class="flex items-center mb-4 w-full">--}}
+                    {{--                        <input name="visits" wire:model="visits" type="checkbox" value="edit-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+                    {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تعديل الزيارة</label>--}}
+                    {{--                    </div>--}}
+                </div>
+                {{--                <div class="flex flex-row">--}}
+                {{--                    <div class="flex items-center mb-4 w-full">--}}
+                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="accept-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الموافقة على الزيارة</label>--}}
+                {{--                    </div>--}}
+                {{--                    <div class="flex items-center mb-4 w-full">--}}
+                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="reject-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رفض الزيارة</label>--}}
+                {{--                    </div>--}}
+                {{--                </div>--}}
+                {{--                <div class="flex flex-row">--}}
+                {{--                    <div class="flex items-center mb-4 w-full">--}}
+                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="close-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إتمام الزيارة</label>--}}
+                {{--                    </div>--}}
+                {{--                    <div class="flex items-center mb-4 w-full">--}}
+                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="cancel-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
+                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إلغاء الزيارة</label>--}}
+                {{--                    </div>--}}
+                {{--                </div>--}}
+
+
+                @error('visits')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
+            </div>
+        </div>
+    </div>
     <div class="mt-8 text-center">
         <button wire:click.prevent="create" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">
