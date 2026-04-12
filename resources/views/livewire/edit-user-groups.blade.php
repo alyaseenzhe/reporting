@@ -274,31 +274,9 @@
                         <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             الإطلاع على جميع الزيارات</label>
                     </div>
-                    {{--                    <div class="flex items-center mb-4 w-full">--}}
-                    {{--                        <input name="visits" wire:model="visits" type="checkbox" value="edit-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                    {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تعديل الزيارة</label>--}}
-                    {{--                    </div>--}}
+
                 </div>
-                {{--                <div class="flex flex-row">--}}
-                {{--                    <div class="flex items-center mb-4 w-full">--}}
-                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="accept-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الموافقة على الزيارة</label>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="flex items-center mb-4 w-full">--}}
-                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="reject-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">رفض الزيارة</label>--}}
-                {{--                    </div>--}}
-                {{--                </div>--}}
-                {{--                <div class="flex flex-row">--}}
-                {{--                    <div class="flex items-center mb-4 w-full">--}}
-                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="close-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إتمام الزيارة</label>--}}
-                {{--                    </div>--}}
-                {{--                    <div class="flex items-center mb-4 w-full">--}}
-                {{--                        <input name="visits" wire:model="visits" type="checkbox" value="cancel-visit" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">--}}
-                {{--                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">إلغاء الزيارة</label>--}}
-                {{--                    </div>--}}
-                {{--                </div>--}}
+
 
 
                 @error('visits')
