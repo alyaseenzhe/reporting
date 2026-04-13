@@ -195,7 +195,7 @@
                             <td style="color: #5f9ea0; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                                 {{ number_format(floatval($record["PreviousMonth_total"]), 2) }}
                             </td>
-                            <td style="color: #c71585; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
+                            <td  style=" @if( floatval($record["PreviousMonth_total"]) != 0 && number_format(((floatval($record["CurrentMonth_total"])-floatval($record["PreviousMonth_total"]))/floatval($record["PreviousMonth_total"]))*100, 2)< 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                                 {{ floatval($record["PreviousMonth_total"]) != 0 ? number_format(((floatval($record["CurrentMonth_total"])-floatval($record["PreviousMonth_total"]))/floatval($record["PreviousMonth_total"]))*100, 2) : 0 }}
                             </td>
                             <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
@@ -219,7 +219,7 @@
                             {{ number_format(floatval($record["PreviousMonth"]), 2) }}
                             @php $previous_month += floatval($record["PreviousMonth"]) @endphp
                         </td>
-                        <td style="color: #c71585; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
+                        <td style=" @if(floatval($record["PreviousMonth"]) != 0  && number_format(((floatval($record["CurrentMonth"])-floatval($record["PreviousMonth"]))/floatval($record["PreviousMonth"]))*100, 2) <0) color: #c71585; @else color:darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                             {{ floatval($record["PreviousMonth"]) != 0 ? number_format(((floatval($record["CurrentMonth"])-floatval($record["PreviousMonth"]))/floatval($record["PreviousMonth"]))*100, 2) : 0 }}
                         </td>
                         <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
