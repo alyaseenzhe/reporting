@@ -19,7 +19,7 @@ class EditUser extends Component
     public $email;
     public $password;
     public $branch_mode = 'selection';
-    public $one_branch;
+//    public $one_branch;
     public $branches = [];
     public $group_id;
     public $sales_dept_code;
@@ -265,18 +265,18 @@ class EditUser extends Component
             $this->branches = self::ALL_BRANCHES;
         }
 
-        if ($this->branch_mode === 'one') {
-            $this->one_branch = $this->one_branch ?: ($this->branches[0] ?? null);
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-        }
+//        if ($this->branch_mode === 'one') {
+//            $this->one_branch = $this->one_branch ?: ($this->branches[0] ?? null);
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
     }
 
-    public function updatedOneBranch(): void
-    {
-        if ($this->branch_mode === 'one') {
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-        }
-    }
+//    public function updatedOneBranch(): void
+//    {
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
+//    }
 
     public function branchOptions(): array
     {
@@ -305,20 +305,20 @@ class EditUser extends Component
 
         if ($currentBranches === $allBranches) {
             $this->branch_mode = 'all';
-            $this->one_branch = null;
+//            $this->one_branch = null;
 
             return;
         }
 
-        if (count($currentBranches) === 1) {
-            $this->branch_mode = 'one';
-            $this->one_branch = $currentBranches[0];
-
-            return;
-        }
+//        if (count($currentBranches) === 1) {
+//            $this->branch_mode = 'one';
+//            $this->one_branch = $currentBranches[0];
+//
+//            return;
+//        }
 
         $this->branch_mode = 'selection';
-        $this->one_branch = null;
+//        $this->one_branch = null;
     }
 
     protected function syncBranchesFromMode(): void
@@ -329,11 +329,11 @@ class EditUser extends Component
             return;
         }
 
-        if ($this->branch_mode === 'one') {
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-
-            return;
-        }
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//
+//            return;
+//        }
 
         $this->branches = array_values(array_unique(array_map('strval', $this->branches ?? [])));
     }

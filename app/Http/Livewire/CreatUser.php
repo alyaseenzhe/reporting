@@ -17,7 +17,7 @@ class CreatUser extends Component
     public $password;
     public $password_confirmation;
     public $branch_mode = 'selection';
-    public $one_branch;
+//    public $one_branch;
     public $branches = [];
     public $group_id;
 
@@ -93,17 +93,17 @@ class CreatUser extends Component
             $this->branches = self::ALL_BRANCHES;
         }
 
-        if ($this->branch_mode === 'one') {
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-        }
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
     }
 
-    public function updatedOneBranch(): void
-    {
-        if ($this->branch_mode === 'one') {
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-        }
-    }
+//    public function updatedOneBranch(): void
+//    {
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
+//    }
 
     public function branchOptions(): array
     {
@@ -131,11 +131,11 @@ class CreatUser extends Component
             return;
         }
 
-        if ($this->branch_mode === 'one') {
-            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
-
-            return;
-        }
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//
+//            return;
+//        }
 
         $this->branches = array_values(array_unique(array_map('strval', $this->branches ?? [])));
     }

@@ -119,10 +119,10 @@
                     <input wire:model="branch_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
                     <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
                 </label>
-                <label class="flex items-center">
-                    <input wire:model="branch_mode" type="radio" value="one" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                    <span class="mr-2 text-sm font-medium text-gray-900">فرع واحد</span>
-                </label>
+{{--                <label class="flex items-center">--}}
+{{--                    <input wire:model="branch_mode" type="radio" value="one" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">--}}
+{{--                    <span class="mr-2 text-sm font-medium text-gray-900">فرع واحد</span>--}}
+{{--                </label>--}}
                 <label class="flex items-center">
                     <input wire:model="branch_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
                     <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
@@ -130,17 +130,17 @@
             </div>
         </div>
 
-        @if($branch_mode === 'one')
-            <div class="mb-6">
-                <label class="block font-bold mb-2">الفرع</label>
-                <select wire:model="one_branch" class="form-select w-full">
-                    <option value="">اختر الفرع</option>
-                    @foreach($branchOptions as $branchValue => $branchLabel)
-                        <option value="{{ $branchValue }}">{{ $branchLabel }}</option>
-                    @endforeach
-                </select>
-            </div>
-        @endif
+{{--        @if($branch_mode === 'one')--}}
+{{--            <div class="mb-6">--}}
+{{--                <label class="block font-bold mb-2">الفرع</label>--}}
+{{--                <select wire:model="one_branch" class="form-select w-full">--}}
+{{--                    <option value="">اختر الفرع</option>--}}
+{{--                    @foreach($branchOptions as $branchValue => $branchLabel)--}}
+{{--                        <option value="{{ $branchValue }}">{{ $branchLabel }}</option>--}}
+{{--                    @endforeach--}}
+{{--                </select>--}}
+{{--            </div>--}}
+{{--        @endif--}}
 
         @if($branch_mode === 'selection')
         <div class="flex items-center mb-4">
