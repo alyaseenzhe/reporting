@@ -592,18 +592,50 @@
 
             /* Responsive SweetAlert2 modal */
             .responsive-modal {
-                width: 90vw !important;
-                max-width: 600px !important;
+                width: min(92vw, 640px) !important;
+                max-width: calc(100vw - 1rem) !important;
+                max-height: calc(100vh - 1rem) !important;
                 box-sizing: border-box;
                 padding: 1rem;
+                overflow-y: auto;
             }
 
             /* Ensure input stretches correctly */
             .swal2-input,
-                /*.swal2-textarea {*/
-                /*    width: 100% !important;*/
-                /*    box-sizing: border-box;*/
-                /*}*/
+            .swal2-textarea {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box;
+            }
+
+            .responsive-modal .swal2-html-container {
+                margin-left: 0;
+                margin-right: 0;
+                overflow-x: hidden;
+            }
+
+            .responsive-modal .select2-container {
+                max-width: 100% !important;
+            }
+
+            .responsive-modal .swal2-actions {
+                flex-wrap: wrap;
+            }
+
+            @media (max-width: 640px) {
+                .responsive-modal {
+                    padding: 0.75rem !important;
+                }
+
+                .responsive-modal .swal2-html-container {
+                    max-height: calc(100vh - 13rem);
+                    overflow-y: auto;
+                }
+
+                .responsive-modal .flex.w-full.gap-2 {
+                    flex-direction: column;
+                }
+            }
 
             .star {
                 font-size: 2rem;
@@ -1325,6 +1357,9 @@
                         confirmButtonText: 'تحديث',
                         cancelButtonText: 'عودة',
                         reverseButtons: true,
+                        customClass: {
+                            popup: 'responsive-modal'
+                        },
                         didOpen: () => {
                             const branchSelect = document.getElementById('edit-branch');
                             const employeeSelect = document.getElementById('edit-employees');
@@ -1708,6 +1743,9 @@
                 confirmButtonText: 'تحديث',
                 cancelButtonText: 'عودة',
                 reverseButtons: true,
+                customClass: {
+                    popup: 'responsive-modal'
+                },
                 didOpen: () => {
                     const branchSelect = document.getElementById('edit-branch');
                     const employeeSelect = document.getElementById('edit-employees');

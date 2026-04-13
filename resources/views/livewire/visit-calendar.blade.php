@@ -82,7 +82,7 @@
             <div wire:ignore id='calendar'></div>
         </div>
         <div style="width: 0; height: 0; overflow: visible;">
-            @foreach(collect($calendarVisit)->merge(collect($visits))->unique('id')->values() as $visit)
+            @foreach(collect($calendarVisit)->merge(collect($listVisits->items()))->unique('id')->values() as $visit)
                 <x-modal :modal-id="$visit['id']" :open-button="false">
                     @include('livewire.modal_visit', ['record' => \App\Models\Visit::findOrFail($visit['id']), 'visit_id' => $visit['id']])
                 </x-modal>
@@ -202,7 +202,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                @if(count($visits) > 0 )
+                @if($listVisits->count() > 0 )
 
                     <table class="table-auto w-full border text-center">
                         <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
@@ -242,7 +242,7 @@
                         <tbody class="text-sm divide-y divide-gray-100">
 
 
-                        @forelse($visits as $visit)
+                        @forelse($listVisits as $visit)
 
                             <tr
                                 class="h-16 cursor-pointer"
@@ -387,6 +387,9 @@
                     {{--                        <div class="border text-center p-6 text-lg font-bold bg-gray-50">لا يوجد زيارات حتى الآن</div>--}}
                     {{--                    </div>--}}
                 @endif
+                <div class="mt-4">
+                    {{ $listVisits->links() }}
+                </div>
             </div>
         </div>
     </div>

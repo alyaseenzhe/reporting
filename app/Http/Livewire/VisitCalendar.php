@@ -22,6 +22,10 @@ use Dcblogdev\MsGraph\Facades\MsGraph;
 class VisitCalendar extends Component
 {
     use MsGraphAuthTrait;
+    use WithPagination;
+
+    protected $paginationTheme = 'tailwind';
+
     public $visits;
     public $emps;
 
@@ -251,8 +255,50 @@ class VisitCalendar extends Component
 
     public function render()
     {
-        return view('livewire.visit-calendar')
+        return view('livewire.visit-calendar', [
+            'listVisits' => $this->visitListQuery()->paginate(25),
+        ])
             ->layout('layouts.dashboard');
+    }
+
+    private function visitListQuery()
+    {
+        $user = auth()->user();
+
+        $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])->when(!$this->canViewAll, function ($query) use ($user) {
+            $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
+        });
+
+        if (auth()->check()) {
+            $query->when(
+                VisitEmp::where('user_id', auth()->id())
+                    ->where('type', 'requester')
+                    ->exists(),
+                function ($q) {
+                    $q->whereHas('emps_requester', fn($sub) => $sub->where('user_id', auth()->id()));
+                }
+            );
+        }
+
+        if ($this->user && $this->user !== 'all') {
+            $query->whereHas('emps_requester.user', function ($q) {
+                $q->where('id', 'LIKE', $this->user);
+            });
+        }
+
+        if ($this->branch && $this->branch !== 'all') {
+            $query->where("branch", "LIKE", $this->branch);
+        }
+
+        if ($this->status && $this->status !== 'all') {
+            $query->where("status", "LIKE", $this->status);
+        }
+
+        if ($this->start && $this->end) {
+            $query->whereBetween('start', [$this->start, $this->end]);
+        }
+
+        return $query->orderBy('created_at', 'DESC');
     }
 
     public function addVisit($data)
@@ -478,55 +524,7 @@ class VisitCalendar extends Component
         echo $response;
     }
     public function search() {
-
-        $user = auth()->user();
-        $this->visits = Visit::orderBy('created_at', 'DESC')->get();
-
-
-        $query = Visit::with(['emps_requester.user', 'emps_recipients.user'])->when(!$this->canViewAll, function ($query) use ($user) {
-            $query->whereHas('emps', fn ($q) => $q->where('user_id', $user->id));
-        });
-
-        if (auth()->check()){
-            $query->when(
-                VisitEmp::where('user_id', auth()->id())
-                    ->where('type', 'requester') // adjust if you have type column
-                    ->exists(),
-                function ($q) {
-                    $q->whereHas('emps_requester', fn($sub) => $sub->where('user_id', auth()->id())
-                    );
-                }
-            )
-
-
-                ->orderBy('created_at', 'DESC');
-        }
-
-        if($this->user !== 'all') {
-
-            $query->whereHas('emps_requester.user', function ($q) {
-                $q->where('id', 'LIKE', $this->user);
-            });
-        }
-        if($this->branch !== 'all') {
-            $query->where("branch", "LIKE", $this->branch);
-
-        }
-
-        if($this->status !== 'all') {
-            $query->where("status", "LIKE", $this->status);
-        }
-        // Filter by date range if both start and end exist
-        if ($this->start && $this->end) {
-            $query->whereBetween('start', [$this->start, $this->end]);
-        }
-
-        // Execute query
-        $this->visits = $query->get();
-
-
-//
-
+        $this->resetPage();
         $this->activePanel = 'list';
         $this->dispatchBrowserEvent('activePanel');
 

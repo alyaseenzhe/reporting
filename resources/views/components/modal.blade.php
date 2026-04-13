@@ -21,7 +21,7 @@
         x-cloak
         x-show="openModal"
         x-transition.opacity
-        class="fixed inset-0 flex items-center justify-center z-50"
+        class="fixed inset-0 flex items-start justify-center z-50 overflow-y-auto p-3 sm:p-6"
         style="background: rgba(255, 255, 255, 0.28); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
         @click.self.stop="openModal = false"
     >
@@ -31,10 +31,11 @@
             x-cloak
             x-show="openModal"
             x-transition.scale
-            class="bg-white w-full max-w-4xl rounded-lg shadow-lg p-6 relative"
+            class="bg-white w-full max-w-4xl rounded-lg shadow-lg p-4 sm:p-6 relative"
+            style="max-height: calc(100vh - 2rem); overflow-y: auto; width: min(100%, 64rem);"
             @click.stop
         >
-            <div class="flex justify-between p-5">
+            <div class="flex flex-wrap justify-between gap-3 p-3 sm:p-5">
             <button
                 type="button"
                 @click.stop="openModal = false"
