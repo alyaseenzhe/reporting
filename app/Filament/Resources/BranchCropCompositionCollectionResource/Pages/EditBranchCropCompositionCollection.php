@@ -50,10 +50,11 @@ class EditBranchCropCompositionCollection extends EditRecord
     protected function getActions(): array
     {
         return [
-            $this->getSaveFormAction(),
-//            Actions\DeleteAction::make(),
+            Actions\Action::make('save')
+                ->label(__('filament::resources/pages/edit-record.form.actions.save.label'))
+                ->action('save')
+                ->keyBindings(['mod+s']),
             $this->getCancelFormAction(),
-
         ];
     }
 
