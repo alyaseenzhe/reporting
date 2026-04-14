@@ -630,7 +630,7 @@
                     </div>
                 </div>
 
-                <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center" wire:ignore>
+                <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                     <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm" >
                     <tr style="border: 2px solid black;">
 
@@ -2538,4 +2538,3 @@
 {{--    <span style="text-align: center">تقرير عمليات الأصناف</span>--}}
 {{--@stop--}}
 @include('livewire.report11.script')
-

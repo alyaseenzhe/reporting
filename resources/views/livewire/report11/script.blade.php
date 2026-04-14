@@ -144,12 +144,36 @@
         };
 
         var selected_cat_type = null;
+
+        function setReportButtonLoading() {
+            $("#gen-report")
+                .prop('disabled', true)
+                .html('<b>الرجاء الإنتظار..</b>');
+        }
+
+        function resetReportButton() {
+            $("#gen-report")
+                .prop('disabled', false)
+                .html('<b>إنشاء تقرير</b>');
+        }
+
+        function closeReportLoadingAlert() {
+            if (typeof Swal !== 'undefined' && Swal.close) {
+                Swal.close();
+            } else if (typeof swal !== 'undefined' && swal.close) {
+                swal.close();
+            }
+        }
+
         Livewire.on('show-container', () => {
-            $("#gen-report").html('<b>إنشاء تقرير</b>');
+            resetReportButton();
 
         });
 
         Livewire.on('finished', () => {
+            resetReportButton();
+            closeReportLoadingAlert();
+
             console.log('selected' + selected_cat_type);
             $("#cat_type").select2('val', selected_cat_type);
             old_search_type = $("input[name='search_type']:checked").val();
@@ -218,7 +242,6 @@
 
             // $("#cat_type option[value='"+selected_cat_type+"']").prop('selected', true);
             $('.cost').addClass('hide');
-            swal.close();
 
 
             ///////////////////////////
@@ -238,6 +261,20 @@
             }
 
             //////////////////////////////////////////////////
+        });
+
+        document.addEventListener('livewire:load', function () {
+            if (typeof Livewire !== 'undefined' && Livewire.hook) {
+                Livewire.hook('message.processed', () => {
+                    resetReportButton();
+                    closeReportLoadingAlert();
+                });
+
+                Livewire.hook('message.failed', () => {
+                    resetReportButton();
+                    closeReportLoadingAlert();
+                });
+            }
         });
 
         $(document).ready(function () {
@@ -824,7 +861,7 @@
                 $("#margin-percentage").prop('checked', false);
 
 
-                $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                setReportButtonLoading();
 
                 // Swal.fire({
                 //     title: 'الرجاء الإنتظار',
@@ -848,7 +885,7 @@
                             icon: "error",
                             confirmButtonText: "موافق",
                         });
-                        $("#gen-report").html('<b>إنشاء تقرير</b>');
+                        resetReportButton();
                     }
                     else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                         Swal.fire({
@@ -857,10 +894,10 @@
                             icon: "error",
                             confirmButtonText: "موافق",
                         });
-                        $("#gen-report").html('<b>إنشاء تقرير</b>');
+                        resetReportButton();
                     }
                     else {
-                        $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                        setReportButtonLoading();
 
                         Swal.fire({
                             title: 'الرجاء الإنتظار',
@@ -889,7 +926,7 @@
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
-                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                            resetReportButton();
                         }
                         else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                             Swal.fire({
@@ -898,10 +935,10 @@
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
-                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                            resetReportButton();
                         }
                         else {
-                            $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                            setReportButtonLoading();
 
                             Swal.fire({
                                 title: 'الرجاء الإنتظار',
@@ -926,7 +963,7 @@
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
-                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                            resetReportButton();
                         }
                         else if((new Date(start_date).getFullYear()) < 2023  || (new Date(end_date).getFullYear()) < 2023) {
                             Swal.fire({
@@ -935,10 +972,10 @@
                                 icon: "error",
                                 confirmButtonText: "موافق",
                             });
-                            $("#gen-report").html('<b>إنشاء تقرير</b>');
+                            resetReportButton();
                         }
                         else {
-                            $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
+                            setReportButtonLoading();
 
                             Swal.fire({
                                 title: 'الرجاء الإنتظار',
@@ -961,8 +998,11 @@
                             icon: "error",
                             confirmButtonText: "موافق",
                         });
-                        $("#gen-report").html('<b>إنشاء تقرير</b>');
+                        resetReportButton();
                     }
+                }
+                else {
+                    resetReportButton();
                 }
             });
 
