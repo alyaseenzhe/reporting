@@ -51,7 +51,7 @@ class EditBranchCropCompositionCollection extends EditRecord
     {
         return [
             $this->getSaveFormAction(),
-            Actions\DeleteAction::make(),
+//            Actions\DeleteAction::make(),
             $this->getCancelFormAction(),
 
         ];
