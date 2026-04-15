@@ -127,9 +127,11 @@
             $current_month = 0;
             $previous_month = 0;
             $year_total = 0;
+            $previous_year_total = 0;
 
         @endphp
 
+{{--    @dd([$current_year, $previous_year])--}}
         {{-- table 2 (details) --}}
         <div id="tbl2-container" class="tbl-fixed overflow-x-auto">
             <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
@@ -152,8 +154,16 @@
                     <th style="padding: 10px; border-left: 2px solid black;">
                         <div class="text-xs">نمو %</div>
                     </th>
+{{--                    <th style="padding: 10px;">--}}
+{{--                        <div class="text-xs">مبيعات سنة</div>--}}
+{{--                    </th>--}}
+{{--                    <th style="padding: 10px;">--}}
+{{--                        <div class="text-xs">نمو سنة({{$current_year}})</div>--}}
+{{--                    </th>--}}
                     <th style="padding: 10px;">
-                        <div class="text-xs">مبيعات سنة</div>
+{{--                        <div class="text-xs">نمو سنة % <br> من ({{$previous_year}}  {{$end_date}} الى  )</div>--}}
+                        <div class="text-xs">نمو سنة %  </div>
+
                     </th>
                 </tr>
                 </thead>
@@ -195,11 +205,19 @@
                             <td style="color: #5f9ea0; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                                 {{ number_format(floatval($record["PreviousMonth_total"]), 2) }}
                             </td>
-                            <td  style=" @if( floatval($record["PreviousMonth_total"]) != 0 && number_format(((floatval($record["CurrentMonth_total"])-floatval($record["PreviousMonth_total"]))/floatval($record["PreviousMonth_total"]))*100, 2)< 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
+                            <td  style="  @if( floatval($record["PreviousMonth_total"]) != 0 && number_format(((floatval($record["CurrentMonth_total"])-floatval($record["PreviousMonth_total"]))/floatval($record["PreviousMonth_total"]))*100, 2)< 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                                 {{ floatval($record["PreviousMonth_total"]) != 0 ? number_format(((floatval($record["CurrentMonth_total"])-floatval($record["PreviousMonth_total"]))/floatval($record["PreviousMonth_total"]))*100, 2) : 0 }}
                             </td>
-                            <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
-                                {{ number_format(floatval($record["CurrentYear_total"]), 2) }}
+{{--                            <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">--}}
+{{--                                {{ number_format(floatval($record["CurrentYear_total"]), 2) }}--}}
+{{--                            </td>--}}
+{{--                            <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">--}}
+{{--                                {{ number_format(floatval($record["PreviousYear_total"]), 2) }}--}}
+{{--                            </td>--}}
+                            <td  style="  @if($record["CurrentYear_total"] - $record["PreviousYear_total"] < 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
+
+                            {{$record["PreviousYear_total"] != 0 ? number_format( ($record["CurrentYear_total"] - $record["PreviousYear_total"])/ $record["PreviousYear_total"] *100, 2) : 0 }}
+                                @php $previous_year_total += floatval($record["PreviousYear_total"]) @endphp
                             </td>
                         </tr>
                     @endif
@@ -222,9 +240,20 @@
                         <td style=" @if(floatval($record["PreviousMonth"]) != 0  && number_format(((floatval($record["CurrentMonth"])-floatval($record["PreviousMonth"]))/floatval($record["PreviousMonth"]))*100, 2) <0) color: #c71585; @else color:darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                             {{ floatval($record["PreviousMonth"]) != 0 ? number_format(((floatval($record["CurrentMonth"])-floatval($record["PreviousMonth"]))/floatval($record["PreviousMonth"]))*100, 2) : 0 }}
                         </td>
-                        <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
-                            {{ number_format(floatval($record["CurrentYear"]), 2) }}
+{{--                        <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">--}}
+{{--                            {{ number_format(floatval($record["CurrentYear"]), 2) }}--}}
+{{--                            @php $year_total += floatval($record["CurrentYear"]) @endphp--}}
+
+{{--                        </td>--}}
+{{--                        <td style="color: #00008b; padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">--}}
+{{--                            {{ number_format(floatval($record["PreviousYear"]), 2) }}--}}
+
+{{--                        </td>--}}
+                        <td  style="  @if($record["CurrentYear"] - $record["PreviousYear"] < 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
                             @php $year_total += floatval($record["CurrentYear"]) @endphp
+                        {{ $record["PreviousYear"] != 0 ? number_format(($record["CurrentYear"] - $record["PreviousYear"]) / $record["PreviousYear"]* 100, 2): 0 }}
+
+
                         </td>
 
                     </tr>
@@ -235,8 +264,16 @@
                     <td colspan="2" style="padding: 10px;border-left: 2px solid black; color: black">المجموع</td>
                     <td style="padding: 10px;border-left: 2px solid black; color: black">{{ number_format($current_month , 2) }}</td>
                     <td style="padding: 10px;border-left: 2px solid black; color: black">{{ number_format($previous_month , 2) }}</td>
-                    <td style="padding: 10px;border-left: 2px solid black; color: black">{{ $previous_month != 0 ? number_format((($current_month-$previous_month)/$previous_month)*100 , 2) : 0 }}</td>
-                    <td style="padding: 10px;border-left: 2px solid black; color: black">{{ number_format($year_total , 2) }}</td>
+                    <td  style=" @if($current_month-$previous_month < 0) color: #c71585; @else color: darkgreen; @endif padding: 10px;border-left: 2px solid black; ">{{ $previous_month != 0 ? number_format((($current_month-$previous_month)/$previous_month)*100 , 2) : 0 }}</td>
+{{--                    <td style="padding: 10px;border-left: 2px solid black; color: black">{{ number_format($year_total , 2) }}</td>--}}
+{{--                    <td>{{$previous_year_total}}</td>--}}
+                    <td  style="  @if($year_total - $previous_year_total < 0) color: #c71585; @else color: darkgreen; @endif padding: 10px; font-weight: bold; border-left: 2px solid black;" class="whitespace-nowrap">
+
+
+                    {{$year_total != 0 ?  number_format(($year_total - $previous_year_total) / $previous_year_total *100, 2) : 0 }}
+{{--                        <p> current year: {{$year_total}}</p>--}}
+{{--                        <p> previous year: {{$previous_year_total}}</p>--}}
+                    </td>
                 </tr>
                 </tfoot>
             </table>

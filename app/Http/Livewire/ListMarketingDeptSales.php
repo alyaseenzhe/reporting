@@ -9,14 +9,47 @@ use Livewire\Component;
 
 class ListMarketingDeptSales extends Component
 {
+    private const REPORT_PERMISSION = 'list.marketing-depts-sales';
+
+    private const MARKETING_GROUPS = [
+        'QryGroup30',
+        'QryGroup31',
+        'QryGroup32',
+        'QryGroup40',
+        'QryGroup41',
+        'QryGroup50',
+        'QryGroup51',
+        'QryGroup52',
+        'QryGroup53',
+    ];
+
+    private const BRANCH_DEPARTMENTS = [
+        '2' => "'0001'",
+        '3' => "'0101'",
+        '10' => "'0102'",
+        '7' => "'0103'",
+        '13' => "'0104'",
+        '4' => "'0105'",
+        '6' => "'0106'",
+        '5' => "'0107'",
+        '12' => "'0108'",
+        '11' => "'0109'",
+        '9' => "'0110'",
+        '8' => "'0111'",
+        '505' => "'0112'",
+        '15' => "'0201'",
+        '500' => "'0202'",
+        '504' => "'0203'",
+    ];
 
     public $start_date;
     public $end_date;
     public $branches = [];
-
     public $sap_results = [];
-
     public $show_msg = false;
+    public   $current_year;
+    public   $previous_year;
+    public $percentage;
 
     protected $listeners = ['create-report' => 'generateReport'];
 
@@ -26,30 +59,39 @@ class ListMarketingDeptSales extends Component
     ];
 
     protected $messages = [
-        'start_date.required' => "مطلوب",
-        'start_date.after_or_equal' => "يجب ان يكون التاريخ اعلى او يساوي 2024-01-01",
-        'end_date.required' => "مطلوب",
-        'end_date.after_or_equal' => "يجب ان يكون التاريخ اعلى او يساوي 2024-01-01",
+        'start_date.required' => 'مطلوب',
+        'start_date.after_or_equal' => 'يجب ان يكون التاريخ اعلى او يساوي 2024-01-01',
+        'end_date.required' => 'مطلوب',
+        'end_date.after_or_equal' => 'يجب ان يكون التاريخ اعلى او يساوي 2024-01-01',
     ];
 
-    public function booted() {
+    public function booted()
+    {
+        $user = Auth::user();
 
-        if (Auth::user()->is_active == '0'){
+        if ($user->is_active == '0') {
             return redirect()->route('non-active-user');
         }
 
-        if ((Auth::user()->user_group && in_array('list.marketing-depts-sales', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a'){
+        if ($user->role == 'a') {
             return;
-        } else {
-            return redirect()->route('dashboard');
         }
+
+        $reportTypes = $user->user_group
+            ? json_decode($user->user_group->report_type)
+            : [];
+
+        if (in_array(self::REPORT_PERMISSION, $reportTypes ?: [])) {
+            return;
+        }
+
+        return redirect()->route('dashboard');
     }
 
-    public function mount() {
-
-        $query = User::where('id', Auth::id())->first();
-        $this->branches = json_decode($query->branches);
-//        dd($this->branches);
+    public function mount()
+    {
+        $user = User::where('id', Auth::id())->first();
+        $this->branches = json_decode($user->branches);
 
     }
 
@@ -59,801 +101,233 @@ class ListMarketingDeptSales extends Component
             ->layout('layouts.dashboard');
     }
 
-    public function generateReport($start_date, $end_date, $depts) {
-//        dd($depts);
+    public function calculatePercentage($previous, $current){
+        $this->percentage =  number_format(($current / $previous *100) -1, 2);
+        return   $this->percentage ;
+    }
+
+    public function generateReport($start_date, $end_date, $depts)
+    {
 
         set_time_limit(2000);
 
-//        dd($this->start_date);
-
-//        $this->validate();
         $this->emit('show-container');
-
         $this->sapQuery($start_date, $end_date, $depts);
+
 
         $this->show_msg = true;
         $this->emit('finished');
     }
 
-    public function sapQuery($start_date, $end_date, $depts) {
-
-        $prev_month_start = Carbon::parse($start_date)->addYears(-1)->format('Y-m-d');
-        $prev_month_end = Carbon::parse($end_date)->addYears(-1)->format('Y-m-d');
-        $prev_month_start_plus_month = Carbon::parse($start_date)->addYears(-1)->addMonth()->format('Y-m-d');
+    public function sapQuery($start_date, $end_date, $depts)
+    {
+        $dateRange = $this->buildDateRange($start_date, $end_date);
+        $departments = $this->resolveDepartments($depts);
 
         $this->sap_results = [];
 
-//        dd($depts);
-        if (in_array("dept_all", $depts)) {
+        $conn = $this->connectToSap();
 
-            $customer_depts = ['2' => "'0001'", '3' => "'0101'", '10' => "'0102'", '7' => "'0103'", '13' => "'0104'", '4' => "'0105'" , '6' => "'0106'", '5' => "'0107'", '12' => "'0108'", '11' => "'0109'", '9' => "'0110'", '8' => "'0111'", '505' => "'0112'", '15' => "'0201'", '500' => "'0202'", '504' => "'0203'"];
-            $customer_codes = array_intersect_key($customer_depts, array_flip($this->branches));
-
-            $depts = $customer_codes;
-//            dd($depts);
+        if (! $conn) {
+            return;
         }
-//        dd($customer_codes);
 
-        if (! extension_loaded('odbc'))
-        {
+        $sql =   $this->buildMarketingDepartmentSalesSql($dateRange, $departments);
+
+        $result = odbc_exec($conn, $sql );
+//        dd($sql);
+
+        if (! $result) {
+            echo "Error while sending SQL statement to the database server.\n";
+            echo 'ODBC error code: ' . odbc_error() . '. Message: ' . odbc_errormsg();
+
+            odbc_close($conn);
+
+            return;
+        }
+
+        while ($row = odbc_fetch_array($result)) {
+            $this->sap_results[] = $row;
+        }
+
+        odbc_close($conn);
+    }
+
+    private function buildDateRange($startDate, $endDate)
+    {
+        $this->current_year  =  Carbon::parse( $endDate)->addYears(-1)->addDay()->format('Y-m-d');
+        $this->previous_year = Carbon::parse($this->current_year)->addYears(-1)->format('Y-m-d');
+
+        return [
+            'start' => $startDate,
+            'end' => $endDate,
+            'previous_start' => Carbon::parse($startDate)->addYears(-1)->format('Y-m-d'),
+            'previous_end' => Carbon::parse($endDate)->addYears(-1)->format('Y-m-d'),
+//            'current_year' => Carbon::parse($startDate)->addYears(-1)->addMonth()->format('Y-m-d'),
+            'current_year' => $this->current_year,
+            'previous_year' => $this->previous_year,
+            'previous_year_end' => Carbon::parse($this->current_year)->addDays(-1)->format('Y-m-d')
+        ];
+    }
+
+    private function resolveDepartments($departments)
+    {
+        $departments = (array) $departments;
+
+        if (! in_array('dept_all', $departments)) {
+            return $departments;
+        }
+
+        return array_intersect_key(
+            self::BRANCH_DEPARTMENTS,
+            array_flip($this->branches ?: [])
+        );
+    }
+
+    private function connectToSap()
+    {
+        if (! extension_loaded('odbc')) {
             die('ODBC extension not enabled / loaded');
         }
 
         $driver = env('DB_CONNECTION_FOURTH');
-
-// Host
-// Note: I am hosting it on the Amazon AWS, so my host looks like this. Put whatever your system administrator gave you
         $host = env('DB_HOST_FOURTH');
-
-// Default name of your hana instance
-        $db_name = env('DB_DATABASE_FOURTH');
+        $dbName = env('DB_DATABASE_FOURTH');
         $username = env('DB_USERNAME_FOURTH');
         $password = env('DB_PASSWORD_FOURTH');
 
-// Try to connect
-        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+        $conn = odbc_connect(
+            "Driver=$driver;ServerNode=$host;Database=$dbName;char_as_utf8=true;",
+            $username,
+            $password,
+            SQL_CUR_USE_ODBC
+        );
 
-        if (!$conn)
-        {
-            // Try to get a meaningful error if the connection fails
-            echo "Connection failed.\n";
-            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-
-
+        if ($conn) {
+            return $conn;
         }
-        else
-        {
-            $sql = 'SELECT * FROM (
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber",  \'QryGroup30\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
 
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+        echo "Connection failed.\n";
+        echo 'ODBC error code: ' . odbc_error() . '. Message: ' . odbc_errormsg();
 
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
+        return false;
+    }
 
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup30" = \'Y\'
+    private function buildMarketingDepartmentSalesSql(array $dateRange, array $departments)
+    {
+        $departmentSql = implode(', ', $departments);
+        $branchRowsSql = $this->buildMarketingGroupUnion($dateRange, null, true);
+        $totalRowsSql = $this->buildMarketingGroupUnion($dateRange, $departmentSql, false);
 
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup31\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup31" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup32\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup32" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup40\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup40" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup41\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup41" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup50\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup50" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup51\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup51" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup52\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup52" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
-
-UNION ALL
-
-SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", \'QryGroup53\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup53" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "InvType" IS NULL
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
+        return <<<SQL
+SELECT * FROM (
+{$branchRowsSql}
 ) tbl1
 LEFT JOIN (
 ----------------------------------
 
-SELECT \'QryGroup30\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth_total",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth_total",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear_total" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup30" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup31\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup31" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup32\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup32" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup40\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup40" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup41\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup41" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup50\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup50" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup51\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup51" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup52\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup52" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
-
-UNION ALL
-
-SELECT \'QryGroup53\' as "mrkt_type", SUM(CASE WHEN "DocumentDate" >= \''.$start_date.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$prev_month_end.'\' THEN "NetSalesAmountLC" END) as "PreviousMonth",
-SUM(CASE WHEN "DocumentDate" >= \''.$prev_month_start_plus_month.'\' AND "DocumentDate" <= \''.$end_date.'\' THEN "NetSalesAmountLC" END) as "CurrentYear" FROM (
-
-SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0 INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry" LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry" AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203 LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry" WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203 GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
-Select "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
-SUM("GrossProfitSC") AS "GrossProfitSC",
-SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
-SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
-SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
-SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
-
-FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "DocumentDate" >= \''.$prev_month_start.'\' AND "DocumentDate" <= \''.$end_date.'\'
-AND ("DocumentTypeCode" != \'17\' AND "DocumentTypeCode" != \'15\')
-
-GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
-"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
-"CancellationStatus", "DocumentDate",
-"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
-"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
-"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
-RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
-ON T1."ItemCode" = T2."ItemCode"
-WHERE T2."QryGroup53" = \'Y\'
-
-
-)
-WHERE "BranchCode" IS NOT NULL
-AND "BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-AND "InvType" IS NULL
+{$totalRowsSql}
 
 ----------------------------------
 ) tbl2
 ON tbl1."mrkt_type" = tbl2."mrkt_type"
 
-WHERE tbl1."BranchRegistrationNumber" IN ('. implode(', ', $depts) .')
-ORDER BY tbl1."mrkt_type", tbl1."BranchCode", tbl1."BranchRegistrationNumber"';
+WHERE tbl1."BranchRegistrationNumber" IN ({$departmentSql})
+ORDER BY tbl1."mrkt_type", tbl1."BranchCode", tbl1."BranchRegistrationNumber"
+SQL;
+    }
 
-//    dd($sql);
+    private function buildMarketingGroupUnion(array $dateRange, $departmentSql, $includeBranchColumns)
+    {
+//        dd($dateRange['current_year']);
+        $selects = [];
 
-
-
-
-            $result = odbc_exec($conn, $sql);
-
-            if (!$result)
-            {
-                echo "Error while sending SQL statement to the database server.\n";
-                echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
-            }
-            else
-            {
-
-                while ($row = odbc_fetch_array($result)) {
-                    array_push($this->sap_results, $row);
-//                    array_push($this->emp_codes, $row['OldSlpCode']);
-                }
-
-            }
-            odbc_close($conn);
+        foreach (self::MARKETING_GROUPS as $group) {
+            $selects[] = $this->buildMarketingGroupSelect(
+                $group,
+                $dateRange,
+                $departmentSql,
+                $includeBranchColumns
+            );
         }
+
+        return implode("\n\nUNION ALL\n\n", $selects);
+    }
+
+    private function buildMarketingGroupSelect($group, array $dateRange, $departmentSql, $includeBranchColumns)
+    {
+        $selectColumns = $includeBranchColumns
+            ? "\"BranchName\", \"BranchCode\", \"BranchRegistrationNumber\", '{$group}' as \"mrkt_type\""
+            : "'{$group}' as \"mrkt_type\"";
+
+        $currentAlias = $includeBranchColumns ? 'CurrentMonth' : 'CurrentMonth_total';
+        $previousAlias = $includeBranchColumns ? 'PreviousMonth' : 'PreviousMonth_total';
+        $yearAlias = $includeBranchColumns ? 'CurrentYear' : 'CurrentYear_total';
+        $previousYearAlias = $includeBranchColumns ? 'PreviousYear' : 'PreviousYear_total';
+        $branchFilter = $departmentSql ? "\nAND \"BranchRegistrationNumber\" IN ({$departmentSql})" : '';
+        $groupBy = $includeBranchColumns
+            ? "\nGROUP BY \"BranchName\", \"BranchCode\", \"BranchRegistrationNumber\""
+            : '';
+
+        return <<<SQL
+SELECT {$selectColumns}, SUM(CASE WHEN "DocumentDate" >= '{$dateRange['start']}'
+                                AND "DocumentDate" <= '{$dateRange['end']}'
+    THEN "NetSalesAmountLC" END) as "{$currentAlias}",
+SUM(CASE WHEN "DocumentDate" >= '{$dateRange['previous_start']}'
+                  AND "DocumentDate" <= '{$dateRange['previous_end']}'
+    THEN "NetSalesAmountLC" END) as "{$previousAlias}",
+SUM(CASE WHEN "DocumentDate" >= '{$dateRange['current_year']}'
+                  AND "DocumentDate" <= '{$dateRange['end']}'
+    THEN "NetSalesAmountLC" END) as "{$yearAlias}",
+SUM(CASE WHEN "DocumentDate" >= '{$dateRange['previous_year']}'
+                  AND "DocumentDate" <= '{$dateRange['previous_year_end']}'
+    THEN "NetSalesAmountLC" END) as "{$previousYearAlias}"
+FROM (
+
+{$this->buildSalesAnalysisSubquery($group, $dateRange)}
+)
+WHERE "BranchCode" IS NOT NULL{$branchFilter}
+AND "InvType" IS NULL{$groupBy}
+SQL;
+    }
+
+    private function buildSalesAnalysisSubquery($group, array $dateRange)
+    {
+        return <<<SQL
+SELECT (SELECT TBL0."DocNum" FROM AL_YASEEN_AGRI_PLIVE.ODPI TBL0
+    INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TBL1 ON TBL0."DocEntry" = TBL1."DocEntry"
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TBL2 ON TBL2."BaseEntry" = TBL1."DocEntry"
+                                                    AND TBL2."BaseLine" = TBL1."LineNum" AND TBL2."BaseType" = 203
+    LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TBL3 ON TBL2."DocEntry" = TBL3."DocEntry"
+                             WHERE TBL3."DocNum" = T1."DocumentNumber" AND TBL2."BaseType" = 203
+                             GROUP BY TBL0."DocNum") as "InvType",T1.* FROM (
+Select "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName",
+SUM("GrossProfitSC") AS "GrossProfitSC",
+SUM("GrossProfitBaseAmountLC") AS "GrossProfitBaseAmountLC", SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+SUM("NetSalesAmountSC") AS "NetSalesAmountSC", SUM("GrossProfitMarginByBaseAmount") AS "GrossProfitMarginByBaseAmount",
+SUM("GrossProfitLC") AS "GrossProfitLC", SUM("QuantityInInventoryUoM") AS "QuantityInInventoryUoM",
+SUM("GrossProfitMarginBySalesAmount") AS "GrossProfitMarginBySalesAmount"
+
+FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+--WHERE "DocumentDate" >= '{$dateRange['previous_start']}' AND "DocumentDate" <= '{$dateRange['end']}'
+WHERE "DocumentDate" >= '{$dateRange['previous_year']}' AND "DocumentDate" <= '{$dateRange['end']}'
+AND ("DocumentTypeCode" != '17' AND "DocumentTypeCode" != '15')
+
+GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber",
+"BusinessPartnerNameAndCode", "BusinessPartnerType", "BusinessPartnerGroupName","BusinessPartnerName", "BusinessPartnerCode",
+"CancellationStatus", "DocumentDate",
+"DocumentNumber", "DocumentTypeCode", "DocumentTypeShortName", "ItemDescriptionAndCode",
+"ItemGroup", "DefaultPreferredVendor", "ItemCode", "ItemDescription",
+"SalesEmployeeOrBuyerNumber", "SalesEmployeeOrBuyerName") T1
+RIGHT JOIN AL_YASEEN_AGRI_PLIVE.OITM T2
+ON T1."ItemCode" = T2."ItemCode"
+WHERE T2."{$group}" = 'Y'
+SQL;
+
     }
 }
