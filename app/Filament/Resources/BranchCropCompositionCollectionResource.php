@@ -56,21 +56,8 @@ class BranchCropCompositionCollectionResource extends Resource
         return $form->schema([
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
-                    Grid::make(2)->schema([
-                        DatePicker::make('updated_at')
-                            ->label('تاريخ جمع البيانات')
-                            ->hiddenOn('create')
-                            ->disabled(),
-                          //  ->required(),
+                    Grid::make(4)->schema([
 
-                        TextInput::make('updated_by')
-                            ->label('آخر تعديل بواسطة')
-                            ->hiddenOn('create')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->formatStateUsing(function ($state, ?Model $record): string {
-                                return (string) optional(optional($record)->userUpdate)->name;
-                            }),
                           //  ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
@@ -89,6 +76,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
                         Select::make('customer_code')
                             ->label('العميل')
+                            ->columnSpan(2)
                             ->searchable()
                             ->required()
                             ->unique(ignoreRecord: true)
@@ -140,7 +128,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->disabled()
                             ->dehydrated()
 //                            ->required()
-                            ->helperText('يتم تحديد المهندس المسؤول تلقائيا من العميل المختار في SAP.')
+                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
                             ->formatStateUsing(fn ($state): string => (string) $state),
                         TextInput::make('farms_count')
                             ->label('عدد المزارع الخاصة بالعميل')
@@ -154,30 +142,44 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->numeric()
                             ->maxValue(9999999999.99)
                             ->rules(['numeric', 'min:0.01']),
+
+                        DatePicker::make('updated_at')
+                            ->label('تاريخ جمع البيانات')
+                            ->hiddenOn('create')
+                            ->disabled(),
+                        //  ->required(),
+
+                        TextInput::make('updated_by')
+                            ->label('آخر تعديل بواسطة')
+                            ->hiddenOn('create')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(function ($state, ?Model $record): string {
+                                return (string) optional(optional($record)->userUpdate)->name;
+                            }),
                     ]),
                 ]),
             Section::make('أنواع الزراعة')
                 ->schema([
                     Repeater::make('cultivation_types')
                         ->label('تفاصيل أنواع الزراعة')
+                        ->view('filament.forms.components.compact-inline-repeater')
+                        ->disableItemMovement()
                         ->minItems(1)
                         ->defaultItems(1)
                         ->schema([
-                            Grid::make(4)->schema([
-
-
-                                Select::make('agri_type_id')
+                            Select::make('agri_type_id')
                                     ->label('نوع الزراعة')
                                     ->required()
                                     ->searchable()
                                     ->preload()
+                                    ->columnSpan(['default' => 1, 'md' => 3])
                                     ->options(function (): array {
                                         return AgriType::query()
                                             ->orderBy('name')
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
-                                    ->columnSpan(2)
                                     ->reactive()
                                     ->afterStateUpdated(function (callable $set) {
                                         $set('agri_detail_id', null);
@@ -188,6 +190,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->reactive()
+                                    ->columnSpan(['default' => 1, 'md' => 3])
                                     ->options(function (callable $get): array {
                                         $currentAgriDetailId = $get('agri_detail_id');
                                         $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
@@ -216,13 +219,12 @@ class BranchCropCompositionCollectionResource extends Resource
                                         }
 
                                         return ! optional(AgriType::find($agriDetailId))->has_details;
-                                    })
-                                    ->columnSpan(2),
-
+                                    }),
                                 TextInput::make('unit_count')
                                     ->label('عدد الوحدات')
                                     ->numeric()
                                     ->reactive()
+                                    ->columnSpan(['default' => 1, 'md' => 2])
                                     ->hidden(function (callable $get): bool {
                                         $agriTypeId = $get('agri_type_id');
 
@@ -232,23 +234,23 @@ class BranchCropCompositionCollectionResource extends Resource
 
                                         return ! optional(AgriType::find($agriTypeId))->has_units;
                                     })
-                                    ->rules(['nullable', 'numeric', 'min:0'])
-                                    ->columnSpan(2),
+                                    ->rules(['nullable', 'numeric', 'min:0']),
                                 TextInput::make('total_area_hectares')
                                     ->label('مساحة اجمالية (هـ)')
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
+                                    ->columnSpan(['default' => 1, 'md' => 3])
                                     ->rules(['numeric', 'min:0.01'])
-                                    ->columnSpan(2),
 
-                            ]),
                         ]),
                 ]),
             Section::make('التركيب المحصولي')
                 ->schema([
                     Repeater::make('crop_composition_items')
                         ->label('صفوف التركيب المحصولي')
+                        ->view('filament.forms.components.compact-inline-repeater')
+                        ->disableItemMovement()
                         ->minItems(1)
                         ->defaultItems(1)
                         ->schema([
@@ -311,6 +313,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 ]),
             Section::make('الملاحظات الختامية')
                 ->schema([
+                    Grid::make(3)->schema([
                     Textarea::make('opportunities')
                         ->label('الفرص مع المزارع')
                         ->rows(4),
@@ -320,6 +323,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     Textarea::make('notes')
                         ->label('ملاحظات')
                         ->rows(4),
+                        ]),
                 ]),
         ]);
     }
