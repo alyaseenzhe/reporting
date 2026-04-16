@@ -24,6 +24,14 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         ];
     }
 
+    protected function getFormActions(): array
+    {
+        return array_merge(
+            [$this->getCreateFormAction()],
+            static::canCreateAnother() ? [$this->getCreateAnotherFormAction()] : [],
+        );
+    }
+
     /**
      * Persist the parent and child rows in one transaction.
      */

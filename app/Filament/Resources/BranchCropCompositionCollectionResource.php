@@ -76,7 +76,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
                         Select::make('customer_code')
                             ->label('العميل')
-                            ->columnSpan(2)
+                            ->columnSpan(['default' => 1, 'md' =>2])
                             ->searchable()
                             ->required()
                             ->unique(ignoreRecord: true)
@@ -254,7 +254,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->minItems(1)
                         ->defaultItems(1)
                         ->schema([
-                            Grid::make(4)->schema([
+//                            Grid::make(4)->schema([
                                 Select::make('crop_catalog_category_id')
                                     ->label('طبيعة المحصول')
                                     ->required()
@@ -265,13 +265,16 @@ class BranchCropCompositionCollectionResource extends Resource
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
+                                    ->columnSpan(['default' => 4, 'md' => 3])
                                     ->afterStateUpdated(function (callable $set) {
                                         $set('crop_catalog_item_id', null);
+
                                     }),
                                 Select::make('crop_catalog_item_id')
                                     ->label('المحصول')
                                     ->required()
                                     ->searchable()
+                                    ->columnSpan(['default' => 4, 'md' => 3])
                                     ->options(function (callable $get): array {
                                         $categoryId = $get('crop_catalog_category_id');
 
@@ -289,6 +292,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('عدد العروات/سنة')
                                     ->required()
                                     ->numeric()
+                                    ->columnSpan(['default' => 4, 'md' => 3])
                                     ->rules(['integer', 'min:1']),
 
                                 TextInput::make('total_area_hectares')
@@ -296,6 +300,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
+                                    ->columnSpan(['default' => 4, 'md' => 3])
                                     ->rules(['numeric', 'min:0.01']),
                                 Checkbox::make('show_tree_count')
                                     ->label('إضافة عدد الأشجار')
@@ -307,8 +312,9 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->numeric()
                                     ->maxValue(9999999999)
                                     ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
+                                    ->columnSpan(['default' => 4, 'md' => 3])
                                     ->rules(['nullable', 'integer', 'min:0']),
-                            ]),
+//                            ]),
                         ]),
                 ]),
             Section::make('الملاحظات الختامية')
