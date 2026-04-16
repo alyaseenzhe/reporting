@@ -15,21 +15,31 @@ class CreateBranchCropCompositionCollection extends CreateRecord
 
     protected function getActions(): array
     {
-        return [
+        return array_merge([
+
+            Actions\Action::make('create')
+                ->label(__('filament::resources/pages/create-record.form.actions.create.label'))
+                ->action('create')
+                ->keyBindings(['mod+s']),
+        ], static::canCreateAnother() ? [
+            Actions\Action::make('createAnother')
+                ->label(__('filament::resources/pages/create-record.form.actions.create_another.label'))
+                ->action('createAnother')
+                ->keyBindings(['mod+shift+s'])
+                ->color('secondary'),
+
             Actions\Action::make('back')
                 ->label('عودة')
                 ->url(static::getResource()::getUrl('index'))
                 ->color('secondary')
                 ->icon('heroicon-o-arrow-left'),
-        ];
+        ] : []);
+
     }
 
     protected function getFormActions(): array
     {
-        return array_merge(
-            [$this->getCreateFormAction()],
-            static::canCreateAnother() ? [$this->getCreateAnotherFormAction()] : [],
-        );
+        return [];
     }
 
     /**
