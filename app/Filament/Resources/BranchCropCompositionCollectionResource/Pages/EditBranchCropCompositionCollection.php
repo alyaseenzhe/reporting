@@ -62,4 +62,17 @@ class EditBranchCropCompositionCollection extends EditRecord
     {
         return [];
     }
+
+    protected function getCancelFormAction(): Actions\Action
+    {
+        return Actions\Action::make('cancel')
+            ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->color('secondary')
+            ->requiresConfirmation()
+            ->modalHeading(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->modalButton(__('filament-support::actions/modal.actions.confirm.label'))
+            ->action(function (): void {
+                $this->redirect($this->previousUrl ?? static::getResource()::getUrl());
+            });
+    }
 }

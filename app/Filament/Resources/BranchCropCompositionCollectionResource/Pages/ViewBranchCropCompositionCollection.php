@@ -24,9 +24,10 @@ class ViewBranchCropCompositionCollection extends ViewRecord
 
             Actions\Action::make('cancel')
 //                ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
-                ->label('رجوع')
+                ->label('عودة')
                 ->url(static::getResource()::getUrl('index'))
-                ->color('secondary'),
+                ->color('secondary')
+                ->icon('heroicon-o-arrow-left'),
         ];
     }
 }
