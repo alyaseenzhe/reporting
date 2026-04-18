@@ -68,6 +68,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->required()
                             ->searchable()
                             ->reactive()
+                            ->default(fn (): ?int => static::getSingleAuthorizedBranchId())
                             ->options(function () {
                                 return static::getAuthorizedBranchesQuery()
                                     ->orderBy('name')
@@ -708,6 +709,19 @@ class BranchCropCompositionCollectionResource extends Resource
     protected static function getAuthorizedBranchesQuery(): Builder
     {
         return Branch::query()->whereIn('code', static::getAuthorizedBranchCodes());
+    }
+
+    protected static function getSingleAuthorizedBranchId(): ?int
+    {
+        $branchIds = static::getAuthorizedBranchesQuery()
+            ->limit(2)
+            ->pluck('id');
+
+        if ($branchIds->count() !== 1) {
+            return null;
+        }
+
+        return (int) $branchIds->first();
     }
 
     protected static function canAccessRecordBranch(Model $record): bool
