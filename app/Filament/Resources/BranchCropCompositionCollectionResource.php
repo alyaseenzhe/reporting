@@ -96,16 +96,20 @@ class BranchCropCompositionCollectionResource extends Resource
                                     return [];
                                 }
 
-                                $customers = app(SapCustomerLookupServiceInterface::class)
-                                    ->searchCustomers($search);
+                                $customerPrefixes = static::getCustomerPrefixesForBranchCode($branchCode);
 
-                                $customers = static::filterCustomersForSelectedBranch($customers, $branchCode);
-                                $customers = static::filterExistingCollectionCustomers(
+                                $customers = app(SapCustomerLookupServiceInterface::class)
+                                    ->searchCustomerRows($search, $customerPrefixes, 50);
+
+                                $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
+                                $customers = static::filterExistingCollectionCustomerRows(
                                     $customers,
                                     $get('customer_code')
                                 );
 
-                                return static::filterCustomersForCreatePermission($customers);
+                                $customers = static::filterCustomerRowsForCreatePermission($customers);
+
+                                return static::customerRowsToOptions($customers);
                             })
                             ->afterStateUpdated(function ($state, callable $set): void {
                                 $customer = app(SapCustomerLookupServiceInterface::class)
@@ -783,6 +787,39 @@ class BranchCropCompositionCollectionResource extends Resource
             ->toArray();
     }
 
+    protected static function filterCustomerRowsForCreatePermission(array $customers): array
+    {
+        if (static::isAdminUser() || static::userHasCropPermission('create-others-crop')) {
+            return $customers;
+        }
+
+        if (! static::userHasCropPermission('create-only-own-crop')) {
+            return $customers;
+        }
+
+        $user = Auth::user();
+
+        if (! $user) {
+            return [];
+        }
+
+        return collect($customers)
+            ->filter(function (array $customer) use ($user): bool {
+                $engineerName = $customer['slp_name'] ?? null;
+
+                if (blank($engineerName) && filled($customer['code'] ?? null)) {
+                    $customerDetails = app(SapCustomerLookupServiceInterface::class)
+                        ->findCustomerByCode($customer['code']);
+
+                    $engineerName = $customerDetails['slp_name'] ?? null;
+                }
+
+                return trim((string) $engineerName) === trim((string) $user->name);
+            })
+            ->values()
+            ->all();
+    }
+
     protected static function filterCustomersForSelectedBranch(array $customers, ?string $branchCode): array
     {
         if (blank($branchCode)) {
@@ -792,6 +829,18 @@ class BranchCropCompositionCollectionResource extends Resource
         return collect($customers)
             ->filter(fn ($label, $customerCode): bool => static::customerBelongsToBranch($customerCode, $branchCode))
             ->toArray();
+    }
+
+    protected static function filterCustomerRowsForSelectedBranch(array $customers, ?string $branchCode): array
+    {
+        if (blank($branchCode)) {
+            return [];
+        }
+
+        return collect($customers)
+            ->filter(fn (array $customer): bool => static::customerBelongsToBranch($customer['code'] ?? null, $branchCode))
+            ->values()
+            ->all();
     }
 
     protected static function applySapEngineerNameSearch(Builder $query, ?string $engineerName): Builder
@@ -857,6 +906,52 @@ class BranchCropCompositionCollectionResource extends Resource
 
         return collect($customers)
             ->reject(fn ($label, $customerCode): bool => in_array(trim((string) $customerCode), $existingCustomerCodes, true))
+            ->toArray();
+    }
+
+    protected static function filterExistingCollectionCustomerRows(
+        array $customers,
+        ?string $currentCustomerCode = null
+    ): array {
+        $customerCodes = collect($customers)
+            ->pluck('code')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (! count($customerCodes)) {
+            return $customers;
+        }
+
+        $existingCustomerCodes = BranchCropCompositionCollection::query()
+            ->whereIn('customer_code', $customerCodes)
+            ->when(
+                filled($currentCustomerCode),
+                fn (Builder $query) => $query->where('customer_code', '!=', $currentCustomerCode)
+            )
+            ->pluck('customer_code')
+            ->map(fn ($customerCode): string => trim((string) $customerCode))
+            ->filter()
+            ->all();
+
+        if (! count($existingCustomerCodes)) {
+            return $customers;
+        }
+
+        return collect($customers)
+            ->reject(fn (array $customer): bool => in_array(trim((string) ($customer['code'] ?? '')), $existingCustomerCodes, true))
+            ->values()
+            ->all();
+    }
+
+    protected static function customerRowsToOptions(array $customers): array
+    {
+        return collect($customers)
+            ->mapWithKeys(function (array $customer): array {
+                return [
+                    $customer['code'] => $customer['label'],
+                ];
+            })
             ->toArray();
     }
 

@@ -11,9 +11,25 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     /**
      * Search SAP customers using the ODBC SAP connection, with local AccMast fallback.
      */
-    public function searchCustomers(?string $search): array
+    public function searchCustomers(?string $search, array $customerCodePrefixes = [], int $limit = 50): array
+    {
+        return collect($this->searchCustomerRows($search, $customerCodePrefixes, $limit))
+            ->mapWithKeys(function (array $customer): array {
+                return [
+                    $customer['code'] => $customer['label'],
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Search SAP customers and return customer details needed by filtered forms.
+     */
+    public function searchCustomerRows(?string $search, array $customerCodePrefixes = [], int $limit = 50): array
     {
         $search = trim((string) $search);
+        $customerCodePrefixes = $this->normalizeCustomerCodePrefixes($customerCodePrefixes);
+        $limit = max(1, min($limit, 100));
 
         if ($search === '' || mb_strlen($search) < 2) {
             return [];
@@ -21,16 +37,16 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
 
         try {
             return Cache::remember(
-                'sap_customers_search_' . md5($search),
+                'sap_customers_search_rows_' . md5($search . '|' . implode(',', $customerCodePrefixes) . '|' . $limit),
                 now()->addMinutes(10),
-                function () use ($search) {
-                    $results = $this->searchCustomersFromSap($search);
+                function () use ($search, $customerCodePrefixes, $limit) {
+                    $results = $this->searchCustomersFromSap($search, $customerCodePrefixes, $limit);
 
                     if (! empty($results)) {
                         return $results;
                     }
 
-                    return $this->searchCustomersFromLocalAccMast($search);
+                    return $this->searchCustomersFromLocalAccMast($search, $customerCodePrefixes, $limit);
                 }
             );
         } catch (\Throwable $exception) {
@@ -72,17 +88,31 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         }
     }
 
-    protected function searchCustomersFromSap(string $search): array
+    protected function searchCustomersFromSap(string $search, array $customerCodePrefixes, int $limit): array
     {
         $searchEscaped = str_replace("'", "''", $search);
-        $query = 'SELECT T0."CardCode", T0."CardName"'
+        $prefixWhere = $this->buildSapCustomerPrefixWhere($customerCodePrefixes);
+        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName"'
             . ' FROM AL_YASEEN_AGRI_PLIVE.OCRD T0'
+            . ' LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP T1 ON T0."SlpCode" = T1."SlpCode"'
             . ' WHERE T0."CardType" = \'C\''
+            . $prefixWhere
             . ' AND (T0."CardCode" LIKE \'%' . $searchEscaped . '%\''
             . ' OR T0."CardName" LIKE \'%' . $searchEscaped . '%\')'
-            . ' ORDER BY T0."CardCode"';
+            . ' ORDER BY T0."CardCode"'
+            . ' LIMIT ' . $limit;
 
-        return $this->querySapAsMap($query);
+        return collect($this->querySapRows($query, $limit))
+            ->map(function (array $row): array {
+                return [
+                    'code' => $row['CardCode'],
+                    'name' => $row['CardName'],
+                    'slp_code' => $row['SlpCode'] ?? null,
+                    'slp_name' => $row['SlpName'] ?? null,
+                    'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
+                ];
+            })
+            ->toArray();
     }
 
     protected function findCustomerByCodeFromSap(string $customerCode): ?array
@@ -111,7 +141,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         ];
     }
 
-    protected function querySapRows(string $sql): array
+    protected function querySapRows(string $sql, ?int $maxRows = null): array
     {
         $conn = $this->getOdbcConnection();
 
@@ -129,6 +159,10 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
             $rows = [];
             while ($row = odbc_fetch_array($result)) {
                 $rows[] = $row;
+
+                if ($maxRows !== null && count($rows) >= $maxRows) {
+                    break;
+                }
             }
 
             return $rows;
@@ -169,23 +203,31 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         return $conn ?: null;
     }
 
-    protected function searchCustomersFromLocalAccMast(string $search): array
+    protected function searchCustomersFromLocalAccMast(string $search, array $customerCodePrefixes, int $limit): array
     {
         return AccMast::query()
             ->where('Type', '10')
+            ->when(count($customerCodePrefixes), function ($query) use ($customerCodePrefixes) {
+                $query->where(function ($query) use ($customerCodePrefixes) {
+                    foreach ($customerCodePrefixes as $prefix) {
+                        $query->orWhere('Code', 'like', $prefix . '%');
+                    }
+                });
+            })
             ->where(function ($query) use ($search) {
                 $query->where('Arabic_Name', 'like', '%' . $search . '%')
                     ->orWhere('Code', 'like', '%' . $search . '%');
             })
             ->orderBy('Arabic_Name')
-            ->limit(50)
+            ->limit($limit)
             ->get(['Code', 'Arabic_Name'])
-            ->mapWithKeys(function ($customer) {
+            ->map(function ($customer): array {
                 return [
-                    $customer->Code => $this->formatLabel(
-                        $customer->Code,
-                        $customer->Arabic_Name
-                    ),
+                    'code' => $customer->Code,
+                    'name' => $customer->Arabic_Name,
+                    'slp_code' => null,
+                    'slp_name' => null,
+                    'label' => $this->formatLabel($customer->Code, $customer->Arabic_Name),
                 ];
             })
             ->toArray();
@@ -215,5 +257,28 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     protected function formatLabel(string $code, string $name): string
     {
         return trim($code . ' - ' . $name);
+    }
+
+    protected function normalizeCustomerCodePrefixes(array $customerCodePrefixes): array
+    {
+        return array_values(array_unique(array_filter(array_map(
+            fn ($prefix): string => trim((string) $prefix),
+            $customerCodePrefixes
+        ))));
+    }
+
+    protected function buildSapCustomerPrefixWhere(array $customerCodePrefixes): string
+    {
+        if (! count($customerCodePrefixes)) {
+            return '';
+        }
+
+        $conditions = array_map(function (string $prefix): string {
+            $prefixEscaped = str_replace("'", "''", $prefix);
+
+            return 'T0."CardCode" LIKE \'' . $prefixEscaped . '%\'';
+        }, $customerCodePrefixes);
+
+        return ' AND (' . implode(' OR ', $conditions) . ')';
     }
 }
