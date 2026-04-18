@@ -4,14 +4,16 @@ namespace App\Services;
 
 use App\Contracts\SapCustomerLookupServiceInterface;
 use App\Models\AccMast;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 
 class SapCustomerLookupService implements SapCustomerLookupServiceInterface
 {
     /**
      * Search SAP customers using the ODBC SAP connection, with local AccMast fallback.
      */
-    public function searchCustomers(?string $search, array $customerCodePrefixes = [], int $limit = 50): array
+    public function searchCustomers(?string $search, array $customerCodePrefixes = [], ?int $limit = 50): array
     {
         return collect($this->searchCustomerRows($search, $customerCodePrefixes, $limit))
             ->mapWithKeys(function (array $customer): array {
@@ -25,19 +27,19 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     /**
      * Search SAP customers and return customer details needed by filtered forms.
      */
-    public function searchCustomerRows(?string $search, array $customerCodePrefixes = [], int $limit = 50): array
+    public function searchCustomerRows(?string $search, array $customerCodePrefixes = [], ?int $limit = 50): array
     {
         $search = trim((string) $search);
         $customerCodePrefixes = $this->normalizeCustomerCodePrefixes($customerCodePrefixes);
-        $limit = max(1, min($limit, 100));
+        $limit = $this->normalizeLimit($limit);
 
-        if ($search === '' || mb_strlen($search) < 2) {
+        if ($search !== '' && mb_strlen($search) < 2) {
             return [];
         }
 
         try {
             return Cache::remember(
-                'sap_customers_search_rows_' . md5($search . '|' . implode(',', $customerCodePrefixes) . '|' . $limit),
+                'sap_customers_search_rows_v2_' . md5($search . '|' . implode(',', $customerCodePrefixes) . '|' . ($limit ?? 'all')),
                 now()->addMinutes(10),
                 function () use ($search, $customerCodePrefixes, $limit) {
                     $results = $this->searchCustomersFromSap($search, $customerCodePrefixes, $limit);
@@ -88,7 +90,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         }
     }
 
-    protected function searchCustomersFromSap(string $search, array $customerCodePrefixes, int $limit): array
+    protected function searchCustomersFromSap(string $search, array $customerCodePrefixes, ?int $limit): array
     {
         $searchEscaped = str_replace("'", "''", $search);
         $prefixWhere = $this->buildSapCustomerPrefixWhere($customerCodePrefixes);
@@ -96,11 +98,18 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
             . ' FROM AL_YASEEN_AGRI_PLIVE.OCRD T0'
             . ' LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP T1 ON T0."SlpCode" = T1."SlpCode"'
             . ' WHERE T0."CardType" = \'C\''
-            . $prefixWhere
-            . ' AND (T0."CardCode" LIKE \'%' . $searchEscaped . '%\''
-            . ' OR T0."CardName" LIKE \'%' . $searchEscaped . '%\')'
-            . ' ORDER BY T0."CardCode"'
-            . ' LIMIT ' . $limit;
+            . $prefixWhere;
+
+        if ($search !== '') {
+            $query .= ' AND (T0."CardCode" LIKE \'%' . $searchEscaped . '%\''
+                . ' OR T0."CardName" LIKE \'%' . $searchEscaped . '%\')';
+        }
+
+        $query .= ' ORDER BY T0."CardCode"';
+
+        if ($limit !== null) {
+            $query .= ' LIMIT ' . $limit;
+        }
 
         return collect($this->querySapRows($query, $limit))
             ->map(function (array $row): array {
@@ -203,34 +212,52 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         return $conn ?: null;
     }
 
-    protected function searchCustomersFromLocalAccMast(string $search, array $customerCodePrefixes, int $limit): array
+    protected function searchCustomersFromLocalAccMast(string $search, array $customerCodePrefixes, ?int $limit): array
     {
-        return AccMast::query()
-            ->where('Type', '10')
-            ->when(count($customerCodePrefixes), function ($query) use ($customerCodePrefixes) {
-                $query->where(function ($query) use ($customerCodePrefixes) {
-                    foreach ($customerCodePrefixes as $prefix) {
-                        $query->orWhere('Code', 'like', $prefix . '%');
-                    }
-                });
-            })
-            ->where(function ($query) use ($search) {
-                $query->where('Arabic_Name', 'like', '%' . $search . '%')
-                    ->orWhere('Code', 'like', '%' . $search . '%');
-            })
-            ->orderBy('Arabic_Name')
-            ->limit($limit)
-            ->get(['Code', 'Arabic_Name'])
-            ->map(function ($customer): array {
-                return [
-                    'code' => $customer->Code,
-                    'name' => $customer->Arabic_Name,
-                    'slp_code' => null,
-                    'slp_name' => null,
-                    'label' => $this->formatLabel($customer->Code, $customer->Arabic_Name),
-                ];
-            })
-            ->toArray();
+        if ($search === '') {
+            $query = AccMast::query()->where('Type', '10');
+            $this->applyLocalCustomerPrefixFilter($query, $customerCodePrefixes);
+
+            return $query
+                ->orderBy('Code')
+                ->when($limit !== null, fn ($query) => $query->limit($limit))
+                ->get(['Code', 'Name', 'Arabic_Name'])
+                ->map(fn ($customer): array => $this->localCustomerToRow($customer))
+                ->values()
+                ->all();
+        }
+
+        $codeQuery = AccMast::query()->where('Type', '10');
+        $this->applyLocalCustomerPrefixFilter($codeQuery, $customerCodePrefixes);
+
+        $codeMatches = $codeQuery
+            ->where('Code', 'like', '%' . $search . '%')
+            ->orderBy('Code')
+            ->when($limit !== null, fn ($query) => $query->limit($limit))
+            ->get(['Code', 'Name', 'Arabic_Name'])
+            ->map(fn ($customer): array => $this->localCustomerToRow($customer));
+
+        if ($limit !== null && $codeMatches->count() >= $limit) {
+            return $codeMatches->take($limit)->values()->all();
+        }
+
+        $nameQuery = AccMast::query()->where('Type', '10');
+        $this->applyLocalCustomerPrefixFilter($nameQuery, $customerCodePrefixes);
+
+        $nameMatches = $nameQuery
+            ->when($codeMatches->isNotEmpty(), fn ($query) => $query->whereNotIn('Code', $codeMatches->pluck('code')->all()))
+            ->orderBy('Code')
+            ->limit(2000)
+            ->get(['Code', 'Name', 'Arabic_Name'])
+            ->filter(fn ($customer): bool => $this->matchesLocalCustomer($customer, $search))
+            ->map(fn ($customer): array => $this->localCustomerToRow($customer))
+            ->values();
+
+        return $codeMatches
+            ->merge($nameMatches)
+            ->when($limit !== null, fn ($rows) => $rows->take($limit))
+            ->values()
+            ->all();
     }
 
     protected function findCustomerByCodeFromLocalAccMast(string $customerCode): ?array
@@ -238,16 +265,18 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         $customer = AccMast::query()
             ->where('Type', '10')
             ->where('Code', $customerCode)
-            ->first(['Code', 'Arabic_Name']);
+            ->first(['Code', 'Name', 'Arabic_Name']);
 
         if (! $customer) {
             return null;
         }
 
+        $customerName = $this->resolveLocalCustomerName($customer);
+
         return [
             'code' => $customer->Code,
-            'name' => $customer->Arabic_Name,
-            'label' => $this->formatLabel($customer->Code, $customer->Arabic_Name),
+            'name' => $customerName,
+            'label' => $this->formatLabel($customer->Code, $customerName),
         ];
     }
 
@@ -267,6 +296,15 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         ))));
     }
 
+    protected function normalizeLimit(?int $limit): ?int
+    {
+        if ($limit === null) {
+            return null;
+        }
+
+        return max(1, min($limit, 1000));
+    }
+
     protected function buildSapCustomerPrefixWhere(array $customerCodePrefixes): string
     {
         if (! count($customerCodePrefixes)) {
@@ -280,5 +318,72 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         }, $customerCodePrefixes);
 
         return ' AND (' . implode(' OR ', $conditions) . ')';
+    }
+
+    protected function applyLocalCustomerPrefixFilter($query, array $customerCodePrefixes): void
+    {
+        if (! count($customerCodePrefixes)) {
+            return;
+        }
+
+        $query->where(function ($query) use ($customerCodePrefixes) {
+            foreach ($customerCodePrefixes as $prefix) {
+                $query->orWhere('Code', 'like', $prefix . '%');
+            }
+        });
+    }
+
+    protected function localCustomerToRow($customer): array
+    {
+        $customerName = $this->resolveLocalCustomerName($customer);
+
+        return [
+            'code' => $customer->Code,
+            'name' => $customerName,
+            'slp_code' => null,
+            'slp_name' => null,
+            'label' => $this->formatLabel($customer->Code, $customerName),
+        ];
+    }
+
+    protected function matchesLocalCustomer($customer, string $search): bool
+    {
+        $search = $this->normalizeSearchText($search);
+
+        if ($search === '') {
+            return true;
+        }
+
+        return mb_strpos($this->normalizeSearchText((string) $customer->Code), $search) !== false
+            || mb_strpos($this->normalizeSearchText($this->resolveLocalCustomerName($customer)), $search) !== false;
+    }
+
+    protected function resolveLocalCustomerName($customer): string
+    {
+        return (string) (
+            $this->decryptLocalValue($customer->Arabic_Name ?? null)
+            ?: $this->decryptLocalValue($customer->Name ?? null)
+            ?: ''
+        );
+    }
+
+    protected function decryptLocalValue($value): string
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        try {
+            return (string) Crypt::decryptString($value);
+        } catch (DecryptException $exception) {
+            return $value;
+        }
+    }
+
+    protected function normalizeSearchText(string $value): string
+    {
+        return trim(mb_strtolower($value));
     }
 }

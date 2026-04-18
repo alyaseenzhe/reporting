@@ -67,17 +67,24 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->label('الفرع')
                             ->required()
                             ->searchable()
+                            ->reactive()
                             ->options(function () {
                                 return static::getAuthorizedBranchesQuery()
                                     ->orderBy('name')
                                     ->pluck('name', 'id')
                                     ->toArray();
+                            })
+                            ->afterStateUpdated(function (callable $set): void {
+                                $set('customer_code', null);
+                                $set('engineer_name', null);
                             }),
 
                         Select::make('customer_code')
                             ->label('العميل')
                             ->columnSpan(['default' => 1, 'md' =>2])
                             ->searchable()
+                            ->preload()
+                            ->optionsLimit(10000)
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->reactive()
@@ -89,27 +96,21 @@ class BranchCropCompositionCollectionResource extends Resource
 
                                 return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
                             })
-                            ->getSearchResultsUsing(function (string $search, callable $get): array {
-                                $branchCode = static::resolveBranchCodeFromState($get('branch_id'));
-
-                                if (blank($branchCode)) {
-                                    return [];
-                                }
-
-                                $customerPrefixes = static::getCustomerPrefixesForBranchCode($branchCode);
-
-                                $customers = app(SapCustomerLookupServiceInterface::class)
-                                    ->searchCustomerRows($search, $customerPrefixes, 50);
-
-                                $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
-                                $customers = static::filterExistingCollectionCustomerRows(
-                                    $customers,
-                                    $get('customer_code')
+                            ->options(function (callable $get): array {
+                                return static::getCustomerSelectOptionsForBranch(
+                                    static::resolveBranchCodeFromState($get('branch_id')),
+                                    '',
+                                    $get('customer_code'),
+                                    null
                                 );
-
-                                $customers = static::filterCustomerRowsForCreatePermission($customers);
-
-                                return static::customerRowsToOptions($customers);
+                            })
+                            ->getSearchResultsUsing(function (string $search, callable $get): array {
+                                return static::getCustomerSelectOptionsForBranch(
+                                    static::resolveBranchCodeFromState($get('branch_id')),
+                                    $search,
+                                    $get('customer_code'),
+                                    blank($search) ? null : 50
+                                );
                             })
                             ->afterStateUpdated(function ($state, callable $set): void {
                                 $customer = app(SapCustomerLookupServiceInterface::class)
@@ -759,6 +760,32 @@ class BranchCropCompositionCollectionResource extends Resource
         $cropPermissions = json_decode($user->user_group->crops ?? '[]', true);
 
         return is_array($cropPermissions) && in_array($permission, $cropPermissions, true);
+    }
+
+    protected static function getCustomerSelectOptionsForBranch(
+        ?string $branchCode,
+        ?string $search,
+        ?string $currentCustomerCode = null,
+        ?int $limit = 50
+    ): array {
+        if (blank($branchCode)) {
+            return [];
+        }
+
+        $customerPrefixes = static::getCustomerPrefixesForBranchCode($branchCode);
+
+        if (! count($customerPrefixes)) {
+            return [];
+        }
+
+        $customers = app(SapCustomerLookupServiceInterface::class)
+            ->searchCustomerRows($search, $customerPrefixes, $limit);
+
+        $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
+        $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode);
+        $customers = static::filterCustomerRowsForCreatePermission($customers);
+
+        return static::customerRowsToOptions($customers);
     }
 
     protected static function filterCustomersForCreatePermission(array $customers): array
