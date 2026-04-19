@@ -7,6 +7,7 @@ use App\Filament\Resources\RequestResource\RelationManagers\AttachmentsRelationM
 use App\Models\Request;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -28,8 +29,12 @@ class RequestResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('type')
                     ->label('النوع')
-                    ->columnSpan(2)
                     ->default('اخلاء طرف'),
+
+                TextInput::make('name')
+                    ->label('اسم الطلب')
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\Textarea::make('reasons')
                     ->columnSpan(2)
@@ -47,21 +52,23 @@ class RequestResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('type')
-                    ->label('Type'),
+                    ->label('النوع'),
+                TextColumn::make('name')
+                    ->label('اسم الطلب'),
                 TextColumn::make('user.name')
-                    ->label('Created By')
+                    ->label('مقدم الطلب')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('attachments')
-                    ->label('Files')
-                    ->getStateUsing(function ($record) {
-                        return collect($record->getMedia())
-                            ->map(function ($media) {
-                                return "<a href='{$media->getUrl()}' target='_blank'>{$media->file_name}</a>";
-                            })
-                            ->implode('<br>');
-                    })
-                    ->html(),
+//                TextColumn::make('attachments')
+//                    ->label('المرفقات')
+//                    ->getStateUsing(function ($record) {
+//                        return collect($record->getMedia())
+//                            ->map(function ($media) {
+//                                return "<a href='{$media->getUrl()}' target='_blank'>{$media->file_name}</a>";
+//                            })
+//                            ->implode('<br>');
+//                    })
+//                    ->html(),
             ])
             ->filters([
                 //

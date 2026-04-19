@@ -16,6 +16,7 @@ class CreateRequestsTable extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->string('type')->nullable();
+            $table->string('name')->nullable();
             $table->foreignId('user_id')->nullable();
             $table->foreignId('created_by')->nullable();
             $table->integer('status')->nullable();
