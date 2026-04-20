@@ -42,9 +42,9 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'جمع التركيب المحصولي';
+    protected static ?string $navigationLabel = ' التركيب المحصولي';
 
-    protected static ?string $pluralLabel = 'نماذج جمع التركيب المحصولي';
+    protected static ?string $pluralLabel = 'نماذج التركيب المحصولي';
 
     protected static ?string $label = 'نموذج تركيب محصولي';
 
@@ -90,13 +90,13 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->reactive()
                             ->placeholder('اختر الفرع أولاً ثم ابحث عن العميل')
-                            ->helperText(function (callable $get): string {
-                                if (blank($get('branch_id'))) {
-                                    return 'اختر الفرع أولاً، ثم ابحث باسم العميل أو رقمه من SAP.';
-                                }
-
-                                return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
-                            })
+//                            ->helperText(function (callable $get): string {
+//                                if (blank($get('branch_id'))) {
+//                                    return 'اختر الفرع أولاً، ثم ابحث باسم العميل أو رقمه من SAP.';
+//                                }
+//
+//                                return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
+//                            })
                             ->options(function (callable $get): array {
                                 return static::getCustomerSelectOptionsForBranch(
                                     static::resolveBranchCodeFromState($get('branch_id')),
@@ -134,7 +134,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->disabled()
                             ->dehydrated()
 //                            ->required()
-                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
+//                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
                             ->formatStateUsing(fn ($state): string => (string) $state),
                         TextInput::make('farms_count')
                             ->label('عدد المزارع الخاصة بالعميل')

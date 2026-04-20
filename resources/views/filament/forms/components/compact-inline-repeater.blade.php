@@ -34,7 +34,8 @@
 
                     <li
                         wire:key="{{ $this->id }}.{{ $item->getStatePath() }}.{{ $field::class }}.compact-item"
-                        class="filament-forms-repeater-component-item rounded-md border border-gray-200 bg-white px-2 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+{{--                        class="filament-forms-repeater-component-item rounded-md border border-gray-200 bg-white px-2 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-800"--}}
+                        class="filament-forms-repeater-component-item  bg-white px-2 py-2  "
                     >
                         <x-filament-support::grid
                             :default="1"
