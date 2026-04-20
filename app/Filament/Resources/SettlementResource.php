@@ -36,7 +36,7 @@ class SettlementResource extends Resource
                         'employee'=> 'الموظف',
                         'hr'=> 'الموارد البشرية',
                         'it' => 'تقنية المعلومات',
-                        'accounting'=>'المالية'])
+                        'accountant'=>'المالية'])
 
             ]);
 
@@ -52,7 +52,7 @@ class SettlementResource extends Resource
                     'employee' => 'الموظف',
                     'hr' => 'الموارد البشرية',
                     'it' => 'تقنية المعلومات',
-                    'accounting' => 'المالية'
+                    'accountant' => 'المالية'
                 ])
 
         ])

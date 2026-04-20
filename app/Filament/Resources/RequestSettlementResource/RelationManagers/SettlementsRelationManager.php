@@ -77,6 +77,8 @@ class SettlementsRelationManager extends RelationManager
             $query->where('department', 'hr');
         } elseif ($user->role === 'it') {
             $query->where('department', 'it');
+        } elseif ($user->role === 'accountant') {
+            $query->where('department', 'accountant');
         }
 
         return $query;
@@ -98,6 +100,11 @@ class SettlementsRelationManager extends RelationManager
 
         if ($user->role == 'a') {
             $query->whereHas('type', fn ($q) => $q->where('department', 'it'));
+        }
+
+
+        if ($user->role == 'accountant') {
+            $query->whereHas('type', fn ($q) => $q->where('department', 'accountant'));
         }
 
         return $query;

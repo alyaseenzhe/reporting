@@ -173,6 +173,7 @@ class ManageRequestSettlements extends Page
         return match (auth()->user()?->role) {
             'a', 'it' => 'it',
             'hr' => 'hr',
+            'accountant' => 'accountant',
             default => null,
         };
     }
