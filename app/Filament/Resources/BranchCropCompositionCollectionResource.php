@@ -57,7 +57,6 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
                     Grid::make(4)->schema([
-
                           //  ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
@@ -308,16 +307,16 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->maxValue(9999999999.99)
                                     ->columnSpan(['default' => 4, 'md' => 3])
                                     ->rules(['numeric', 'min:0.01']),
-                                Checkbox::make('show_tree_count')
-                                    ->label('إضافة عدد الأشجار')
-                                    ->reactive()
-                                    ->default(false)
-                                    ->columnSpan(4),
+//                                Checkbox::make('show_tree_count')
+//                                    ->label('إضافة عدد الأشجار')
+//                                    ->reactive()
+//                                    ->default(false)
+//                                    ->columnSpan(4),
                                 TextInput::make('trees_count')
                                     ->label('عدد الأشجار')
                                     ->numeric()
                                     ->maxValue(9999999999)
-                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
+//                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
                                     ->columnSpan(['default' => 4, 'md' => 3])
                                     ->rules(['nullable', 'integer', 'min:0']),
 //                            ]),

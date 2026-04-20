@@ -16,6 +16,8 @@
         $isItemCreationDisabled = $isItemCreationDisabled();
         $isItemDeletionDisabled = $isItemDeletionDisabled();
         $minItems = $getMinItems();
+        $headerContainer = collect($containers)->first();
+        $headerComponents = $headerContainer?->getComponents(withHidden: true) ?? [];
     @endphp
 
     <div
@@ -26,6 +28,61 @@
         }}
     >
         @if (count($containers))
+            <x-filament-support::grid
+                :default="1"
+                :md="12"
+                class="filament-forms-component-container items-end gap-2 rounded-md bg-gray-50 px-2 py-2 dark:bg-gray-800"
+            >
+                @foreach ($headerComponents as $headerComponent)
+                    @php
+                        $isHidden = $headerComponent->isHidden();
+                        $isRequired = method_exists($headerComponent, 'isRequired') && $headerComponent->isRequired();
+                    @endphp
+
+                    <x-filament-support::grid.column
+                        :hidden="$isHidden"
+                        :default="$headerComponent->getColumnSpan('default')"
+                        :sm="$headerComponent->getColumnSpan('sm')"
+                        :md="$headerComponent->getColumnSpan('md')"
+                        :lg="$headerComponent->getColumnSpan('lg')"
+                        :xl="$headerComponent->getColumnSpan('xl')"
+                        :twoXl="$headerComponent->getColumnSpan('2xl')"
+                        :class="
+                            ($maxWidth = $headerComponent->getMaxWidth()) ? match ($maxWidth) {
+                                'xs' => 'max-w-xs',
+                                'sm' => 'max-w-sm',
+                                'md' => 'max-w-md',
+                                'lg' => 'max-w-lg',
+                                'xl' => 'max-w-xl',
+                                '2xl' => 'max-w-2xl',
+                                '3xl' => 'max-w-3xl',
+                                '4xl' => 'max-w-4xl',
+                                '5xl' => 'max-w-5xl',
+                                '6xl' => 'max-w-6xl',
+                                '7xl' => 'max-w-7xl',
+                                default => $maxWidth,
+                            } : null
+                        "
+                    >
+                        @if (! $isHidden && filled($label = $headerComponent->getLabel()))
+                            <span @class([
+                                'text-sm font-medium leading-4 text-gray-700',
+                                'dark:text-gray-300' => config('forms.dark_mode'),
+                            ])>
+                                {{ $label }}@if ($isRequired)<sup
+                                    @class([
+                                        'text-danger-700 whitespace-nowrap font-medium',
+                                        'dark:text-danger-400' => config('forms.dark_mode'),
+                                    ])
+                                >*</sup>@endif
+                            </span>
+                        @endif
+                    </x-filament-support::grid.column>
+                @endforeach
+
+                <div class="hidden md:col-span-1 md:block"></div>
+            </x-filament-support::grid>
+
             <ul class="space-y-2">
                 @foreach ($containers as $uuid => $item)
                     @php
@@ -45,6 +102,10 @@
                             @foreach ($item->getComponents(withHidden: true) as $formComponent)
                                 @php
                                     $isHidden = $formComponent->isHidden();
+
+                                    if (method_exists($formComponent, 'disableLabel')) {
+                                        $formComponent->disableLabel();
+                                    }
                                 @endphp
 
                                 <x-filament-support::grid.column
