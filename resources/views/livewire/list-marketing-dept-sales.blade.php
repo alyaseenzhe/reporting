@@ -149,10 +149,10 @@
                         </div>
                     </th>
                     <th style="padding: 10px; border-left: 2px solid black;">
-                        <div class="text-xs">مبيعات فترة (العام الماضي)</div>
+                        <div class="text-xs">مبيعات فترة (العام السابق)</div>
                     </th>
                     <th style="padding: 10px; border-left: 2px solid black;">
-                        <div class="text-xs">نمو %</div>
+                        <div class="text-xs">نمو فترة%</div>
                     </th>
 {{--                    <th style="padding: 10px;">--}}
 {{--                        <div class="text-xs">مبيعات سنة</div>--}}
