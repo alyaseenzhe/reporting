@@ -18,6 +18,12 @@
         $minItems = $getMinItems();
         $headerContainer = collect($containers)->first();
         $headerComponents = $headerContainer?->getComponents(withHidden: true) ?? [];
+        $gridDefaultColumns = $getColumns('default') ?? 1;
+        $gridSmColumns = $getColumns('sm');
+        $gridMdColumns = $getColumns('md') ?? 12;
+        $gridLgColumns = $getColumns('lg');
+        $gridXlColumns = $getColumns('xl');
+        $gridTwoXlColumns = $getColumns('2xl');
     @endphp
 
     <div
@@ -29,8 +35,12 @@
     >
         @if (count($containers))
             <x-filament-support::grid
-                :default="1"
-                :md="12"
+                :default="$gridDefaultColumns"
+                :sm="$gridSmColumns"
+                :md="$gridMdColumns"
+                :lg="$gridLgColumns"
+                :xl="$gridXlColumns"
+                :two-xl="$gridTwoXlColumns"
                 class="filament-forms-component-container items-end gap-2 rounded-md bg-gray-50 px-2 py-2 dark:bg-gray-800"
             >
                 @foreach ($headerComponents as $headerComponent)
@@ -95,8 +105,12 @@
                         class="filament-forms-repeater-component-item  bg-white px-2 py-2  "
                     >
                         <x-filament-support::grid
-                            :default="1"
-                            :md="12"
+                            :default="$gridDefaultColumns"
+                            :sm="$gridSmColumns"
+                            :md="$gridMdColumns"
+                            :lg="$gridLgColumns"
+                            :xl="$gridXlColumns"
+                            :two-xl="$gridTwoXlColumns"
                             class="filament-forms-component-container items-end gap-2"
                         >
                             @foreach ($item->getComponents(withHidden: true) as $formComponent)

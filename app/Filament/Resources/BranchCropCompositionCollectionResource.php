@@ -190,63 +190,67 @@ class BranchCropCompositionCollectionResource extends Resource
                                         $set('agri_detail_id', null);
                                     }),
 
-                                Select::make('agri_detail_id')
-                                    ->label('تفاصيل الزراعة')
-                                    ->searchable()
-                                    ->preload()
-                                    ->reactive()
-                                    ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->options(function (callable $get): array {
-                                        $currentAgriDetailId = $get('agri_detail_id');
-                                        $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
-                                            ->pluck('agri_detail_id')
-                                            ->filter()
-                                            ->reject(function ($agriDetailId) use ($currentAgriDetailId) {
-                                                return (string) $agriDetailId === (string) $currentAgriDetailId;
-                                            })
-                                            ->values()
-                                            ->all();
 
-                                        $query = AgriDetais::query()->orderBy('details');
-
-                                        if (count($selectedAgriDetailIds)) {
-                                            $query->whereNotIn('id', $selectedAgriDetailIds);
-                                        }
-
-                                        return $query->pluck('details', 'id')->toArray();
-                                    })
-
-                                    ->hidden(function (callable $get): bool {
-                                        $agriDetailId = $get('agri_type_id');
-
-                                        if (! $agriDetailId) {
-                                            return true;
-                                        }
-
-                                        return ! optional(AgriType::find($agriDetailId))->has_details;
-                                    }),
-                                TextInput::make('unit_count')
-                                    ->label('عدد الوحدات')
-                                    ->numeric()
-                                    ->reactive()
-                                    ->columnSpan(['default' => 1, 'md' => 2])
-                                    ->hidden(function (callable $get): bool {
-                                        $agriTypeId = $get('agri_type_id');
-
-                                        if (! $agriTypeId) {
-                                            return true;
-                                        }
-
-                                        return ! optional(AgriType::find($agriTypeId))->has_units;
-                                    })
-                                    ->rules(['nullable', 'numeric', 'min:0']),
                                 TextInput::make('total_area_hectares')
                                     ->label('مساحة اجمالية (هـ)')
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
                                     ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->rules(['numeric', 'min:0.01'])
+                                    ->rules(['numeric', 'min:0.01']),
+
+                            TextInput::make('unit_count')
+                                ->label('عدد الوحدات')
+                                ->numeric()
+                                ->reactive()
+                                ->columnSpan(['default' => 1, 'md' => 2])
+                                ->hidden(function (callable $get): bool {
+                                    $agriTypeId = $get('agri_type_id');
+
+                                    if (! $agriTypeId) {
+                                        return true;
+                                    }
+
+                                    return ! optional(AgriType::find($agriTypeId))->has_units;
+                                })
+                                ->rules(['nullable', 'numeric', 'min:0']),
+
+                            Select::make('agri_detail_id')
+                                ->label('تفاصيل الزراعة')
+                                ->searchable()
+                                ->preload()
+                                ->reactive()
+                                ->columnSpan(['default' => 1, 'md' => 3])
+                                ->options(function (callable $get): array {
+                                    $currentAgriDetailId = $get('agri_detail_id');
+                                    $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
+                                        ->pluck('agri_detail_id')
+                                        ->filter()
+                                        ->reject(function ($agriDetailId) use ($currentAgriDetailId) {
+                                            return (string) $agriDetailId === (string) $currentAgriDetailId;
+                                        })
+                                        ->values()
+                                        ->all();
+
+                                    $query = AgriDetais::query()->orderBy('details');
+
+                                    if (count($selectedAgriDetailIds)) {
+                                        $query->whereNotIn('id', $selectedAgriDetailIds);
+                                    }
+
+                                    return $query->pluck('details', 'id')->toArray();
+                                })
+
+                                ->hidden(function (callable $get): bool {
+                                    $agriDetailId = $get('agri_type_id');
+
+                                    if (! $agriDetailId) {
+                                        return true;
+                                    }
+
+                                    return ! optional(AgriType::find($agriDetailId))->has_details;
+                                }),
+
 
                         ]),
                 ]),
@@ -255,6 +259,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     Repeater::make('crop_composition_items')
                         ->label('صفوف التركيب المحصولي')
                         ->view('filament.forms.components.compact-inline-repeater')
+                        ->columns(['default' => 1, 'md' => 5])
                         ->disableItemMovement()
                         ->minItems(1)
                         ->defaultItems(1)
@@ -270,7 +275,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
-                                    ->columnSpan(['default' => 4, 'md' => 3])
+                                    ->columnSpan(['default' => 1, 'md' => 1])
                                     ->afterStateUpdated(function (callable $set) {
                                         $set('crop_catalog_item_id', null);
 
@@ -279,7 +284,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('المحصول')
                                     ->required()
                                     ->searchable()
-                                    ->columnSpan(['default' => 4, 'md' => 3])
+                                    ->columnSpan(['default' => 1, 'md' => 1])
                                     ->options(function (callable $get): array {
                                         $categoryId = $get('crop_catalog_category_id');
 
@@ -297,7 +302,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('عدد العروات/سنة')
                                     ->required()
                                     ->numeric()
-                                    ->columnSpan(['default' => 4, 'md' => 3])
+                                    ->columnSpan(['default' => 1, 'md' => 1])
                                     ->rules(['integer', 'min:1']),
 
                                 TextInput::make('total_area_hectares')
@@ -305,7 +310,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
-                                    ->columnSpan(['default' => 4, 'md' => 3])
+                                    ->columnSpan(['default' => 1, 'md' => 1])
                                     ->rules(['numeric', 'min:0.01']),
 //                                Checkbox::make('show_tree_count')
 //                                    ->label('إضافة عدد الأشجار')
@@ -317,7 +322,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->numeric()
                                     ->maxValue(9999999999)
 //                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
-                                    ->columnSpan(['default' => 4, 'md' => 3])
+                                    ->columnSpan(['default' => 1, 'md' => 1])
                                     ->rules(['nullable', 'integer', 'min:0']),
 //                            ]),
                         ]),
