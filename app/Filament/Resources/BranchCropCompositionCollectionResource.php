@@ -179,9 +179,28 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->options(function (): array {
+                                    ->options(function (callable $get): array {
+                                        $currentAgriTypeId = $get('agri_type_id');
+                                        $selectedAgriTypeIds = collect($get('../../cultivation_types') ?? [])
+                                            ->pluck('agri_type_id')
+                                            ->filter()
+                                            ->reject(function ($agriTypeId) use ($currentAgriTypeId) {
+                                                return (string) $agriTypeId === (string) $currentAgriTypeId;
+                                            })
+                                            ->values()
+                                            ->all();
+
                                         return AgriType::query()
                                             ->orderBy('name')
+                                            ->get(['id', 'name'])
+                                            ->reject(function (AgriType $agriType) use ($selectedAgriTypeIds): bool {
+                                                if (static::isRepeatableAgriType($agriType)) {
+                                                    return false;
+                                                }
+
+                                                return in_array($agriType->getKey(), $selectedAgriTypeIds, false)
+                                                    || in_array((string) $agriType->getKey(), $selectedAgriTypeIds, true);
+                                            })
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
@@ -641,19 +660,43 @@ class BranchCropCompositionCollectionResource extends Resource
                 continue;
             }
 
-            $uniqueKey = implode(':', [
-                (string) $agriTypeId,
-                $agriDetailId === null ? 'null' : (string) $agriDetailId,
-            ]);
+            $uniqueKey = static::isRepeatableAgriTypeId($agriTypeId)
+                ? implode(':', [
+                    (string) $agriTypeId,
+                    $agriDetailId === null ? 'null' : (string) $agriDetailId,
+                ])
+                : (string) $agriTypeId;
 
             if (isset($seen[$uniqueKey])) {
                 throw ValidationException::withMessages([
-                    'data.cultivation_types' => 'The same agri type and agri detail combination cannot be added more than once.',
+                    'data.cultivation_types' => static::isRepeatableAgriTypeId($agriTypeId)
+                        ? 'The same agri type and agri detail combination cannot be added more than once.'
+                        : 'The same agri type cannot be added more than once.',
                 ]);
             }
 
             $seen[$uniqueKey] = $index;
         }
+    }
+
+    protected static function isRepeatableAgriType(AgriType $agriType): bool
+    {
+        return trim((string) $agriType->name) === 'محميات';
+    }
+
+    protected static function isRepeatableAgriTypeId($agriTypeId): bool
+    {
+        if (blank($agriTypeId)) {
+            return false;
+        }
+
+        $agriType = AgriType::query()->find($agriTypeId);
+
+        if (! $agriType) {
+            return false;
+        }
+
+        return static::isRepeatableAgriType($agriType);
     }
 
     /**
