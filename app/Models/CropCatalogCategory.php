@@ -12,7 +12,7 @@ class CropCatalogCategory extends Model
 
     protected $fillable = [
         'name',
-        'sort_order',
+        'has_trees',
     ];
 
     /**

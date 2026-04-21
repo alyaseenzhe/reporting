@@ -15,9 +15,9 @@ class CreateCropCatalogItemsTable extends Migration
     {
         Schema::create('crop_catalog_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('crop_catalog_category_id')
-                ->constrained('crop_catalog_categories')
-                ->cascadeOnDelete();
+            $table->foreignId('crop_catalog_category_id');
+//                ->constrained('crop_catalog_categories')
+//                ->cascadeOnDelete();
             $table->string('name');
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();

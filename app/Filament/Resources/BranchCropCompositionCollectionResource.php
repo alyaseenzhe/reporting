@@ -259,7 +259,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     Repeater::make('crop_composition_items')
                         ->label('صفوف التركيب المحصولي')
                         ->view('filament.forms.components.compact-inline-repeater')
-                        ->columns(['default' => 1, 'md' => 5])
+                        ->columns(['default' => 1, 'md' => 12])
                         ->disableItemMovement()
                         ->minItems(1)
                         ->defaultItems(1)
@@ -271,11 +271,11 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->reactive()
                                     ->options(function (): array {
                                         return CropCatalogCategory::query()
-                                            ->orderBy('sort_order')
+//                                            ->orderBy('sort_order')
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
-                                    ->columnSpan(['default' => 1, 'md' => 1])
+                                    ->columnSpan(['default' => 1, 'md' => 3])
                                     ->afterStateUpdated(function (callable $set) {
                                         $set('crop_catalog_item_id', null);
 
@@ -284,25 +284,47 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('المحصول')
                                     ->required()
                                     ->searchable()
-                                    ->columnSpan(['default' => 1, 'md' => 1])
+                                    ->columnSpan(['default' => 1, 'md' => 2])
                                     ->options(function (callable $get): array {
                                         $categoryId = $get('crop_catalog_category_id');
+                                        $currentCropItemId = $get('crop_catalog_item_id');
 
                                         if (! $categoryId) {
                                             return [];
                                         }
 
-                                        return CropCatalogItem::query()
-                                            ->where('crop_catalog_category_id', $categoryId)
-                                            ->orderBy('sort_order')
+                                        $selectedCropItemIds = collect($get('../../crop_composition_items') ?? [])
+                                            ->filter(function (array $row) use ($categoryId, $currentCropItemId): bool {
+                                                if (($row['crop_catalog_category_id'] ?? null) != $categoryId) {
+                                                    return false;
+                                                }
+
+                                                return (string) ($row['crop_catalog_item_id'] ?? '') !== (string) $currentCropItemId;
+                                            })
+                                            ->pluck('crop_catalog_item_id')
+                                            ->filter()
+                                            ->values()
+                                            ->all();
+
+                                        $query = CropCatalogItem::query()
+                                            ->where('crop_catalog_category_id', $categoryId);
+
+                                        if (count($selectedCropItemIds)) {
+                                            $query->whereNotIn('id', $selectedCropItemIds);
+                                        }
+
+                                        return $query
+//                                            ->orderBy('sort_order')
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     }),
+
+
                                 TextInput::make('cycles_per_year')
                                     ->label('عدد العروات/سنة')
                                     ->required()
                                     ->numeric()
-                                    ->columnSpan(['default' => 1, 'md' => 1])
+                                    ->columnSpan(['default' => 1, 'md' => 2])
                                     ->rules(['integer', 'min:1']),
 
                                 TextInput::make('total_area_hectares')
@@ -310,7 +332,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
-                                    ->columnSpan(['default' => 1, 'md' => 1])
+                                    ->columnSpan(['default' => 1, 'md' => 2])
                                     ->rules(['numeric', 'min:0.01']),
 //                                Checkbox::make('show_tree_count')
 //                                    ->label('إضافة عدد الأشجار')
@@ -321,8 +343,20 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('عدد الأشجار')
                                     ->numeric()
                                     ->maxValue(9999999999)
-//                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
-                                    ->columnSpan(['default' => 1, 'md' => 1])
+                                    ->reactive()
+                                    ->hidden(function (callable $get): bool {
+                                        $catalogCategory = $get('crop_catalog_category_id');
+
+                                        if (! $catalogCategory) {
+                                            return true;
+                                        }
+
+                                        return ! optional(CropCatalogCategory::find($catalogCategory))->has_trees;
+                                    })
+//                                    ->rules(['nullable', 'numeric', 'min:0']),
+
+                        //                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
+                                    ->columnSpan(['default' => 1, 'md' => 2])
                                     ->rules(['nullable', 'integer', 'min:0']),
 //                            ]),
                         ]),
@@ -631,6 +665,36 @@ class BranchCropCompositionCollectionResource extends Resource
     }
 
     /**
+     * Ensure crop rows don't repeat the same crop within the same category.
+     */
+    public static function validateCropRowsUnique(array $cropRows): void
+    {
+        $seen = [];
+
+        foreach ($cropRows as $index => $row) {
+            $categoryId = $row['crop_catalog_category_id'] ?? null;
+            $cropItemId = $row['crop_catalog_item_id'] ?? null;
+
+            if (blank($categoryId) || blank($cropItemId)) {
+                continue;
+            }
+
+            $uniqueKey = implode(':', [
+                (string) $categoryId,
+                (string) $cropItemId,
+            ]);
+
+            if (isset($seen[$uniqueKey])) {
+                throw ValidationException::withMessages([
+                    'data.crop_composition_items' => 'The same crop cannot be added more than once under the same crop category.',
+                ]);
+            }
+
+            $seen[$uniqueKey] = $index;
+        }
+    }
+
+    /**
      * Sync both child repeaters for the record.
      */
     public static function syncChildren(
@@ -647,7 +711,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 'agri_detail_id' => $row['agri_detail_id'] ?? null,
                 'unit_count' => $row['unit_count'] ?? null,
                 'total_area_hectares' => $row['total_area_hectares'],
-                'sort_order' => $index + 1,
+//                'sort_order' => $index + 1,
             ]);
         }
 
@@ -658,7 +722,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 'cycles_per_year' => $row['cycles_per_year'],
                 'trees_count' => $row['trees_count'] ?? null,
                 'total_area_hectares' => $row['total_area_hectares'],
-                'sort_order' => $index + 1,
+//                'sort_order' => $index + 1,
             ]);
         }
     }

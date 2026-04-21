@@ -6,16 +6,19 @@ use App\Filament\Resources\CropCatalogCategoryResource\Pages;
 use App\Filament\Resources\CropCatalogCategoryResource\RelationManagers;
 use App\Models\CropCatalogCategory;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\BooleanColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 class CropCatalogCategoryResource extends Resource
 {
@@ -39,6 +42,8 @@ class CropCatalogCategoryResource extends Resource
                 TextInput::make('name')
                     ->label('اسم نوع الزراعة')
                     ->required(),
+                Checkbox::make('has_trees')
+                    ->label('اضافة عدد الأشجار'),
 
             ]);
     }
@@ -49,13 +54,15 @@ class CropCatalogCategoryResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('اسم نوع الزراعة')
-                    ,
+                    ->searchable(),
+                BooleanColumn::make('has_trees')
+                ->label('اضافة عدد الأشجار')
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

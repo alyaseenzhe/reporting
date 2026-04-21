@@ -49,6 +49,7 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         $cultivationRows = BranchCropCompositionCollectionResource::extractCultivationRows($data);
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
         BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
+        BranchCropCompositionCollectionResource::validateCropRowsUnique($cropRows);
         $parentData = BranchCropCompositionCollectionResource::extractParentData($data);
         $parentData['user_id'] = auth()->id();
         $parentData['updated_by'] = auth()->id();

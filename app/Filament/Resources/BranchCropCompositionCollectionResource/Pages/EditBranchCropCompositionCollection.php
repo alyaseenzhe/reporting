@@ -28,6 +28,7 @@ class EditBranchCropCompositionCollection extends EditRecord
         $cultivationRows = BranchCropCompositionCollectionResource::extractCultivationRows($data);
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
         BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
+        BranchCropCompositionCollectionResource::validateCropRowsUnique($cropRows);
         $parentData = BranchCropCompositionCollectionResource::extractParentData($data);
         $parentData['updated_by'] = auth()->id();
 
