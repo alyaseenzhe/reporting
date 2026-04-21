@@ -9,6 +9,9 @@ use Livewire\Component;
 
 class EditUser extends Component
 {
+    private const ALL_BRANCHES = ['3', '10', '7', '13', '4', '6', '5', '12', '11', '9', '8', '505'];
+    private const MRKT_TYPES = ['QryGroup30','QryGroup31','QryGroup32','QryGroup40','QryGroup41', 'QryGroup50', 'QryGroup51', 'QryGroup52', 'QryGroup53'];
+
     public $user_id;
     public $role;
     public $is_active;
@@ -16,7 +19,11 @@ class EditUser extends Component
     public $emp_code;
     public $email;
     public $password;
+    public $branch_mode = 'selection';
+    public $mrkt_mode = 'selection';
+//    public $one_branch;
     public $branches = [];
+    public $mrkt_types = [];
     public $group_id;
     public $sales_dept_code;
     public $record;
@@ -32,6 +39,9 @@ class EditUser extends Component
         'branches.required' => 'يجب اختيار فرع واحد على الأقل',
         'branches.array' => 'يجب اختيار فرع واحد على الأقل',
         'branches.min' => 'يجب اختيار فرع واحد على الأقل',
+        'mrkt_types.required' => 'يجب اختيار قسم واحد على الأقل',
+        'mrkt_types.array' => 'يجب اختيار قسم واحد على الأقل',
+        'mrkt_types.min' => 'يجب اختيار قسم واحد على الأقل',
         'sales_dept_code'=> 'حقل المكان مطلوب'
     ];
 
@@ -56,7 +66,10 @@ class EditUser extends Component
             $this->role = $this->record->role;
             $this->group_id = $this->record->group;
             $this->is_active = $this->record->is_active;
-            $this->branches = json_decode($this->record->branches);
+            $this->branches = array_values(array_map('strval', json_decode($this->record->branches, true) ?? []));
+            $this->mrkt_types = array_values(array_map('strval', json_decode($this->record->mrkt_types, true) ?? []));
+            $this->setBranchModeFromBranches();
+            $this->setMrktModeFromTypes();
             $this->sales_dept_code = $this->record->sales_dept_code;
 
         } catch (ModelNotFoundException $exception) {
@@ -77,8 +90,9 @@ class EditUser extends Component
     public function render()
     {
         $groups = UserGroup::all();
+        $branchOptions = $this->branchOptions();
 
-        return view('livewire.edit-user', compact('groups'))
+        return view('livewire.edit-user', compact('groups', 'branchOptions'))
             ->layout('layouts.dashboard');
     }
 
@@ -98,6 +112,8 @@ class EditUser extends Component
     public function update() {
 
         try {
+            $this->syncBranchesFromMode();
+            $this->syncMrktTypesFromMode();
             $record = User::findOrFail($this->user_id);
 
             if($record->email != $this->email) {
@@ -109,6 +125,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
@@ -119,6 +136,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
 
                         ]);
@@ -130,6 +148,7 @@ class EditUser extends Component
                     $record->email = $this->email;
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
+                    $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
 
@@ -143,6 +162,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
 
                         ]);
@@ -154,6 +174,7 @@ class EditUser extends Component
                             'email' => 'required|unique:users',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                     }
@@ -165,6 +186,7 @@ class EditUser extends Component
                     $record->email = $this->email;
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
+                    $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                 }   $record->sales_dept_code = $this->sales_dept_code;
             }
@@ -177,6 +199,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
@@ -187,6 +210,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                     }
@@ -197,6 +221,7 @@ class EditUser extends Component
                     $record->email = $this->email;
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
+                    $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
 
@@ -208,6 +233,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
@@ -218,6 +244,7 @@ class EditUser extends Component
                             'email' => 'required',
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
+                            'mrkt_types' => 'required|array|min:1',
                             'sales_dept_code'=>'nullable'
                         ]);
                     }
@@ -228,6 +255,7 @@ class EditUser extends Component
                     $record->email = $this->email;
                     $record->is_active = $this->is_active;
                     $record->branches = json_encode($this->branches);
+                    $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
 
@@ -248,5 +276,118 @@ class EditUser extends Component
             session()->flash('message', 'هذا المستخدم غير موجود');
             return redirect()->route('list.users');
         }
+    }
+
+    public function updatedBranchMode(): void
+    {
+        $this->resetErrorBag('branches');
+
+        if ($this->branch_mode === 'all') {
+            $this->branches = self::ALL_BRANCHES;
+        }
+
+//        if ($this->branch_mode === 'one') {
+//            $this->one_branch = $this->one_branch ?: ($this->branches[0] ?? null);
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
+    }
+
+    public function updatedMrktMode(): void
+    {
+        $this->resetErrorBag('mrkt_types');
+
+        if ($this->mrkt_mode === 'all') {
+            $this->mrkt_types = self::MRKT_TYPES;
+        }
+    }
+
+//    public function updatedOneBranch(): void
+//    {
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//        }
+//    }
+
+    public function branchOptions(): array
+    {
+        return [
+            '3' => 'الأحساء',
+            '10' => 'جدة',
+            '7' => 'الرياض',
+            '13' => 'وادي الدواسر',
+            '4' => 'الجوف',
+            '6' => 'الدمام',
+            '5' => 'الخرج',
+            '12' => 'نجران',
+            '11' => 'حايل',
+            '9' => 'تبوك',
+            '8' => 'القصيم',
+            '505' => 'ساجر',
+        ];
+    }
+
+    protected function setBranchModeFromBranches(): void
+    {
+        $currentBranches = array_values(array_unique(array_map('strval', $this->branches ?? [])));
+        $allBranches = self::ALL_BRANCHES;
+        sort($currentBranches);
+        sort($allBranches);
+
+        if ($currentBranches === $allBranches) {
+            $this->branch_mode = 'all';
+//            $this->one_branch = null;
+
+            return;
+        }
+
+//        if (count($currentBranches) === 1) {
+//            $this->branch_mode = 'one';
+//            $this->one_branch = $currentBranches[0];
+//
+//            return;
+//        }
+
+        $this->branch_mode = 'selection';
+//        $this->one_branch = null;
+    }
+
+    protected function setMrktModeFromTypes(): void
+    {
+        $currentTypes = array_values(array_unique(array_map('strval', $this->mrkt_types ?? [])));
+        $allTypes = self::MRKT_TYPES;
+        sort($currentTypes);
+        sort($allTypes);
+
+        $this->mrkt_mode = $currentTypes === $allTypes ? 'all' : 'selection';
+    }
+
+    protected function syncBranchesFromMode(): void
+    {
+        if ($this->branch_mode === 'all') {
+            $this->branches = self::ALL_BRANCHES;
+
+            return;
+        }
+
+//        if ($this->branch_mode === 'one') {
+//            $this->branches = filled($this->one_branch) ? [(string) $this->one_branch] : [];
+//
+//            return;
+//        }
+
+        $this->branches = array_values(array_unique(array_map('strval', $this->branches ?? [])));
+    }
+
+    protected function syncMrktTypesFromMode(): void
+    {
+        if ($this->mrkt_mode === 'all') {
+            $this->mrkt_types = self::MRKT_TYPES;
+
+            return;
+        }
+
+        $this->mrkt_types = array_values(array_unique(array_filter(
+            array_map('strval', $this->mrkt_types ?? [])
+        )));
     }
 }

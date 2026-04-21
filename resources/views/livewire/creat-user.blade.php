@@ -110,6 +110,8 @@
     </div>
 
     <hr style="color: #cbd5e1;border: 2px solid;">
+    <div class="grid md:grid-cols-2">
+    <div>
     <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
     <div>
         <div class="mb-6">
@@ -196,7 +198,43 @@
         @error('branches')
         <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
     </div>
+    </div>
+   <div>
+    <h1 class="mt-4 bold text-2xl mb-6">الأقسام التسويقية</h1>
+    <div>
+        <div class="mb-6">
+            <label class="block font-bold mb-3">تعيين الأقسام التسويقية</label>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <label class="flex items-center">
+                    <input wire:model="mrkt_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                    <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
+                </label>
+                {{--                <label class="flex items-center">--}}
+                {{--                    <input wire:model="branch_mode" type="radio" value="one" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">--}}
+                {{--                    <span class="mr-2 text-sm font-medium text-gray-900">فرع واحد</span>--}}
+                {{--                </label>--}}
+                <label class="flex items-center">
+                    <input wire:model="mrkt_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                    <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
+                </label>
+            </div>
+        </div>
+    </div>
 
+    @if($mrkt_mode === 'selection')
+        @foreach(self::MRKT_TYPES as $mrkt_type)
+            <div class="flex items-center mb-4">
+                <input wire:model="mrkt_types" type="checkbox" value="{{$mrkt_type}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{__($mrkt_type)}}</label>
+            </div>
+        @endforeach
+    @endif
+
+    @error('mrkt_types')
+    <div class="text-xs mt-1 text-red-500">{{$message}}</div>
+    @enderror
+   </div>
+    </div>
     <div class="mt-8 text-center">
         <button wire:click.prevent="create" wire:loading.attr="disabled" class="btn bg-indigo-500 hover:bg-indigo-600 text-white">
             <svg class="w-4 h-4 fill-current opacity-50 shrink-0" viewBox="0 0 16 16">

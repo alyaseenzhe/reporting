@@ -31,7 +31,8 @@ class User extends Authenticatable
         'branches',
         'group',
         'emp_code',
-        'is_active'
+        'is_active',
+        "mrkt_types"
     ];
 
     /**
