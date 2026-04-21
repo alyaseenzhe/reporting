@@ -45,12 +45,12 @@
             >
                 @foreach ($headerComponents as $headerComponent)
                     @php
-                        $isHidden = $headerComponent->isHidden();
                         $isRequired = method_exists($headerComponent, 'isRequired') && $headerComponent->isRequired();
+                        $label = $headerComponent->getLabel();
                     @endphp
 
                     <x-filament-support::grid.column
-                        :hidden="$isHidden"
+                        :hidden="blank($label)"
                         :default="$headerComponent->getColumnSpan('default')"
                         :sm="$headerComponent->getColumnSpan('sm')"
                         :md="$headerComponent->getColumnSpan('md')"
@@ -74,7 +74,7 @@
                             } : null
                         "
                     >
-                        @if (! $isHidden && filled($label = $headerComponent->getLabel()))
+                        @if (filled($label))
                             <span @class([
                                 'text-sm font-medium leading-4 text-gray-700',
                                 'dark:text-gray-300' => config('forms.dark_mode'),
@@ -116,6 +116,20 @@
                             @foreach ($item->getComponents(withHidden: true) as $formComponent)
                                 @php
                                     $isHidden = $formComponent->isHidden();
+                                    $columnMaxWidthClass = ($maxWidth = $formComponent->getMaxWidth()) ? match ($maxWidth) {
+                                        'xs' => 'max-w-xs',
+                                        'sm' => 'max-w-sm',
+                                        'md' => 'max-w-md',
+                                        'lg' => 'max-w-lg',
+                                        'xl' => 'max-w-xl',
+                                        '2xl' => 'max-w-2xl',
+                                        '3xl' => 'max-w-3xl',
+                                        '4xl' => 'max-w-4xl',
+                                        '5xl' => 'max-w-5xl',
+                                        '6xl' => 'max-w-6xl',
+                                        '7xl' => 'max-w-7xl',
+                                        default => $maxWidth,
+                                    } : null;
 
                                     if (method_exists($formComponent, 'disableLabel')) {
                                         $formComponent->disableLabel();
@@ -124,32 +138,18 @@
 
                                 <x-filament-support::grid.column
                                     :wire:key="$formComponent instanceof \Filament\Forms\Components\Field ? $this->id . '.' . $formComponent->getStatePath() . '.' . $formComponent::class : null"
-                                    :hidden="$isHidden"
                                     :default="$formComponent->getColumnSpan('default')"
                                     :sm="$formComponent->getColumnSpan('sm')"
                                     :md="$formComponent->getColumnSpan('md')"
                                     :lg="$formComponent->getColumnSpan('lg')"
                                     :xl="$formComponent->getColumnSpan('xl')"
                                     :twoXl="$formComponent->getColumnSpan('2xl')"
-                                    :class="
-                                        ($maxWidth = $formComponent->getMaxWidth()) ? match ($maxWidth) {
-                                            'xs' => 'max-w-xs',
-                                            'sm' => 'max-w-sm',
-                                            'md' => 'max-w-md',
-                                            'lg' => 'max-w-lg',
-                                            'xl' => 'max-w-xl',
-                                            '2xl' => 'max-w-2xl',
-                                            '3xl' => 'max-w-3xl',
-                                            '4xl' => 'max-w-4xl',
-                                            '5xl' => 'max-w-5xl',
-                                            '6xl' => 'max-w-6xl',
-                                            '7xl' => 'max-w-7xl',
-                                            default => $maxWidth,
-                                        } : null
-                                    "
+                                    :class="$columnMaxWidthClass"
                                 >
                                     @if (! $isHidden)
                                         {{ $formComponent }}
+                                    @else
+                                        <div aria-hidden="true" class="h-10"></div>
                                     @endif
                                 </x-filament-support::grid.column>
                             @endforeach
