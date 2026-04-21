@@ -104,14 +104,6 @@ class BranchCropCompositionCollectionResource extends Resource
                                     null
                                 );
                             })
-                            ->getSearchResultsUsing(function (string $search, callable $get): array {
-                                return static::getCustomerSelectOptionsForBranch(
-                                    static::resolveBranchCodeFromState($get('branch_id')),
-                                    $search,
-                                    $get('customer_code'),
-                                    blank($search) ? null : 50
-                                );
-                            })
                             ->afterStateUpdated(function ($state, callable $set): void {
                                 $customer = app(SapCustomerLookupServiceInterface::class)
                                     ->findCustomerByCode($state);
