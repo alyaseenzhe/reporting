@@ -86,6 +86,20 @@
                     </div>
                     @error('dept_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
                 </div>
+                <div class="w-full">
+                    <label class="block font-bold mb-2">الإدارات والأقسام
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div wire:ignore>
+                        <select id="marketing_type" name="marketing_type[]" multiple="multiple"
+                                class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <option value="marketing_all" selected>الكل</option>
+                            @foreach($this->marketingTypeOptions() as $marketingTypeValue => $marketingTypeLabel)
+                                <option value="{{ $marketingTypeValue }}">{{ $marketingTypeLabel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div wire:ignore class="w-full">
                     <label class="block font-bold mb-2">تاريخ البداية
                         <span class="text-red-500">*</span>
@@ -318,7 +332,13 @@
                 dropdownCssClass: "select-font-size"
             });
 
+            $('#marketing_type').select2({
+                dir: "rtl",
+                dropdownCssClass: "select-font-size"
+            });
+
             var prev_depts = $('#dept_id').select2("val");
+            var prev_marketing = $('#marketing_type').select2("val");
 
             $('#dept_id').on('change', function (e) {
                 var data = $('#dept_id').select2("val");
@@ -341,16 +361,38 @@
                 }
             });
 
+            $('#marketing_type').on('change', function () {
+                var data = $('#marketing_type').select2("val");
+
+                if (prev_marketing && prev_marketing.includes('marketing_all') == false && data.includes('marketing_all') == true && prev_marketing.length != data.length) {
+                    $("#marketing_type option").prop('selected', false);
+                    $("#marketing_type option[value='marketing_all']").prop('selected', true);
+
+                    prev_marketing = $(this).val();
+                    $('#marketing_type').change();
+                }
+                else {
+
+                    if (prev_marketing && prev_marketing.length != data.length) {
+                        $("#marketing_type option[value='marketing_all']").removeAttr('selected');
+                        prev_marketing = $(this).val();
+
+                        $("#marketing_type").change();
+                    }
+                }
+            });
+
             $('#gen-report').on('click', function () {
 
                 var start_date = $('#start_date').val();
                 var end_date = $('#end_date').val();
                 var dept_id = $('#dept_id').select2("val");
+                var marketing_type = $('#marketing_type').select2("val");
 
                 $("#gen-report").html('<b>الرجاء الإنتظار..</b>');
 
 
-                if(start_date == '' || end_date == '' || start_date == null || end_date == null || dept_id == null) {
+                if(start_date == '' || end_date == '' || start_date == null || end_date == null || dept_id == null || marketing_type == null) {
                     Swal.fire({
                         title: "حدث خطأ",
                         text: "الرجاء تعبئة جميع الحقول حتى تتمكن من إنشاء التقرير",
@@ -379,7 +421,7 @@
                         },
                     });
 
-                    Livewire.emit('create-report', start_date, end_date, dept_id);
+                    Livewire.emit('create-report', start_date, end_date, dept_id, marketing_type);
                 }
             })
 

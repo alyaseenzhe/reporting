@@ -45,6 +45,7 @@ class ListMarketingDeptSales extends Component
     public $start_date;
     public $end_date;
     public $branches = [];
+    public $allowed_marketing_types = [];
     public $sap_results = [];
     public $show_msg = false;
     public   $current_year;
@@ -91,7 +92,8 @@ class ListMarketingDeptSales extends Component
     public function mount()
     {
         $user = User::where('id', Auth::id())->first();
-        $this->branches = json_decode($user->branches);
+        $this->branches = array_values(array_map('strval', json_decode($user->branches ?? '[]', true) ?? []));
+        $this->allowed_marketing_types = $this->resolveAllowedMarketingTypes($user);
 
     }
 
@@ -106,25 +108,30 @@ class ListMarketingDeptSales extends Component
         return   $this->percentage ;
     }
 
-    public function generateReport($start_date, $end_date, $depts)
+    public function generateReport($start_date, $end_date, $depts, $marketingTypes = null)
     {
 
         set_time_limit(2000);
 
         $this->emit('show-container');
-        $this->sapQuery($start_date, $end_date, $depts);
+        $this->sapQuery($start_date, $end_date, $depts, $marketingTypes);
 
 
         $this->show_msg = true;
         $this->emit('finished');
     }
 
-    public function sapQuery($start_date, $end_date, $depts)
+    public function sapQuery($start_date, $end_date, $depts, $marketingTypes = null)
     {
         $dateRange = $this->buildDateRange($start_date, $end_date);
         $departments = $this->resolveDepartments($depts);
+        $marketingGroups = $this->resolveMarketingGroups($marketingTypes);
 
         $this->sap_results = [];
+
+        if (! count($departments) || ! count($marketingGroups)) {
+            return;
+        }
 
         $conn = $this->connectToSap();
 
@@ -132,7 +139,7 @@ class ListMarketingDeptSales extends Component
             return;
         }
 
-        $sql =   $this->buildMarketingDepartmentSalesSql($dateRange, $departments);
+        $sql =   $this->buildMarketingDepartmentSalesSql($dateRange, $departments, $marketingGroups);
 
         $result = odbc_exec($conn, $sql );
 //        dd($sql);
@@ -213,11 +220,11 @@ class ListMarketingDeptSales extends Component
         return false;
     }
 
-    private function buildMarketingDepartmentSalesSql(array $dateRange, array $departments)
+    private function buildMarketingDepartmentSalesSql(array $dateRange, array $departments, array $marketingGroups)
     {
         $departmentSql = implode(', ', $departments);
-        $branchRowsSql = $this->buildMarketingGroupUnion($dateRange, null, true);
-        $totalRowsSql = $this->buildMarketingGroupUnion($dateRange, $departmentSql, false);
+        $branchRowsSql = $this->buildMarketingGroupUnion($dateRange, null, true, $marketingGroups);
+        $totalRowsSql = $this->buildMarketingGroupUnion($dateRange, $departmentSql, false, $marketingGroups);
 
         return <<<SQL
 SELECT * FROM (
@@ -237,12 +244,12 @@ ORDER BY tbl1."mrkt_type", tbl1."BranchCode", tbl1."BranchRegistrationNumber"
 SQL;
     }
 
-    private function buildMarketingGroupUnion(array $dateRange, $departmentSql, $includeBranchColumns)
+    private function buildMarketingGroupUnion(array $dateRange, $departmentSql, $includeBranchColumns, array $marketingGroups)
     {
 //        dd($dateRange['current_year']);
         $selects = [];
 
-        foreach (self::MARKETING_GROUPS as $group) {
+        foreach ($marketingGroups as $group) {
             $selects[] = $this->buildMarketingGroupSelect(
                 $group,
                 $dateRange,
@@ -252,6 +259,66 @@ SQL;
         }
 
         return implode("\n\nUNION ALL\n\n", $selects);
+    }
+
+    private function resolveMarketingGroups($marketingTypes): array
+    {
+        $allowedMarketingTypes = $this->allowed_marketing_types;
+
+        if (Auth::user()?->role === 'a') {
+            $allowedMarketingTypes = self::MARKETING_GROUPS;
+        }
+
+        $marketingTypes = array_values(array_unique(array_filter(
+            array_map('strval', (array) $marketingTypes)
+        )));
+
+        if (! count($marketingTypes) || in_array('marketing_all', $marketingTypes, true)) {
+            return $allowedMarketingTypes;
+        }
+
+        return array_values(array_intersect($allowedMarketingTypes, $marketingTypes));
+    }
+
+    private function resolveAllowedMarketingTypes(?User $user): array
+    {
+        if (! $user) {
+            return [];
+        }
+
+        if ($user->role === 'a') {
+            return self::MARKETING_GROUPS;
+        }
+
+        $assignedMarketingTypes = array_values(array_unique(array_filter(
+            array_map('strval', json_decode($user->mrkt_types ?? '[]', true) ?? [])
+        )));
+
+        return array_values(array_intersect(self::MARKETING_GROUPS, $assignedMarketingTypes));
+    }
+
+    public function marketingTypeOptions(): array
+    {
+        return collect($this->allowed_marketing_types)
+            ->mapWithKeys(fn (string $marketingType): array => [
+                $marketingType => $this->marketingTypeLabel($marketingType),
+            ])
+            ->toArray();
+    }
+
+    private function marketingTypeLabel(string $marketingType): string
+    {
+        return [
+            'QryGroup30' => 'ادارة فنية - الاسمدة م1',
+            'QryGroup31' => 'ادارة فنية - المبيدات م1',
+            'QryGroup32' => 'ادارة فنية - البذور م1',
+            'QryGroup40' => 'اقسام تسويقية - الحدائق والصحة العامة',
+            'QryGroup41' => 'اقسام تسويقية - المكافحة المتكاملة',
+            'QryGroup50' => 'تقنيات الزراعة - الاليات',
+            'QryGroup51' => 'تقنيات الزراعة - الري',
+            'QryGroup52' => 'تقنيات الزراعة - الري المطري',
+            'QryGroup53' => 'تقنيات الزراعة - الخدمات',
+        ][$marketingType] ?? $marketingType;
     }
 
     private function buildMarketingGroupSelect($group, array $dateRange, $departmentSql, $includeBranchColumns)
