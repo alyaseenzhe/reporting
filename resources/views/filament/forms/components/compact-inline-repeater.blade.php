@@ -43,14 +43,21 @@
                 :two-xl="$gridTwoXlColumns"
                 class="filament-forms-component-container items-end gap-2 rounded-md bg-gray-50 px-2 py-2 dark:bg-gray-800"
             >
-                @foreach ($headerComponents as $headerComponent)
+                @foreach ($headerComponents as $headerIndex => $headerComponent)
                     @php
                         $isRequired = method_exists($headerComponent, 'isRequired') && $headerComponent->isRequired();
                         $label = $headerComponent->getLabel();
+                        $shouldShowHeader = filled($label) && collect($containers)->contains(function ($container) use ($headerIndex): bool {
+                            $component = collect($container->getComponents(withHidden: true))
+                                ->values()
+                                ->get($headerIndex);
+
+                            return $component && (! $component->isHidden());
+                        });
                     @endphp
 
                     <x-filament-support::grid.column
-                        :hidden="blank($label)"
+                        :hidden="! $shouldShowHeader"
                         :default="$headerComponent->getColumnSpan('default')"
                         :sm="$headerComponent->getColumnSpan('sm')"
                         :md="$headerComponent->getColumnSpan('md')"
@@ -74,7 +81,7 @@
                             } : null
                         "
                     >
-                        @if (filled($label))
+                        @if ($shouldShowHeader)
                             <span @class([
                                 'text-sm font-medium leading-4 text-gray-700',
                                 'dark:text-gray-300' => config('forms.dark_mode'),

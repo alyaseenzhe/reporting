@@ -335,6 +335,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->label('عدد العروات/سنة')
                                     ->required()
                                     ->numeric()
+                                    ->default(1)
                                     ->columnSpan(['default' => 1, 'md' => 2])
                                     ->rules(['integer', 'min:1']),
 
