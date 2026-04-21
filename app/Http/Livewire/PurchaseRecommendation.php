@@ -183,7 +183,6 @@ class PurchaseRecommendation extends Component
 
     public function createReport($item_type, $vendor_type, $product_code) {
 
-
         if (! extension_loaded('odbc'))
         {
             die('ODBC extension not enabled / loaded');
@@ -836,7 +835,6 @@ INNER JOIN
 
 	AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
 
-
 WHERE
 
     T2."DocStatus" = \'O\' -- Filters for open purchase quotation
@@ -858,88 +856,6 @@ WHERE
             }
 
 
-$stmt = 'SELECT
-    T1."CardCode",
-    T1."CardName",
-    T0."ItemCode",
-    T0."U_UDF1" AS "OldItemCode",
-    T0."ItemName",
-    T0."InvntryUom",
-    T0."LeadTime",
-    T0."U_SafetyStock",
-    T0."OnOrder",
-    SUM(tbl_Quotation."OpenQoutation") AS "OpenQoutation",
-    T0."OnHand",
-    COALESCE(SUM(tbl_Sales."QuantityInInventoryUoM"), 0) AS "HistoricalSalesQty"
-    --COALESCE(SUM(tbl_Sales."NetSalesAmountSC"), 0) AS "HistoricalSalesAmount"
-FROM AL_YASEEN_AGRI_PLIVE.OITM T0
-INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
-
-LEFT JOIN (
-    -- Open Quotations
-    SELECT DISTINCT
-        T2."DocEntry",
-        T2."DocNum",
-        T2."DocDate",
-        T2."ReqDate" AS "DocDueDate",
-        T2."CardCode",
-        T2."CardName",
-        T3."ItemCode" AS "ItemCode2",
-        T4."U_UDF1" AS "OldItemCode",
-        T3."Dscription",
-        T3."ItemCode",
-        T3."OpenQty" AS "OpenQoutation"
-    FROM AL_YASEEN_AGRI_PLIVE.OPQT T2
-    INNER JOIN AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
-    INNER JOIN AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
-    INNER JOIN AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
-    WHERE T2."DocStatus" = \'O\'
-) AS tbl_Quotation ON tbl_Quotation."ItemCode2" = T0."ItemCode"
-
-LEFT JOIN "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery" AS tbl_Sales
-    ON tbl_Sales."ItemCode" = T0."ItemCode"
-    --AND tbl_Sales."BusinessPartnerCode" = T1."CardCode"
-    AND tbl_Sales."DocumentDate" BETWEEN
-
-      --  ADD_DAYS(
-       --     ADD_YEARS(CURRENT_DATE, -1),
-       --     -(T0."LeadTime" + \'' . $this->dist_days. '\')
-      --  )
-     --   AND ADD_YEARS(CURRENT_DATE, -1)
-
-   --  AND tbl_Sales."DocDate" BETWEEN
- --   ADD_YEARS(CURRENT_DATE, -1)
-   -- AND ADD_YEARS(
-   --     ADD_MONTHS(CURRENT_DATE, CEIL((T0."LeadTime" + \'' . $this->dist_days. '\') / 30) - 1),
-   --     -1
- --   )
-
-    ADD_YEARS(ADD_DAYS(CURRENT_DATE, 1 - DAYOFMONTH(CURRENT_DATE)), -1)
-    AND ADD_YEARS(
-        LAST_DAY(
-        ADD_MONTHS(ADD_DAYS(CURRENT_DATE, 1 - DAYOFMONTH(CURRENT_DATE)), CEIL((T0."LeadTime" + 15)/30) - 1)
-         ),
-        -1
-    )
-
-
-        ';
-
-$stmt .= 'WHERE T0."validFor" = \'Y\'
-GROUP BY
-    T1."CardCode",
-    T1."CardName",
-    T0."ItemCode",
-    T0."U_UDF1",
-    T0."ItemName",
-    T0."InvntryUom",
-    T0."LeadTime",
-    T0."U_SafetyStock",
-    T0."OnOrder",
-    T0."OnHand"
-ORDER BY T1."CardCode"
-';
-//dd($stmt);
             $result = odbc_exec($conn, $stmt);
             if (!$result)
             {
