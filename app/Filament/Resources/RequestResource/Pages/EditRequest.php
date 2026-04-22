@@ -10,6 +10,11 @@ class EditRequest extends EditRecord
 {
     protected static string $resource = RequestResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('settlements', ['record' => $this->getRecord()]);
+    }
+
     protected function getActions(): array
     {
         return [

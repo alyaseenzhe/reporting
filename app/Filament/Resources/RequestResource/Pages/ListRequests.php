@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RequestResource\Pages;
 
 use App\Filament\Resources\RequestResource;
+use App\Models\Request;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Notifications\Actions\Action as NotificationAction;
@@ -25,6 +26,7 @@ class ListRequests extends ListRecords
                 ->icon('heroicon-o-bell')
                 ->modalHeading('ارسال اشعار لطلب جديد')
                 ->modalButton('ارسال الاشعار')
+                ->visible(optional(auth()->user())->role == 'a' || optional(auth()->user())->role == 'hr')
                 ->form([
                     Forms\Components\Select::make('user_id')
                         ->label('User')

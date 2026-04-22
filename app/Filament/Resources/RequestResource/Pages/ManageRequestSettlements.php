@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RequestResource\Pages;
 
 use App\Filament\Resources\RequestResource;
+use App\Models\Request as RequestModel;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\Concerns\HasRecordBreadcrumb;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
@@ -47,14 +48,14 @@ class ManageRequestSettlements extends Page
     public function uploadAttachment(): void
     {
         $department = $this->getAllowedDepartment();
+        $collection = RequestModel::settlementAttachmentUploadCollectionForDepartment($department);
 
-        if (! $department) {
+        if (! $department || ! $collection) {
             abort(403);
         }
 
         $this->validate();
 
-        $collection = sprintf('%s-files', $department);
         $filename = $this->attachment->getClientOriginalName();
         $tempPath = $this->attachment->storeAs('temp-uploads', $filename, 'local');
 
@@ -134,16 +135,7 @@ class ManageRequestSettlements extends Page
             'pendingCount' => $totalCount - $doneCount,
             'totalCount' => $totalCount,
             'progress' => $totalCount > 0 ? (int) round(($doneCount / $totalCount) * 100) : 0,
-            'attachments' => $this->getAllowedDepartment()
-                ? $this->getRecord()
-                    ->getMedia(sprintf('%s-files', $this->getAllowedDepartment()))
-                    ->map(fn ($media) => [
-                        'id' => $media->getKey(),
-                        'name' => $media->file_name,
-                        'url' => $media->getUrl(),
-                    ])
-                    ->toArray()
-                : [],
+            'attachments' => $this->getDepartmentAttachments(),
             'attachmentCollection' => $this->getAllowedDepartment()
                 ? strtoupper($this->getAllowedDepartment()).' Files'
                 : 'Attachments',
@@ -170,12 +162,28 @@ class ManageRequestSettlements extends Page
 
     protected function getAllowedDepartment(): ?string
     {
-        return match (auth()->user()?->role) {
-            'a', 'it' => 'it',
-            'hr' => 'hr',
-            'accountant' => 'accountant',
-            default => null,
-        };
+        return RequestModel::settlementDepartmentFromRole(auth()->user()?->role);
+    }
+
+    protected function getDepartmentAttachments(): array
+    {
+        $department = $this->getAllowedDepartment();
+
+        if (! $department) {
+            return [];
+        }
+
+        return collect(RequestModel::settlementAttachmentCollectionsForDepartment($department))
+            ->flatMap(fn (string $collection) => $this->getRecord()->getMedia($collection))
+            ->unique(fn ($media) => $media->getKey())
+            ->sortByDesc(fn ($media) => optional($media->created_at)?->timestamp ?? 0)
+            ->map(fn ($media) => [
+                'id' => $media->getKey(),
+                'name' => $media->file_name,
+                'url' => $media->getUrl(),
+            ])
+            ->values()
+            ->all();
     }
 
     protected function cleanUtf8($value): string

@@ -140,11 +140,26 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->maxValue(9999999999.99)
                             ->rules(['numeric', 'min:0.01']),
 
-                        DatePicker::make('updated_at')
+                        DatePicker::make('created_at')
                             ->label('تاريخ جمع البيانات')
                             ->hiddenOn('create')
                             ->disabled(),
+
+                        TextInput::make('created_by')
+                            ->label('تم انشاؤه بواسطة')
+                            ->hiddenOn('create')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(function ($state, ?Model $record): string {
+                                return (string) optional(optional($record)->userUpdate)->name;
+                            }),
+
+                        DatePicker::make('updated_at')
+                            ->label('تاريخ آخر تحديث')
+                            ->hiddenOn('create')
+                            ->disabled(),
                         //  ->required(),
+
 
                         TextInput::make('updated_by')
                             ->label('آخر تعديل بواسطة')
@@ -398,10 +413,10 @@ class BranchCropCompositionCollectionResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable(),
+//                TextColumn::make('id')
+//                    ->label('ID')
+//                    ->sortable()
+//                    ->searchable(),
 //                TextColumn::make('created_at')
 //                    ->label('تاريخ الجمع')
 //                    ->date(),
@@ -433,8 +448,16 @@ class BranchCropCompositionCollectionResource extends Resource
                         query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search),
 //                        isIndividual: true
                     ),
-                TextColumn::make('farms_count')
-                    ->label('عدد المزارع'),
+                 TextColumn::make('total_farm_area_hectares')
+                ->label('المساحة الاجمالية للمزارع (هكتار)')
+                ->searchable(),
+
+                TextColumn::make('updated_at')
+                ->label('تاريخ آخر تحديث')
+                ->date('Y-m-d'),
+
+//                TextColumn::make('farms_count')
+//                    ->label('عدد المزارع'),
                 // TextColumn::make('cropItems_count')
                 //     ->counts('cropItems')
                 //     ->label('عدد المحاصيل'),

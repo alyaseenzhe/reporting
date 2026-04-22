@@ -12,6 +12,18 @@ class Request extends Model implements HasMedia
     use InteractsWithMedia;
     use HasFactory;
 
+    public const SETTLEMENT_ATTACHMENT_COLLECTIONS = [
+        'hr' => ['hr-files'],
+        'it' => ['it-files'],
+        'accountant' => ['accountant-files', 'accounting-files', 'finance-files'],
+    ];
+
+    public const SETTLEMENT_ATTACHMENT_UPLOAD_COLLECTIONS = [
+        'hr' => 'hr-files',
+        'it' => 'it-files',
+        'accountant' => 'accountant-files',
+    ];
+
 
     protected $guarded = [];
 
@@ -45,6 +57,7 @@ class Request extends Model implements HasMedia
     {
         $this->addMediaCollection('hr-files')->useDisk('public');
         $this->addMediaCollection('it-files')->useDisk('public');
+        $this->addMediaCollection('accountant-files')->useDisk('public');
         $this->addMediaCollection('finance-files')->useDisk('public');
         $this->addMediaCollection('accounting-files')->useDisk('public');
         $this->addMediaCollection('employee-files')->useDisk('public');
@@ -53,6 +66,7 @@ class Request extends Model implements HasMedia
         $collections = [
             'hr-files',
             'it-files',
+            'accountant-files',
             'finance-files',
             'accounting-files',
             'employee-files'
@@ -61,6 +75,26 @@ class Request extends Model implements HasMedia
             $this->addMediaCollection($collection)
                 ->useDisk('public');
         }
+    }
+
+    public static function settlementDepartmentFromRole(?string $role): ?string
+    {
+        return match ($role) {
+            'a', 'it' => 'it',
+            'hr' => 'hr',
+            'accountant' => 'accountant',
+            default => null,
+        };
+    }
+
+    public static function settlementAttachmentCollectionsForDepartment(?string $department): array
+    {
+        return static::SETTLEMENT_ATTACHMENT_COLLECTIONS[$department] ?? [];
+    }
+
+    public static function settlementAttachmentUploadCollectionForDepartment(?string $department): ?string
+    {
+        return static::SETTLEMENT_ATTACHMENT_UPLOAD_COLLECTIONS[$department] ?? null;
     }
 
 
