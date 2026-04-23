@@ -174,7 +174,7 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('أنواع الزراعة')
                 ->schema([
                     Repeater::make('cultivation_types')
-                        ->label('تفاصيل أنواع الزراعة')
+                        ->label('')
                         ->view('filament.forms.components.compact-inline-repeater')
                         ->disableItemMovement()
                         ->minItems(1)
@@ -283,7 +283,7 @@ class BranchCropCompositionCollectionResource extends Resource
             Section::make('التركيب المحصولي')
                 ->schema([
                     Repeater::make('crop_composition_items')
-                        ->label('صفوف التركيب المحصولي')
+                        ->label('')
                         ->view('filament.forms.components.compact-inline-repeater')
                         ->columns(['default' => 1, 'md' => 12])
                         ->disableItemMovement()
@@ -452,6 +452,10 @@ class BranchCropCompositionCollectionResource extends Resource
                 ->label('المساحة الاجمالية للمزارع (هكتار)')
                 ->searchable(),
 
+                TextColumn::make('cultivation_types_sum_total_area_hectares')
+                ->label('مجموع أنواع الزراعة (هـ)')
+                ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
+
                 TextColumn::make('updated_at')
                 ->label('تاريخ آخر تحديث')
                 ->date('Y-m-d'),
@@ -596,7 +600,8 @@ class BranchCropCompositionCollectionResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()
+            ->withSum('cultivationTypes', 'total_area_hectares');
         $authorizedBranchIds = static::getAuthorizedBranchesQuery()->pluck('id');
 
         if ($authorizedBranchIds->isEmpty()) {
