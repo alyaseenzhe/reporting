@@ -175,7 +175,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 ->schema([
                     Repeater::make('cultivation_types')
                         ->label('')
-                        ->view('filament.forms.components.compact-inline-repeater')
+                        ->view('components.filament.forms.compact-inline-repeater')
                         ->disableItemMovement()
                         ->minItems(1)
                         ->defaultItems(1)
@@ -284,7 +284,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 ->schema([
                     Repeater::make('crop_composition_items')
                         ->label('')
-                        ->view('filament.forms.components.compact-inline-repeater')
+                        ->view('components.filament.forms.compact-inline-repeater')
                         ->columns(['default' => 1, 'md' => 12])
                         ->disableItemMovement()
                         ->minItems(1)

@@ -16,4 +16,8 @@ class ListCropCatalogCategories extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+    protected function getTableRecordsPerPageSelectOptions(): array
+    {
+        return [25, -1];
+    }
 }

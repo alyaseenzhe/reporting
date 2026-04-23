@@ -4,8 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CropCatalogItemResource\Pages;
 use App\Filament\Resources\CropCatalogItemResource\RelationManagers;
+
+use App\Models\CropCatalogCategory;
 use App\Models\CropCatalogItem;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -16,12 +19,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+
 
 class CropCatalogItemResource extends Resource
 {
     protected static ?string $model = CropCatalogItem::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
+
 
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
@@ -38,8 +44,25 @@ class CropCatalogItemResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+
                     ->label('اسم المحصول')
-                    ->required(),
+                    ->required()
+                    ->rule(function (callable $get, ?Model $record) {
+                        return Rule::unique('crop_catalog_items', 'name')
+                            ->where(fn ($query) => $query->where('crop_catalog_category_id', $get('crop_catalog_category_id')))
+                            ->ignore($record);
+
+
+                    }),
+                Select::make('crop_catalog_category_id')
+                    ->label('طبيعة المحصول')
+                    ->required()
+                    ->reactive()
+                    ->options(function (): array {
+                        return CropCatalogCategory::query()
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    }),
 
             ]);
     }
@@ -49,13 +72,20 @@ class CropCatalogItemResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+
                     ->label('اسم المحصول'),
+
+
+                TextColumn::make('category.name')
+                    ->label('طبيعة المحصول')
+                    ->searchable(),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+//                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
