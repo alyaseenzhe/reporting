@@ -39,6 +39,7 @@ class ItemsSalesByBranch extends Component
     public $vendor_list = [];
     public $customer_list = [];
     public $emps = null;
+    public $products_codes = [];
     public $currentGroup = null, $currentItemName = null,
         $itemGroup_item_total = 0, $itemGroup_cost_total = 0, $itemGroup_gross_total = 0, $itemGroup_quantity_total = 0, $itemGroup_trans_total = 0,
         $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0,
@@ -110,8 +111,6 @@ class ItemsSalesByBranch extends Component
         'product_code.required_if' => 'مطلوب'
 
     ];
-    public $query;
-
     public function mount(){
 
         $this->empKey =null;
@@ -119,14 +118,13 @@ class ItemsSalesByBranch extends Component
         $this->employees();
         $this->vendors();
         $this->customers();
-        $this->query = User::where('id', Auth::id())->first();
-        $this->branches = json_decode($this->query->branches);
+        $user = User::where('id', Auth::id())->first();
+        $this->branches = json_decode(optional($user)->branches, true) ?? [];
         $this->all_option = 'dept_id';
     }
 
     public function generateReport()
     {
-        $this->branches = [];
         $this->expanded = [];
 
 
@@ -243,7 +241,6 @@ class ItemsSalesByBranch extends Component
 
     protected function resetExpandedData()
     {
-        $this->branches = [];
         $this->expanded = [];
 
     }
@@ -464,7 +461,8 @@ class ItemsSalesByBranch extends Component
                         'Quantity'     => $empRows->sum('EmployeeTotalQty'),
                         'TransCount'   => $empRows->sum('EmployeeTransCount'),
                     ])
-                    ->values();
+                    ->values()
+                    ->all();
 
                 return [
                     'BranchId' => $branch['BPLId'],
@@ -477,12 +475,13 @@ class ItemsSalesByBranch extends Component
                 ];
             })
                 ->sortByDesc('TotalQuantitySaleByBranch')
-                ->values();
+                ->values()
+                ->all();
 
             $item['branches'] = $branches;
 
             return $item;
-        });
+        })->values()->all();
 
 
 //                $this->group_results = collect($sap_collection)
@@ -1024,7 +1023,17 @@ ORDER BY "CardCode"';
             ->where('is_active', '1')
             ->whereIn('write_product_target', ['1', '2'])
             ->select('users.id', 'users.emp_code', 'users.name', 'users.sales_dept_code')
-            ->get();
+            ->get()
+            ->map(function ($employee) {
+                return [
+                    'id' => $employee->id,
+                    'emp_code' => $employee->emp_code,
+                    'name' => $employee->name,
+                    'sales_dept_code' => $employee->sales_dept_code,
+                ];
+            })
+            ->values()
+            ->all();
         return $this->emps;
     }
     public function vendors() {
