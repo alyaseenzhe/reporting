@@ -100,7 +100,7 @@
                 <label class="block font-bold mb-2">نوع المنتج</label>
                 <div class="flex  gap-8 pt-2">
                     <label class="inline-flex items-center gap-2">
-                        <input wire:model="item_validity" type="checkbox" value="valid" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                        <input git wire:model="item_validity" type="checkbox" value="valid" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
                         <span>نشط</span>
                     </label>
                     <label class="inline-flex items-center gap-2">

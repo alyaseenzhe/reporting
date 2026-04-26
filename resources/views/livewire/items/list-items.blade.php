@@ -29,6 +29,9 @@
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
                                 <div class="text-sm">الإدارة / القسم</div>
                             </th>
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">رقم الكتلوج</div>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -40,6 +43,7 @@
                                 <td style="border-left: 2px solid #a8a8a8;" class="border p-2 whitespace-nowrap">{{ $item['Speciality'] }}</td>
                                 <td style="border-left: 2px solid #a8a8a8;" class="border p-2">{{ $item['VendorName'] }}</td>
                                 <td style="border-left: 2px solid black;" class="border p-2">{{ __($item['mrkt_type']) }}</td>
+                                <td style="border-left: 2px solid black;" class="border p-2">{{ __($item['CatalogNumber']) }}</td>
                             </tr>
                         @endforeach
                         </tbody>

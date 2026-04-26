@@ -595,6 +595,7 @@ ORDER BY "CardCode"';
 SELECT DISTINCT
     T0."ItemCode",
     T0."ItemName",
+    T0."SuppCatNum" AS "CatalogNumber",
     T1."CardName" AS "VendorName",
     T2."UomCode",
     CASE
