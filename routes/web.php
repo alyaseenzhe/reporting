@@ -79,6 +79,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/show-visit/{id}', \App\Http\Livewire\ShowVisit::class)->name('show.visit');
 
     Route::get('/items-sales-by-branch', ItemsSalesByBranch::class)->name('items.sales');
+    Route::get('/list-items', \App\Http\Livewire\ListItems::class)->name('list.items');
 
 
 });
