@@ -10,6 +10,17 @@ use Livewire\Component;
 
 class ItemsSalesByBranch extends Component
 {
+    private const MARKETING_TYPE_OPTIONS = [
+        '30' => 'ادارة فنية - الاسمدة م1',
+        '31' => 'ادارة فنية - المبيدات م1',
+        '32' => 'ادارة فنية - البذور م1',
+        '40' => 'اقسام تسويقية - الحدائق والصحة العامة',
+        '41' => 'اقسام تسويقية - المكافحة المتكاملة',
+        '50' => 'الاليات والري - الاليات',
+        '51' => 'الاليات والري - الري',
+        '52' => 'الاليات والري - الري المطري',
+        '53' => 'الاليات والري - الخدمات',
+    ];
 //    use WithPagination;
 
 //    protected $paginationTheme = 'tailwind';
@@ -22,34 +33,35 @@ class ItemsSalesByBranch extends Component
     public $group_type = 'groups_all';
     public $cat_type = [];
     public $sp_type = [];
-    public $vendor_type ;
+    public $vendor_type = ['vendor_all'];
     public $search_type;
     public $product_code;
     public $marketing_type = [];
+    public $allowed_marketing_types = [];
     public $customer_type='customer_all';
     public $emps_type ='employees_all';
     public $sortBy = 'ItemCode';
     public $sortDir = 'ASC';
     public $sap_codes = [];
-    public $group_results;
-    public $sap_results;
-    public $totalSalesByItem;
+    public $group_results = [];
+    public $sap_results = [];
+    public $totalSalesByItem = [];
     public $show_msg = false;
     public $branches = [];
     public $vendor_list = [];
     public $customer_list = [];
-    public $emps = null;
+    public $emps = [];
     public $products_codes = [];
     public $currentGroup = null, $currentItemName = null,
         $itemGroup_item_total = 0, $itemGroup_cost_total = 0, $itemGroup_gross_total = 0, $itemGroup_quantity_total = 0, $itemGroup_trans_total = 0,
         $itemGroup_item_subtotal = 0, $itemGroup_cost_subtotal = 0, $itemGroup_gross_subtotal = 0, $itemGroup_quantity_subtotal = 0, $itemGroup_trans_subtotal = 0,
         $itemGroup_itemName_subtotal = 0, $itemGroup_costName_subtotal = 0, $itemGroup_grossName_subtotal = 0;
 
-    public $grouped;
-    public $totalsByBranch;
+    public $grouped = [];
+    public $totalsByBranch = [];
     public $empKey;
     public $allBranches = [];
-    public $salesIndex;
+    public $salesIndex = [];
     public $employees = [];
     public $counter = 0,
 
@@ -120,20 +132,100 @@ class ItemsSalesByBranch extends Component
         $this->customers();
         $user = User::where('id', Auth::id())->first();
         $this->branches = json_decode(optional($user)->branches, true) ?? [];
+        $this->allowed_marketing_types = $this->resolveAllowedMarketingTypes($user);
+        $this->marketing_type = $this->defaultMarketingTypes();
         $this->all_option = 'dept_id';
+    }
+
+    protected function normalizeMarketingTypeValues($marketingTypes): array
+    {
+        return array_values(array_unique(array_filter(array_map(function ($marketingType) {
+            $marketingType = (string) $marketingType;
+
+            if (strpos($marketingType, 'QryGroup') === 0) {
+                $marketingType = substr($marketingType, strlen('QryGroup'));
+            }
+
+            return array_key_exists($marketingType, self::MARKETING_TYPE_OPTIONS)
+                ? $marketingType
+                : null;
+        }, (array) $marketingTypes))));
+    }
+
+    protected function resolveAllowedMarketingTypes(?User $user): array
+    {
+        $allMarketingTypes = array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if (! $user || $user->role === 'a') {
+            return $allMarketingTypes;
+        }
+
+        $assignedMarketingTypes = $this->normalizeMarketingTypeValues(
+            json_decode($user->mrkt_types ?? '[]', true) ?? []
+        );
+
+        return count($assignedMarketingTypes) ? $assignedMarketingTypes : $allMarketingTypes;
+    }
+
+    protected function userCanAccessAllMarketingTypes(): bool
+    {
+        return count($this->allowed_marketing_types) === count(self::MARKETING_TYPE_OPTIONS);
+    }
+
+    protected function defaultMarketingTypes(): array
+    {
+        return $this->userCanAccessAllMarketingTypes()
+            ? ['marketing_all']
+            : $this->allowed_marketing_types;
+    }
+
+    protected function resolveSelectedMarketingTypes($marketingTypes): array
+    {
+        $requestedMarketingTypes = (array) $marketingTypes;
+        $selectedMarketingTypes = $this->normalizeMarketingTypeValues($requestedMarketingTypes);
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if ($this->userCanAccessAllMarketingTypes()) {
+            if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+                return ['marketing_all'];
+            }
+
+            return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+        }
+
+        if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+            return $allowedMarketingTypes;
+        }
+
+        return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+    }
+
+    public function marketingTypeOptions(): array
+    {
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+        $labels = [
+            '30' => 'ادارة فنية - الاسمدة م1',
+            '31' => 'ادارة فنية - المبيدات م1',
+            '32' => 'ادارة فنية - البذور م1',
+            '40' => 'اقسام تسويقية - الحدائق والصحة العامة',
+            '41' => 'اقسام تسويقية - المكافحة المتكاملة',
+            '50' => 'الاليات والري - الاليات',
+            '51' => 'الاليات والري - الري',
+            '52' => 'الاليات والري - الري المطري',
+            '53' => 'الاليات والري - الخدمات',
+        ];
+
+        return collect($allowedMarketingTypes)
+            ->mapWithKeys(fn (string $marketingType): array => [
+                $marketingType => $labels[$marketingType] ?? $marketingType,
+            ])
+            ->toArray();
     }
 
     public function generateReport()
     {
         $this->expanded = [];
-
-
         $this->resetExpandedData();
-        foreach ($this->expanded as $itemCode => $expandedItems) {
-            if ($expandedItems) {
-                $this->loadBranches($itemCode);
-            }
-        }
 //        $sql = '';        // RESET
 //        $bindings = [];   // RESET
         // Now all values are AVAILABLE
@@ -252,300 +344,89 @@ class ItemsSalesByBranch extends Component
         return view('livewire.items.items-sales-by-branch')->layout('layouts.dashboard');
     }
 
-//    public function create_report(){
-    public function resetProductCodes()
-    {
-        foreach ([
-                     'product_codes',
-                     'group_codes',
-                     'category_codes',
-                     'speciality_codes',
-                     'vendor_codes',
-                     'marketing_codes',
-                     'selected_products'
-                 ] as $property) {
-
-            if (property_exists($this, $property)) {
-                $this->{$property} = [];
-            }
-        }
-    }
-
     public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $customer_type, $emps_type) {
-
-
-//        dd($this->vendor_type);
-        $report_type ='byDepartment';
-
-//        dd('here?');
-
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
 
         $this->validate();
         $this->show_msg = false;
         $this->resetProductCodes();
-        //    $this->report_type = $report_type;
-        //  $this->scribes_results = [];
         $this->sap_results = [];
         $this->group_results = [];
 
-//        $this->productCodes('commerce',['cat_all'], ['sp_all'], 'vendor_all', 'advanced_search', null, ['marketing_all']);
         $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
 
-        if (is_null($start_date) == false && is_null($end_date) == false) {
-
-
-            $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
-
-            logger('SAP COUNT: ' . count($this->sap_results));
-//            dd($this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type));
-
+        if ($start_date === null || $end_date === null) {
+            return;
         }
 
-        else {
-            dd('coco');
-        }
+        $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type);
+        logger('SAP COUNT: ' . count($this->sap_results));
 
-//        dd($this->sap_results);
-        $sap_collection = collect($this->sap_results);
-        $fullSap = collect($this->sap_results);
+        $this->group_results = $this->buildGroupedResults($this->sap_results);
+        $this->sap_results = [];
+        $this->show_msg = true;
+        $this->emit('finished');
+    }
 
-//
-        $this->group_results = collect($this->sap_results)
-            ->groupBy('ItemCode')
-            ->map(function ($itemRows) use ($fullSap) {
-
-                $itemCode = $itemRows->first()['ItemCode'];
-
-                // 🔒 total never affected
-                $totalQuantitySale = $itemRows->first()['TotalQuantitySale'];
-
-                // ⭐ FIXED BEST BRANCH (from FULL data, not filtered)
-                $fixedBestBranch = $fullSap
-                    ->where('ItemCode', $itemCode)
-                    ->firstWhere('IsBestBranch', 'Y');
-
-                return [
-                    'ItemCode'   => $itemRows->first()['ItemCode'],
-                    'ItemName'   => $itemRows->first()['ItemName'],
-                    'VendorName' => $itemRows->first()['VendorName'],
-                    'Unit'       => $itemRows->first()['Unit'],
-                    'mrkt_type'  => $itemRows->first()['mrkt_type'],
-                    'Speciality' => $itemRows->first()['Speciality'],
-                    'ItemGroup'  => $itemRows->first()['ItemGroup'],
-
-                    // ✅ unchanged
-                    'TotalQuantitySale' => $totalQuantitySale,
-                    'branches' => $itemRows->groupBy('BPLName'),
-
-                    // 🆕 added (SAFE)
-                    'fixedBestBranch' => $fixedBestBranch,
-                ];
-            })
-            ->values();
-
-
-        $this->group_results = collect($this->sap_results)
+    protected function buildGroupedResults(array $sapResults): array
+    {
+        return collect($sapResults)
+            ->map(fn (array $row): array => $row)
             ->groupBy('ItemCode')
             ->map(function ($itemRows) {
+                $itemMeta = $itemRows->first();
+                $itemSales = $itemRows->groupBy('BPLId');
+                $totalQuantitySale = (float) ($itemMeta['TotalQuantitySale'] ?? $itemRows->sum('EmployeeTotalQty'));
 
+                $branches = $itemRows
+                    ->unique('BPLId')
+                    ->map(function ($row) use ($itemSales, $totalQuantitySale) {
+                        $branchRows = collect($itemSales->get($row['BPLId'], []))->values();
+                        $branchQuantity = (float) $branchRows->sum('EmployeeTotalQty');
 
+                        $employees = $branchRows
+                            ->groupBy('SlpCode')
+                            ->map(function ($empRows) {
+                                return [
+                                    'EmployeeCode' => $empRows->first()['SlpCode'],
+                                    'EmployeeName' => $empRows->first()['SlpName'],
+                                    'Quantity' => $empRows->sum('EmployeeTotalQty'),
+                                    'TransCount' => $empRows->sum('EmployeeTransCount'),
+                                ];
+                            })
+                            ->values()
+                            ->all();
 
-                // 1️⃣ TOTALS — NEVER FILTERED
-                $totalQuantitySale = $itemRows->first()['TotalQuantitySale'];
-
-                // 2️⃣ BEST BRANCH — FROM FULL DATA
-                $bestBranchRow = $itemRows->firstWhere('IsBestBranch', 'Y');
-
-                $itemMeta = $itemRows;
-
-                // Separate best branch
-                $branches = $itemRows->groupBy('BPLName');
-//                dd($branches->flatten(1));
-                $bestBranch = $branches->flatten(1)->firstWhere('IsBestBranch', 'Y'); // flatten(1) merge all branch employees into one collection
-                $otherBranches = $branches->reject(function ($b) {
-                    return $b->first()['IsBestBranch'] === 'Y';
-                });
-//                dd($bestBranch);
-//                dd($branches->first()->where('IsBestBranch', 'Y')->first());
-                return [
-                    'ItemCode'   => $itemMeta->first()['ItemCode'],
-                    'ItemName'   => $itemMeta->first()['ItemName'],
-                    'VendorName' => $itemMeta->first()['VendorName'],
-                    'Unit' => $itemMeta->first()['Unit'],
-                    'mrkt_type' => $itemMeta->first()['mrkt_type'],
-                    'Speciality' => $itemMeta->first()['Speciality'],
-                    'ItemGroup' => $itemMeta->first()['ItemGroup'],
-                    'TotalQuantitySale' =>$itemMeta->first()['TotalQuantitySale'],
-                    'bestBranch' => $bestBranch ? $bestBranch : null,
-                    'branches' => $itemRows
-                        ->groupBy('BPLName'),
-
-
-                ];
-            })
-            ->values();
-
-        $results = collect($sap_collection);
-
-        $fullSap = collect($this->sap_results);
-
-        $this->group_results = collect($this->sap_results)
-            ->groupBy('ItemCode')
-            ->map(function ($itemRows) use ($fullSap) {
-
-                $itemCode = $itemRows->first()['ItemCode'];
-
-                // 🔒 TOTAL NEVER AFFECTED
-                $totalQuantitySale = $itemRows->first()['TotalQuantitySale'];
-
-                // ⭐ FIXED BEST BRANCH (FROM FULL DATA)
-                $fixedBestBranch = $fullSap
-                    ->where('ItemCode', $itemCode)
-                    ->firstWhere('IsBestBranch', 'Y');
-
-                // 🔁 YOUR EXISTING LOGIC (UNCHANGED)
-                $branches = $itemRows->groupBy('BPLName');
-                $bestBranch = $branches->flatten(1)->firstWhere('IsBestBranch', 'Y');
-
-                return [
-                    'ItemCode'   => $itemRows->first()['ItemCode'],
-                    'ItemName'   => $itemRows->first()['ItemName'],
-                    'VendorName' => $itemRows->first()['VendorName'],
-                    'Unit'       => $itemRows->first()['Unit'],
-                    'mrkt_type'  => $itemRows->first()['mrkt_type'],
-                    'Speciality' => $itemRows->first()['Speciality'],
-                    'ItemGroup'  => $itemRows->first()['ItemGroup'],
-                    'TransCount' => $itemRows->sum('EmployeeTransCount'),
-
-                    // ✅ unchanged
-                    'TotalQuantitySale' => $totalQuantitySale,
-                    'branches' => $branches,
-                    'bestBranch' => $bestBranch ?: null,
-
-                    // 🆕 SAFE ADDITION
-                    'fixedBestBranch' => $fixedBestBranch,
-                ];
-            })
-            ->values();
-
-        $this->group_results = $this->group_results->map(function ($item) {
-            $itemCode = $item['ItemCode'];
-
-            // Build all unique branches for this item
-            $itemSales = collect($this->sap_results)
-                ->where('ItemCode', $itemCode)
-                ->groupBy('BPLId');
-
-            $allBranches = collect($this->sap_results)
-                ->where('ItemCode', $itemCode)
-                ->unique('BPLId')
-                ->map(fn($r) => [
-                    'BPLId'   => $r['BPLId'],
-                    'BPLName' => $r['BPLName'],
-                ])
-                ->values();
-
-            $totalQuantity = $itemSales->flatten(1)->sum('EmployeeTotalQty');
-
-            $branches = $allBranches->map(function ($branch) use ($itemSales, $totalQuantity) {
-                $branchRows = $itemSales->get($branch['BPLId'], collect());
-
-                $employees = $branchRows
-                    ->groupBy('SlpCode')
-                    ->map(fn($empRows) => [
-                        'EmployeeCode' => $empRows->first()['SlpCode'],
-                        'EmployeeName' => $empRows->first()['SlpName'],
-//                        'Quantity'     => $empRows->sum('EmpQty'),
-                        'Quantity'     => $empRows->sum('EmployeeTotalQty'),
-                        'TransCount'   => $empRows->sum('EmployeeTransCount'),
-                    ])
+                        return [
+                            'BranchId' => $row['BPLId'],
+                            'BranchName' => $row['BPLName'],
+                            'TransCount' => $branchRows->sum('EmployeeTransCount'),
+                            'TotalQuantitySaleByBranch' => $branchQuantity,
+                            'TotalSalesPer' => $totalQuantitySale > 0 ? ($branchQuantity / $totalQuantitySale) * 100 : 0,
+                            'employees_loaded' => true,
+                            'employees' => $employees,
+                        ];
+                    })
+                    ->sortByDesc('TotalQuantitySaleByBranch')
                     ->values()
                     ->all();
 
                 return [
-                    'BranchId' => $branch['BPLId'],
-                    'BranchName' => $branch['BPLName'],
-                    'TransCount' => $branchRows->sum('EmployeeTransCount'),
-                    'TotalQuantitySaleByBranch' => $branchRows->sum('EmployeeTotalQty'),
-                    'TotalSalesPer' => $totalQuantity ? $branchRows->sum('EmployeeTotalQty') / $totalQuantity * 100 : 0,
-                    'employees_loaded' => true,
-                    'employees' => $employees,
+                    'ItemCode' => $itemMeta['ItemCode'],
+                    'ItemName' => $itemMeta['ItemName'],
+                    'VendorName' => $itemMeta['VendorName'],
+                    'Unit' => $itemMeta['Unit'],
+                    'mrkt_type' => $itemMeta['mrkt_type'],
+                    'Speciality' => $itemMeta['Speciality'],
+                    'ItemGroup' => $itemMeta['ItemGroup'],
+                    'TransCount' => $itemRows->sum('EmployeeTransCount'),
+                    'TotalQuantitySale' => $totalQuantitySale,
+                    'branches' => $branches,
                 ];
             })
-                ->sortByDesc('TotalQuantitySaleByBranch')
-                ->values()
-                ->all();
-
-            $item['branches'] = $branches;
-
-            return $item;
-        })->values()->all();
-
-
-//                $this->group_results = collect($sap_collection)
-//            ->groupBy('ItemCode')
-//            ->map(function ($itemRows) {
-//
-//
-//                $itemMeta = $itemRows->first();
-//
-//                return [
-//                    'ItemCode'   => $itemMeta['ItemCode'],
-//                    'ItemName'   => $itemMeta['ItemName'],
-//                    'VendorName' => $itemMeta['VendorName'],
-//                    'Unit' => $itemMeta['Unit'],
-////                    'CardName'   => $itemMeta['cardName'],
-////                    'SlpName'    => $itemMeta['SlpName'] ,   // ✅ works now
-////                    'BranchName' => $itemMeta['branchname'],
-//                    'mrkt_type' => $itemMeta['mrkt_type'],
-//                    'TotalQuantitySale' => $itemMeta['TotalQuantitySale'],
-//                    'TotalQuantitySaleByBranch' => $itemMeta['TotalQuantitySaleByBranch'],
-//                    'TotalSalesPer' => $itemMeta['TotalSalesPer'],
-//                    'EmployeeName'    =>  $itemMeta['SlpName'] ,
-//                    'ItemGroup' => $itemMeta['ItemGroup'],
-//                    'Speciality' => $itemMeta['Speciality'],
-//
-//                    'branches' => $itemRows
-//                        ->groupBy('BranchName')
-//                        ->map(function ($branchRows, $branchName) {
-//                            return [
-//                                'BranchName' => $branchName,
-//                                'TotalQuantitySaleByBranch' =>
-//                                    $branchRows->sum('TotalQuantitySaleByBranch'),
-//
-//                                'TotalQuantitySale' => $branchRows->first()['TotalQuantitySale'],
-//                                'TotalSalesPer' =>
-//                                    $branchRows->sum('TotalSalesPer'),
-//                                'EmployeeQuantity' =>$branchRows->first()['TotalQuantitySaleByBranch'],
-//                                'employees' => $branchRows
-////                                    ->unique()
-//                                    ->groupBy('EmployeeName')
-////                                    ->map(function ($row)
-////                                    return [
-////                                        'EmployeeName' => $row->first()['EmployeeName'],
-//////                                        'Quantity'  =>  $row->sum('TotalQuantitySaleByBranch'),
-////                                    ];
-//                                        ->map(function ($empRows, $empName) {
-//                                        return [
-//                                            'EmployeeName' => $empName,
-//                                            'Quantity' => $empRows->first()['TotalQuantitySaleByBranch'], // summed per employee
-//                                        ];
-//                                    })
-//                                ->values()
-//                                    ->values(),
-//                                'BranchTotal' => $branchRows->sum('TotalQuantitySaleByBranch'),
-//                            ];
-//                        })
-//                        ->values()
-//                ];
-//            })
-//            ->values();
-
-//dd($this->group_results);
-        $this->show_msg = true;
-        $this->emit('finished');
+            ->values()
+            ->all();
     }
 
     public function customers()
@@ -749,10 +630,9 @@ ORDER BY "CardCode"';
         $cat_type       = array_filter((array) $cat_type);
         $sp_type        = array_filter((array) $sp_type);
         $vendor_type    = array_filter((array) $vendor_type);
-        $marketing_type = array_filter((array) $marketing_type);
+        $marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
         $group_type= array_filter((array) $group_type);
 //        $product_code= array_filter((array) $product_code);
-        $marketing_type= array_filter((array) $marketing_type);
 
 
         $this->sap_codes = [];
@@ -1159,7 +1039,7 @@ ORDER BY "CardCode"';
                 $cat_type = $this->cat_type;
 //                $marketing_type = $this->marketing_type;
 //                dd($this->marketing_type);
-                $marketing_type = array_unique((array) $this->marketing_type);
+                $marketing_type = $this->resolveSelectedMarketingTypes($this->marketing_type);
                 $sp_type        = array_unique((array) $this->sp_type);
                 $vendor_type    = array_unique((array) $this->vendor_type);
 //                $sp_type = $this->sp_type;

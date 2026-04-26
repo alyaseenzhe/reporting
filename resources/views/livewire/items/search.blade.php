@@ -1,4 +1,4 @@
-<button style="border: 1px solid #838383;" type="button" class="collapsible active" @click="container = !container"  >خيارات البحث</button>
+﻿<button style="border: 1px solid #838383;" type="button" class="collapsible active" @click="container = !container"  >خيارات البحث</button>
 
 <div style="border: 1px solid #838383;" id="branch-container" x-show="container" @if($show_msg) x-show="false" @endif class="mb-6">
     <div class="flex flex-col gap-4">
@@ -73,7 +73,7 @@
 {{--                    @foreach ($branchOptions as $branchKey => $options)--}}
 {{--                        @if (in_array($branchKey, $branches))--}}
 {{--                            @foreach ($options as [$value, $label])--}}
-{{--                                <option value="dept_all">{{ __('الكل') }}</option>--}}
+{{--                                <option value="dept_all">{{ __('ط§ظ„ظƒظ„') }}</option>--}}
 
 {{--                            @if($value !== '1010')--}}
 {{--                                    <option value="{{ $value }}">{{ $label }}</option>--}}
@@ -301,17 +301,28 @@
                     <span class="text-red-500">*</span>
                 </label>
                 <div >
+                    @php
+                        $marketingTypeOptions = method_exists($this, 'marketingTypeOptions')
+                            ? $this->marketingTypeOptions()
+                            : null;
+                    @endphp
                     <x-multiselect wire:model.live="marketing_type" multiple>
                         <option all_option="true" value="marketing_all" selected>الكل</option>
+                        @if($marketingTypeOptions !== null)
+                            @foreach($marketingTypeOptions as $marketingTypeCode => $marketingTypeLabel)
+                                <option value="{{ $marketingTypeCode }}">{{ $marketingTypeLabel }}</option>
+                            @endforeach
+                        @else
                         <option value="30">ادارة فنية - الاسمدة م1</option>
                         <option value="31">ادارة فنية - المبيدات م1</option>
                         <option value="32">ادارة فنية - البذور م1</option>
                         <option value="40">اقسام تسويقية - الحدائق والصحة العامة</option>
                         <option value="41">اقسام تسويقية - المكافحة المتكاملة</option>
-                        <option value="50">الآليات والري - الاليات</option>
-                        <option value="51">الآليات والري - الري</option>
-                        <option value="52">الآليات والري - الري المطري</option>
-                        <option value="53">الآليات والري - الخدمات</option>
+                        <option value="50">الاليات والري - الاليات</option>
+                        <option value="51">الاليات والري - الري</option>
+                        <option value="52">الاليات والري - الري المطري</option>
+                        <option value="53">الاليات والري - الخدمات</option>
+                        @endif
                     </x-multiselect>
 
 {{--                    <select id="marketing_type" name="marketing_type" multiple--}}
@@ -608,3 +619,4 @@
 {{--</div>--}}
 
 </div>
+
