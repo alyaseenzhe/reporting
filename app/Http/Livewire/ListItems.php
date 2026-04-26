@@ -21,7 +21,7 @@ class ListItems extends Component
     public $search_type;
     public $product_code;
     public $marketing_type = ['marketing_all'];
-    public $item_validity = [];
+    public $item_validity = ['valid'];
     public $customer_type='customer_all';
     public $emps_type ='employees_all';
     public $sortBy = 'ItemCode';
