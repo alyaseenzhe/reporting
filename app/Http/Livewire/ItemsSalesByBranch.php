@@ -460,7 +460,8 @@ class ItemsSalesByBranch extends Component
                     ->map(fn($empRows) => [
                         'EmployeeCode' => $empRows->first()['SlpCode'],
                         'EmployeeName' => $empRows->first()['SlpName'],
-                        'Quantity'     => $empRows->sum('EmpQty'),
+//                        'Quantity'     => $empRows->sum('EmpQty'),
+                        'Quantity'     => $empRows->sum('EmployeeTotalQty'),
                         'TransCount'   => $empRows->sum('EmployeeTransCount'),
                     ])
                     ->values();
@@ -2099,6 +2100,7 @@ ORDER BY I."ItemCode", "BranchRank"
         SUM(X."TransCount") AS "EmpTransCount"
     FROM (
         -- Invoices
+
         SELECT
             T0."ItemCode",
             T1."BPLId",
