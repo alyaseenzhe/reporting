@@ -350,7 +350,7 @@ class ItemsSalesByBranch extends Component
 
         $this->validate();
         $this->show_msg = false;
-        $this->resetProductCodes();
+//        $this->resetProductCodes();
         $this->sap_results = [];
         $this->group_results = [];
 
