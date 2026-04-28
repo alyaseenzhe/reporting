@@ -9,8 +9,22 @@ use Livewire\Component;
 
 class Report11 extends Component
 {
+    private const MARKETING_TYPE_OPTIONS = [
+        '30' => 'ادارة فنية - الاسمدة م1',
+        '31' => 'ادارة فنية - المبيدات م1',
+        '32' => 'ادارة فنية - البذور م1',
+        '40' => 'اقسام تسويقية - الحدائق والصحة العامة',
+        '41' => 'اقسام تسويقية - المكافحة المتكاملة',
+        '50' => 'الاليات والري - الاليات',
+        '51' => 'الاليات والري - الري',
+        '52' => 'الاليات والري - الري المطري',
+        '53' => 'الاليات والري - الخدمات',
+    ];
+
     public $dept_id = ["dept_all"];
     public $branches = [];
+    public $marketing_type = ['marketing_all'];
+    public $allowed_marketing_types = [];
     public $itemGrp = [];
     public $vendor_list = [];
     public $customer_list = [];
@@ -122,11 +136,87 @@ class Report11 extends Component
 
         $this->query = User::where('id', Auth::id())->first();
         $this->branches = json_decode($this->query->branches);
+        $this->allowed_marketing_types = $this->resolveAllowedMarketingTypes($this->query);
+        $this->marketing_type = $this->defaultMarketingTypes();
 //        dd($this->branches);
 
 //        $this->groupedResults = $this->buildGroups($this->report_type);
 
 
+    }
+
+    protected function normalizeMarketingTypeValues($marketingTypes): array
+    {
+        return array_values(array_unique(array_filter(array_map(function ($marketingType) {
+            $marketingType = (string) $marketingType;
+
+            if (strpos($marketingType, 'QryGroup') === 0) {
+                $marketingType = substr($marketingType, strlen('QryGroup'));
+            }
+
+            return array_key_exists($marketingType, self::MARKETING_TYPE_OPTIONS)
+                ? $marketingType
+                : null;
+        }, (array) $marketingTypes))));
+    }
+
+    protected function resolveAllowedMarketingTypes(?User $user): array
+    {
+        $allMarketingTypes = array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if (! $user || $user->role === 'a') {
+            return $allMarketingTypes;
+        }
+
+        $assignedMarketingTypes = $this->normalizeMarketingTypeValues(
+            json_decode($user->mrkt_types ?? '[]', true) ?? []
+        );
+
+        return count($assignedMarketingTypes) ? $assignedMarketingTypes : $allMarketingTypes;
+    }
+
+    protected function userCanAccessAllMarketingTypes(): bool
+    {
+        return count($this->allowed_marketing_types) === count(self::MARKETING_TYPE_OPTIONS);
+    }
+
+    protected function defaultMarketingTypes(): array
+    {
+        return $this->userCanAccessAllMarketingTypes()
+            ? ['marketing_all']
+            : $this->allowed_marketing_types;
+    }
+
+    protected function resolveSelectedMarketingTypes($marketingTypes): array
+    {
+        $requestedMarketingTypes = (array) $marketingTypes;
+        $selectedMarketingTypes = $this->normalizeMarketingTypeValues($requestedMarketingTypes);
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if ($this->userCanAccessAllMarketingTypes()) {
+            if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+                return ['marketing_all'];
+            }
+
+            return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+        }
+
+        if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+            return $allowedMarketingTypes;
+        }
+
+        return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+    }
+
+    public function marketingTypeOptions(): array
+    {
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        return collect($allowedMarketingTypes)
+            ->mapWithKeys(fn (string $marketingType): array => [
+                $marketingType => self::MARKETING_TYPE_OPTIONS[$marketingType] ?? $marketingType,
+            ])
+            ->toArray();
     }
 
     public function buildGroups(string $report_type)
@@ -218,11 +308,12 @@ class Report11 extends Component
 
         $this->show_msg = false;
         $this->report_type = $report_type;
+        $this->marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
         $this->scribes_results = [];
         $this->sap_results = [];
         $this->group_results = [];
 
-        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
+        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $this->marketing_type);
 //        dd($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type);
 //        $this->scribesQuery($start_date, $end_date, $dept_id, $sp_type);
 //        $this->sapQuery($start_date, $end_date, $dept_id);
@@ -1256,6 +1347,7 @@ ORDER BY "CardCode"';
 
         $this->scribes_codes = [];
         $this->sap_codes = [];
+        $marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
 
         if (! extension_loaded('odbc'))
         {
@@ -1419,6 +1511,21 @@ ORDER BY "CardCode"';
                 if ($vendor_type != 'vendor_all' && $vendor_type != null) {
                     $categoryQuery .= ' AND (T0."CardCode" = \''.$vendor_type.'\')';
                 }
+            }
+
+            if ($marketing_type != null && in_array('marketing_all', $marketing_type) == false && count($marketing_type) != 0 && $search_type == "item_code_search") {
+                $categoryQuery .= ' AND (';
+
+                foreach ($marketing_type as $key => $marketingTypeCode) {
+                    if ($key === array_key_first($marketing_type)) {
+                        $categoryQuery .= 'T0."QryGroup'. intval($marketingTypeCode) .'" = \'Y\'';
+                    }
+                    else {
+                        $categoryQuery .= ' OR T0."QryGroup'. intval($marketingTypeCode) .'" = \'Y\'';
+                    }
+                }
+
+                $categoryQuery .= ')';
             }
 
 //            dd($categoryQuery);

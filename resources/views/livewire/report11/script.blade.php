@@ -5,6 +5,28 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
+        const allowedMarketingTypeOptions = @json(method_exists($this, 'marketingTypeOptions') ? $this->marketingTypeOptions() : []);
+        const defaultMarketingTypeSelection = @json($this->marketing_type ?? ['marketing_all']);
+
+        function syncMarketingTypeOptions() {
+            const $marketingType = $('#marketing_type');
+
+            if (! $marketingType.length) {
+                return;
+            }
+
+            const selectedValues = Array.isArray(defaultMarketingTypeSelection) && defaultMarketingTypeSelection.length
+                ? defaultMarketingTypeSelection
+                : ['marketing_all'];
+
+            $marketingType.empty();
+            $marketingType.append(new Option('الكل', 'marketing_all', false, selectedValues.includes('marketing_all')));
+
+            Object.entries(allowedMarketingTypeOptions).forEach(([value, label]) => {
+                const isSelected = selectedValues.includes(String(value));
+                $marketingType.append(new Option(label, value, false, isSelected));
+            });
+        }
 
         var groups_all = {
             "104": "اسمدة أحادية",
@@ -299,6 +321,7 @@
                 dropdownCssClass: "select-font-size"
             });
 
+            syncMarketingTypeOptions();
             $('#marketing_type').select2({
                 dir: "rtl",
                 dropdownCssClass: "select-font-size"
@@ -664,6 +687,7 @@
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
                 });
+                syncMarketingTypeOptions();
                 $('#marketing_type').select2({
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
@@ -1035,6 +1059,7 @@
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
                 });
+                syncMarketingTypeOptions();
                 $('#marketing_type').select2({
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
