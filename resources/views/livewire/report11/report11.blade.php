@@ -370,7 +370,7 @@
                             <input
                                 type="radio"
                                 name="sortBy"
-                                value="GroupTotalSales"
+                                value="GroupTotalSales,TotalSalesAmount"
                                 wire:model="sortBy"
                                 x-model="sortBy"
                                 @click="sortDir='desc'"
@@ -390,7 +390,7 @@
                                 <input
                                     type="radio"
                                     name="sortBy"
-                                    value="GroupGrossProfit"
+                                    value="GroupGrossProfit,GrossProfit"
                                     wire:model.defer="sortBy"
                                     class="hidden peer"
                                 >

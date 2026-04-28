@@ -1622,11 +1622,21 @@ group by code,BaseUnits,Name,Arabic_Name,productNo,SpecialityCode, VendorNo ,Ven
 
     public function sapQuery($start_date, $end_date, $departments, $customer_type, $emps_type) {
 
-        $sortBy = $this->sortBy;
+//        $sortBy = $this->sortBy;
+
+
 //            ? $this->sortBy
 //            : 'EmployeeTotalSales';
 
         $direction = $this->sortDir;
+//        $this->sortDir->toArray();
+//        $sortByArray = explode(",", $this->sortBy);
+//        $sortBy = implode($sortByArray, '" '.$direction.',"');
+
+        $sortByArray = explode(",", $this->sortBy);
+
+        $sortBy = implode('"'.$direction.',"', $sortByArray);
+
 
         if (count($this->sap_codes) > 0) {
             $depts = ['0001' => '1', '0101' => '3', '0102' => '4', '0103' =>'5', '0104' =>'6', '0105' =>'7', '0106' => '8', '0107' => '9', '0108' => '10', '0109' => '11', '0110' => '12', '0111' => '13', '0112' => '14', '0201' => '15', '0202' =>  '16', '0203' => '17'];
@@ -1954,14 +1964,16 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 //order By "TotalSalesAmount"';
 
                     if($sortBy == 'code'){
-                        $sql .='ORDER BY "ItemCode" ' . $direction . '';
+                        $sql .='ORDER BY "ItemCode" ' . $direction . ',"BranchCode"';
                     }
                     else {
 
                         $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
                     }
-//                    dd($sql);
 
+//                    if($direction == 'desc') {
+//                        dd($sql);
+//                    }
                 }
 
                 else if ($this->report_type == "byItemGroup") {
@@ -2085,7 +2097,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 
                     if($sortBy == 'code'){
 
-                        $sql .='ORDER BY "ItemGroup" ' . $direction . ',"ItemCode" ';
+                        $sql .='ORDER BY "ItemGroup" ' . $direction . ',"ItemCode", "BranchCode" ';
                     }
 
 //ORDER BY "ItemGroup","ItemCode"';
@@ -2207,7 +2219,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 "IsInventoryItem"';
 
                     if($sortBy =='code'){
-                        $sql .= 'ORDER BY "Speciality" ' . $direction . ',"ItemCode"';
+                        $sql .= 'ORDER BY "Speciality" ' . $direction . ',"ItemCode", "BranchCode"';
 
                     }
 
@@ -2344,7 +2356,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 
                     if($sortBy =='code') {
 
-                        $sql .='ORDER BY "mrkt_type","ItemCode"';
+                        $sql .='ORDER BY "mrkt_type","ItemCode", "BranchCode"';
                     }
                     else {
 
@@ -2469,7 +2481,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "ItemCode",
 
                     if($sortBy == 'code'){
 
-                        $sql .='ORDER BY "VendorCode" ' . $direction . ',"ItemCode"';
+                        $sql .='ORDER BY "VendorCode" ' . $direction . ',"ItemCode", "BranchCode"';
                     }
 
                     else {
@@ -2600,7 +2612,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
                     if($sortBy =='code') {
 
 
-                        $sql .= 'ORDER BY "BusinessPartnerCode" ' . $direction . ',"ItemCode"';
+                        $sql .= 'ORDER BY "BusinessPartnerCode" ' . $direction . ',"ItemCode", "BranchCode"';
                     }
                     else {
                         $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
@@ -2766,7 +2778,7 @@ GROUP BY
 
                     if($sortBy == 'code')
                     {
-                        $sql .=' ORDER BY "SlpCode" ' . $direction . ', "BusinessPartnerCode", "ItemCode2"';
+                        $sql .=' ORDER BY "SlpCode" ' . $direction . ', "BusinessPartnerCode", "ItemCode2","BranchCode"';
                     }
 
                     else {
