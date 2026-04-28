@@ -99,7 +99,8 @@ class ExpenseResource extends Resource
                     ->default(0),
 
                 Textarea::make('description')
-                    ->label('الوصف')->required(),
+                    ->label('الوصف')
+                    ->columnSpan(2)->required(),
                 Select::make('status')->label('الحالة')
                     ->options([
                         1 => 'تحت الإجراء',
