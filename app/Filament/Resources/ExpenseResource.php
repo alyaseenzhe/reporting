@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExpenseResource\Pages;
-use App\Filament\Resources\ExpenseResource\RelationManagers;
 use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -17,10 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ExpenseResource extends Resource
 {
@@ -36,6 +32,15 @@ class ExpenseResource extends Resource
 
     protected static ?string $label = 'كشف مطالبة المصروفات';
 
+    public static function getStatusOptions(): array
+    {
+        return [
+            '1' => 'تحت الإجراء',
+            '2' => 'تمت الموافقة',
+            '3' => 'مرفوضة',
+        ];
+    }
+
     public static function calculateTotal($amount, $vat): float
     {
         $amount = (float) ($amount ?? 0);
@@ -48,68 +53,62 @@ class ExpenseResource extends Resource
     {
         return $form
             ->schema([
-
-            Section::make('معلومات التركيب المحصولي للعملاء')
-                ->schema([
-                    Grid::make(4)->schema([
-                DatePicker::make('created_at')
-                    ->label('التاريخ')
-                    ->hiddenOn('create')
-                    ->disabled(),
-
-                Select::make('user_id')->label('اسم الموظف')
-                    ->relationship('user', 'name'),
-
-                 ]),
-                ]),
                 Section::make('معلومات التركيب المحصولي للعملاء')
                     ->schema([
                         Grid::make(4)->schema([
-                TextInput::make('location')
-                    ->label('الموقع')->required(),
+                            DatePicker::make('created_at')
+                                ->label('التاريخ')
+                                ->hiddenOn('create')
+                                ->disabled(),
 
+                            Select::make('user_id')->label('اسم الموظف')
+                                ->relationship('user', 'name'),
+                        ]),
+                    ]),
+                Section::make('معلومات التركيب المحصولي للعملاء')
+                    ->schema([
+                        Grid::make(4)->schema([
+                            TextInput::make('location')
+                                ->label('الموقع')->required(),
 
-                TextInput::make('amount')
-                    ->label('المبلغ')
-                    ->required()
-                    ->numeric()
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $get, callable $set): void {
-                        $set('total', static::calculateTotal($state, $get('vat')));
-                    })
-                    ->maxValue(9999999999.99)
-                    ->rules(['numeric', 'min:0.01']),
+                            TextInput::make('amount')
+                                ->label('المبلغ')
+                                ->required()
+                                ->numeric()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+                                    $set('total', static::calculateTotal($state, $get('vat')));
+                                })
+                                ->maxValue(9999999999.99)
+                                ->rules(['numeric', 'min:0.01']),
 
-                TextInput::make('vat')
-                    ->label('الضريبة')
-                    ->required()
-                    ->numeric()
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $get, callable $set): void {
-                        $set('total', static::calculateTotal($get('amount'), $state));
-                    })
-                    ->maxValue(9999999999.99)
-                    ->rules(['numeric', 'min:0.01']),
+                            TextInput::make('vat')
+                                ->label('الضريبة')
+                                ->required()
+                                ->numeric()
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+                                    $set('total', static::calculateTotal($get('amount'), $state));
+                                })
+                                ->maxValue(9999999999.99)
+                                ->rules(['numeric', 'min:0.01']),
 
-                TextInput::make('total')
-                    ->label('Total')
-                    ->numeric()
-                    ->disabled()
-                    ->dehydrated()
-                    ->default(0),
+                            TextInput::make('total')
+                                ->label('Total')
+                                ->numeric()
+                                ->disabled()
+                                ->dehydrated()
+                                ->default(0),
 
-                Textarea::make('description')
-                    ->label('الوصف')
-                    ->columnSpan(2)->required(),
-                Select::make('status')->label('الحالة')
-                    ->options([
-                        1 => 'تحت الإجراء',
-                        2 => 'تمت المافقة',
-//                        'published' => 'Published',
-                    ])
-                    ->hiddenOn('create')
-                    ->default(1)
-                    ->disablePlaceholderSelection(),
+                            Textarea::make('description')
+                                ->label('الوصف')
+                                ->columnSpan(2)->required(),
+
+                            Select::make('status')->label('الحالة')
+                                ->options(static::getStatusOptions())
+                                ->hiddenOn('create')
+                                ->default('1')
+                                ->disablePlaceholderSelection(),
 
 //                TextInput::make('created_by')
 //                    ->label('تم انشاؤه بواسطة')
@@ -119,9 +118,8 @@ class ExpenseResource extends Resource
 //                    ->formatStateUsing(function ($state, ?Model $record): string {
 //                        return (string) optional(optional($record)->userUpdate)->name;
 //                    }),
-
                         ]),
-                        ])
+                    ]),
             ]);
     }
 
@@ -130,13 +128,13 @@ class ExpenseResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user.name')
-                ->label('اسم الموظف'),
+                    ->label('اسم الموظف'),
                 TextColumn::make('amount')
                     ->label('المبلغ'),
                 TextColumn::make('vat')
                     ->label('الضريبة'),
                 TextColumn::make('total')
-                ->label('الاجمالي'),
+                    ->label('الاجمالي'),
             ])
             ->filters([
                 //
@@ -150,17 +148,15 @@ class ExpenseResource extends Resource
                     ->label('Update Status')
                     ->form([
                         Forms\Components\Select::make('status')
-                            ->options([
-                                'pending' => 'تحت الإجراء',
-                                'approved' => 'تمت الموافقة',
-                                'rejected' => 'مرفوضة',
-                            ])
+                            ->options(static::getStatusOptions())
                             ->required(),
                     ])
                     ->action(function (Collection $records, array $data) {
-                        \App\Models\Expense::whereIn('id', $records->pluck('id'))
+                        Expense::query()
+                            ->whereIn('id', $records->pluck('id'))
                             ->update(['status' => $data['status']]);
                     })
+                    ->deselectRecordsAfterCompletion(),
             ]);
     }
 
