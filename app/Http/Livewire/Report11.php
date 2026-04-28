@@ -2612,7 +2612,7 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber", "BusinessPartne
                     if($sortBy =='code') {
 
 
-                        $sql .= 'ORDER BY "BusinessPartnerCode" ' . $direction . ',"ItemCode", "BranchCode"';
+                        $sql .= 'ORDER BY "BusinessPartnerCode" ' . $direction . ',"ItemCode"';
                     }
                     else {
                         $sql .= ' ORDER BY "' . $sortBy . '" ' . $direction . '';
