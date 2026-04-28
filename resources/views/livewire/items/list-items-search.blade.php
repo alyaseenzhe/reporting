@@ -18,6 +18,17 @@
             </div>
 
             <div class="w-full">
+                <label class="block font-bold mb-2">رقم الكتلوج</label>
+                <x-select_search id="catalog_number" name="catalog_number" wire:model="catalog_number"
+                                 class="form-input w-full">
+                    <option all_option="true" value="">الكل</option>
+                    @foreach($catalog_numbers as $catalogNumber)
+                        <option value="{{ $catalogNumber }}">{{ $catalogNumber }}</option>
+                    @endforeach
+                </x-select_search>
+            </div>
+
+            <div class="w-full">
                 <label class="block font-bold mb-2">نوع المواد</label>
                 <x-select_search wire:model="cat_type">
                     <option all_option="true" value="cat_all">الكل</option>

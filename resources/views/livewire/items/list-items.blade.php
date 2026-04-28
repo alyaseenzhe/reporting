@@ -30,7 +30,7 @@
                                 <div class="text-sm">الإدارة / القسم</div>
                             </th>
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div class="text-sm">رقم الكتلوج</div>
+                                <div class="text-sm">رقم المورد</div>
                             </th>
                         </tr>
                         </thead>

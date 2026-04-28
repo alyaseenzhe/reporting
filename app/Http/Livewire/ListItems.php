@@ -20,6 +20,7 @@ class ListItems extends Component
     public $vendor_type = 'vendor_all';
     public $search_type;
     public $product_code;
+    public $catalog_number;
     public $marketing_type = ['marketing_all'];
     public $item_validity = ['valid'];
     public $customer_type='customer_all';
@@ -34,6 +35,7 @@ class ListItems extends Component
     public $branches = [];
     public $vendor_list = [];
     public $customer_list = [];
+    public $catalog_numbers = [];
     public $emps = null;
     public $currentGroup = null, $currentItemName = null,
         $itemGroup_item_total = 0, $itemGroup_cost_total = 0, $itemGroup_gross_total = 0, $itemGroup_quantity_total = 0, $itemGroup_trans_total = 0,
@@ -141,6 +143,7 @@ class ListItems extends Component
             $this->vendor_type ,
             $this->search_type,
             $this->product_code,
+            $this->catalog_number,
             $this->marketing_type,
             $this->item_validity,
             $this->customer_type,
@@ -179,6 +182,7 @@ class ListItems extends Component
     public function product_lists() {
 
         $this->products_codes = [];
+        $this->catalog_numbers = [];
 
         if (! extension_loaded('odbc'))
         {
@@ -200,7 +204,7 @@ class ListItems extends Component
         }
         else
         {
-            $productQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode", T0."ItemName" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
+            $productQuery = 'SELECT DISTINCT T0."ItemCode",T0."U_UDF1" AS "ScribeCode", T0."ItemName", T0."SuppCatNum" AS "CatalogNumber" FROM AL_YASEEN_AGRI_PLIVE."OITM" T0 JOIN AL_YASEEN_AGRI_PLIVE."OITB" T1 ON T0."ItmsGrpCod" = T1."ItmsGrpCod" WHERE (T0."ItemCode" LIKE \'11%\' OR T0."ItemCode" LIKE \'12%\' OR T0."ItemCode" LIKE \'13%\' OR T0."ItemCode" LIKE \'14%\' OR T0."ItemCode" LIKE \'15%\' OR T0."ItemCode" LIKE \'16%\' OR T0."ItemCode" LIKE \'28%\' OR T0."ItemCode" LIKE \'29%\' OR T0."ItemCode" LIKE \'30%\' OR T0."ItemCode" LIKE \'99%\')';
 
             $result = odbc_exec($conn, $productQuery);
             if (!$result)
@@ -214,6 +218,14 @@ class ListItems extends Component
                 while ($row = odbc_fetch_array($result)) {
                     array_push($this->products_codes, $row);
                 }
+
+                $this->catalog_numbers = collect($this->products_codes)
+                    ->pluck('CatalogNumber')
+                    ->filter(fn ($catalogNumber) => ! empty($catalogNumber))
+                    ->unique()
+                    ->sort()
+                    ->values()
+                    ->all();
             }
 
 //            dd($this->itemGrp);
@@ -254,7 +266,7 @@ class ListItems extends Component
         }
     }
 
-    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $item_validity, $customer_type, $emps_type) {
+    public function create_report($start_date, $end_date, $dept_id, $group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $marketing_type, $item_validity, $customer_type, $emps_type) {
         set_time_limit(2000);
         ini_set('memory_limit', '2048M');
 
@@ -263,7 +275,7 @@ class ListItems extends Component
         $this->sap_results = [];
         $this->group_results = [];
 
-        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $item_validity);
+        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $marketing_type, $item_validity);
         $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type, $item_validity);
 
         $this->group_results = collect($this->sap_results)
@@ -378,7 +390,7 @@ ORDER BY "CardCode"';
     }
 
 
-    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $marketing_type, $item_validity)
+    public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $marketing_type, $item_validity)
     {
         // Clean filters
         $cat_type       = array_filter((array) $cat_type);
@@ -442,6 +454,22 @@ ORDER BY "CardCode"';
             } else {
                 $safe = "'" . str_replace("'", "''", $product_code) . "'";
                 $conditions[] = "T0.\"ItemCode\" = $safe";
+            }
+        }
+
+        if (!empty($catalog_number)) {
+            if (is_array($catalog_number)) {
+                $escapedCatalogNumbers = array_map(
+                    fn ($catalogNumberValue) => "'" . str_replace("'", "''", $catalogNumberValue) . "'",
+                    array_filter($catalog_number)
+                );
+
+                if (count($escapedCatalogNumbers) > 0) {
+                    $conditions[] = 'T0."SuppCatNum" IN (' . implode(',', $escapedCatalogNumbers) . ')';
+                }
+            } else {
+                $safeCatalogNumber = "'" . str_replace("'", "''", $catalog_number) . "'";
+                $conditions[] = "T0.\"SuppCatNum\" = $safeCatalogNumber";
             }
         }
 
