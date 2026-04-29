@@ -10,6 +10,17 @@ use Livewire\Component;
 
 class ListItems extends Component
 {
+    private const MARKETING_TYPE_OPTIONS = [
+        '30' => 'ادارة فنية - الاسمدة م1',
+        '31' => 'ادارة فنية - المبيدات م1',
+        '32' => 'ادارة فنية - البذور م1',
+        '40' => 'اقسام تسويقية - الحدائق والصحة العامة',
+        '41' => 'اقسام تسويقية - المكافحة المتكاملة',
+        '50' => 'الآليات والري - الآليات',
+        '51' => 'الآليات والري - الري',
+        '52' => 'الآليات والري - الري المطري',
+        '53' => 'الآليات والري - الخدمات',
+    ];
 
     public $start_date;
     public $end_date;
@@ -22,6 +33,7 @@ class ListItems extends Component
     public $product_code;
     public $catalog_number;
     public $marketing_type = ['marketing_all'];
+    public $allowed_marketing_types = [];
     public $item_validity = ['valid'];
     public $customer_type='customer_all';
     public $emps_type ='employees_all';
@@ -106,7 +118,83 @@ class ListItems extends Component
         $this->customers();
         $this->query = User::where('id', Auth::id())->first();
         $this->branches = json_decode($this->query->branches);
+        $this->allowed_marketing_types = $this->resolveAllowedMarketingTypes($this->query);
+        $this->marketing_type = $this->defaultMarketingTypes();
         $this->all_option = 'dept_id';
+    }
+
+    protected function normalizeMarketingTypeValues($marketingTypes): array
+    {
+        return array_values(array_unique(array_filter(array_map(function ($marketingType) {
+            $marketingType = (string) $marketingType;
+
+            if (strpos($marketingType, 'QryGroup') === 0) {
+                $marketingType = substr($marketingType, strlen('QryGroup'));
+            }
+
+            return array_key_exists($marketingType, self::MARKETING_TYPE_OPTIONS)
+                ? $marketingType
+                : null;
+        }, (array) $marketingTypes))));
+    }
+
+    protected function resolveAllowedMarketingTypes(?User $user): array
+    {
+        $allMarketingTypes = array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if (! $user || $user->role === 'a') {
+            return $allMarketingTypes;
+        }
+
+        $assignedMarketingTypes = $this->normalizeMarketingTypeValues(
+            json_decode($user->mrkt_types ?? '[]', true) ?? []
+        );
+
+        return count($assignedMarketingTypes) ? $assignedMarketingTypes : $allMarketingTypes;
+    }
+
+    protected function userCanAccessAllMarketingTypes(): bool
+    {
+        return count($this->allowed_marketing_types) === count(self::MARKETING_TYPE_OPTIONS);
+    }
+
+    protected function defaultMarketingTypes(): array
+    {
+        return $this->userCanAccessAllMarketingTypes()
+            ? ['marketing_all']
+            : $this->allowed_marketing_types;
+    }
+
+    protected function resolveSelectedMarketingTypes($marketingTypes): array
+    {
+        $requestedMarketingTypes = (array) $marketingTypes;
+        $selectedMarketingTypes = $this->normalizeMarketingTypeValues($requestedMarketingTypes);
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        if ($this->userCanAccessAllMarketingTypes()) {
+            if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+                return ['marketing_all'];
+            }
+
+            return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+        }
+
+        if (in_array('marketing_all', $requestedMarketingTypes, true) || ! count($selectedMarketingTypes)) {
+            return $allowedMarketingTypes;
+        }
+
+        return array_values(array_intersect($allowedMarketingTypes, $selectedMarketingTypes));
+    }
+
+    public function marketingTypeOptions(): array
+    {
+        $allowedMarketingTypes = $this->allowed_marketing_types ?: array_keys(self::MARKETING_TYPE_OPTIONS);
+
+        return collect($allowedMarketingTypes)
+            ->mapWithKeys(fn (string $marketingType): array => [
+                $marketingType => self::MARKETING_TYPE_OPTIONS[$marketingType] ?? $marketingType,
+            ])
+            ->toArray();
     }
 
     public function generateReport()
@@ -271,11 +359,12 @@ class ListItems extends Component
         ini_set('memory_limit', '2048M');
 
         $this->show_msg = false;
+        $this->marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
         $this->resetProductCodes();
         $this->sap_results = [];
         $this->group_results = [];
 
-        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $marketing_type, $item_validity);
+        $this->productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $this->marketing_type, $item_validity);
         $this->sapQuery($start_date, $end_date, $dept_id, $customer_type, $emps_type, $item_validity);
 
         $this->group_results = collect($this->sap_results)
@@ -396,7 +485,7 @@ ORDER BY "CardCode"';
         $cat_type       = array_filter((array) $cat_type);
         $sp_type        = array_filter((array) $sp_type);
         $vendor_type    = array_filter((array) $vendor_type);
-        $marketing_type = array_filter((array) $marketing_type);
+        $marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
         $item_validity  = $this->normalizeValidityFilter($item_validity);
         $group_type     = is_array($group_type) ? reset($group_type) : $group_type;
 

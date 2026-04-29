@@ -55,3 +55,70 @@
         @endif
     </div>
 </div>
+
+@php
+    $allowedMarketingTypeOptions = method_exists($this, 'marketingTypeOptions')
+        ? $this->marketingTypeOptions()
+        : [];
+    $defaultMarketingTypeSelection = $this->marketing_type ?? ['marketing_all'];
+@endphp
+
+<script>
+    (function () {
+        const allowedMarketingTypeOptions = @json($allowedMarketingTypeOptions);
+        const defaultMarketingTypeSelection = @json($defaultMarketingTypeSelection);
+
+        function findMarketingTypeSelect() {
+            return Array.from(document.querySelectorAll('select')).find((select) => {
+                return select.querySelector('option[value="marketing_all"]')
+                    && select.querySelector('option[value="30"]')
+                    && select.closest('[wire\\:ignore]');
+            });
+        }
+
+        function syncMarketingTypeOptions() {
+            const select = findMarketingTypeSelect();
+
+            if (!select) {
+                return;
+            }
+
+            const selectedValues = Array.isArray(defaultMarketingTypeSelection) && defaultMarketingTypeSelection.length
+                ? defaultMarketingTypeSelection
+                : ['marketing_all'];
+
+            if (select.tomselect) {
+                select.tomselect.clearOptions();
+                select.tomselect.addOption({value: 'marketing_all', text: 'الكل', all_option: 'true'});
+
+                Object.entries(allowedMarketingTypeOptions).forEach(([value, label]) => {
+                    select.tomselect.addOption({value, text: label});
+                });
+
+                select.tomselect.refreshOptions(false);
+                select.tomselect.setValue(selectedValues, true);
+                return;
+            }
+
+            select.innerHTML = '';
+
+            const allOption = new Option('الكل', 'marketing_all', false, selectedValues.includes('marketing_all'));
+            allOption.setAttribute('all_option', 'true');
+            select.appendChild(allOption);
+
+            Object.entries(allowedMarketingTypeOptions).forEach(([value, label]) => {
+                const option = new Option(label, value, false, selectedValues.includes(String(value)));
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', syncMarketingTypeOptions);
+        document.addEventListener('livewire:load', syncMarketingTypeOptions);
+
+        if (window.Livewire && typeof window.Livewire.hook === 'function') {
+            window.Livewire.hook('message.processed', () => {
+                syncMarketingTypeOptions();
+            });
+        }
+    })();
+</script>
