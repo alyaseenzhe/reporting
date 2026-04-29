@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
+use Filament\Pages\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,5 +27,16 @@ class ListBranchCropCompositionCollections extends ListRecords
 
             return null;
         };
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+            Actions\Action::make('report')
+                ->label('Crop Composition Report')
+                ->icon('heroicon-o-chart-bar')
+                ->url(static::getResource()::getUrl('report')),
+        ];
     }
 }

@@ -600,25 +600,14 @@ class BranchCropCompositionCollectionResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()
-            ->withSum('cultivationTypes', 'total_area_hectares');
-        $authorizedBranchIds = static::getAuthorizedBranchesQuery()->pluck('id');
+        return static::applyCollectionAccessScope(
+            parent::getEloquentQuery()->withSum('cultivationTypes', 'total_area_hectares')
+        );
+    }
 
-        if ($authorizedBranchIds->isEmpty()) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        $query->whereIn('branch_id', $authorizedBranchIds);
-
-        if (static::userCanManageOthersCropRecords()) {
-            return $query;
-        }
-
-        if (static::userCanManageOwnCropRecords()) {
-            return $query->where('engineer_name', Auth::user()->name);
-        }
-
-        return $query->whereRaw('1 = 0');
+    public static function getAccessibleCollectionsQuery(): Builder
+    {
+        return static::applyCollectionAccessScope(static::$model::query());
     }
 
     /**
@@ -628,6 +617,7 @@ class BranchCropCompositionCollectionResource extends Resource
     {
         return [
             'index' => Pages\ListBranchCropCompositionCollections::route('/'),
+            'report' => Pages\BranchCropCompositionCollectionReport::route('/report'),
             'create' => Pages\CreateBranchCropCompositionCollection::route('/create'),
             'view' => Pages\ViewBranchCropCompositionCollection::route('/{record}'),
             'edit' => Pages\EditBranchCropCompositionCollection::route('/{record}/edit'),
@@ -841,6 +831,27 @@ class BranchCropCompositionCollectionResource extends Resource
     protected static function getAuthorizedBranchesQuery(): Builder
     {
         return Branch::query()->whereIn('code', static::getAuthorizedBranchCodes());
+    }
+
+    protected static function applyCollectionAccessScope(Builder $query): Builder
+    {
+        $authorizedBranchIds = static::getAuthorizedBranchesQuery()->pluck('id');
+
+        if ($authorizedBranchIds->isEmpty()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $query->whereIn('branch_id', $authorizedBranchIds);
+
+        if (static::userCanManageOthersCropRecords()) {
+            return $query;
+        }
+
+        if (static::userCanManageOwnCropRecords()) {
+            return $query->where('engineer_name', Auth::user()->name);
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     protected static function getSingleAuthorizedBranchId(): ?int
