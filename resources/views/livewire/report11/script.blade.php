@@ -28,6 +28,11 @@
             });
         }
 
+        function syncCostColumns() {
+            const isCostVisible = $('#cost').is(':checked');
+            $('.cost').toggleClass('hide', !isCostVisible);
+        }
+
         var groups_all = {
             "104": "اسمدة أحادية",
             "105": "اسمدة مركبة ورقية",
@@ -263,7 +268,7 @@
 
 
             // $("#cat_type option[value='"+selected_cat_type+"']").prop('selected', true);
-            $('.cost').addClass('hide');
+            syncCostColumns();
 
 
             ///////////////////////////
@@ -1041,6 +1046,12 @@
             //     }
             // });
 
+            if (window.Livewire && typeof window.Livewire.hook === 'function') {
+                window.Livewire.hook('message.processed', () => {
+                    syncCostColumns();
+                });
+            }
+
         });
 
         function re_intialize() {
@@ -1073,6 +1084,8 @@
                     dir: "rtl",
                     dropdownCssClass: "select-font-size"
                 });
+
+                syncCostColumns();
             }
             catch (e) {
 
@@ -1096,17 +1109,7 @@
         }
 
         function hideColumn(type) {
-
-            if (type.checked) {
-                $('.cost').removeClass('hide');
-                // $('.' + type.value).removeClass('hide');
-                // console.log(type.val() + ' not ticked');
-            }
-            else {
-                console.log(type.value + ' ticked');
-                // $('.' + type.value).addClass('hide');
-                $('.cost').addClass('hide');
-            }
+            syncCostColumns();
         }
 
         function show_hide(acc) {
