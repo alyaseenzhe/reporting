@@ -22,7 +22,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static string $view = 'filament.resources.branch-crop-composition-collection-resource.pages.branch-crop-composition-collection-report';
 
-    protected static ?string $title = 'Branch Crop Composition Report';
+    protected static ?string $title = 'تقرير التركيب المحصولي';
 
     protected ?string $maxContentWidth = 'full';
 
@@ -66,7 +66,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     $this->form->fill($this->filters);
                 }),
             Actions\Action::make('back')
-                ->label('Back to Collections')
+                ->label('عودة')
                 ->icon('heroicon-o-arrow-left')
                 ->url(static::getResource()::getUrl('index')),
         ];
@@ -75,12 +75,12 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     protected function getFormSchema(): array
     {
         return [
-            Forms\Components\Section::make('Filters')
-                ->schema([
+//            Forms\Components\Section::make('Filters')
+//                ->schema([
                     Forms\Components\Grid::make(4)
                         ->schema([
                             Forms\Components\Select::make('branch_ids')
-                                ->label('Branch')
+                                ->label('الفرع')
                                 ->placeholder('')
                                 ->options($this->getBranchOptions())
                                 ->multiple()
@@ -89,7 +89,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->preload()
                                 ->reactive(),
                             Forms\Components\Select::make('customer_codes')
-                                ->label('Customer')
+                                ->label('العميل')
                                 ->placeholder('')
                                 ->options($this->getCustomerOptions())
                                 ->multiple()
@@ -98,7 +98,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->preload()
                                 ->reactive(),
                             Forms\Components\Select::make('engineer_names')
-                                ->label('Engineer')
+                                ->label('المهندس المسؤول')
                                 ->placeholder('')
                                 ->options($this->getEngineerOptions())
                                 ->multiple()
@@ -107,7 +107,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->preload()
                                 ->reactive(),
                             Forms\Components\Select::make('crop_category_ids')
-                                ->label('Crop Category')
+                                ->label('طبيعة المحصول')
                                 ->placeholder('')
                                 ->options($this->getCropCategoryOptions())
                                 ->multiple()
@@ -116,7 +116,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->preload()
                                 ->reactive(),
                         ]),
-                ]),
+//                ]),
         ];
     }
 
@@ -362,7 +362,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected function withAllOption(array $options): array
     {
-        return [static::ALL_FILTER_VALUE => 'All'] + $options;
+        return [static::ALL_FILTER_VALUE => 'الكل'] + $options;
     }
 
     protected function normalizeFilterValues(array $values): array
