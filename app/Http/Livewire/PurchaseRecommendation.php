@@ -856,6 +856,7 @@ WHERE
             }
 
 
+//            dd($stmt);
             $result = odbc_exec($conn, $stmt);
             if (!$result)
             {

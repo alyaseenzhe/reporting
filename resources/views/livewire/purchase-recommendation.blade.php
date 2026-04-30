@@ -198,6 +198,18 @@
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">
                                     طلبات الشراء
+{{--                                    التسعيرة--}}
+                                    {{--                                <br>--}}
+                                    {{--                                @if($record["OpenQty"])--}}
+                                    {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}
+                                    {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? \Carbon\Carbon::parse($record["DocDueDate"])->format('Y-m-d') : "N/A" }}){{intval($record["count_purchase_order"]) > 1 ? "*" : ""}} </span>--}}
+                                    {{--                                @endif--}}
+                                </div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm">
+{{--                                    طلبات الشراء--}}
+                                    التسعيرة
                                     {{--                                <br>--}}
                                     {{--                                @if($record["OpenQty"])--}}
                                     {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}
@@ -267,6 +279,9 @@
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">{{ number_format($record["OnHand"]) }}</div>
+                            </th>
+                            <th style="border: 2px solid black; z-index: 10" class="border p-2">
+                                <div class="text-sm"></div>
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">{{ number_format(intval($record["OpenQoutation"])) }}</div>
