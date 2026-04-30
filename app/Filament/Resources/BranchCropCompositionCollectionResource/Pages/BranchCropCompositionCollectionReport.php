@@ -4,12 +4,20 @@ namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
 use App\Models\BranchCropCollectionItem;
+use Filament\Forms;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
-class BranchCropCompositionCollectionReport extends Page
+class BranchCropCompositionCollectionReport extends Page implements HasForms
 {
+    use InteractsWithForms;
+
+    protected const ALL_FILTER_VALUE = '__all';
+
     protected static string $resource = BranchCropCompositionCollectionResource::class;
 
     protected static string $view = 'filament.resources.branch-crop-composition-collection-resource.pages.branch-crop-composition-collection-report';
@@ -18,21 +26,103 @@ class BranchCropCompositionCollectionReport extends Page
 
     protected ?string $maxContentWidth = 'full';
 
+    public array $filters = [
+        'branch_ids' => [self::ALL_FILTER_VALUE],
+        'customer_codes' => [self::ALL_FILTER_VALUE],
+        'engineer_names' => [self::ALL_FILTER_VALUE],
+        'crop_category_ids' => [self::ALL_FILTER_VALUE],
+    ];
+
     public function mount(): void
     {
         static::authorizeResourceAccess();
 
         abort_unless(static::getResource()::canViewAny(), 403);
+
+        $this->form->fill($this->filters);
+    }
+
+    public function updatedFilters(): void
+    {
+        foreach (array_keys($this->filters) as $key) {
+            $this->filters[$key] = $this->normalizeFilterValues($this->filters[$key] ?? []);
+        }
     }
 
     protected function getActions(): array
     {
         return [
+            Actions\Action::make('clearFilters')
+                ->label('Clear Filters')
+                ->icon('heroicon-o-x')
+                ->action(function (): void {
+                    $this->filters = [
+                        'branch_ids' => [static::ALL_FILTER_VALUE],
+                        'customer_codes' => [static::ALL_FILTER_VALUE],
+                        'engineer_names' => [static::ALL_FILTER_VALUE],
+                        'crop_category_ids' => [static::ALL_FILTER_VALUE],
+                    ];
+
+                    $this->form->fill($this->filters);
+                }),
             Actions\Action::make('back')
                 ->label('Back to Collections')
                 ->icon('heroicon-o-arrow-left')
                 ->url(static::getResource()::getUrl('index')),
         ];
+    }
+
+    protected function getFormSchema(): array
+    {
+        return [
+            Forms\Components\Section::make('Filters')
+                ->schema([
+                    Forms\Components\Grid::make(4)
+                        ->schema([
+                            Forms\Components\Select::make('branch_ids')
+                                ->label('Branch')
+                                ->placeholder('')
+                                ->options($this->getBranchOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->reactive(),
+                            Forms\Components\Select::make('customer_codes')
+                                ->label('Customer')
+                                ->placeholder('')
+                                ->options($this->getCustomerOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->reactive(),
+                            Forms\Components\Select::make('engineer_names')
+                                ->label('Engineer')
+                                ->placeholder('')
+                                ->options($this->getEngineerOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->reactive(),
+                            Forms\Components\Select::make('crop_category_ids')
+                                ->label('Crop Category')
+                                ->placeholder('')
+                                ->options($this->getCropCategoryOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->reactive(),
+                        ]),
+                ]),
+        ];
+    }
+
+    protected function getFormStatePath(): string
+    {
+        return 'filters';
     }
 
     protected function getViewData(): array
@@ -56,7 +146,7 @@ class BranchCropCompositionCollectionReport extends Page
 
     protected function getCustomerCropRows(): Collection
     {
-        $accessibleCollections = static::getResource()::getAccessibleCollectionsQuery()
+        $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery()
             ->select([
                 'branch_crop_composition_collections.id',
                 'branch_crop_composition_collections.branch_id',
@@ -64,6 +154,7 @@ class BranchCropCompositionCollectionReport extends Page
                 'branch_crop_composition_collections.customer_name',
                 'branch_crop_composition_collections.engineer_name',
             ]);
+        $cropCategoryIds = $this->getEffectiveFilterValues($this->filters['crop_category_ids'] ?? []);
 
         return BranchCropCollectionItem::query()
             ->selectRaw('
@@ -88,6 +179,13 @@ class BranchCropCompositionCollectionReport extends Page
             ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
             ->leftJoin('crop_catalog_items as crops', 'crops.id', '=', 'branch_crop_collection_items.crop_catalog_item_id')
             ->leftJoin('branches', 'branches.id', '=', 'accessible_collections.branch_id')
+            ->when(
+                count($cropCategoryIds),
+                fn (Builder $query) => $query->whereIn(
+                    'branch_crop_collection_items.crop_catalog_category_id',
+                    $cropCategoryIds
+                )
+            )
             ->groupBy([
                 'branch_crop_collection_items.crop_catalog_category_id',
                 'branch_crop_collection_items.crop_catalog_item_id',
@@ -174,5 +272,129 @@ class BranchCropCompositionCollectionReport extends Page
             ])
             ->values()
             ->all();
+    }
+
+    protected function getFilteredAccessibleCollectionsQuery(): Builder
+    {
+        $branchIds = $this->getEffectiveFilterValues($this->filters['branch_ids'] ?? []);
+        $customerCodes = $this->getEffectiveFilterValues($this->filters['customer_codes'] ?? []);
+        $engineerNames = $this->getEffectiveFilterValues($this->filters['engineer_names'] ?? []);
+
+        return static::getResource()::getAccessibleCollectionsQuery()
+            ->when(
+                count($branchIds),
+                fn (Builder $query) => $query->whereIn('branch_id', $branchIds)
+            )
+            ->when(
+                count($customerCodes),
+                fn (Builder $query) => $query->whereIn('customer_code', $customerCodes)
+            )
+            ->when(
+                count($engineerNames),
+                fn (Builder $query) => $query->whereIn('engineer_name', $engineerNames)
+            );
+    }
+
+    protected function getBranchOptions(): array
+    {
+        return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
+            ->leftJoin('branches', 'branches.id', '=', 'branch_crop_composition_collections.branch_id')
+            ->orderBy('branches.name')
+            ->pluck('branches.name', 'branch_crop_composition_collections.branch_id')
+            ->filter()
+            ->toArray());
+    }
+
+    protected function getCustomerOptions(): array
+    {
+        return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
+            ->select(['customer_code', 'customer_name'])
+            ->orderBy('customer_name')
+            ->get()
+            ->mapWithKeys(function ($row): array {
+                $code = trim((string) $row->customer_code);
+
+                if ($code === '') {
+                    return [];
+                }
+
+                $name = trim((string) ($row->customer_name ?? ''));
+
+                return [
+                    $code => $name !== '' ? $code . ' - ' . $name : $code,
+                ];
+            })
+            ->all());
+    }
+
+    protected function getEngineerOptions(): array
+    {
+        return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
+            ->whereNotNull('engineer_name')
+            ->pluck('engineer_name')
+            ->map(fn ($name): string => trim((string) $name))
+            ->filter()
+            ->unique()
+            ->sort()
+            ->mapWithKeys(fn (string $name): array => [$name => $name])
+            ->all());
+    }
+
+    protected function getCropCategoryOptions(): array
+    {
+        $accessibleCollections = static::getResource()::getAccessibleCollectionsQuery()
+            ->select('branch_crop_composition_collections.id');
+
+        return $this->withAllOption(BranchCropCollectionItem::query()
+            ->joinSub($accessibleCollections, 'accessible_collections', function ($join): void {
+                $join->on(
+                    'accessible_collections.id',
+                    '=',
+                    'branch_crop_collection_items.branch_crop_composition_collection_id'
+                );
+            })
+            ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
+            ->orderBy('categories.name')
+            ->pluck('categories.name', 'branch_crop_collection_items.crop_catalog_category_id')
+            ->filter()
+            ->toArray());
+    }
+
+    protected function withAllOption(array $options): array
+    {
+        return [static::ALL_FILTER_VALUE => 'All'] + $options;
+    }
+
+    protected function normalizeFilterValues(array $values): array
+    {
+        $values = collect($values)
+            ->filter(fn ($value) => filled($value))
+            ->map(fn ($value) => (string) $value)
+            ->values()
+            ->all();
+
+        if (in_array(static::ALL_FILTER_VALUE, $values, true) && count($values) > 1) {
+            $values = array_values(array_filter(
+                $values,
+                fn (string $value): bool => $value !== static::ALL_FILTER_VALUE
+            ));
+        }
+
+        if (! count($values)) {
+            return [static::ALL_FILTER_VALUE];
+        }
+
+        return $values;
+    }
+
+    protected function getEffectiveFilterValues(array $values): array
+    {
+        $values = $this->normalizeFilterValues($values);
+
+        if (in_array(static::ALL_FILTER_VALUE, $values, true)) {
+            return [];
+        }
+
+        return $values;
     }
 }

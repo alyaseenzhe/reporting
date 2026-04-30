@@ -18,6 +18,10 @@
         }"
         class="space-y-6"
     >
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            {{ $this->form }}
+        </div>
+
         <div class="grid gap-4 md:grid-cols-3">
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div class="text-sm font-medium text-gray-500">المحاصيل</div>
