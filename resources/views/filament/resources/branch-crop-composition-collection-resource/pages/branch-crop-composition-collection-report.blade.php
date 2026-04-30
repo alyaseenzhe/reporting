@@ -1,4 +1,5 @@
 <x-filament::page>
+{{--<x-filament::page :widget-data="$this->getWidgetData()">--}}
     <div
         x-data="{
             expandedCrops: {},

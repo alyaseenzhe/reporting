@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
+use App\Filament\Resources\BranchCropCompositionCollectionResource\Widgets\BranchCropCompositionCollection as BranchCropCompositionCollectionWidget;
 use App\Models\BranchCropCollectionItem;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -144,6 +145,25 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         ];
     }
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            BranchCropCompositionCollectionWidget::class,
+        ];
+    }
+
+    protected function getHeaderWidgetsColumns(): int | array
+    {
+        return 1;
+    }
+
+    protected function getWidgetData(): array
+    {
+        return [
+            'chartData' => $this->buildBranchAreaPieChartData($this->getCustomerCropRows()),
+        ];
+    }
+
     protected function getCustomerCropRows(): Collection
     {
         $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery()
@@ -272,6 +292,49 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ])
             ->values()
             ->all();
+    }
+
+    protected function buildBranchAreaPieChartData(Collection $rows): array
+    {
+        $colors = [
+            '#0f766e',
+            '#2563eb',
+            '#f59e0b',
+            '#dc2626',
+            '#7c3aed',
+            '#059669',
+            '#ea580c',
+            '#4f46e5',
+            '#be123c',
+            '#0891b2',
+        ];
+
+        $branches = $rows
+            ->groupBy('branch_id')
+            ->map(function (Collection $branchRows) {
+                $firstRow = $branchRows->first();
+
+                return [
+                    'branch_name' => $firstRow['branch_name'],
+                    'total_area_hectares' => round((float) $branchRows->sum('total_area_hectares'), 2),
+                ];
+            })
+            ->sortByDesc('total_area_hectares')
+            ->values();
+
+        return [
+            'datasets' => [
+                [
+                    'label' => 'المساحة بالهكتار',
+                    'data' => $branches->pluck('total_area_hectares')->all(),
+                    'backgroundColor' => $branches
+                        ->keys()
+                        ->map(fn (int $index): string => $colors[$index % count($colors)])
+                        ->all(),
+                ],
+            ],
+            'labels' => $branches->pluck('branch_name')->all(),
+        ];
     }
 
     protected function getFilteredAccessibleCollectionsQuery(): Builder
