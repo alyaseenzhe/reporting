@@ -106,4 +106,13 @@ Route::middleware([
     Route::get('/edit-group/{id}', \App\Http\Livewire\EditUserGroups::class)->name('edit.group');
 
     Route::get('/settings', \App\Http\Livewire\ListSettings::class)->name('list.settings');
+
+    Route::get('/test-db', function () {
+        try {
+            \DB::connection('sqlsrv')->getPdo();
+            return "Connection OK";
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    });
 });

@@ -3,17 +3,27 @@
 namespace App\Filament\Resources\ExpenseResource\Pages;
 
 use App\Filament\Resources\ExpenseResource;
-use Filament\Pages\Actions;
+use App\Models\Expense;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CreateExpense extends CreateRecord
 {
     protected static string $resource = ExpenseResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function handleRecordCreation(array $data): Model
     {
-        $data['total'] = ExpenseResource::calculateTotal($data['amount'] ?? 0, $data['vat'] ?? 0);
+        $detailRows = ExpenseResource::extractDetailRows($data);
+        $parentData = ExpenseResource::extractParentData($data);
+        $parentData['user_id'] = auth()->id();
 
-        return $data;
+        return DB::transaction(function () use ($parentData, $detailRows) {
+            $record = Expense::create($parentData);
+
+            ExpenseResource::syncChildren($record, $detailRows);
+
+            return $record;
+        });
     }
 }

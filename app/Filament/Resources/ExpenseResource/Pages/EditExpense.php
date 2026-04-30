@@ -5,6 +5,8 @@ namespace App\Filament\Resources\ExpenseResource\Pages;
 use App\Filament\Resources\ExpenseResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class EditExpense extends EditRecord
 {
@@ -12,16 +14,21 @@ class EditExpense extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['total'] = ExpenseResource::calculateTotal($data['amount'] ?? 0, $data['vat'] ?? 0);
-
-        return $data;
+        return ExpenseResource::mutateDataBeforeFill($data, $this->record);
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $data['total'] = ExpenseResource::calculateTotal($data['amount'] ?? 0, $data['vat'] ?? 0);
+        $detailRows = ExpenseResource::extractDetailRows($data);
+        $parentData = ExpenseResource::extractParentData($data);
 
-        return $data;
+        return DB::transaction(function () use ($record, $parentData, $detailRows) {
+            $record->update($parentData);
+
+            ExpenseResource::syncChildren($record, $detailRows);
+
+            return $record;
+        });
     }
 
     protected function getActions(): array

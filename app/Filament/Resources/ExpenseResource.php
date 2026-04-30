@@ -4,12 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
+use App\Models\ExpenseDetails;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -17,6 +18,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class ExpenseResource extends Resource
 {
@@ -26,11 +28,11 @@ class ExpenseResource extends Resource
 
     //protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = ' المصروفات';
+    protected static ?string $navigationLabel = ' المطالبات المالية';
 
-    protected static ?string $pluralLabel = 'المصروفات';
+    protected static ?string $pluralLabel = 'المطالبات المالية';
 
-    protected static ?string $label = 'كشف مطالبة المصروفات';
+    protected static ?string $label = 'كشف مطالبة مالية';
 
     public static function getStatusOptions(): array
     {
@@ -60,66 +62,126 @@ class ExpenseResource extends Resource
                                 ->label('التاريخ')
                                 ->hiddenOn('create')
                                 ->disabled(),
-
+//
                             Select::make('user_id')->label('اسم الموظف')
                                 ->relationship('user', 'name'),
                         ]),
-                    ]),
-                Section::make('معلومات التركيب المحصولي للعملاء')
-                    ->schema([
-                        Grid::make(4)->schema([
-                            TextInput::make('location')
-                                ->label('الموقع')->required(),
+                    ])->hiddenOn('create'),
+//                Section::make('معلومات التركيب المحصولي للعملاء')
+//                    ->schema([
+////                        Grid::make(4)->schema([
+////                            TextInput::make('location')
+////                                ->label('الموقع')->required(),
+////
+////                            TextInput::make('amount')
+////                                ->label('المبلغ')
+////                                ->required()
+////                                ->numeric()
+////                                ->reactive()
+////                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+////                                    $set('total', static::calculateTotal($state, $get('vat')));
+////                                })
+////                                ->maxValue(9999999999.99)
+////                                ->rules(['numeric', 'min:0.01']),
+////
+////                            TextInput::make('vat')
+////                                ->label('الضريبة')
+////                                ->required()
+////                                ->numeric()
+////                                ->reactive()
+////                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+////                                    $set('total', static::calculateTotal($get('amount'), $state));
+////                                })
+////                                ->maxValue(9999999999.99)
+////                                ->rules(['numeric', 'min:0.01']),
+////
+////                            TextInput::make('total')
+////                                ->label('Total')
+////                                ->numeric()
+////                                ->disabled()
+////                                ->dehydrated()
+////                                ->default(0),
+////
+////                            Textarea::make('description')
+////                                ->label('الوصف')
+////                                ->columnSpan(2)->required(),
+//
+//                            Select::make('status')->label('الحالة')
+//                                ->options(static::getStatusOptions())
+//                                ->hiddenOn('create')
+//                                ->default('1')
+//                                ->disablePlaceholderSelection(),
+//
+////                TextInput::make('created_by')
+////                    ->label('تم انشاؤه بواسطة')
+////                    ->hiddenOn('create')
+////                    ->disabled()
+////                    ->dehydrated(false)
+////                    ->formatStateUsing(function ($state, ?Model $record): string {
+////                        return (string) optional(optional($record)->userUpdate)->name;
+////                    }),
+//                        ]),
+                        Section::make('المطالبات المالية')
+                            ->schema([
+                                Repeater::make('crop_composition_items')
+                                    ->label('')
+                                    ->view('components.filament.forms.compact-inline-repeater')
+                                    ->columns(['default' => 1, 'md' => 12])
+                                    ->disableItemMovement()
+                                    ->minItems(1)
+                                    ->defaultItems(1)
+                                    ->schema([
+//                            Grid::make(4)->schema([
 
-                            TextInput::make('amount')
-                                ->label('المبلغ')
-                                ->required()
-                                ->numeric()
-                                ->reactive()
-                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
-                                    $set('total', static::calculateTotal($state, $get('vat')));
-                                })
-                                ->maxValue(9999999999.99)
-                                ->rules(['numeric', 'min:0.01']),
+                                        TextInput::make('location')
+                                            ->label('الموقع')
+                                            ->columnSpan(2)
+                                            ->required(),
 
-                            TextInput::make('vat')
-                                ->label('الضريبة')
-                                ->required()
-                                ->numeric()
-                                ->reactive()
-                                ->afterStateUpdated(function ($state, callable $get, callable $set): void {
-                                    $set('total', static::calculateTotal($get('amount'), $state));
-                                })
-                                ->maxValue(9999999999.99)
-                                ->rules(['numeric', 'min:0.01']),
 
-                            TextInput::make('total')
-                                ->label('Total')
-                                ->numeric()
-                                ->disabled()
-                                ->dehydrated()
-                                ->default(0),
+                                        TextInput::make('description')
+                                            ->label('الوصف')
+                                            ->columnSpan(3)
+                                            ->required(),
 
-                            Textarea::make('description')
-                                ->label('الوصف')
-                                ->columnSpan(2)->required(),
 
-                            Select::make('status')->label('الحالة')
-                                ->options(static::getStatusOptions())
-                                ->hiddenOn('create')
-                                ->default('1')
-                                ->disablePlaceholderSelection(),
 
-//                TextInput::make('created_by')
-//                    ->label('تم انشاؤه بواسطة')
-//                    ->hiddenOn('create')
-//                    ->disabled()
-//                    ->dehydrated(false)
-//                    ->formatStateUsing(function ($state, ?Model $record): string {
-//                        return (string) optional(optional($record)->userUpdate)->name;
-//                    }),
+                                        TextInput::make('amount')
+                                            ->label('المبلغ')
+                                            ->required()
+                                            ->numeric()
+                                            ->reactive()
+                                            ->columnSpan(2)
+                                            ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+                                                $set('total', static::calculateTotal($state, $get('vat')));
+                                            })
+                                            ->maxValue(9999999999.99)
+                                            ->rules(['numeric', 'min:0.01']),
+
+                                        TextInput::make('vat')
+                                            ->label('الضريبة')
+                                            ->required()
+                                            ->numeric()
+                                            ->reactive()
+                                            ->columnSpan(2)
+                                            ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+                                                $set('total', static::calculateTotal($get('amount'), $state));
+                                            })
+                                            ->maxValue(9999999999.99)
+                                            ->rules(['numeric', 'min:0.01']),
+
+                                        TextInput::make('total')
+                                            ->label('Total')
+                                            ->numeric()
+                                            ->disabled()
+                                            ->dehydrated()
+                                            ->default(0)
+                                            ->columnSpan(2),
+
+                                         ]),
+
+
                         ]),
-                    ]),
             ]);
     }
 
@@ -158,6 +220,60 @@ class ExpenseResource extends Resource
                     })
                     ->deselectRecordsAfterCompletion(),
             ]);
+    }
+
+    public static function extractDetailRows(array $data): array
+    {
+        return array_values($data['crop_composition_items'] ?? []);
+    }
+
+    public static function extractParentData(array $data): array
+    {
+        $detailRows = static::extractDetailRows($data);
+
+        unset($data['crop_composition_items']);
+
+        $data['total'] = collect($detailRows)->sum(function (array $row): float {
+            return (float) ($row['total'] ?? 0);
+        });
+
+        if (blank($data['status'] ?? null)) {
+            $data['status'] = '1';
+        }
+
+        return $data;
+    }
+
+    public static function syncChildren(Expense $record, array $detailRows): void
+    {
+        $record->expenseDetails()->delete();
+
+        foreach ($detailRows as $row) {
+            $record->expenseDetails()->create([
+                'description' => $row['description'] ?? null,
+                'location' => $row['location'] ?? null,
+                'amount' => $row['amount'] ?? null,
+                'vat' => $row['vat'] ?? null,
+                'total' => $row['total'] ?? null,
+            ]);
+        }
+    }
+
+    public static function mutateDataBeforeFill(array $data, Model $record): array
+    {
+        $data['crop_composition_items'] = $record->expenseDetails
+            ->map(function (ExpenseDetails $row): array {
+                return [
+                    'description' => $row->description,
+                    'location' => $row->location,
+                    'amount' => $row->amount,
+                    'vat' => $row->vat,
+                    'total' => $row->total,
+                ];
+            })
+            ->toArray();
+
+        return $data;
     }
 
     public static function getRelations(): array

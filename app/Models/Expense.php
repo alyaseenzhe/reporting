@@ -15,13 +15,15 @@ class Expense extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function added(){
-
-        return $this->belongsTo(User::class);
-    }
-
     public function approved(){
 
         return $this->belongsTo(User::class);
     }
+
+    public function expenseDetails(){
+
+        return $this->hasMany(ExpenseDetails::class);
+    }
+
+
 }
