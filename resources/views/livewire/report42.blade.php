@@ -331,7 +331,7 @@
                             data-month_total_per="{{floatval($record["S2 Sales PY"]) != 0 ? ((floatval($record["S2 Sales"]) - floatval($record["S2 Sales PY"])) / floatval($record["S2 Sales PY"])) * 100 : 0) + number_format(floatval($record["S1 Sales PY"]) != 0 ? ((floatval($record["S1 Sales"]) - floatval($record["S1 Sales PY"])) / floatval($record["S1 Sales PY"])) * 100 : 0}}"
                             data-year_s1="{{floatval($record["S1 Sales Year"])/1000}}"
                             data-year_s1_per="{{((floatval($record["S1 Sales Year"]) - floatval($record["S1 Sales Year PY"])) / floatval($record["S1 Sales Year PY"])) * 100}}"
-                            data-year_s2 ="{{floatval($record["S1 Sales Year"])/1000}}"
+                            data-year_s2 ="{{floatval($record["S2 Sales Year"])/1000}}"
                             data-year_s2_per="{{floatval($record["S2 Sales Year PY"]) != 0 ? number_format(((floatval($record["S2 Sales Year"]) - floatval($record["S2 Sales Year PY"])) / floatval($record["S2 Sales Year PY"])) * 100) : 0}}"
                             data-year_total="{{(floatval($record["S1 Sales Year"])/1000)+(floatval($record["S2 Sales Year"])/1000)}}"
                             data-year_per="{{number_format(((floatval($record["S1 Sales Year"]) - floatval($record["S1 Sales Year PY"])) / floatval($record["S1 Sales Year PY"])) * 100)
