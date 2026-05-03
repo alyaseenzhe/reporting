@@ -11,6 +11,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -182,6 +183,25 @@ class ExpenseResource extends Resource
 
 
                         ]),
+                Section::make('المرفقات')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('attachments')
+                            ->label('المرفقات')
+                            ->collection('expense_attachments')
+                            ->multiple()
+                            ->preserveFilenames()
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'image/png',
+                                'image/jpeg',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            ])
+                            ->enableOpen()
+                            ->enableDownload(),
+                    ]),
             ]);
     }
 
@@ -191,10 +211,10 @@ class ExpenseResource extends Resource
             ->columns([
                 TextColumn::make('user.name')
                     ->label('اسم الموظف'),
-                TextColumn::make('amount')
-                    ->label('المبلغ'),
-                TextColumn::make('vat')
-                    ->label('الضريبة'),
+//                TextColumn::make('amount')
+//                    ->label('المبلغ'),
+//                TextColumn::make('vat')
+//                    ->label('الضريبة'),
                 TextColumn::make('total')
                     ->label('الاجمالي'),
             ])
@@ -231,7 +251,7 @@ class ExpenseResource extends Resource
     {
         $detailRows = static::extractDetailRows($data);
 
-        unset($data['crop_composition_items']);
+        unset($data['crop_composition_items'], $data['attachments']);
 
         $data['total'] = collect($detailRows)->sum(function (array $row): float {
             return (float) ($row['total'] ?? 0);
