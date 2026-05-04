@@ -32,6 +32,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         'customer_codes' => [self::ALL_FILTER_VALUE],
         'engineer_names' => [self::ALL_FILTER_VALUE],
         'crop_category_ids' => [self::ALL_FILTER_VALUE],
+        'crop_item_ids' => [self::ALL_FILTER_VALUE],
     ];
 
     public function mount(): void
@@ -62,6 +63,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                         'customer_codes' => [static::ALL_FILTER_VALUE],
                         'engineer_names' => [static::ALL_FILTER_VALUE],
                         'crop_category_ids' => [static::ALL_FILTER_VALUE],
+                        'crop_item_ids' => [static::ALL_FILTER_VALUE],
                     ];
 
                     $this->form->fill($this->filters);
@@ -351,6 +353,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         $branchIds = $this->getEffectiveFilterValues($this->filters['branch_ids'] ?? []);
         $customerCodes = $this->getEffectiveFilterValues($this->filters['customer_codes'] ?? []);
         $engineerNames = $this->getEffectiveFilterValues($this->filters['engineer_names'] ?? []);
+        $cropItem = $this->getEffectiveFilterValues($this->filters['crop_item_ids'] ?? []);
 
         return static::getResource()::getAccessibleCollectionsQuery()
             ->when(
@@ -360,6 +363,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->when(
                 count($customerCodes),
                 fn (Builder $query) => $query->whereIn('customer_code', $customerCodes)
+            )
+            ->when(
+                count($engineerNames),
+                fn (Builder $query) => $query->whereIn('engineer_name', $engineerNames)
             )
             ->when(
                 count($engineerNames),
@@ -445,9 +452,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'branch_crop_collection_items.branch_crop_composition_collection_id'
                 );
             })
-            ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
-            ->orderBy('categories.name')
-            ->pluck('categories.name', 'branch_crop_collection_items.crop_catalog_category_id')
+            ->leftJoin('crop_catalog_items as items', 'items.id', '=', 'branch_crop_collection_items.crop_catalog_item_id')
+            ->orderBy('items.name')
+            ->pluck('items.name', 'branch_crop_collection_items.crop_catalog_item_id')
             ->filter()
             ->toArray());
     }
