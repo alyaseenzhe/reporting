@@ -1,6 +1,7 @@
 <x-filament::page>
 {{--<x-filament::page :widget-data="$this->getWidgetData()">--}}
     <div
+        wire:key="crop-composition-report-{{ md5(json_encode($this->filters)) }}"
         x-data="{
             expandedCrops: {},
             expandedBranches: {},
@@ -85,7 +86,7 @@
 
                             @foreach ($crop['branches'] as $branch)
                                 <tr
-                                    x-show="isCropExpanded('{{ $crop['key'] }}')"
+                                    x-bind:style="isCropExpanded('{{ $crop['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                     x-cloak
                                     class="bg-gray-50"
                                 >
@@ -111,7 +112,7 @@
 
                                 @foreach ($branch['customers'] as $customer)
                                     <tr
-                                        x-show="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}')"
+                                        x-bind:style="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                         x-cloak
                                         class="bg-white"
                                     >
