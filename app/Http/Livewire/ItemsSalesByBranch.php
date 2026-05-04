@@ -448,8 +448,10 @@ class ItemsSalesByBranch extends Component
         $username = env('DB_USERNAME_FOURTH');
         $password = env('DB_PASSWORD_FOURTH');
 
-        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+//        $conn = odbc_connect("Driver=$driver;ServerNode=$host;Database=$db_name;char_as_utf8=true;", $username, $password, SQL_CUR_USE_ODBC);
+        $connectionString = "Driver={{$driver}};ServerNode=$host;Database=$db_name;char_as_utf8=true;";
 
+        $conn = odbc_connect($connectionString, $username, $password);
         if (!$conn)
         {
             echo "Connection failed.\n";

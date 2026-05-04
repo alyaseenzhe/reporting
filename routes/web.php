@@ -107,6 +107,8 @@ Route::middleware([
 
     Route::get('/settings', \App\Http\Livewire\ListSettings::class)->name('list.settings');
 
+    Route::get('/daily-report/export', [\App\Http\Livewire\ListDailyReports::class , 'export']);
+
     Route::get('/test-db', function () {
         try {
             \DB::connection('sqlsrv')->getPdo();

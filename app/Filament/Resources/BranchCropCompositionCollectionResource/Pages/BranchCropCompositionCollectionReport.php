@@ -116,6 +116,15 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->searchable()
                                 ->preload()
                                 ->reactive(),
+                            Forms\Components\Select::make('crop_items_ids')
+                                ->label(' المحصول')
+                                ->placeholder('')
+                                ->options($this->getCropItemOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->reactive(),
                         ]),
 //                ]),
         ];
@@ -404,6 +413,26 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     }
 
     protected function getCropCategoryOptions(): array
+    {
+        $accessibleCollections = static::getResource()::getAccessibleCollectionsQuery()
+            ->select('branch_crop_composition_collections.id');
+
+        return $this->withAllOption(BranchCropCollectionItem::query()
+            ->joinSub($accessibleCollections, 'accessible_collections', function ($join): void {
+                $join->on(
+                    'accessible_collections.id',
+                    '=',
+                    'branch_crop_collection_items.branch_crop_composition_collection_id'
+                );
+            })
+            ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
+            ->orderBy('categories.name')
+            ->pluck('categories.name', 'branch_crop_collection_items.crop_catalog_category_id')
+            ->filter()
+            ->toArray());
+    }
+
+    protected function getCropItemOptions(): array
     {
         $accessibleCollections = static::getResource()::getAccessibleCollectionsQuery()
             ->select('branch_crop_composition_collections.id');

@@ -30,6 +30,10 @@ class Kernel extends ConsoleKernel
         //$schedule->command('visits:rate-reminders')->cron('0 0 */2 * *');
         // $schedule->command('visits:send-reminders')->everyTwoMinutes();
         $schedule->command('visits:rate-reminders')->everyTwoMinutes();
+        $schedule->command('report:send-weekly')
+            ->weeklyOn(5, '1:00')
+            ->timezone(config('weekly-report.timezone', 'Asia/Riyadh'))
+            ->withoutOverlapping();
 //        $schedule->command('send:daily-report')->weeklyOn(5, '1:00')->timezone("Asia/Riyadh");
         $schedule->command('send:daily-report')->everyMinute();
     }

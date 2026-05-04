@@ -2,12 +2,13 @@
 
 namespace App\Http\Livewire;
 
+use App\Exports\DailyReportExport;
 use App\Models\DailyReport;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-
+use Maatwebsite\Excel\Facades\Excel;
 class ListDailyReports extends Component
 {
     use WithPagination;
@@ -34,5 +35,10 @@ class ListDailyReports extends Component
             session()->flash('error-message', 'حدث خطأ ما عند حذف هذا التقرير');
             return redirect()->route('list.daily-reports');
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new DailyReportExport(), 'dailyReport.xlsx');
     }
 }
