@@ -18,7 +18,7 @@
             </div>
 
             <div class="w-full">
-                <label class="block font-bold mb-2">رقم المورد</label>
+                <label class="block font-bold mb-2">رقم صنف المورد</label>
                 <x-select_search id="catalog_number" name="catalog_number" wire:model="catalog_number"
                                  class="form-input w-full">
                     <option all_option="true" value="">الكل</option>

@@ -1,5 +1,5 @@
 @section('title')
-    23- تقرير الأصناف
+    24- قائمةالأصناف
 @stop
 <div>
     <div x-data="{ container:true, itemSearch:false, advancedSearch:false }" x-cloak>
@@ -30,11 +30,15 @@
                                 <div class="text-sm">الإدارة / القسم</div>
                             </th>
                             <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                <div class="text-sm">رقم المورد</div>
+                                <div class="text-sm">رقم صنف المورد</div>
+                            </th>
+                            <th style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                <div class="text-sm">الحالة</div>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
+{{--                        @dd($group_results)--}}
                         @foreach($group_results as $item)
                             <tr style="border-bottom: 2px solid #a8a8a8; background-color: #e4fbff; font-weight: bold;">
                                 <td style="border-left: 2px solid #a8a8a8;" class="border p-2 whitespace-nowrap">{{ $item['ItemCode'] }}</td>
@@ -44,6 +48,16 @@
                                 <td style="border-left: 2px solid #a8a8a8;" class="border p-2">{{ $item['VendorName'] }}</td>
                                 <td style="border-left: 2px solid black;" class="border p-2">{{ __($item['mrkt_type']) }}</td>
                                 <td style="border-left: 2px solid black;" class="border p-2">{{ __($item['CatalogNumber']) }}</td>
+                                <td style="border-left: 2px solid black;" class="border p-2">{{-- __($item['validFor']) --}}
+                                @if($item['validFor'] == 'Y')
+                                    نشط
+                                    @else
+                                    غير نشط
+                                @endif
+
+                                </td>
+
+
                             </tr>
                         @endforeach
                         </tbody>

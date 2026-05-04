@@ -506,6 +506,11 @@ ORDER BY "CardCode"';
         }
 
 
+        if (count($item_validity) > 1) {
+            $item_validity = array_values(array_diff($item_validity, ['ValidFor']));
+        }
+
+
         $this->sap_codes = [];
 
         $driver   = env('DB_CONNECTION_FOURTH');
