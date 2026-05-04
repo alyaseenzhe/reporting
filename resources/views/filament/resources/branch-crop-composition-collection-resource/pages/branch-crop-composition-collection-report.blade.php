@@ -63,7 +63,7 @@
 
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($reportRows as $crop)
-                            <tr class="bg-white">
+                            <tr class="bg-gray-100"  >
                                 <td class="px-4 py-3 align-top">
                                     @if (count($crop['branches']))
                                         <button
@@ -88,8 +88,11 @@
                                 <tr
                                     x-bind:style="isCropExpanded('{{ $crop['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                     x-cloak
-                                    class="bg-gray-50"
+{{--                                    style="background-color: #E8F2FF;"--}}
+{{--                                   class="bg-gray-50"--}}
+                                   class="bg-primary-500/10 text-primary-700"
                                 >
+                                    <td></td>
                                     <td class="px-4 py-3 align-top">
                                         @if (count($branch['customers']))
                                             <button
@@ -102,7 +105,7 @@
                                             </button>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 pl-8 text-sm text-gray-400">-</td>
+{{--                                    <td class="px-4 py-3 pl-8 text-sm text-gray-400">-</td>--}}
                                     <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $branch['branch_name'] }}</td>
 {{--                                    <td class="px-4 py-3 text-sm text-gray-400">-</td>--}}
 {{--                                    <td class="px-4 py-3 text-sm text-gray-400">-</td>--}}
@@ -114,7 +117,9 @@
                                     <tr
                                         x-bind:style="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                         x-cloak
+{{--                                        class="bg-gray-100"--}}
                                         class="bg-white"
+
                                     >
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 pl-12 text-sm text-gray-400">-</td>
