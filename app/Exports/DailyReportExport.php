@@ -27,8 +27,8 @@ class DailyReportExport implements FromCollection, WithHeadings, WithStyles, Sho
             'customer_name',
             'report_note'
         )
-            ->where('added_by', 124)
-            ->whereDate('report_date', '>=', '2026-02-01')
+            ->where('added_by', 46)
+            ->whereDate('report_date', '>=', '2026-04-01')
             ->whereDate('report_date', '<=', '2026-04-30')
             ->get();
     }
