@@ -280,6 +280,79 @@ WHERE
     T0."OnHand"
  ORDER BY T1."CardCode"';
 
+
+
+                $stmt= 'SELECT
+T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1" AS "OldItemCode",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
+    SUM("tbl_PurchaseRequest"."OpenPurchaseRequest") AS "OpenPurchaseRequest",
+    T0."OnHand"
+ FROM AL_YASEEN_AGRI_PLIVE.OITM T0
+ INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
+
+ LEFT JOIN (
+ SELECT DISTINCT
+    T2."DocEntry",
+    T2."DocNum",
+    T2."DocDate",
+T2."ReqDate" as "DocDueDate",
+    T2."CardCode",
+    T2."CardName",
+    T3."ItemCode" AS "ItemCode2",
+    T4."U_UDF1" AS "OldItemCode",
+    T3."Dscription",
+T3."ItemCode",
+    T3."OpenQty" AS "OpenQoutation"
+FROM
+    AL_YASEEN_AGRI_PLIVE.OPQT T2
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
+INNER JOIN
+AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
+WHERE
+    T2."DocStatus" = \'O\'
+ ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
+
+ LEFT JOIN (
+ SELECT DISTINCT
+    T2."DocEntry",
+    T2."DocNum",
+    T2."DocDate",
+    T2."ReqDate" as "DocDueDate",
+    T3."ItemCode" AS "ItemCode2",
+    T3."OpenQty" AS "OpenPurchaseRequest"
+FROM
+    AL_YASEEN_AGRI_PLIVE.OPRQ T2
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.PRQ1 T3 ON T2."DocEntry" = T3."DocEntry"
+WHERE
+    T2."DocStatus" = \'O\'
+ ) AS "tbl_PurchaseRequest" ON "tbl_PurchaseRequest"."ItemCode2" = T0."ItemCode"
+
+ WHERE T1."CardCode" = \''.$vendor_type.'\'
+ AND T0."validFor" = \'Y\'
+ GROUP BY
+ T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    T0."OnHand"
+ ORDER BY T1."CardCode"';
             }
             else if ($item_type == 'item_code') {
 //                $stmt = "SELECT * FROM (
@@ -478,6 +551,77 @@ WHERE
     T0."OnHand"
  ORDER BY T1."CardCode"';
 
+                $stmt = 'SELECT
+T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1" AS "OldItemCode",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
+
+    (
+        SELECT SUM(TPRQ1."OpenQty")
+        FROM AL_YASEEN_AGRI_PLIVE.OPRQ TPRQ
+        INNER JOIN AL_YASEEN_AGRI_PLIVE.PRQ1 TPRQ1
+            ON TPRQ."DocEntry" = TPRQ1."DocEntry"
+        WHERE
+            TPRQ."DocStatus" = \'O\'
+            AND TPRQ1."ItemCode" = T0."ItemCode"
+    ) AS "OpenPurchaseRequest",
+
+    T0."OnHand"
+
+FROM AL_YASEEN_AGRI_PLIVE.OITM T0
+
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1
+    ON T0."CardCode" = T1."CardCode"
+
+LEFT JOIN (
+ SELECT DISTINCT
+    T2."DocEntry",
+    T2."DocNum",
+    T2."DocDate",
+    T2."ReqDate" as "DocDueDate",
+    T2."CardCode",
+    T2."CardName",
+    T3."ItemCode" AS "ItemCode2",
+    T4."U_UDF1" AS "OldItemCode",
+    T3."Dscription",
+    T3."ItemCode",
+    T3."OpenQty" AS "OpenQoutation"
+FROM
+    AL_YASEEN_AGRI_PLIVE.OPQT T2
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
+INNER JOIN
+    AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
+WHERE
+    T2."DocStatus" = \'O\'
+) AS "tbl_Quotation"
+    ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
+
+WHERE T0."ItemCode" = \''.$product_code.'\'
+AND T0."validFor" = \'Y\'
+
+GROUP BY
+ T1."CardCode",
+    T1."CardName",
+    T0."ItemCode",
+    T0."U_UDF1",
+    T0."ItemName",
+    T0."InvntryUom",
+    T0."LeadTime",
+    T0."U_SafetyStock",
+    T0."OnOrder",
+    T0."OnHand"
+
+ORDER BY T1."CardCode"';
             }
             else {
 
@@ -790,9 +934,134 @@ WHERE
 //ORDER BY "CardCode"
 //  ';
 
-                $stmt = '
-                SELECT
-	T1."CardCode",
+//                $stmt = '
+//                SELECT
+//	T1."CardCode",
+//    T1."CardName",
+//    T0."ItemCode",
+//    T0."U_UDF1" AS "OldItemCode",
+//    T0."ItemName",
+//    T0."InvntryUom",
+//    T0."LeadTime",
+//    T0."U_SafetyStock",
+//    T0."OnOrder",
+//    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
+//    T0."OnHand"
+// FROM AL_YASEEN_AGRI_PLIVE.OITM T0
+// INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
+// LEFT JOIN (
+// SELECT DISTINCT
+//
+//    T2."DocEntry",
+//    T2."DocNum",
+//    T2."DocDate",
+//	T2."ReqDate" as "DocDueDate",
+//    T2."CardCode",
+//    T2."CardName",
+//    T3."ItemCode" AS "ItemCode2",
+//    T4."U_UDF1" AS "OldItemCode",
+//    T3."Dscription",
+//	T3."ItemCode",
+//    T3."OpenQty" AS "OpenQoutation"
+//FROM
+//
+//    AL_YASEEN_AGRI_PLIVE.OPQT T2
+//
+//INNER JOIN
+//
+//    AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
+//
+//INNER JOIN
+//
+//	AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
+//
+//INNER JOIN
+//
+//	AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
+//
+//WHERE
+//
+//    T2."DocStatus" = \'O\' -- Filters for open purchase quotation
+// ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
+// WHERE T0."validFor" = \'Y\'
+// GROUP BY
+// T1."CardCode",
+//    T1."CardName",
+//    T0."ItemCode",
+//    T0."U_UDF1",
+//    T0."ItemName",
+//    T0."InvntryUom",
+//    T0."LeadTime",
+//    T0."U_SafetyStock",
+//    T0."OnOrder",
+//    T0."OnHand"
+// ORDER BY T1."CardCode"';
+
+//                $stmt = 'SELECT
+//T1."CardCode",
+//    T1."CardName",
+//    T0."ItemCode",
+//    T0."U_UDF1" AS "OldItemCode",
+//    T0."ItemName",
+//    T0."InvntryUom",
+//    T0."LeadTime",
+//    T0."U_SafetyStock",
+//    T0."OnOrder",
+//    SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
+//    T0."OnHand"
+// FROM AL_YASEEN_AGRI_PLIVE.OITM T0
+// INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
+// LEFT JOIN (
+// SELECT DISTINCT
+//
+//    T2."DocEntry",
+//    T2."DocNum",
+//    T2."DocDate",
+//T2."ReqDate" as "DocDueDate",
+//    T2."CardCode",
+//    T2."CardName",
+//    T3."ItemCode" AS "ItemCode2",
+//    T4."U_UDF1" AS "OldItemCode",
+//    T3."Dscription",
+//T3."ItemCode",
+//    T3."OpenQty" AS "OpenQoutation"
+//FROM
+//
+//    AL_YASEEN_AGRI_PLIVE.OPQT T2
+//
+//INNER JOIN
+//
+//    AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
+//
+//INNER JOIN
+//
+//AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
+//
+//INNER JOIN
+//
+//AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
+//
+//WHERE
+//
+//    T2."DocStatus" = \'O\' -- Filters for open purchase quotation
+// ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
+// WHERE T0."validFor" = \'Y\'
+// GROUP BY
+// T1."CardCode",
+//    T1."CardName",
+//    T0."ItemCode",
+//    T0."U_UDF1",
+//    T0."ItemName",
+//    T0."InvntryUom",
+//    T0."LeadTime",
+//    T0."U_SafetyStock",
+//    T0."OnOrder",
+//    T0."OnHand"
+// ORDER BY T1."CardCode"';
+
+
+                $stmt = 'SELECT
+    T1."CardCode",
     T1."CardName",
     T0."ItemCode",
     T0."U_UDF1" AS "OldItemCode",
@@ -802,46 +1071,42 @@ WHERE
     T0."U_SafetyStock",
     T0."OnOrder",
     SUM("tbl_Quotation"."OpenQoutation") AS "OpenQoutation",
+    SUM("tbl_PurchaseRequest"."OpenPurchaseRequest") AS "OpenPurchaseRequest",
     T0."OnHand"
- FROM AL_YASEEN_AGRI_PLIVE.OITM T0
- INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1 ON T0."CardCode" = T1."CardCode"
- LEFT JOIN (
- SELECT DISTINCT
 
-    T2."DocEntry",
-    T2."DocNum",
-    T2."DocDate",
-	T2."ReqDate" as "DocDueDate",
-    T2."CardCode",
-    T2."CardName",
-    T3."ItemCode" AS "ItemCode2",
-    T4."U_UDF1" AS "OldItemCode",
-    T3."Dscription",
-	T3."ItemCode",
-    T3."OpenQty" AS "OpenQoutation"
-FROM
+FROM AL_YASEEN_AGRI_PLIVE.OITM T0
 
-    AL_YASEEN_AGRI_PLIVE.OPQT T2
+INNER JOIN AL_YASEEN_AGRI_PLIVE.OCRD T1
+    ON T0."CardCode" = T1."CardCode"
 
-INNER JOIN
+LEFT JOIN (
+    SELECT
+        T3."ItemCode",
+        SUM(T3."OpenQty") AS "OpenQoutation"
+    FROM AL_YASEEN_AGRI_PLIVE.OPQT T2
+    INNER JOIN AL_YASEEN_AGRI_PLIVE.PQT1 T3
+        ON T2."DocEntry" = T3."DocEntry"
+    WHERE T2."DocStatus" = \'O\'
+    GROUP BY T3."ItemCode"
+) AS "tbl_Quotation"
+    ON "tbl_Quotation"."ItemCode" = T0."ItemCode"
 
-    AL_YASEEN_AGRI_PLIVE.PQT1 T3 ON T2."DocEntry" = T3."DocEntry"
+LEFT JOIN (
+    SELECT
+        T3."ItemCode",
+        SUM(T3."OpenQty") AS "OpenPurchaseRequest"
+    FROM AL_YASEEN_AGRI_PLIVE.OPRQ T2
+    INNER JOIN AL_YASEEN_AGRI_PLIVE.PRQ1 T3
+        ON T2."DocEntry" = T3."DocEntry"
+    WHERE T2."DocStatus" = \'O\'
+    GROUP BY T3."ItemCode"
+) AS "tbl_PurchaseRequest"
+    ON "tbl_PurchaseRequest"."ItemCode" = T0."ItemCode"
 
-INNER JOIN
+WHERE T0."validFor" = \'Y\'
 
-	AL_YASEEN_AGRI_PLIVE.OITM T4 ON T3."ItemCode" = T4."ItemCode"
-
-INNER JOIN
-
-	AL_YASEEN_AGRI_PLIVE.OITW T5 ON T3."ItemCode" = T5."ItemCode"
-
-WHERE
-
-    T2."DocStatus" = \'O\' -- Filters for open purchase quotation
- ) AS "tbl_Quotation" ON "tbl_Quotation"."ItemCode2" = T0."ItemCode"
- WHERE T0."validFor" = \'Y\'
- GROUP BY
- T1."CardCode",
+GROUP BY
+    T1."CardCode",
     T1."CardName",
     T0."ItemCode",
     T0."U_UDF1",
@@ -851,9 +1116,10 @@ WHERE
     T0."U_SafetyStock",
     T0."OnOrder",
     T0."OnHand"
- ORDER BY T1."CardCode"';
 
+ORDER BY T1."CardCode"';
             }
+
 
 
 //            dd($stmt);

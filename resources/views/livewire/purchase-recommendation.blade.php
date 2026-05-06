@@ -281,7 +281,7 @@
                                 <div class="text-sm">{{ number_format($record["OnHand"]) }}</div>
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <div class="text-sm"></div>
+                                <div class="text-sm">{{number_format($record["OpenPurchaseRequest"])}}</div>
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">{{ number_format(intval($record["OpenQoutation"])) }}</div>
