@@ -18,16 +18,22 @@ class DailyReportExport implements FromCollection, WithHeadings, WithStyles, Sho
 {
     public function collection()
     {
-        return DailyReport::select(
+        return DailyReport::query()->
+        leftJoin('users', 'daily_reports.added_by', '=', 'users.id')
+            ->leftJoin('branches', 'users.sales_dept_code', '=', 'branches.code')
+        ->select(
+            'users.name as Employee_name',
+            'branches.name as branch_name',
             'report_type',
             'report_date',
             'location1',
             'location2',
             'companion',
             'customer_name',
-            'report_note'
+            'report_note',
+
         )
-            ->where('added_by', 46)
+//            ->where('added_by', 46)
             ->whereDate('report_date', '>=', '2026-04-01')
             ->whereDate('report_date', '<=', '2026-04-30')
             ->get();
@@ -36,6 +42,8 @@ class DailyReportExport implements FromCollection, WithHeadings, WithStyles, Sho
     public function headings(): array
     {
         return [
+            'Employee Name',
+            'Branch',
             'Report Type',
             'Report Date',
             'Location 1',
@@ -43,6 +51,7 @@ class DailyReportExport implements FromCollection, WithHeadings, WithStyles, Sho
             'Companion',
             'Customer Name',
             'report_note',
+
         ];
     }
 
