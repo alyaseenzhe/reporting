@@ -4556,3 +4556,6 @@ button.active:after {
     content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
 
+.bg-blue-100{
+    background-color: oklch(93.2% 0.032 255.585);
+}

@@ -1739,55 +1739,144 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
                                 </svg>
                             </div>
                         </div>
-                        <div class="text-3xl font-semibold text-gray-800 text-center">23- تقرير كميات الأصناف بالفرع</div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">23- ترتيب الفروع بكميات المبيعات</div>
                     </div>
                 </div>
             </a>
         @endif
-    @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
-        <a class="w-full" href="{{ route('visit-calendar') }}">
-            <div
-                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
-                <div class="px-5 pt-5">
-                    <div class="flex items-center justify-center mb-8">
-                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
-                            <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Window Header -->
-                                <rect x="6" y="8" width="52" height="6" rx="1.5" fill="#3e4f59"/>
-                                <circle cx="46" cy="11" r="1.3" fill="#ed7161"/>
-                                <circle cx="42" cy="11" r="1.3" fill="#ecba16"/>
-                                <circle cx="38" cy="11" r="1.3" fill="#42b05c"/>
+        @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('list.items') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" viewBox="0 0 64 64" version="1.1"
+                                     xmlns="http://www.w3.org/2000/svg">
 
-                                <!-- Window Body -->
-                                <rect x="6" y="14" width="52" height="42" rx="2" fill="#acbec2"/>
-                                <path d="M6 14h32c8 0 14 14 14 42H6z" fill="#e8edee"/>
+                                    <!-- Background window -->
+                                    <g transform="translate(0,0)">
+                                        <!-- Top bar -->
+                                        <path d="M8 8H56V14H8Z"
+                                              style="fill:#3e4f59;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
 
-                                <!-- Visit Location Pin -->
-                                <path
-                                    d="M32 24c-4.4 0-8 3.3-8 7.5 0 5.7 8 13.5 8 13.5s8-7.8 8-13.5c0-4.2-3.6-7.5-8-7.5z"
-                                    fill="#fe73c5"/>
-                                <circle cx="32" cy="31" r="3" fill="#fe93d3"/>
+                                        <!-- Body -->
+                                        <path d="M8 14H56V50H8Z"
+                                              style="fill:#acbec2;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
 
-                                <!-- Calendar / Visit Line -->
-                                <rect x="20" y="46" width="24" height="6" rx="1.5" fill="#0075d3"/>
-                                <rect x="20" y="46" width="12" height="6" rx="1.5" fill="#0588e2"/>
+                                        <!-- Right light panel -->
+                                        <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z"
+                                              style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
 
-                                <!-- Outline -->
-                                <path
-                                    d="M6 8c-1.7 0-3 1.3-3 3v42c0 1.7 1.3 3 3 3h52c1.7 0 3-1.3 3-3V11c0-1.7-1.3-3-3-3H6zm0 2h52c.6 0 1 .4 1 1v42c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1z"
-                                    fill="#000"/>
-                            </svg>
+                                        <!-- Outer stroke / frame -->
+                                        <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                              style="fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"/>
 
+                                        <!-- Top dots -->
+                                        <circle cx="48" cy="11" r="1" style="fill:#ed7161"/>
+                                        <circle cx="44" cy="11" r="1" style="fill:#ecba16"/>
+                                        <circle cx="40" cy="11" r="1" style="fill:#42b05c"/>
+
+                                        <!-- Left bottom dot -->
+                                        <circle cx="6" cy="52" r="1" style="fill:#000000"/>
+
+                                        <!-- Small dot near body -->
+                                        <circle cx="11" cy="16" r="1" style="fill:#000000"/>
+
+                                        <!-- List items card background -->
+                                        <rect x="15" y="21" width="34" height="24" rx="3"
+                                              style="fill:#ffffff;fill-opacity:0.75;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Item row 1 -->
+                                        <circle cx="20" cy="27" r="2" style="fill:#ffa221;stroke:#000000;stroke-width:1"/>
+                                        <path d="M25 27H44"
+                                              style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+                                        <path d="M25 30H38"
+                                              style="fill:none;stroke:#0075d3;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Item row 2 -->
+                                        <circle cx="20" cy="35" r="2" style="fill:#42b05c;stroke:#000000;stroke-width:1"/>
+                                        <path d="M25 35H44"
+                                              style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+                                        <path d="M25 38H40"
+                                              style="fill:none;stroke:#fe73c5;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Item row 3 -->
+                                        <circle cx="20" cy="43" r="2" style="fill:#0075d3;stroke:#000000;stroke-width:1"/>
+                                        <path d="M25 43H44"
+                                              style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <!-- Small check marks -->
+                                        <path d="M18.8 27L19.7 28L21.4 25.8"
+                                              style="fill:none;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <path d="M18.8 35L19.7 36L21.4 33.8"
+                                              style="fill:none;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                        <path d="M18.8 43L19.7 44L21.4 41.8"
+                                              style="fill:none;stroke:#ffffff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    </g>
+                                </svg>
+
+                            </div>
                         </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">24- قائمة الأصناف</div>
                     </div>
-                    <div class="text-3xl font-semibold text-gray-800 text-center">منصة الزيارات</div>
                 </div>
-            </div>
-        </a>
-    @endif
+            </a>
+        @endif
 
 
+    </div>
 </div>
+<div>
+    <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+
+        @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('visit-calendar') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Window Header -->
+                                    <rect x="6" y="8" width="52" height="6" rx="1.5" fill="#3e4f59"/>
+                                    <circle cx="46" cy="11" r="1.3" fill="#ed7161"/>
+                                    <circle cx="42" cy="11" r="1.3" fill="#ecba16"/>
+                                    <circle cx="38" cy="11" r="1.3" fill="#42b05c"/>
+
+                                    <!-- Window Body -->
+                                    <rect x="6" y="14" width="52" height="42" rx="2" fill="#acbec2"/>
+                                    <path d="M6 14h32c8 0 14 14 14 42H6z" fill="#e8edee"/>
+
+                                    <!-- Visit Location Pin -->
+                                    <path
+                                        d="M32 24c-4.4 0-8 3.3-8 7.5 0 5.7 8 13.5 8 13.5s8-7.8 8-13.5c0-4.2-3.6-7.5-8-7.5z"
+                                        fill="#fe73c5"/>
+                                    <circle cx="32" cy="31" r="3" fill="#fe93d3"/>
+
+                                    <!-- Calendar / Visit Line -->
+                                    <rect x="20" y="46" width="24" height="6" rx="1.5" fill="#0075d3"/>
+                                    <rect x="20" y="46" width="12" height="6" rx="1.5" fill="#0588e2"/>
+
+                                    <!-- Outline -->
+                                    <path
+                                        d="M6 8c-1.7 0-3 1.3-3 3v42c0 1.7 1.3 3 3 3h52c1.7 0 3-1.3 3-3V11c0-1.7-1.3-3-3-3H6zm0 2h52c.6 0 1 .4 1 1v42c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1z"
+                                        fill="#000"/>
+                                </svg>
+
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">منصة الزيارات</div>
+                    </div>
+                </div>
+            </a>
+        @endif
+
+
+    </div>
 </div>
 
 @section('css-scripts')
