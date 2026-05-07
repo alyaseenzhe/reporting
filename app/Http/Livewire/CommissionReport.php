@@ -117,6 +117,7 @@ class CommissionReport extends Component
     public $branch_balance = 0;
     public $profitAndLoss = 0;
     public $commission_days = 180;
+    public $branch_reports = [];
 
     protected $rules = [
         'area_id' => 'required|not_in:-1',
@@ -158,8 +159,19 @@ class CommissionReport extends Component
         $this->first_date = date('Y-m-01', strtotime($this->selected_date));
         $this->last_date = date('Y-m-t', strtotime($this->selected_date));
 
+        $this->resetGeneratedReportData();
 
-        $this->sapQuery($this->first_date, $this->last_date);
+        $targetAreaIds = $this->area_id === 'all'
+            ? array_keys($this->getAreaOptions())
+            : [(string) $this->area_id];
+
+        foreach ($targetAreaIds as $targetAreaId) {
+            $this->branch_reports[] = $this->sapQuery($this->first_date, $this->last_date, (string) $targetAreaId);
+        }
+
+        if (count($this->branch_reports)) {
+            $this->syncReportState($this->branch_reports[0]);
+        }
 
 
 
@@ -171,12 +183,15 @@ class CommissionReport extends Component
 
     }
 
-    public function sapQuery($start_date, $end_date) {
-
-        $this->sap_results = [];
-        $this->sap_results2 = [];
-        $this->slp_aging = [];
-        $this->slp_code = [];
+    public function sapQuery($start_date, $end_date, ?string $areaId = null) {
+        $targetAreaId = (string) ($areaId ?? $this->area_id);
+        $sapResults = [];
+        $sapResults2 = [];
+        $slpAging = [];
+        $slpCode = [];
+        $branchBalance = 0;
+        $profitAndLoss = 0;
+        $totalGrossProfit = 0;
 
         if (! extension_loaded('odbc'))
         {
@@ -241,9 +256,13 @@ AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
 INNER JOIN
 AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
 WHERE
-JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
-AND JDT1."ProfitCode" = \''.$this->cost_center[$this->area_id].'\'
-ORDER
+JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
+
+            if($targetAreaId != 'all'){
+            $loss_profit_sql  .= 'AND JDT1."ProfitCode" = \''.$this->cost_center[$targetAreaId].'\'';
+            }
+
+            $loss_profit_sql  .= 'ORDER
 BY JDT1."RefDate"
 )
 
@@ -255,6 +274,41 @@ OR "Account Code" LIKE \'7%\'
 OR "Account Code" LIKE \'8%\'
 ';
 
+//            dd($loss_profit_sql);
+//
+//            $loss_profit_sql = 'SELECT SUM("Credit Amount")-SUM("Debit Amount") AS "ProfitAndLoss" FROM (
+//--SELECT * FROM (
+//
+//SELECT
+//OACT."AcctCode" AS "Account Code",
+//OACT."AcctName" AS "Account Name",
+//JDT1."RefDate" AS "Transaction Date",
+//OJDT."Memo" AS "Transaction Description",
+//JDT1."Debit" AS "Debit Amount",
+//JDT1."Credit" AS "Credit Amount",
+//--JDT1."LocTotal" AS "Local Total Amount",
+//JDT1."ProfitCode" AS "Cost Center"
+//FROM
+//AL_YASEEN_AGRI_PLIVE.JDT1
+//INNER JOIN
+//AL_YASEEN_AGRI_PLIVE.OJDT ON JDT1."TransId" = OJDT."TransId"
+//INNER JOIN
+//AL_YASEEN_AGRI_PLIVE.OACT ON JDT1."Account" = OACT."AcctCode"
+//WHERE
+//JDT1."RefDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+//AND JDT1."ProfitCode" = \''.$this->cost_center[$this->area_id].'\'
+//ORDER
+//BY JDT1."RefDate"
+//)
+//
+//WHERE
+//"Account Code" LIKE \'4%\'
+//OR "Account Code" LIKE \'5%\'
+//OR "Account Code" LIKE \'6%\'
+//OR "Account Code" LIKE \'7%\'
+//OR "Account Code" LIKE \'8%\'
+//';
+//
 
 
 
@@ -294,10 +348,13 @@ LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
 
 ORDER BY "BusinessPartnerCode"
 
-)
-WHERE "BranchCode" = '. $this->area_id .'
+)';
 
-GROUP BY "BranchCode"
+            if($targetAreaId != 'all'){
+                $sql .= 'WHERE "BranchCode" = '. $targetAreaId .' ';
+            }
+
+$sql .= 'GROUP BY "BranchCode"
 
 ) outstanding_tbl
 
@@ -305,8 +362,13 @@ GROUP BY "BranchCode"
  SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", SUM("GrossProfitLC") AS "GrossProfitLC" FROM (
 SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", "DocumentDate", "GrossProfitLC"
 FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
-WHERE "WarehouseBranchCode" = '.$this->area_id.'
-AND "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\')
+WHERE "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
+            if($targetAreaId != 'all') {
+                $sql .= ' AND "WarehouseBranchCode" = ' . $targetAreaId . '';
+            }
+
+            $sql .='
+ )
 GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
  ) gross_tbl ON gross_tbl."BranchCode" = outstanding_tbl."BranchCode"
  LEFT JOIN (
@@ -314,11 +376,15 @@ GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
 SELECT T1."BPLId", T0."Warehouse", Sum(T0."TransValue") "TransVal",
 Sum(T0."CogsVal") "COGS" from AL_YASEEN_AGRI_PLIVE.oinm T0
 LEFT JOIN AL_YASEEN_AGRI_PLIVE.OBPL T1 ON T0."Warehouse" = T1."DflWhs"
-WHERE T0."DocDate" <= \''.$end_date.'\'
-AND T1."BPLId" = '.$this->area_id.'
-Group By T1."BPLId", T0."Warehouse"
+WHERE T0."DocDate" <= \''.$end_date.'\'';
+            if($targetAreaId != 'all'){
+                $sql .='AND T1."BPLId" = '.$targetAreaId.'';
+            }
+
+$sql .=' Group By T1."BPLId", T0."Warehouse"
  ) stock_tbl ON stock_tbl."BPLId" = outstanding_tbl."BranchCode"';
 
+//            dd($sql);
 
             $sql2 = 'SELECT * FROM (
     SELECT
@@ -401,8 +467,158 @@ GROUP BY "SlpCode", "OldSlpCode", "SlpName", "BranchCode"
 
 ) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeCode"
 
-WHERE "BPLId" = '.$this->area_id.'
-AND "BPLId" IS NOT NULL';
+WHERE "BPLId" IS NOT NULL ';
+
+            if($targetAreaId != 'all'){
+                $sql2 .='AND "BPLId" = '.$targetAreaId.'';
+            }
+
+//
+//            $sql = '
+//Select * from (
+//    SELECT "BranchCode", SUM("Balance Due") as "Branch Balance"  FROM (
+//SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) "121+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
+//CASE
+//WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'3\'
+//WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'4\'
+//WHEN "BusinessPartnerCode" LIKE \'03%\' THEN \'5\'
+//WHEN "BusinessPartnerCode" LIKE \'04%\' THEN \'6\'
+//WHEN "BusinessPartnerCode" LIKE \'05%\' THEN \'7\'
+//WHEN "BusinessPartnerCode" LIKE \'06%\' THEN \'8\'
+//WHEN "BusinessPartnerCode" LIKE \'07%\' THEN \'9\'
+//WHEN "BusinessPartnerCode" LIKE \'08%\' THEN \'10\'
+//WHEN "BusinessPartnerCode" LIKE \'09%\' THEN \'11\'
+//WHEN "BusinessPartnerCode" LIKE \'10%\' THEN \'12\'
+//WHEN "BusinessPartnerCode" LIKE \'11%\' THEN \'13\'
+//WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'14\'
+//ELSE \'1\'
+//END as "BranchCode" FROM (
+//
+//SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "121+" FROM (
+//
+//select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
+//
+//)
+//
+//GROUP BY "BusinessPartnerCode", "BusinessPartnerName"
+//) AG
+//
+//
+//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON AG."BusinessPartnerCode" = OC."CardCode"
+//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
+//--WHERE OC."validFor" = \'Y\'
+//
+//ORDER BY "BusinessPartnerCode"
+//
+//)
+//WHERE "BranchCode" = '. $this->area_id .'
+//
+//GROUP BY "BranchCode"
+//
+//) outstanding_tbl
+//
+// LEFT JOIN (
+// SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", SUM("GrossProfitLC") AS "GrossProfitLC" FROM (
+//SELECT "BranchName", "BranchCode", "BranchRegistrationNumber", "DocumentDate", "GrossProfitLC"
+//FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+//WHERE "WarehouseBranchCode" = '.$this->area_id.'
+//AND "DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\')
+//GROUP BY "BranchName", "BranchCode", "BranchRegistrationNumber"
+// ) gross_tbl ON gross_tbl."BranchCode" = outstanding_tbl."BranchCode"
+// LEFT JOIN (
+//
+//SELECT T1."BPLId", T0."Warehouse", Sum(T0."TransValue") "TransVal",
+//Sum(T0."CogsVal") "COGS" from AL_YASEEN_AGRI_PLIVE.oinm T0
+//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OBPL T1 ON T0."Warehouse" = T1."DflWhs"
+//WHERE T0."DocDate" <= \''.$end_date.'\'
+//AND T1."BPLId" = '.$this->area_id.'
+//Group By T1."BPLId", T0."Warehouse"
+// ) stock_tbl ON stock_tbl."BPLId" = outstanding_tbl."BranchCode"';
+//
+//
+//            $sql2 = 'SELECT * FROM (
+//    SELECT
+//        "BranchCode" AS "BPLId",
+//        CR."SlpCode" AS "SalesEmployeeCode",
+//        OS."SlpName" AS "SalesEmployeeName",
+//        SUM("NetSalesAmountLC") AS "NetSalesAmountLC",
+//        SUM("GrossProfitLC") AS "GrossProfitLC"
+//    FROM (
+//        SELECT * FROM "_SYS_BIC"."sap.alyaseenagriplive.ar.case/SalesAnalysisQuery"
+//        WHERE "BusinessPartnerCode" != 0000001
+//    ) SA
+//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD CR ON SA."BusinessPartnerCode" = CR."CardCode"
+//    LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON CR."SlpCode" = OS."SlpCode"
+//    WHERE SA."DocumentDate" BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'
+//        AND SA."DocumentTypeCode" NOT IN (\'15\', \'17\')
+//        AND (
+//            SELECT TABL0."DocNum"
+//            FROM AL_YASEEN_AGRI_PLIVE.ODPI TABL0
+//            INNER JOIN AL_YASEEN_AGRI_PLIVE.DPI1 TABL1 ON TABL0."DocEntry" = TABL1."DocEntry"
+//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.RIN1 TABL2
+//                ON TABL2."BaseEntry" = TABL1."DocEntry"
+//                AND TABL2."BaseLine" = TABL1."LineNum"
+//                AND TABL2."BaseType" = 203
+//            LEFT JOIN AL_YASEEN_AGRI_PLIVE.ORIN TABL3
+//                ON TABL2."DocEntry" = TABL3."DocEntry"
+//            WHERE TABL3."DocNum" = SA."DocumentNumber"
+//                AND TABL2."BaseType" = 203
+//            GROUP BY TABL0."DocNum"
+//        ) IS NULL
+//    GROUP BY
+//        "BranchCode",
+//        CR."SlpCode",
+//        OS."SlpName"
+//) tbl1
+//
+//FULL OUTER JOIN (
+//
+//--SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+") as "Balance", SUM("211+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121-210"+"211+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
+//SELECT "SlpCode", "OldSlpCode", "SlpName", "BranchCode", SUM("0-30"+"31-60"+"61-90"+"91-120"+"121+") as "Balance", SUM("180+") as "Balance Due", MIN(CASE WHEN "0-30"+"31-60"+"61-90"+"91-120"+"121+" != 0 THEN "OldestInvoice" END) as "OldestInvoice" FROM (
+//
+//--SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121-210",0) as "121-210", IFNULL("211+",0) "211+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121-210",0)+IFNULL("211+",0)) as "Balance Due", "OldestInvoice",
+//SELECT "BusinessPartnerCode", "BusinessPartnerName", OS."SlpCode", OS."Memo" as "OldSlpCode", OS."SlpName", IFNULL("0-30",0) as "0-30", IFNULL("31-60",0) as "31-60", IFNULL("61-90",0) as "61-90", IFNULL("91-120",0) as "91-120", IFNULL("121+",0) as "121+", IFNULL("180+",0) as "180+", (IFNULL("0-30",0)+IFNULL("31-60",0)+IFNULL("61-90",0)+IFNULL("91-120",0)+IFNULL("121+",0)) as "Balance Due", "OldestInvoice",
+//CASE
+//	WHEN "BusinessPartnerCode" LIKE \'01%\' THEN \'0101\'
+//	WHEN "BusinessPartnerCode" LIKE \'02%\' THEN \'0102\'
+//	WHEN "BusinessPartnerCode" LIKE \'03%\' THEN \'0103\'
+//	WHEN "BusinessPartnerCode" LIKE \'04%\' THEN \'0104\'
+//	WHEN "BusinessPartnerCode" LIKE \'05%\' THEN \'0105\'
+//	WHEN "BusinessPartnerCode" LIKE \'06%\' THEN \'0106\'
+//	WHEN "BusinessPartnerCode" LIKE \'07%\' THEN \'0107\'
+//	WHEN "BusinessPartnerCode" LIKE \'08%\' THEN \'0108\'
+//	WHEN "BusinessPartnerCode" LIKE \'09%\' THEN \'0109\'
+//	WHEN "BusinessPartnerCode" LIKE \'10%\' THEN \'0110\'
+//	WHEN "BusinessPartnerCode" LIKE \'11%\' THEN \'0111\'
+//	WHEN "BusinessPartnerCode" LIKE \'12%\' THEN \'0112\'
+//	ELSE \'0001\'
+//END as "BranchCode" FROM (
+//
+//--SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN "days" >=0 AND "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 AND "days" <= 210 THEN "AgingBalanceDueLC" END) as "121-210", SUM(CASE WHEN "days" >=211 OR "days" < 0 THEN "AgingBalanceDueLC" END) as "211+" FROM (
+//SELECT "BusinessPartnerCode", "BusinessPartnerName", MIN(CASE WHEN "DocumentTypeCode" = 13 THEN "PostingDate" END) as "OldestInvoice", SUM(CASE WHEN /*"days" >=0 AND*/ "days" <= 30 THEN "AgingBalanceDueLC" END) as "0-30", SUM(CASE WHEN "days" >=31 AND "days" <= 60 THEN "AgingBalanceDueLC" END) as "31-60", SUM(CASE WHEN "days" >=61 AND "days" <= 90 THEN "AgingBalanceDueLC" END) as "61-90", SUM(CASE WHEN "days" >=91 AND "days" <= 120 THEN "AgingBalanceDueLC" END) as "91-120", SUM(CASE WHEN "days" >=121 /*OR "days" < 0*/ THEN "AgingBalanceDueLC" END) as "121+", SUM(CASE WHEN "days" >=181 THEN "AgingBalanceDueLC" END) as "180+" FROM (
+//
+//select DAYS_BETWEEN( "PostingDate", \''.$end_date.'\') as "days", * from "_SYS_BIC"."sap.alyaseenagriplive.ar.case/CustomerReceivableAgingQuery" (\'PLACEHOLDER\' = (\'$$P_AgingDate$$\', \''.$end_date.'\'))
+//
+//)
+//
+//GROUP BY "BusinessPartnerCode", "BusinessPartnerName"
+//) AG
+//
+//
+//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OCRD OC ON AG."BusinessPartnerCode" = OC."CardCode"
+//LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP OS ON OC."SlpCode" = OS."SlpCode"
+//--WHERE OC."validFor" = \'Y\'
+//
+//ORDER BY "BusinessPartnerCode"
+//
+//)
+//
+//GROUP BY "SlpCode", "OldSlpCode", "SlpName", "BranchCode"
+//
+//) tbl2 ON tbl2."SlpCode" = tbl1."SalesEmployeeCode"
+//
+//WHERE "BPLId" = '.$this->area_id.'
+//AND "BPLId" IS NOT NULL';
 
 //            dd($sql);
 //            dd($sql2);
@@ -423,7 +639,7 @@ AND "BPLId" IS NOT NULL';
                 while ($row = odbc_fetch_array($result_profit)) {
 //                    array_push($this->sap_results, $row);
 //                    array_push($this->sap_results, $row);
-                    $this->profitAndLoss = $row["ProfitAndLoss"];
+                    $profitAndLoss = $row["ProfitAndLoss"];
                 }
 
 //                dd($this->profitAndLoss);
@@ -444,8 +660,8 @@ AND "BPLId" IS NOT NULL';
 //                $x = odbc_fetch_object($result);
 //                $this->sap_results
                 while ($row = odbc_fetch_array($result)) {
-                    array_push($this->sap_results, $row);
-                    $this->branch_balance = $row["Branch Balance"];
+                    array_push($sapResults, $row);
+                    $branchBalance = $row["Branch Balance"];
                 }
 
 //                dd($this->sap_results);
@@ -473,18 +689,18 @@ AND "BPLId" IS NOT NULL';
 //                $x = odbc_fetch_object($result);
 //                $this->sap_results
                 while ($row = odbc_fetch_array($result2)) {
-                    array_push($this->sap_results2, $row);
+                    array_push($sapResults2, $row);
 
 
 //                    array_push($this->slp_code, $row["SlpCode"]); // issue
 
-                    array_push($this->slp_code, $row["SalesEmployeeCode"]);
+                    array_push($slpCode, $row["SalesEmployeeCode"]);
                 }
 //dd($this->slp_code);
 // 408               dd($this->sap_results2);
 
-                $gross_collect = collect($this->sap_results2);
-                $this->total_grossProfit = $gross_collect->sum('GrossProfitLC');
+                $gross_collect = collect($sapResults2);
+                $totalGrossProfit = $gross_collect->sum('GrossProfitLC');
 
 
 
@@ -534,6 +750,72 @@ AND "BPLId" IS NOT NULL';
 
             odbc_close($conn);
         }
+
+        return [
+            'area_id' => $targetAreaId,
+            'branch_name' => $this->getAreaOptions()[$targetAreaId] ?? $targetAreaId,
+            'sap_results' => $sapResults,
+            'sap_results2' => $sapResults2,
+            'slp_aging' => $slpAging,
+            'slp_code' => $slpCode,
+            'branch_balance' => $branchBalance,
+            'profitAndLoss' => $profitAndLoss,
+            'total_grossProfit' => $totalGrossProfit,
+        ];
+    }
+
+    protected function resetGeneratedReportData(): void
+    {
+        $this->branch_reports = [];
+        $this->sap_results = [];
+        $this->sap_results2 = [];
+        $this->slp_aging = [];
+        $this->slp_code = [];
+        $this->branch_balance = 0;
+        $this->profitAndLoss = 0;
+        $this->total_grossProfit = 0;
+    }
+
+    protected function syncReportState(array $reportData): void
+    {
+        $this->sap_results = $reportData['sap_results'] ?? [];
+        $this->sap_results2 = $reportData['sap_results2'] ?? [];
+        $this->slp_aging = $reportData['slp_aging'] ?? [];
+        $this->slp_code = $reportData['slp_code'] ?? [];
+        $this->branch_balance = $reportData['branch_balance'] ?? 0;
+        $this->profitAndLoss = $reportData['profitAndLoss'] ?? 0;
+        $this->total_grossProfit = $reportData['total_grossProfit'] ?? 0;
+    }
+
+    protected function getAreaOptions(): array
+    {
+        $allAreas = [
+            '3' => ['permission_branch' => '3', 'name' => 'فرع الاحساء'],
+            '4' => ['permission_branch' => '10', 'name' => 'فرع جدة'],
+            '5' => ['permission_branch' => '7', 'name' => 'فرع الرياض'],
+            '6' => ['permission_branch' => '13', 'name' => 'فرع وادي الدواسر'],
+            '7' => ['permission_branch' => '4', 'name' => 'فرع الجوف'],
+            '8' => ['permission_branch' => '6', 'name' => 'فرع الدمام'],
+            '9' => ['permission_branch' => '5', 'name' => 'فرع الخرج'],
+            '10' => ['permission_branch' => '12', 'name' => 'فرع نجران'],
+            '11' => ['permission_branch' => '11', 'name' => 'فرع حائل'],
+            '12' => ['permission_branch' => '9', 'name' => 'فرع تبوك'],
+            '13' => ['permission_branch' => '8', 'name' => 'فرع القصيم'],
+            '14' => ['permission_branch' => '505', 'name' => 'فرع ساجر'],
+        ];
+
+        if (optional(Auth::user())->role === 'a') {
+            return collect($allAreas)
+                ->mapWithKeys(fn (array $area, string $areaId): array => [$areaId => $area['name']])
+                ->all();
+        }
+
+        $authorizedBranches = json_decode(Auth::user()->branches ?? '[]', true) ?: [];
+
+        return collect($allAreas)
+            ->filter(fn (array $area): bool => in_array($area['permission_branch'], $authorizedBranches, true))
+            ->mapWithKeys(fn (array $area, string $areaId): array => [$areaId => $area['name']])
+            ->all();
     }
 
     public function getCustomers($slpCode, $end_date) {
