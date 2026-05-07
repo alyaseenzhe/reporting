@@ -180,12 +180,12 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         ];
     }
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            BranchCropCompositionCollectionWidget::class,
-        ];
-    }
+//    protected function getHeaderWidgets(): array
+//    {
+//        return [
+//            BranchCropCompositionCollectionWidget::class,
+//        ];
+//    }
 
     protected function getHeaderWidgetsColumns(): int | array
     {

@@ -1,5 +1,37 @@
 <x-filament::page>
 {{--<x-filament::page :widget-data="$this->getWidgetData()">--}}
+    <style>
+        .branch-crop-report-table .crop-row > td {
+            background-color: #dcfce7 !important;
+            border-top: 1px solid #86efac;
+            border-bottom: 1px solid #86efac;
+        }
+
+        .branch-crop-report-table .crop-row > td:first-child {
+            border-left: 4px solid #16a34a;
+        }
+
+        .branch-crop-report-table .branch-row > td {
+            background-color: #dbeafe !important;
+            border-top: 1px solid #93c5fd;
+            border-bottom: 1px solid #93c5fd;
+        }
+
+        .branch-crop-report-table .branch-row > td:first-child {
+            border-left: 4px solid #2563eb;
+        }
+
+        .branch-crop-report-table .customer-row > td {
+            background-color: #fef3c7 !important;
+            border-top: 1px solid #fcd34d;
+            border-bottom: 1px solid #fcd34d;
+        }
+
+        .branch-crop-report-table .customer-row > td:first-child {
+            border-left: 4px solid #d97706;
+        }
+    </style>
+
     <div
         wire:key="crop-composition-report-{{ md5(json_encode($this->filters)) }}"
         x-data="{
@@ -48,7 +80,7 @@
 
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="w-full divide-y divide-gray-200">
+                <table class="branch-crop-report-table w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Expand</th>
@@ -63,7 +95,7 @@
 
                     <tbody class="divide-y divide-gray-200">
                         @forelse ($reportRows as $crop)
-                            <tr class="bg-gray-100"  >
+                            <tr class="crop-row">
                                 <td class="px-4 py-3 align-top">
                                     @if (count($crop['branches']))
                                         <button
@@ -90,7 +122,7 @@
                                     x-cloak
 {{--                                    style="background-color: #E8F2FF;"--}}
 {{--                                   class="bg-gray-50"--}}
-                                   class="bg-primary-500/10 text-primary-700"
+                                   class="branch-row"
                                 >
                                     <td></td>
                                     <td class="px-4 py-3 align-top">
@@ -118,7 +150,7 @@
                                         x-bind:style="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                         x-cloak
 {{--                                        class="bg-gray-100"--}}
-                                        class="bg-white"
+                                        class="customer-row"
 
                                     >
                                         <td class="px-4 py-3"></td>
