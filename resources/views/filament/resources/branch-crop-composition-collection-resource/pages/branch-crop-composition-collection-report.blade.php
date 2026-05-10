@@ -83,7 +83,7 @@
                 <table class="branch-crop-report-table w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Expand</th>
+                            <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">اسم المحصول</th>
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">رقم العميل</th>--}}
@@ -154,7 +154,7 @@
 
                                     >
                                         <td class="px-4 py-3"></td>
-                                        <td class="px-4 py-3 pl-12 text-sm text-gray-400">-</td>
+                                        <td class="px-4 py-3 pl-12 text-sm text-gray-400"></td>
                                         <td class="px-4 py-3 text-sm text-gray-900"> العميل:{{' '.$customer['customer_code'] .' - '. $customer['customer_name'].' ' }}</td>
 {{--                                        <td class="px-4 py-3 text-sm text-gray-500"></td>--}}
                                         <td class="px-4 py-3 text-sm text-gray-700"> المهندس المسؤول: {{ ' '.$customer['engineer_name'] }}</td>
@@ -166,7 +166,7 @@
                         @empty
                             <tr>
                                 <td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">
-                                    No crop composition data is available for the current access scope.
+                                    لا توجد بيانات عن المحصول متاحة لك ضمن صلاحيات الوصول الحالية
                                 </td>
                             </tr>
                         @endforelse

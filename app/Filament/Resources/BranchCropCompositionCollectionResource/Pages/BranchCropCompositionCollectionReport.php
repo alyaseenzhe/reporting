@@ -55,7 +55,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     {
         return [
             Actions\Action::make('clearFilters')
-                ->label('Clear Filters')
+                ->label('اعادة ضبط الفلاتر')
                 ->icon('heroicon-o-x')
                 ->action(function (): void {
                     $this->filters = [

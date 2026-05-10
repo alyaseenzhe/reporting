@@ -56,7 +56,7 @@ class BranchCropCompositionCollectionResource extends Resource
         return $form->schema([
             Section::make('معلومات التركيب المحصولي للعملاء')
                 ->schema([
-                    Grid::make(4)->schema([
+                    Grid::make(5)->schema([
                           //  ->required(),
 //                        TextInput::make('branch_name')
 //                            ->label('الفرع')
@@ -124,6 +124,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->label('المهندس المسؤول')
                             ->disabled()
                             ->dehydrated()
+//                            ->columnSpan(2)
 //                            ->required()
 //                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
                             ->formatStateUsing(fn ($state): string => (string) $state),
@@ -137,6 +138,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->label('المساحة الاجمالية للمزارع (هكتار)')
                             ->required()
                             ->numeric()
+//                            ->columnSpan(2)
                             ->maxValue(9999999999.99)
                             ->rules(['numeric', 'min:0.01']),
 

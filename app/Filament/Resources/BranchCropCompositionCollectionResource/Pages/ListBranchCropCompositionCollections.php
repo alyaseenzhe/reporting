@@ -34,7 +34,7 @@ class ListBranchCropCompositionCollections extends ListRecords
         return [
             Actions\CreateAction::make(),
             Actions\Action::make('report')
-                ->label('Crop Composition Report')
+                ->label('تقرير التركيب المحصولي')
                 ->icon('heroicon-o-chart-bar')
                 ->url(static::getResource()::getUrl('report')),
         ];

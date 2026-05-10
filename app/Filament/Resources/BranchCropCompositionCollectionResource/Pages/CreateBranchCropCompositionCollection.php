@@ -18,19 +18,25 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         return array_merge([
 
             Actions\Action::make('create')
-                ->label(__('filament::resources/pages/create-record.form.actions.create.label'))
+//                ->label(__('filament::resources/pages/create-record.form.actions.create.label'))
+                ->label(__('filament::resources/pages/edit-record.form.actions.save.label'))
                 ->action('create')
                 ->keyBindings(['mod+s']),
         ], static::canCreateAnother() ? [
             Actions\Action::make('createAnother')
-                ->label(__('filament::resources/pages/create-record.form.actions.create_another.label'))
+//                ->label(__('filament::resources/pages/create-record.form.actions.create_another.label'))
+                ->label(__('حفظ واضافة المزيد'))
                 ->action('createAnother')
                 ->keyBindings(['mod+shift+s'])
                 ->color('secondary'),
-
+            $this->getCancelFormAction(),
             Actions\Action::make('back')
                 ->label('عودة')
-                ->url(static::getResource()::getUrl('index'))
+                ->requiresConfirmation()
+//                ->url(static::getResource()::getUrl('index'))
+                ->action(function () {
+                    $this->redirect(static::getResource()::getUrl('index'));
+                })
                 ->color('secondary')
                 ->icon('heroicon-o-arrow-left'),
         ] : []);
@@ -41,6 +47,18 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         return [];
     }
 
+    protected function getCancelFormAction(): Actions\Action
+    {
+        return Actions\Action::make('cancel')
+            ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->color('secondary')
+            ->requiresConfirmation()
+            ->modalHeading(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->modalButton(__('filament-support::actions/modal.actions.confirm.label'))
+            ->action(function (): void {
+                $this->redirect(static::getResource()::getUrl('create'));
+            });
+    }
     /**
      * Persist the parent and child rows in one transaction.
      */
