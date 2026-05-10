@@ -885,7 +885,8 @@
                 var emps_type = group_type == 'groups_all' || group_type == 'commerce' || search_type == 'advanced_search' ? $('#emps_type').val() : null;
 
                 // clear selections
-                $("#cost").prop('checked', false);
+                // $("#cost").prop('checked', false);
+                 $("#summary").prop('checked', false);
                 $("#margin").prop('checked', false);
                 $("#margin-percentage").prop('checked', false);
 

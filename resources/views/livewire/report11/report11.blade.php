@@ -594,41 +594,44 @@
         </div>
     </div>
 
+    <div style="background-color: #f5f5f5;" class="mb-2 p-2">
+        <div class="flex flex-col sm:flex-row gap-6 w-full">
+
+            @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
+                <div><label class="font-bold mb-5 text-sm">خيارات اظهار الأعمدة الخاصة</label></div>
+                <div>
+                    <span class="text-xs">(</span>
+                    <input id="cost" type="checkbox" @click="showCost = !showCost" value="cost"  onchange="hideColumn(this)"
+                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>
+                    <span class="text-xs">)</span>
+                </div>
+                {{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
+
+
+
+                {{--                            </div>--}}
+                {{--                        </div>--}}
+            @endif
+
+
+            <div ><label class="font-bold mb-5 text-sm">الملخص</label></div>
+            <div>
+                {{--                                <span class="text-xs">(</span>--}}
+                <input id="summary" type="checkbox" value="summary" onchange="summary(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+
+            </div>
+
+
+
+        </div>
+    </div>
     @if($show_msg)
         <div id="tbl2-container" class="tbl-fixed overflow-x-auto mt-4">
+
             @if(count($group_results) > 0)
 
-                <div style="background-color: #f5f5f5;" class="mb-2 p-2">
-                    <div class="flex flex-col sm:flex-row gap-6 w-full">
 
-                        @if(\Illuminate\Support\Facades\Auth::user()->user_group->cost == '1' || \Illuminate\Support\Facades\Auth::user()->role == 'a')
-                            <div><label class="font-bold mb-5 text-sm">خيارات اظهار الأعمدة الخاصة</label></div>
-                            <div>
-                                <span class="text-xs">(</span>
-                                <input id="cost" type="checkbox" @click="showCost = !showCost" value="cost"  onchange="hideColumn(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="mr-2 text-xs font-medium text-gray-900 dark:text-gray-300">اظهار</label>
-                                <span class="text-xs">)</span>
-                            </div>
-                            {{--                            <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">--}}
-
-
-
-                            {{--                            </div>--}}
-                            {{--                        </div>--}}
-                        @endif
-
-
-                        <div ><label class="font-bold mb-5 text-sm">الملخص</label></div>
-                        <div>
-                            {{--                                <span class="text-xs">(</span>--}}
-                            <input id="summary" type="checkbox" value="summary" onchange="summary(this)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-
-                        </div>
-
-
-
-                    </div>
-                </div>
 
                 <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                     <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm" >
@@ -867,20 +870,32 @@
                                     {{--                                    <td style="border: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
                                     {{--                                        {{$record["OldCode"]}}--}}
                                     {{--                                    </td>--}}
-                                    <td colspan="8" style="border: 2px solid black;" class="border p-2 whitespace-nowrap">
+                                    <td colspan="8" style="border: 2px solid black;" class="border p-2 {{--whitespace-nowrap--}} ">
+
+                                        <div class="flex flex-row justify-between">
+
                                         <div class="flex flex-row">
                                             <div>({{ $record["OldCode"] }}) - {{$record["ItemName"]}}</div>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endif
-                            @if($record["OldCode"] != $item_group_itemCode_code)
-                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
 
-                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">
-                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>
-                                    <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">
-                                        <div class="flex flex-row justify-between">
+
+                                            <div>الوحدة:
+                                                <span style="color: #227dd7">
+                                                    {{$record["SalUnitMsr"]}}
+                                                    </span>
+                                            </div>
+                                            <div>المورد:
+                                                <span style="color: #227dd7">
+                                                    {{$record["VendorName"]}}
+                                                    </span>
+                                            </div>
+                                            <div>التميز:
+                                                <span style="color: #227dd7">
+                                                    {{$record['Speciality']}}
+                                                    </span>
+                                            </div>
+
+
                                             <div>قسم:
                                                 <span style="color: #227dd7">
                                                     @if($record["mrkt_type"] == "fan - asmedah 1")
@@ -894,13 +909,13 @@
                                                     @elseif($record["mrkt_type"] == "tasweeg - mokafahh")
                                                         اقسام تسويقية - المكافحة المتكاملة
                                                     @elseif($record["mrkt_type"] == "aleyat - aleyat")
-                                                        الاليات والري - الاليات
+                                                        التقنيات الزراعية - الاليات
                                                     @elseif($record["mrkt_type"] == "aleyat - ray")
-                                                        الاليات والري - الري
+                                                        التقنيات الزراعية - الري
                                                     @elseif($record["mrkt_type"] == "aleyat - ray matary")
-                                                        الاليات والري - الري المطري
+                                                        التقنيات الزراعية - الري المطري
                                                     @elseif($record["mrkt_type"] == "aleyat - khadamat")
-                                                        الاليات والري - الخدمات
+                                                        التقنيات الزراعية - الخدمات
                                                     @else
                                                         عام
                                                     @endif
@@ -909,26 +924,70 @@
                                             <div>نوع المادة:
                                                 <span style="color: #227dd7">{{$record["ItemGroup"]}}</span>
                                             </div>
-                                            <div>الوحدة:
-                                                <span style="color: #227dd7">
-                                                    {{$record["SalUnitMsr"]}}
-                                                    </span>
-                                            </div>
-                                            <div>التميز:
-                                                <span style="color: #227dd7">
-                                                    {{$record['Speciality']}}
-                                                    </span>
-                                            </div>
-                                            <div>المورد:
-                                                <span style="color: #227dd7">
-                                                    {{$record["VendorName"]}}
-                                                    </span>
-                                            </div>
                                         </div>
 
+                                    </td>
+{{--                                    <td colspan="7" style="border-left: 2px solid black;" class="border p-2 --}}{{--whitespace-nowrap--}}{{--">--}}
+
+
                                 </tr>
+                            @endif
+                            @if($record["OldCode"] != $item_group_itemCode_code)
+                                    <?php $item_group_itemCode_code = $record["OldCode"]; ?>
+
+{{--                                <tr onclick="show_hide({{$record["OldCode"]}})" style="border-top: 2px solid black; border-bottom: 2px dashed #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer">--}}
+{{--                                    <td rowspan="2" style="border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+{{--                                    <td colspan="7" style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">--}}
+{{--                                        <div class="flex flex-row justify-between">--}}
+{{--                                            <div>قسم:--}}
+{{--                                                <span style="color: #227dd7">--}}
+{{--                                                    @if($record["mrkt_type"] == "fan - asmedah 1")--}}
+{{--                                                        ادارة فنية - الاسمدة م1--}}
+{{--                                                    @elseif($record["mrkt_type"] == "fan - mobedat 1")--}}
+{{--                                                        ادارة فنية - المبيدات م1--}}
+{{--                                                    @elseif($record["mrkt_type"] == "fan - bathoor 1")--}}
+{{--                                                        ادارة فنية - البذور م1--}}
+{{--                                                    @elseif($record["mrkt_type"] == "tasweeg - sehah")--}}
+{{--                                                        اقسام تسويقية - الحدائق والصحة العامة--}}
+{{--                                                    @elseif($record["mrkt_type"] == "tasweeg - mokafahh")--}}
+{{--                                                        اقسام تسويقية - المكافحة المتكاملة--}}
+{{--                                                    @elseif($record["mrkt_type"] == "aleyat - aleyat")--}}
+{{--                                                        الاليات والري - الاليات--}}
+{{--                                                    @elseif($record["mrkt_type"] == "aleyat - ray")--}}
+{{--                                                        الاليات والري - الري--}}
+{{--                                                    @elseif($record["mrkt_type"] == "aleyat - ray matary")--}}
+{{--                                                        الاليات والري - الري المطري--}}
+{{--                                                    @elseif($record["mrkt_type"] == "aleyat - khadamat")--}}
+{{--                                                        الاليات والري - الخدمات--}}
+{{--                                                    @else--}}
+{{--                                                        عام--}}
+{{--                                                    @endif--}}
+{{--                                                    </span>--}}
+{{--                                            </div>--}}
+{{--                                            <div>نوع المادة:--}}
+{{--                                                <span style="color: #227dd7">{{$record["ItemGroup"]}}</span>--}}
+{{--                                            </div>--}}
+{{--                                            <div>الوحدة:--}}
+{{--                                                <span style="color: #227dd7">--}}
+{{--                                                    {{$record["SalUnitMsr"]}}--}}
+{{--                                                    </span>--}}
+{{--                                            </div>--}}
+{{--                                            <div>التميز:--}}
+{{--                                                <span style="color: #227dd7">--}}
+{{--                                                    {{$record['Speciality']}}--}}
+{{--                                                    </span>--}}
+{{--                                            </div>--}}
+{{--                                            <div>المورد:--}}
+{{--                                                <span style="color: #227dd7">--}}
+{{--                                                    {{$record["VendorName"]}}--}}
+{{--                                                    </span>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+
+{{--                                </tr>--}}
                                 <tr onclick="show_hide({{$record["OldCode"]}})" style="border-bottom: 2px solid black; background-color: #e4fbff; font-weight: bold; cursor: pointer">
                                     {{--                                        <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap parent-{{ $record["OldCode"] }}">+</td>--}}
+                                    <td></td>
                                     <td style="color: #227dd7; border-left: 2px dashed #a8a8a8;" class="border p-2 whitespace-nowrap">
                                         {{number_format($totalSalesByItem[$record["OldCode"]][4])}}
                                     </td>
@@ -1040,7 +1099,7 @@
 
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['Cost'], 2) }}</td>
                                             <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit'], 2) }}</td>
-                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">{{ number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount']*100, 2) }}%</td>
+                                            <td style="border-left: 2px solid black;" style="direction: ltr" class="border p-2 whitespace-nowrap cost">  {{$subtotal['TotalSalesAmount'] >0 ? number_format($subtotal['GrossProfit']/$subtotal['TotalSalesAmount']*100, 2) : 0}}% </td>
 
                                         @endif
                                     </tr>
