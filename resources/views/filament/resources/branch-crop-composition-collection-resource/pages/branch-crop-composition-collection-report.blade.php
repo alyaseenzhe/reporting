@@ -37,6 +37,7 @@
         x-data="{
             expandedCrops: {},
             expandedBranches: {},
+            showCustomerModal: @entangle('isCustomerModalOpen'),
             toggleCrop(key) {
                 this.expandedCrops[key] = ! this.expandedCrops[key];
             },
@@ -150,7 +151,10 @@
                                         x-bind:style="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                         x-cloak
 {{--                                        class="bg-gray-100"--}}
-                                        class="customer-row"
+                                        class="customer-row cursor-pointer transition hover:brightness-95"
+                                        @if ($customer['collection_id'])
+                                            wire:click="openCustomerModal({{ $customer['collection_id'] }})"
+                                        @endif
 
                                     >
                                         <td class="px-4 py-3"></td>
@@ -172,6 +176,36 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <div
+            x-cloak
+            x-show="showCustomerModal"
+            x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/50 p-4"
+            @keydown.escape.window="showCustomerModal = false; $wire.closeCustomerModal()"
+            @click.self="showCustomerModal = false; $wire.closeCustomerModal()"
+        >
+            <div
+                x-show="showCustomerModal"
+                x-transition
+                class="relative flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+                @click.stop
+            >
+                <div class="flex items-center justify-end border-b border-gray-200 px-4 py-3">
+                    <button
+                        type="button"
+                        class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                        @click="showCustomerModal = false; $wire.closeCustomerModal()"
+                    >
+                        ×
+                    </button>
+                </div>
+
+                <div class="overflow-y-auto p-4">
+                    {{ $this->customerViewForm }}
+                </div>
             </div>
         </div>
     </div>

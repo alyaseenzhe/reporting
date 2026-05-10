@@ -5,10 +5,12 @@ namespace App\Filament\Resources\BranchCropCompositionCollectionResource\Pages;
 use App\Filament\Resources\BranchCropCompositionCollectionResource;
 use App\Filament\Resources\BranchCropCompositionCollectionResource\Widgets\BranchCropCompositionCollection as BranchCropCompositionCollectionWidget;
 use App\Models\BranchCropCollectionItem;
+use App\Models\BranchCropCompositionCollection;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Actions;
+use Filament\Resources\Form as ResourceForm;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -35,6 +37,12 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         'crop_item_ids' => [self::ALL_FILTER_VALUE],
     ];
 
+    public array $customerViewData = [];
+
+    public bool $isCustomerModalOpen = false;
+
+    public ?int $selectedCustomerCollectionId = null;
+
     public function mount(): void
     {
         static::authorizeResourceAccess();
@@ -42,6 +50,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         abort_unless(static::getResource()::canViewAny(), 403);
 
         $this->form->fill($this->filters);
+        $this->customerViewForm->fill([]);
     }
 
     public function updatedFilters(): void
@@ -161,6 +170,47 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         return 'filters';
     }
 
+    protected function getForms(): array
+    {
+        return [
+            'form' => $this->makeForm()
+                ->schema($this->getFormSchema())
+                ->statePath($this->getFormStatePath()),
+            'customerViewForm' => $this->makeForm()
+                ->context('view')
+                ->disabled()
+                ->model($this->getCustomerViewFormModel())
+                ->schema($this->getCustomerViewFormSchema())
+                ->statePath('customerViewData')
+                ->inlineLabel(config('filament.layout.forms.have_inline_labels')),
+        ];
+    }
+
+    public function openCustomerModal(int $collectionId): void
+    {
+        $collection = static::getResource()::getAccessibleCollectionsQuery()
+            ->whereKey($collectionId)
+            ->firstOrFail();
+
+        $this->selectedCustomerCollectionId = $collection->getKey();
+
+        $data = static::getResource()::mutateDataBeforeFill(
+            $collection->attributesToArray(),
+            $collection
+        );
+
+        $this->customerViewForm->model($collection)->fill($data);
+        $this->isCustomerModalOpen = true;
+    }
+
+    public function closeCustomerModal(): void
+    {
+        $this->isCustomerModalOpen = false;
+        $this->selectedCustomerCollectionId = null;
+        $this->customerViewData = [];
+        $this->customerViewForm->model(BranchCropCompositionCollection::class)->fill([]);
+    }
+
     protected function getViewData(): array
     {
         $cropRows = $this->getCustomerCropRows();
@@ -214,6 +264,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
         return BranchCropCollectionItem::query()
             ->selectRaw('
+                MIN(accessible_collections.id) as collection_id,
                 branch_crop_collection_items.crop_catalog_category_id,
                 branch_crop_collection_items.crop_catalog_item_id,
                 accessible_collections.branch_id,
@@ -267,6 +318,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->get()
             ->map(function ($row): array {
                 return [
+                    'collection_id' => $row->collection_id ? (int) $row->collection_id : null,
                     'crop_catalog_category_id' => $row->crop_catalog_category_id,
                     'crop_catalog_item_id' => $row->crop_catalog_item_id,
                     'branch_id' => $row->branch_id,
@@ -295,6 +347,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                         $customers = $branchGroup
                             ->map(function (array $customerRow): array {
                                 return [
+                                    'collection_id' => $customerRow['collection_id'],
                                     'customer_code' => $customerRow['customer_code'],
                                     'customer_name' => $customerRow['customer_name'],
                                     'engineer_name' => $customerRow['engineer_name'],
@@ -530,5 +583,23 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         }
 
         return $values;
+    }
+
+    protected function getCustomerViewFormSchema(): array
+    {
+        return static::getResource()::form(
+            ResourceForm::make()->columns(config('filament.layout.forms.have_inline_labels') ? 1 : 2)
+        )->getSchema();
+    }
+
+    protected function getCustomerViewFormModel(): BranchCropCompositionCollection | string
+    {
+        if (! $this->selectedCustomerCollectionId) {
+            return BranchCropCompositionCollection::class;
+        }
+
+        return static::getResource()::getAccessibleCollectionsQuery()
+            ->whereKey($this->selectedCustomerCollectionId)
+            ->first() ?? BranchCropCompositionCollection::class;
     }
 }
