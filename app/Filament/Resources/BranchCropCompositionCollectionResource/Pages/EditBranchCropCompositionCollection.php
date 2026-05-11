@@ -12,6 +12,13 @@ class EditBranchCropCompositionCollection extends EditRecord
 {
     protected static string $resource = BranchCropCompositionCollectionResource::class;
 
+    protected array $initialFormData = [];
+
+    protected function afterFill(): void
+    {
+        $this->initialFormData = $this->snapshotFormState();
+    }
+
     /**
      * Populate repeaters from the saved child rows.
      */
@@ -60,10 +67,10 @@ class EditBranchCropCompositionCollection extends EditRecord
                         'record' => $this->record,
                     ]));
                 }),
-            Actions\Action::make('saveAndContinueToEdit')
-                ->label('حفظ والاستمرار في التعديل' )
-                ->action('save')
-                ->keyBindings(['mod+s']),
+//            Actions\Action::make('saveAndContinueToEdit')
+//                ->label('حفظ والاستمرار في التعديل' )
+//                ->action('save')
+//                ->keyBindings(['mod+s']),
 
 
             $this->getCancelFormAction(),
@@ -80,11 +87,36 @@ class EditBranchCropCompositionCollection extends EditRecord
         return Actions\Action::make('cancel')
             ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->color('secondary')
-            ->requiresConfirmation()
+            ->requiresConfirmation(fn (): bool => $this->hasUnsavedChanges())
             ->modalHeading(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->modalButton(__('filament-support::actions/modal.actions.confirm.label'))
             ->action(function (): void {
                 $this->redirect($this->previousUrl ?? static::getResource()::getUrl());
             });
+    }
+
+    protected function hasUnsavedChanges(): bool
+    {
+        return $this->snapshotFormState() !== $this->initialFormData;
+    }
+
+    protected function snapshotFormState(): array
+    {
+        return $this->normalizeSnapshotValue($this->form->getRawState());
+    }
+
+    protected function normalizeSnapshotValue($value)
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $normalized = [];
+
+        foreach ($value as $key => $item) {
+            $normalized[$key] = $this->normalizeSnapshotValue($item);
+        }
+
+        return $normalized;
     }
 }

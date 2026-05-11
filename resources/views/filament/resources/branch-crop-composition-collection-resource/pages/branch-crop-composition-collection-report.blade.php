@@ -199,7 +199,7 @@
                         class="inline-flex items-center rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
                         @click="showCustomerModal = false; $wire.closeCustomerModal()"
                     >
-                        ×
+                        عودة
                     </button>
                 </div>
 
