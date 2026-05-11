@@ -99,6 +99,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
+                                ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
+                                    'branch_ids',
+                                    $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
+                                ))
                                 ->reactive(),
                             Forms\Components\Select::make('customer_codes')
                                 ->label('العميل')
@@ -108,6 +112,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
+                                ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
+                                    'customer_codes',
+                                    $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
+                                ))
                                 ->reactive(),
                             Forms\Components\Select::make('engineer_names')
                                 ->label('المهندس المسؤول')
@@ -117,6 +125,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
+                                ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
+                                    'engineer_names',
+                                    $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
+                                ))
                                 ->reactive(),
                             Forms\Components\Select::make('crop_category_ids')
                                 ->label('طبيعة المحصول')
@@ -126,7 +138,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
-                                ->afterStateUpdated(function ($state, callable $set): void {
+                                ->afterStateUpdated(function ($state, $old, callable $set): void {
+                                    $state = $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []));
+                                    $set('crop_category_ids', $state);
+
                                     $selectedItemIds = $this->normalizeFilterValues($this->filters['crop_item_ids'] ?? []);
 
                                     if (in_array(static::ALL_FILTER_VALUE, $selectedItemIds, true)) {
@@ -159,6 +174,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
+                                ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
+                                    'crop_item_ids',
+                                    $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
+                                ))
                                 ->reactive(),
                         ]),
 //                ]),
@@ -557,15 +576,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         $values = collect($values)
             ->filter(fn ($value) => filled($value))
             ->map(fn ($value) => (string) $value)
+            ->unique()
             ->values()
             ->all();
-
-        if (in_array(static::ALL_FILTER_VALUE, $values, true) && count($values) > 1) {
-            $values = array_values(array_filter(
-                $values,
-                fn (string $value): bool => $value !== static::ALL_FILTER_VALUE
-            ));
-        }
 
         if (! count($values)) {
             return [static::ALL_FILTER_VALUE];
@@ -583,6 +596,33 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         }
 
         return $values;
+    }
+
+    protected function resolveSelectableFilterState(array $state, array $old): array
+    {
+        $state = collect($state)
+            ->filter(fn ($value) => filled($value))
+            ->map(fn ($value) => (string) $value)
+            ->values()
+            ->all();
+
+        $old = $this->normalizeFilterValues($old);
+
+        $hasAllInState = in_array(static::ALL_FILTER_VALUE, $state, true);
+        $hasAllInOld = in_array(static::ALL_FILTER_VALUE, $old, true);
+
+        if ($hasAllInState && count($state) > 1) {
+            if ($hasAllInOld) {
+                $state = array_values(array_filter(
+                    $state,
+                    fn (string $value): bool => $value !== static::ALL_FILTER_VALUE
+                ));
+            } else {
+                $state = [static::ALL_FILTER_VALUE];
+            }
+        }
+
+        return $this->normalizeFilterValues($state);
     }
 
     protected function getCustomerViewFormSchema(): array
