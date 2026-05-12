@@ -13,6 +13,8 @@ class BranchCropCompositionCollection extends Model
     use HasFactory;
 
     protected $fillable = [
+        'type',
+        'lead_id',
         'collection_date',
         'user_id',
         'updated_by',
@@ -29,6 +31,25 @@ class BranchCropCompositionCollection extends Model
         'notes',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+
+            // Lead
+
+            parent::boot();
+
+            static::creating(function ($model) {
+
+                $lastId = static::max('id') + 1;
+
+                $model->code = 'L' . $lastId;
+            });
+//            }
+        });
+    }
     protected $casts = [
         'collection_date' => 'date',
         'total_farm_area_hectares' => 'decimal:2',
@@ -58,6 +79,11 @@ class BranchCropCompositionCollection extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class, 'lead_id');
     }
 
     /**

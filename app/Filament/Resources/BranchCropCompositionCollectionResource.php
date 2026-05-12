@@ -12,6 +12,7 @@ use App\Models\AgriDetais;
 use App\Models\AgriType;
 use App\Models\CropCatalogCategory;
 use App\Models\CropCatalogItem;
+use App\Models\Lead;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Checkbox;
@@ -36,6 +37,12 @@ use Illuminate\Validation\ValidationException;
 
 class BranchCropCompositionCollectionResource extends Resource
 {
+    protected const CUSTOMER_TYPE_REGISTERED = 'registered_customer';
+
+    protected const CUSTOMER_TYPE_LEAD = 'lead';
+
+    protected const CUSTOMER_TYPE_REDISTRIBUTION = 'redistribution_customer';
+
     protected static ?string $model = BranchCropCompositionCollection::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -54,8 +61,16 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Section::make('معلومات التركيب المحصولي للعملاء')
+            Grid::make()
                 ->schema([
+                    static::getCustomerTypeSelectComponent(),
+                ]),
+            Section::make('معلومات التركيب المحصولي للعملاء')
+                ->schema(function (callable $get): array {
+                    return static::getCustomerInformationSectionSchema(
+                        (string) ($get('type') ?: static::CUSTOMER_TYPE_REGISTERED)
+                    );
+/*
                     Grid::make(5)->schema([
                           //  ->required(),
 //                        TextInput::make('branch_name')
@@ -172,7 +187,8 @@ class BranchCropCompositionCollectionResource extends Resource
                                 return (string) optional(optional($record)->userUpdate)->name;
                             }),
                     ]),
-                ]),
+*/
+                }),
             Section::make('أنواع الزراعة')
                 ->schema([
                     Repeater::make('cultivation_types')
@@ -405,6 +421,203 @@ class BranchCropCompositionCollectionResource extends Resource
                         ]),
                 ]),
         ]);
+    }
+
+    protected static function getCustomerTypeSelectComponent(): Select
+    {
+        return Select::make('type')
+            ->label('Customer Type')
+            ->options(static::getCustomerTypeOptions())
+            ->default(static::CUSTOMER_TYPE_REGISTERED)
+            ->afterStateHydrated(function (Select $component, $state): void {
+                if (blank($state)) {
+                    $component->state(static::CUSTOMER_TYPE_REGISTERED);
+                }
+            })
+            ->afterStateUpdated(function ($state, callable $set): void {
+                $set('customer_code', null);
+                $set('lead_id', null);
+                $set('customer_name', null);
+                $set('engineer_name', null);
+            })
+            ->reactive();
+    }
+
+    protected static function getCustomerInformationSectionSchema(string $customerType): array
+    {
+        return [
+            Grid::make(5)->schema([
+                Select::make('branch_id')
+                    ->label('الفرع')
+                    ->required()
+                    ->searchable()
+                    ->reactive()
+                    ->default(fn (): ?int => static::getSingleAuthorizedBranchId())
+                    ->options(function () {
+                        return static::getAuthorizedBranchesQuery()
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->afterStateUpdated(function (callable $set): void {
+                        $set('customer_code', null);
+                        $set('lead_id', null);
+                        $set('customer_name', null);
+                        $set('engineer_name', null);
+                    }),
+
+                Select::make('customer_code')
+                    ->label('العميل')
+                    ->columnSpan(['default' => 1, 'md' => 2])
+                    ->searchable()
+                    ->preload()
+                    ->optionsLimit(10000)
+                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
+                    ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_REGISTERED)
+                    ->unique(ignoreRecord: true)
+                    ->reactive()
+                    ->placeholder('اختر الفرع أولا ثم ابحث عن العميل')
+                    ->options(function (callable $get) use ($customerType): array {
+                        return static::getCustomerSelectOptionsForType(
+                            $customerType,
+                            static::resolveBranchCodeFromState($get('branch_id')),
+                            '',
+                            $get('customer_code'),
+                            null
+                        );
+                    })
+                    ->afterStateUpdated(function ($state, callable $set): void {
+                        $customer = app(SapCustomerLookupServiceInterface::class)
+                            ->findCustomerByCode($state);
+
+                        $set(
+                            'engineer_name',
+                            $customer['slp_name'] ?? null
+                        );
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        $customer = app(SapCustomerLookupServiceInterface::class)
+                            ->findCustomerByCode($value);
+
+                        return $customer['label'] ?? $value;
+                    }),
+
+                Select::make('lead_id')
+                    ->label('العميل')
+                    ->columnSpan(['default' => 1, 'md' => 2])
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_REGISTERED)
+                    ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
+                    ->options(function (): array {
+                        return Lead::query()
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('phone')
+                            ->tel()
+                            ->maxLength(255),
+                        TextInput::make('email')
+                            ->email()
+                            ->maxLength(255),
+                        TextInput::make('business')
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $data['code'] = Lead::generateNextCode(
+                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l'
+                        );
+
+                        return Lead::query()->create($data)->getKey();
+                    })
+                    ->afterStateUpdated(function ($state, callable $set): void {
+                        $lead = Lead::query()->find($state);
+
+                        $set('customer_name', $lead?->name);
+                        $set('engineer_name', null);
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        return Lead::query()->whereKey($value)->value('name');
+                    }),
+
+                TextInput::make('engineer_name')
+                    ->label('المهندس المسؤول')
+                    ->disabled()
+                    ->dehydrated()
+                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+                    ->formatStateUsing(fn ($state): string => (string) $state),
+                TextInput::make('farms_count')
+                    ->label('عدد المزارع')
+                    ->required()
+                    ->numeric()
+                    ->maxValue(9999999999)
+                    ->rules(['integer', 'min:1']),
+                TextInput::make('total_farm_area_hectares')
+                    ->label('المساحة الإجمالية (هكتار)')
+                    ->required()
+                    ->numeric()
+                    ->maxValue(9999999999.99)
+                    ->rules(['numeric', 'min:0.01']),
+
+                DatePicker::make('created_at')
+                    ->label('تاريخ جمع المعلومات')
+                    ->hiddenOn('create')
+                    ->disabled(),
+
+                TextInput::make('created_by')
+                    ->label('تم انشاؤه بواسطة')
+                    ->hiddenOn('create')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->formatStateUsing(function ($state, ?Model $record): string {
+                        return (string) optional(optional($record)->userUpdate)->name;
+                    }),
+
+                DatePicker::make('updated_at')
+                    ->label('تاريخ آخر تعديل')
+                    ->hiddenOn('create')
+                    ->disabled(),
+
+                TextInput::make('updated_by')
+                    ->label('تم التعديل بواسطة')
+                    ->hiddenOn('create')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->formatStateUsing(function ($state, ?Model $record): string {
+                        return (string) optional(optional($record)->userUpdate)->name;
+                    }),
+            ]),
+        ];
+    }
+
+    protected static function getCustomerTypeOptions(): array
+    {
+        return [
+            static::CUSTOMER_TYPE_REGISTERED => 'Registered Customer',
+            static::CUSTOMER_TYPE_LEAD => 'Lead',
+            static::CUSTOMER_TYPE_REDISTRIBUTION => 'Redistribution Customer',
+        ];
+    }
+
+    protected static function getCustomerSelectOptionsForType(
+        string $customerType,
+        ?string $branchCode,
+        ?string $search,
+        ?string $currentCustomerCode = null,
+        ?int $limit = 50
+    ): array {
+        return static::getCustomerSelectOptionsForBranch(
+            $branchCode,
+            $search,
+            $currentCustomerCode,
+            $limit
+        );
     }
 
     /**
@@ -640,6 +853,17 @@ class BranchCropCompositionCollectionResource extends Resource
             403
         );
 
+        if (($data['type'] ?? null) !== static::CUSTOMER_TYPE_REGISTERED) {
+            $lead = Lead::query()->find($data['lead_id'] ?? null);
+
+            $data['customer_code'] = $lead->code ?? null;
+            $data['customer_name'] = $lead->name ?? ($data['customer_name'] ?? null);
+            $data['engineer_name'] = null;
+            $data['engineer_id'] = null;
+
+            return $data;
+        }
+
         $customer = app(SapCustomerLookupServiceInterface::class)
             ->findCustomerByCode($data['customer_code'] ?? null);
 
@@ -788,10 +1012,16 @@ class BranchCropCompositionCollectionResource extends Resource
      */
     public static function mutateDataBeforeFill(array $data, Model $record): array
     {
-        $customer = app(SapCustomerLookupServiceInterface::class)
-            ->findCustomerByCode($record->customer_code);
+        if (($record->type ?? null) !== static::CUSTOMER_TYPE_REGISTERED) {
+            $data['lead_id'] = $record->lead_id;
+            $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
+            $data['engineer_name'] = null;
+        } else {
+            $customer = app(SapCustomerLookupServiceInterface::class)
+                ->findCustomerByCode($record->customer_code);
 
-        $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
+            $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
+        }
 
         $data['cultivation_types'] = $record->cultivationTypes
             ->map(function (BranchCropCollectionCultivationType $row): array {
