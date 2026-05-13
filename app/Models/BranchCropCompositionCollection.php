@@ -12,25 +12,26 @@ class BranchCropCompositionCollection extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'type',
-        'lead_id',
-        'collection_date',
-        'user_id',
-        'created_by',
-        'updated_by',
-        'branch_id',
-        'branch_name',
-        'engineer_id',
-        'engineer_name',
-        'customer_code',
-        'customer_name',
-        'farms_count',
-        'total_farm_area_hectares',
-        'opportunities',
-        'challenges',
-        'notes',
-    ];
+    protected $guarded = [];
+//    protected $fillable = [
+//        'type',
+//        'lead_id',
+//        'collection_date',
+//        'user_id',
+//        'created_by',
+//        'updated_by',
+//        'branch_id',
+//        'branch_name',
+//        'engineer_id',
+//        'engineer_name',
+//        'customer_code',
+//        'customer_name',
+//        'farms_count',
+//        'total_farm_area_hectares',
+//        'opportunities',
+//        'challenges',
+//        'notes',
+//    ];
 
     protected static function boot()
     {

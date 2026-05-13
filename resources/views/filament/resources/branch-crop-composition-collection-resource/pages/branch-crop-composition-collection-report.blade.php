@@ -30,6 +30,24 @@
         .branch-crop-report-table .customer-row > td:first-child {
             border-left: 4px solid #d97706;
         }
+
+        .branch-crop-report-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .branch-crop-report-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .branch-crop-report-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: rgb(249 250 251);
+        }
     </style>
 
     <div
@@ -79,10 +97,10 @@
             </div>
         </div>
 
-        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div class="overflow-x-auto">
                 <table class="branch-crop-report-table w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="sticky top-0 z-20 bg-gray-50">
                         <tr>
                             <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>

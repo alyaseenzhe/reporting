@@ -408,7 +408,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 ]),
             Section::make('الملاحظات الختامية')
                 ->schema([
-                    Grid::make(3)->schema([
+                    Grid::make(4)->schema([
                     Textarea::make('opportunities')
                         ->label('الفرص مع المزارع')
                         ->rows(4),
@@ -417,6 +417,9 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->rows(4),
                     Textarea::make('notes')
                         ->label('ملاحظات')
+                        ->rows(4),
+                    Textarea::make('companies')
+                        ->label('المؤسسات التي يتعامل معها')
                         ->rows(4),
                         ]),
                 ]),
