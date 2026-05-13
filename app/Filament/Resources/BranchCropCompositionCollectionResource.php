@@ -426,7 +426,7 @@ class BranchCropCompositionCollectionResource extends Resource
     protected static function getCustomerTypeSelectComponent(): Select
     {
         return Select::make('type')
-            ->label('Customer Type')
+            ->label('نوع العميل')
             ->options(static::getCustomerTypeOptions())
             ->default(static::CUSTOMER_TYPE_REGISTERED)
             ->afterStateHydrated(function (Select $component, $state): void {
@@ -502,30 +502,81 @@ class BranchCropCompositionCollectionResource extends Resource
                         return $customer['label'] ?? $value;
                     }),
 
+                TextInput::make('engineer_name')
+                    ->label('المهندس المسؤول')
+                    ->disabled()
+                    ->dehydrated()
+                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+                    ->formatStateUsing(fn ($state): string => (string) $state),
+
+
+//                Select::make('lead_id')
+//                    ->label('العميل')
+//                    ->columnSpan(['default' => 1, 'md' => 2])
+////                    ->searchable()
+////                    ->preload()
+//                    ->reactive()
+//                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
+//                    ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+////                    ->options(function (): array {
+////                        return Lead::query()
+////                            ->orderBy('name')
+////                            ->pluck('name', 'id')
+////                            ->toArray();
+////                    })
+//                    ->createOptionForm([
+//                        TextInput::make('name')
+//                            ->required()
+//                            ->maxLength(255),
+//                        TextInput::make('phone')
+//                            ->tel()
+//                            ->maxLength(255),
+//                        TextInput::make('email')
+//                            ->email()
+//                            ->maxLength(255),
+//                        TextInput::make('business')
+//                            ->maxLength(255),
+//                    ])
+//                    ->createOptionUsing(function (array $data) use ($customerType): int {
+//                        $data['code'] = Lead::generateNextCode(
+//                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l'
+//                        );
+//
+//                        return Lead::query()->create($data)->getKey();
+//                    })
+//                    ->afterStateUpdated(function ($state, callable $set): void {
+//                        $lead = Lead::query()->find($state);
+//
+//                        $set('customer_name', $lead?->name);
+//                        $set('engineer_name', null);
+//                    })
+//                    ->getOptionLabelUsing(function ($value): ?string {
+//                        return Lead::query()->whereKey($value)->value('name');
+//                    }),
                 Select::make('lead_id')
                     ->label('العميل')
                     ->columnSpan(['default' => 1, 'md' => 2])
-                    ->searchable()
-                    ->preload()
-                    ->reactive()
-                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
-                    ->options(function (): array {
-                        return Lead::query()
-                            ->orderBy('name')
-                            ->pluck('name', 'id')
-                            ->toArray();
-                    })
+                    ->options([])
+                    ->searchable(false)
+                    ->preload(false)
+                    ->extraAttributes([
+                        'class' => 'hide-select-input',
+                    ])
                     ->createOptionForm([
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255),
+
                         TextInput::make('phone')
                             ->tel()
                             ->maxLength(255),
+
                         TextInput::make('email')
                             ->email()
                             ->maxLength(255),
+
                         TextInput::make('business')
                             ->maxLength(255),
                     ])
@@ -534,23 +585,14 @@ class BranchCropCompositionCollectionResource extends Resource
                             $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l'
                         );
 
-                        return Lead::query()->create($data)->getKey();
-                    })
-                    ->afterStateUpdated(function ($state, callable $set): void {
-                        $lead = Lead::query()->find($state);
-
-                        $set('customer_name', $lead?->name);
-                        $set('engineer_name', null);
-                    })
-                    ->getOptionLabelUsing(function ($value): ?string {
-                        return Lead::query()->whereKey($value)->value('name');
+                        return Lead::create($data)->id;
                     }),
                 TextInput::make('lead_phone')
                     ->label('رقم العميل')
                     ->disabled()
                     ->dehydrated(false)
                     ->visible(fn (?Model $record): bool => filled($record))
-                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->afterStateHydrated(function ($component, $state, $record) {
                         $component->state($record?->lead?->phone);
                     }),
@@ -559,16 +601,10 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->disabled()
                     ->dehydrated(false)
                     ->visible(fn (?Model $record): bool => filled($record))
-                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->afterStateHydrated(function ($component, $state, $record) {
                         $component->state($record?->lead?->email);
                     }),
-                TextInput::make('engineer_name')
-                    ->label('المهندس المسؤول')
-                    ->disabled()
-                    ->dehydrated()
-                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
-                    ->formatStateUsing(fn ($state): string => (string) $state),
                 TextInput::make('farms_count')
                     ->label('عدد المزارع')
                     ->required()
@@ -616,9 +652,9 @@ class BranchCropCompositionCollectionResource extends Resource
     protected static function getCustomerTypeOptions(): array
     {
         return [
-            static::CUSTOMER_TYPE_REGISTERED => 'Registered Customer',
-            static::CUSTOMER_TYPE_LEAD => 'Lead',
-            static::CUSTOMER_TYPE_REDISTRIBUTION => 'Redistribution Customer',
+            static::CUSTOMER_TYPE_REGISTERED => 'عميل مسجل',
+            static::CUSTOMER_TYPE_LEAD => 'عميل محتمل',
+            static::CUSTOMER_TYPE_REDISTRIBUTION => 'عميل اعادة التوزيع',
         ];
     }
 
