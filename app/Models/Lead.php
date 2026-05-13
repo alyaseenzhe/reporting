@@ -28,16 +28,32 @@ class Lead extends Model
         });
     }
 
-    public static function generateNextCode(string $prefix): string
+    public static function generateNextCode(string $prefix, ?string $branchCode = null): string
     {
+        $branchCode = trim((string) $branchCode);
+
+        if ($branchCode === '') {
+            $nextNumber = static::query()
+                ->where('code', 'like', $prefix . '%')
+                ->pluck('code')
+                ->map(function ($code) use ($prefix): int {
+                    return (int) substr((string) $code, strlen($prefix));
+                })
+                ->max();
+
+            return $prefix . ((int) $nextNumber + 1);
+        }
+
+        $baseCode = $prefix . $branchCode;
+
         $nextNumber = static::query()
-            ->where('code', 'like', $prefix . '%')
+            ->where('code', 'like', $baseCode . '%')
             ->pluck('code')
-            ->map(function ($code) use ($prefix): int {
-                return (int) substr((string) $code, strlen($prefix));
+            ->map(function ($code) use ($baseCode): int {
+                return (int) substr((string) $code, strlen($baseCode));
             })
             ->max();
 
-        return $prefix . ((int) $nextNumber + 1);
+        return $baseCode . str_pad((string) ((int) $nextNumber + 1), 4, '0', STR_PAD_LEFT);
     }
 }

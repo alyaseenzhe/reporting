@@ -438,7 +438,10 @@ class BranchCropCompositionCollectionResource extends Resource
                 $set('customer_code', null);
                 $set('lead_id', null);
                 $set('customer_name', null);
-                $set('engineer_name', null);
+                $set(
+                    'engineer_name',
+                    $state === static::CUSTOMER_TYPE_LEAD ? static::getAuthenticatedEngineerName() : null
+                );
             })
             ->reactive();
     }
@@ -459,11 +462,14 @@ class BranchCropCompositionCollectionResource extends Resource
                             ->pluck('name', 'id')
                             ->toArray();
                     })
-                    ->afterStateUpdated(function (callable $set): void {
+                    ->afterStateUpdated(function (callable $get, callable $set): void {
                         $set('customer_code', null);
                         $set('lead_id', null);
                         $set('customer_name', null);
-                        $set('engineer_name', null);
+                        $set(
+                            'engineer_name',
+                            $get('type') === static::CUSTOMER_TYPE_LEAD ? static::getAuthenticatedEngineerName() : null
+                        );
                     }),
 
                 Select::make('customer_code')
@@ -558,7 +564,23 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
-                    ->options([])
+                    ->options(function (callable $get): array {
+                        $leadId = $get('lead_id');
+
+                        if (blank($leadId)) {
+                            return [];
+                        }
+
+                        return Lead::query()
+                            ->whereKey($leadId)
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->suffixIcon(null)
+                    ->extraInputAttributes([
+                        'style' => 'appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:none;',
+                    ])
+                    ->placeholder('اضف عميل جديد')
                     ->searchable(false)
                     ->preload(false)
                     ->extraAttributes([
@@ -566,29 +588,49 @@ class BranchCropCompositionCollectionResource extends Resource
                     ])
                     ->createOptionForm([
                         TextInput::make('name')
+                            ->label('الاسم')
                             ->required()
                             ->maxLength(255),
 
                         TextInput::make('phone')
-                            ->tel()
-                            ->maxLength(255),
+                            ->label('رقم التواصل')
+                            //->tel()
+                            ->maxLength(10),
 
                         TextInput::make('email')
+                            ->label('الإيميل')
                             ->email()
                             ->maxLength(255),
-
-                        TextInput::make('business')
-                            ->maxLength(255),
+//
+//                        TextInput::make('business')
+//                            ->maxLength(255),
                     ])
-                    ->createOptionUsing(function (array $data) use ($customerType): int {
+                    ->createOptionUsing(function (array $data, callable $get) use ($customerType): int {
+                        $branchCode = trim((string) static::resolveBranchCodeFromState($get('branch_id')));
+
+                        if ($branchCode === '') {
+                            throw ValidationException::withMessages([
+                                'branch_id' => 'Please select a branch first.',
+                            ]);
+                        }
+
                         $data['code'] = Lead::generateNextCode(
-                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l'
+                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l',
+                            $branchCode
                         );
 
                         return Lead::create($data)->id;
+                    })
+                    ->afterStateUpdated(function ($state, callable $set): void {
+                        if (filled($state)) {
+                            $set('engineer_name', static::getAuthenticatedEngineerName());
+                        }
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        return Lead::query()->whereKey($value)->value('name');
                     }),
                 TextInput::make('lead_phone')
-                    ->label('رقم العميل')
+                    ->label('رقم التواصل')
                     ->disabled()
                     ->dehydrated(false)
                     ->visible(fn (?Model $record): bool => filled($record))
@@ -629,7 +671,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->disabled()
                     ->dehydrated(false)
                     ->formatStateUsing(function ($state, ?Model $record): string {
-                        return (string) optional(optional($record)->userUpdate)->name;
+                        return (string) optional(optional($record)->userCreate)->name;
                     }),
 
                 DatePicker::make('updated_at')
@@ -917,8 +959,8 @@ class BranchCropCompositionCollectionResource extends Resource
 
             $data['customer_code'] = $lead->code ?? null;
             $data['customer_name'] = $lead->name ?? ($data['customer_name'] ?? null);
-            $data['engineer_name'] = null;
-            $data['engineer_id'] = null;
+            $data['engineer_name'] = static::getAuthenticatedEngineerName();
+            $data['engineer_id'] = Auth::id();
 
             return $data;
         }
@@ -1074,7 +1116,7 @@ class BranchCropCompositionCollectionResource extends Resource
         if (($record->type ?? null) === static::CUSTOMER_TYPE_LEAD) {
             $data['lead_id'] = $record->lead_id;
             $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
-            $data['engineer_name'] = null;
+            $data['engineer_name'] = $record->engineer_name;
         } else {
             $customer = app(SapCustomerLookupServiceInterface::class)
                 ->findCustomerByCode($record->customer_code);
@@ -1556,5 +1598,12 @@ class BranchCropCompositionCollectionResource extends Resource
             fn ($branch) => $branchCodeMap[(string) $branch] ?? null,
             $assignedBranches
         ))));
+    }
+
+    protected static function getAuthenticatedEngineerName(): ?string
+    {
+        $name = trim((string) optional(Auth::user())->name);
+
+        return $name !== '' ? $name : null;
     }
 }

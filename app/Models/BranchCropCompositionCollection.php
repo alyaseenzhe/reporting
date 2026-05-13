@@ -17,6 +17,7 @@ class BranchCropCompositionCollection extends Model
         'lead_id',
         'collection_date',
         'user_id',
+        'created_by',
         'updated_by',
         'branch_id',
         'branch_name',
@@ -74,6 +75,11 @@ class BranchCropCompositionCollection extends Model
     public function userUpdate(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function userCreate(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function branch(): BelongsTo
