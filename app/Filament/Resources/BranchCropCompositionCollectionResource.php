@@ -472,8 +472,8 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->searchable()
                     ->preload()
                     ->optionsLimit(10000)
-                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
-                    ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_REGISTERED)
+                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+                    ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
                     ->unique(ignoreRecord: true)
                     ->reactive()
                     ->placeholder('اختر الفرع أولا ثم ابحث عن العميل')
@@ -508,8 +508,8 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->searchable()
                     ->preload()
                     ->reactive()
-                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_REGISTERED)
-                    ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
+                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->options(function (): array {
                         return Lead::query()
                             ->orderBy('name')
@@ -529,7 +529,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         TextInput::make('business')
                             ->maxLength(255),
                     ])
-                    ->createOptionUsing(function (array $data): int {
+                    ->createOptionUsing(function (array $data) use ($customerType): int {
                         $data['code'] = Lead::generateNextCode(
                             $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l'
                         );
@@ -545,7 +545,24 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Lead::query()->whereKey($value)->value('name');
                     }),
-
+                TextInput::make('lead_phone')
+                    ->label('رقم العميل')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn (?Model $record): bool => filled($record))
+                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        $component->state($record?->lead?->phone);
+                    }),
+                TextInput::make('lead_email')
+                    ->label('الإيميل')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn (?Model $record): bool => filled($record))
+                    ->hidden(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        $component->state($record?->lead?->email);
+                    }),
                 TextInput::make('engineer_name')
                     ->label('المهندس المسؤول')
                     ->disabled()
@@ -612,12 +629,18 @@ class BranchCropCompositionCollectionResource extends Resource
         ?string $currentCustomerCode = null,
         ?int $limit = 50
     ): array {
-        return static::getCustomerSelectOptionsForBranch(
+        $customers = static::getCustomerSelectOptionsForBranchRows(
             $branchCode,
             $search,
             $currentCustomerCode,
             $limit
         );
+
+        if ($customerType === static::CUSTOMER_TYPE_REDISTRIBUTION) {
+            $customers = static::filterRedistributionCustomerRows($customers);
+        }
+
+        return static::customerRowsToOptions($customers);
     }
 
     /**
@@ -853,7 +876,7 @@ class BranchCropCompositionCollectionResource extends Resource
             403
         );
 
-        if (($data['type'] ?? null) !== static::CUSTOMER_TYPE_REGISTERED) {
+        if (($data['type'] ?? null) === static::CUSTOMER_TYPE_LEAD) {
             $lead = Lead::query()->find($data['lead_id'] ?? null);
 
             $data['customer_code'] = $lead->code ?? null;
@@ -1012,7 +1035,7 @@ class BranchCropCompositionCollectionResource extends Resource
      */
     public static function mutateDataBeforeFill(array $data, Model $record): array
     {
-        if (($record->type ?? null) !== static::CUSTOMER_TYPE_REGISTERED) {
+        if (($record->type ?? null) === static::CUSTOMER_TYPE_LEAD) {
             $data['lead_id'] = $record->lead_id;
             $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
             $data['engineer_name'] = null;
@@ -1157,6 +1180,20 @@ class BranchCropCompositionCollectionResource extends Resource
         ?string $currentCustomerCode = null,
         ?int $limit = 50
     ): array {
+        return static::customerRowsToOptions(static::getCustomerSelectOptionsForBranchRows(
+            $branchCode,
+            $search,
+            $currentCustomerCode,
+            $limit
+        ));
+    }
+
+    protected static function getCustomerSelectOptionsForBranchRows(
+        ?string $branchCode,
+        ?string $search,
+        ?string $currentCustomerCode = null,
+        ?int $limit = 50
+    ): array {
         if (blank($branchCode)) {
             return [];
         }
@@ -1174,7 +1211,15 @@ class BranchCropCompositionCollectionResource extends Resource
         $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode);
         $customers = static::filterCustomerRowsForCreatePermission($customers);
 
-        return static::customerRowsToOptions($customers);
+        return $customers;
+    }
+
+    protected static function filterRedistributionCustomerRows(array $customers): array
+    {
+        return collect($customers)
+            ->filter(fn (array $customer): bool => (bool) ($customer['property_1'] ?? false))
+            ->values()
+            ->all();
     }
 
     protected static function filterCustomersForCreatePermission(array $customers): array

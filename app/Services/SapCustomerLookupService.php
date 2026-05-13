@@ -94,7 +94,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     {
         $searchEscaped = str_replace("'", "''", $search);
         $prefixWhere = $this->buildSapCustomerPrefixWhere($customerCodePrefixes);
-        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName"'
+        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName", T0."QryGroup1"'
             . ' FROM AL_YASEEN_AGRI_PLIVE.OCRD T0'
             . ' LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP T1 ON T0."SlpCode" = T1."SlpCode"'
             . ' WHERE T0."CardType" = \'C\''
@@ -118,6 +118,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
                     'name' => $row['CardName'],
                     'slp_code' => $row['SlpCode'] ?? null,
                     'slp_name' => $row['SlpName'] ?? null,
+                    'property_1' => ($row['QryGroup1'] ?? null) === 'Y',
                     'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
                 ];
             })
@@ -127,7 +128,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
     protected function findCustomerByCodeFromSap(string $customerCode): ?array
     {
         $customerCodeEscaped = str_replace("'", "''", $customerCode);
-        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName"'
+        $query = 'SELECT T0."CardCode", T0."CardName", T0."SlpCode", T1."SlpName", T0."QryGroup1"'
             . ' FROM AL_YASEEN_AGRI_PLIVE.OCRD T0'
             . ' LEFT JOIN AL_YASEEN_AGRI_PLIVE.OSLP T1 ON T0."SlpCode" = T1."SlpCode"'
             . ' WHERE T0."CardType" = \'C\''
@@ -146,6 +147,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
             'name' => $row['CardName'],
             'slp_code' => $row['SlpCode'] ?? null,
             'slp_name' => $row['SlpName'] ?? null,
+            'property_1' => ($row['QryGroup1'] ?? null) === 'Y',
             'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
         ];
     }
@@ -276,6 +278,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         return [
             'code' => $customer->Code,
             'name' => $customerName,
+            'property_1' => false,
             'label' => $this->formatLabel($customer->Code, $customerName),
         ];
     }
@@ -342,6 +345,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
             'name' => $customerName,
             'slp_code' => null,
             'slp_name' => null,
+            'property_1' => false,
             'label' => $this->formatLabel($customer->Code, $customerName),
         ];
     }
