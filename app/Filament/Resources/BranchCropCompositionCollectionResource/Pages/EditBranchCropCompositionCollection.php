@@ -36,10 +36,10 @@ class EditBranchCropCompositionCollection extends EditRecord
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
         BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
         BranchCropCompositionCollectionResource::validateCropRowsUnique($cropRows);
-        $parentData = BranchCropCompositionCollectionResource::extractParentData($data);
-        $parentData['updated_by'] = auth()->id();
+        return DB::transaction(function () use ($record, $data, $cultivationRows, $cropRows) {
+            $parentData = BranchCropCompositionCollectionResource::prepareParentData($data);
+            $parentData['updated_by'] = auth()->id();
 
-        return DB::transaction(function () use ($record, $parentData, $cultivationRows, $cropRows) {
             $record->update($parentData);
 
             BranchCropCompositionCollectionResource::syncChildren(

@@ -441,9 +441,12 @@ class BranchCropCompositionCollectionResource extends Resource
                 $set('customer_code', null);
                 $set('lead_id', null);
                 $set('customer_name', null);
+                $set('lead_name', null);
+                $set('lead_phone', null);
+                $set('lead_email', null);
                 $set(
                     'engineer_name',
-                    $state === static::CUSTOMER_TYPE_LEAD ? static::getAuthenticatedEngineerName() : null
+                    $state === static::CUSTOMER_TYPE_LEAD || $state === static::CUSTOMER_TYPE_REDISTRIBUTION ? static::getAuthenticatedEngineerName() : null
                 );
             })
             ->reactive();
@@ -469,9 +472,14 @@ class BranchCropCompositionCollectionResource extends Resource
                         $set('customer_code', null);
                         $set('lead_id', null);
                         $set('customer_name', null);
+                        $set('lead_name', null);
+                        $set('lead_phone', null);
+                        $set('lead_email', null);
                         $set(
                             'engineer_name',
-                            $get('type') === static::CUSTOMER_TYPE_LEAD ? static::getAuthenticatedEngineerName() : null
+                            in_array($get('type'), [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)
+                                ? static::getAuthenticatedEngineerName()
+                                : null
                         );
                     }),
 
@@ -483,6 +491,8 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->optionsLimit(10000)
                     ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
+//                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
+//                    ->required(fn (): bool => ! in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
                     ->unique(ignoreRecord: true)
                     ->reactive()
                     ->placeholder('اختر الفرع أولا ثم ابحث عن العميل')
@@ -515,7 +525,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->label('المهندس المسؤول')
                     ->disabled()
                     ->dehydrated()
-                    ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
                     ->formatStateUsing(fn ($state): string => (string) $state),
 
 
@@ -565,8 +575,8 @@ class BranchCropCompositionCollectionResource extends Resource
                 Select::make('lead_id')
                     ->label('العميل')
                     ->columnSpan(['default' => 1, 'md' => 2])
-                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
-                    ->required(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
+                    ->hidden()
+                    ->required(false)
                     ->options(function (callable $get): array {
                         $leadId = $get('lead_id');
 
@@ -618,7 +628,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         }
 
                         $data['code'] = Lead::generateNextCode(
-                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 's' : 'l',
+                            $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION ? 'S' : 'L',
                             $branchCode
                         );
 
@@ -632,24 +642,21 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Lead::query()->whereKey($value)->value('name');
                     }),
+                TextInput::make('lead_name')
+                    ->label('اسم العميل المحتمل')
+                    ->columnSpan(['default' => 1, 'md' => 2])
+                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
+                    ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
+                    ->maxLength(255),
                 TextInput::make('lead_phone')
                     ->label('رقم التواصل')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->visible(fn (?Model $record): bool => filled($record))
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
-                    ->afterStateHydrated(function ($component, $state, $record) {
-                        $component->state($record?->lead?->phone);
-                    }),
+                    ->maxLength(10),
                 TextInput::make('lead_email')
                     ->label('الإيميل')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->visible(fn (?Model $record): bool => filled($record))
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
-                    ->afterStateHydrated(function ($component, $state, $record) {
-                        $component->state($record?->lead?->email);
-                    }),
+                    ->email()
+                    ->maxLength(255),
                 TextInput::make('farms_count')
                     ->label('عدد المزارع')
                     ->required()
@@ -775,9 +782,9 @@ class BranchCropCompositionCollectionResource extends Resource
                 ->label('مجموع أنواع الزراعة (هـ)')
                 ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
 
-                TextColumn::make('updated_at')
-                ->label('تاريخ آخر تحديث')
-                ->date('Y-m-d'),
+//                TextColumn::make('updated_at')
+//                ->label('تاريخ آخر تحديث')
+//                ->date('Y-m-d'),
 
 //                TextColumn::make('farms_count')
 //                    ->label('عدد المزارع'),
@@ -946,9 +953,19 @@ class BranchCropCompositionCollectionResource extends Resource
     /**
      * Extract the parent form payload before saving.
      */
+    public static function prepareParentData(array $data): array
+    {
+        if (in_array($data['type'] ?? null, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)) {
+            $lead = static::upsertLeadFromFormData($data);
+            $data['lead_id'] = $lead->getKey();
+        }
+
+        return static::extractParentData($data);
+    }
+
     public static function extractParentData(array $data): array
     {
-        unset($data['cultivation_types'], $data['crop_composition_items']);
+        unset($data['cultivation_types'], $data['crop_composition_items'], $data['lead_name'], $data['lead_phone'], $data['lead_email']);
 
         abort_unless(
             static::getAuthorizedBranchesQuery()
@@ -968,6 +985,17 @@ class BranchCropCompositionCollectionResource extends Resource
             return $data;
         }
 
+        if (($data['type'] ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION) {
+            $customer = app(SapCustomerLookupServiceInterface::class)
+                ->findCustomerByCode($data['customer_code'] ?? null);
+
+            $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
+            $data['engineer_name'] = static::getAuthenticatedEngineerName();
+            $data['engineer_id'] = Auth::id();
+
+            return $data;
+        }
+
         $customer = app(SapCustomerLookupServiceInterface::class)
             ->findCustomerByCode($data['customer_code'] ?? null);
 
@@ -976,6 +1004,39 @@ class BranchCropCompositionCollectionResource extends Resource
         $data['engineer_id'] = null;
 
         return $data;
+    }
+
+    protected static function upsertLeadFromFormData(array $data): Lead
+    {
+        $branchCode = trim((string) static::resolveBranchCodeFromState($data['branch_id'] ?? null));
+
+        if ($branchCode === '') {
+            throw ValidationException::withMessages([
+                'branch_id' => 'Please select a branch first.',
+            ]);
+        }
+
+        $attributes = [
+            'name' => trim((string) (($data['lead_name'] ?? $data['customer_name']) ?? '')),
+            'phone' => static::normalizeOptionalFormValue($data['lead_phone'] ?? null),
+            'email' => static::normalizeOptionalFormValue($data['lead_email'] ?? null),
+        ];
+
+        $lead = Lead::query()->find($data['lead_id'] ?? null);
+
+        if ($lead) {
+            $lead->fill($attributes);
+            $lead->save();
+
+            return $lead;
+        }
+
+        $attributes['code'] = Lead::generateNextCode(
+            ($data['type'] ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION ? 'S' : 'L',
+            $branchCode
+        );
+
+        return Lead::query()->create($attributes);
     }
 
     /**
@@ -1116,15 +1177,24 @@ class BranchCropCompositionCollectionResource extends Resource
      */
     public static function mutateDataBeforeFill(array $data, Model $record): array
     {
-        if (($record->type ?? null) === static::CUSTOMER_TYPE_LEAD) {
+        if (in_array($record->type ?? null, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)) {
             $data['lead_id'] = $record->lead_id;
-            $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
+            $data['lead_name'] = optional($record->lead)->name;
+            $data['lead_phone'] = optional($record->lead)->phone;
+            $data['lead_email'] = optional($record->lead)->email;
             $data['engineer_name'] = $record->engineer_name;
+
+            if (($record->type ?? null) === static::CUSTOMER_TYPE_LEAD) {
+                $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
+            }
         } else {
             $customer = app(SapCustomerLookupServiceInterface::class)
                 ->findCustomerByCode($record->customer_code);
 
             $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
+            $data['lead_name'] = null;
+            $data['lead_phone'] = null;
+            $data['lead_email'] = null;
         }
 
         $data['cultivation_types'] = $record->cultivationTypes
@@ -1608,5 +1678,12 @@ class BranchCropCompositionCollectionResource extends Resource
         $name = trim((string) optional(Auth::user())->name);
 
         return $name !== '' ? $name : null;
+    }
+
+    protected static function normalizeOptionalFormValue($value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : null;
     }
 }
