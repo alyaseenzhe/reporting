@@ -14,6 +14,7 @@ use Filament\Resources\Form as ResourceForm;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class BranchCropCompositionCollectionReport extends Page implements HasForms
 {
@@ -27,7 +28,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = ' تقرير التركيب المحصولي';
+    protected static ?string $navigationLabel = 'تقرير التركيب المحصولي';
 
     protected static string $view = 'filament.resources.branch-crop-composition-collection-resource.pages.branch-crop-composition-collection-report';
 
@@ -280,14 +281,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected function getCustomerCropRows(): Collection
     {
-        $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery()
-            ->select([
-                'branch_crop_composition_collections.id',
-                'branch_crop_composition_collections.branch_id',
-                'branch_crop_composition_collections.customer_code',
-                'branch_crop_composition_collections.customer_name',
-                'branch_crop_composition_collections.engineer_name',
-            ]);
+        $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery();
         $cropCategoryIds = $this->getEffectiveFilterValues($this->filters['crop_category_ids'] ?? []);
         $cropItemIds = $this->getEffectiveFilterValues($this->filters['crop_item_ids'] ?? []);
 
@@ -297,8 +291,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 branch_crop_collection_items.crop_catalog_category_id,
                 branch_crop_collection_items.crop_catalog_item_id,
                 accessible_collections.branch_id,
-                accessible_collections.customer_code,
-                accessible_collections.customer_name,
+                accessible_collections.display_customer_code as customer_code,
+                accessible_collections.display_customer_name as customer_name,
                 accessible_collections.engineer_name,
                 categories.name as category_name,
                 crops.name as crop_name,
@@ -333,8 +327,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'branch_crop_collection_items.crop_catalog_category_id',
                 'branch_crop_collection_items.crop_catalog_item_id',
                 'accessible_collections.branch_id',
-                'accessible_collections.customer_code',
-                'accessible_collections.customer_name',
+                'accessible_collections.display_customer_code',
+                'accessible_collections.display_customer_name',
                 'accessible_collections.engineer_name',
                 'categories.name',
                 'crops.name',
@@ -343,7 +337,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->orderBy('categories.name')
             ->orderBy('crops.name')
             ->orderBy('branches.name')
-            ->orderBy('accessible_collections.customer_name')
+            ->orderBy('accessible_collections.display_customer_name')
             ->get()
             ->map(function ($row): array {
                 return [
@@ -361,7 +355,6 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 ];
             });
     }
-
     protected function buildHierarchy(Collection $rows): array
     {
         return $rows
@@ -462,26 +455,41 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         ];
     }
 
+    protected function getDisplayCustomerCollectionsQuery(): Builder
+    {
+        return static::getResource()::getAccessibleCollectionsQuery()
+            ->leftJoin('leads', 'leads.id', '=', 'branch_crop_composition_collections.lead_id')
+            ->select([
+                'branch_crop_composition_collections.id',
+                'branch_crop_composition_collections.branch_id',
+                'branch_crop_composition_collections.customer_code',
+                'branch_crop_composition_collections.customer_name',
+                'branch_crop_composition_collections.engineer_name',
+                'branch_crop_composition_collections.type',
+            ])
+            ->selectRaw("\n                CASE\n                    WHEN branch_crop_composition_collections.type = 'redistribution_customer'\n                        THEN COALESCE(leads.code, branch_crop_composition_collections.customer_code)\n                    ELSE branch_crop_composition_collections.customer_code\n                END as display_customer_code\n            ")
+            ->selectRaw("\n                CASE\n                    WHEN branch_crop_composition_collections.type = 'redistribution_customer'\n                        THEN COALESCE(leads.name, branch_crop_composition_collections.customer_name)\n                    ELSE branch_crop_composition_collections.customer_name\n                END as display_customer_name\n            ");
+    }
     protected function getFilteredAccessibleCollectionsQuery(): Builder
     {
         $branchIds = $this->getEffectiveFilterValues($this->filters['branch_ids'] ?? []);
         $customerCodes = $this->getEffectiveFilterValues($this->filters['customer_codes'] ?? []);
         $engineerNames = $this->getEffectiveFilterValues($this->filters['engineer_names'] ?? []);
-        return static::getResource()::getAccessibleCollectionsQuery()
+
+        return $this->getDisplayCustomerCollectionsQuery()
             ->when(
                 count($branchIds),
-                fn (Builder $query) => $query->whereIn('branch_id', $branchIds)
+                fn (Builder $query) => $query->whereIn('branch_crop_composition_collections.branch_id', $branchIds)
             )
             ->when(
                 count($customerCodes),
-                fn (Builder $query) => $query->whereIn('customer_code', $customerCodes)
+                fn (Builder $query) => $query->whereIn(DB::raw("CASE WHEN branch_crop_composition_collections.type = 'redistribution_customer' THEN COALESCE(leads.code, branch_crop_composition_collections.customer_code) ELSE branch_crop_composition_collections.customer_code END"), $customerCodes)
             )
             ->when(
                 count($engineerNames),
-                fn (Builder $query) => $query->whereIn('engineer_name', $engineerNames)
+                fn (Builder $query) => $query->whereIn('branch_crop_composition_collections.engineer_name', $engineerNames)
             );
     }
-
     protected function getBranchOptions(): array
     {
         return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
@@ -494,18 +502,17 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected function getCustomerOptions(): array
     {
-        return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
-            ->select(['customer_code', 'customer_name'])
-            ->orderBy('customer_name')
+        return $this->withAllOption($this->getDisplayCustomerCollectionsQuery()
+            ->orderBy('display_customer_name')
             ->get()
             ->mapWithKeys(function ($row): array {
-                $code = trim((string) $row->customer_code);
+                $code = trim((string) $row->display_customer_code);
 
                 if ($code === '') {
                     return [];
                 }
 
-                $name = trim((string) ($row->customer_name ?? ''));
+                $name = trim((string) ($row->display_customer_name ?? ''));
 
                 return [
                     $code => $name !== '' ? $code . ' - ' . $name : $code,
@@ -513,7 +520,6 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             })
             ->all());
     }
-
     protected function getEngineerOptions(): array
     {
         return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
@@ -653,9 +659,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->first() ?? BranchCropCompositionCollection::class;
     }
 
-//    public static function shouldRegisterNavigation(): bool
-//    {
-//        return true;
-//    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
 
 }
+

@@ -22,6 +22,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -49,7 +50,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = ' التركيب المحصولي';
+    protected static ?string $navigationLabel = 'التركيب المحصولي';
 
     protected static ?string $pluralLabel = 'نماذج التركيب المحصولي';
 
@@ -518,14 +519,14 @@ class BranchCropCompositionCollectionResource extends Resource
                         $customer = app(SapCustomerLookupServiceInterface::class)
                             ->findCustomerByCode($value);
 
-                        return $customer['label'] ?? $value;
+                        return $customer['label'] ?? $value;   
                     }),
 
                 TextInput::make('engineer_name')
                     ->label('المهندس المسؤول')
                     ->disabled()
                     ->dehydrated()
-                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
+                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD], true))
                     ->formatStateUsing(fn ($state): string => (string) $state),
 
 
@@ -739,29 +740,30 @@ class BranchCropCompositionCollectionResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-//                TextColumn::make('id')
-//                    ->label('ID')
-//                    ->sortable()
-//                    ->searchable(),
-//                TextColumn::make('created_at')
-//                    ->label('تاريخ الجمع')
-//                    ->date(),
-
-                // TextColumn::make('branch_name')
-                //     ->label('الفرع')
-                //     ->searchable(),
                 TextColumn::make('customer_code')
+                    ->formatStateUsing(fn ($state, Model $record): string => static::getDisplayCustomerCode($record))
                     ->label('كود العميل')
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $query) use ($search): void {
+                            $query->where('customer_code', 'like', "%{$search}%")
+                                ->orWhereHas('lead', fn (Builder $query) => $query->where('code', 'like', "%{$search}%"));
+                        });
+                    }),
                 TextColumn::make('customer_name')
+                    ->formatStateUsing(fn ($state, Model $record): string => static::getDisplayCustomerName($record))
                     ->label('العميل')
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->where(function (Builder $query) use ($search): void {
+                            $query->where('customer_name', 'like', "%{$search}%")
+                                ->orWhereHas('lead', fn (Builder $query) => $query->where('name', 'like', "%{$search}%"));
+                        });
+                    }),
+                TextColumn::make('sap_customer')
+                    ->label('المؤسسة')
+                    ->formatStateUsing(fn ($state, Model $record): string => static::getSapCustomerLabel($record)),
                 TextColumn::make('branch.name')
                     ->label('الفرع')
                     ->searchable(),
-//                TextColumn::make('engineer.name')
-//                    ->label('المهندس')
-//                    ->searchable(),
                 TextColumn::make('engineer_name')
                     ->label('المهندس المسؤول')
                     ->formatStateUsing(function ($state, Model $record): string {
@@ -771,26 +773,14 @@ class BranchCropCompositionCollectionResource extends Resource
                         return (string) ($customer['slp_name'] ?? $state ?? '');
                     })
                     ->searchable(
-                        query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search),
-//                        isIndividual: true
+                        query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search)
                     ),
-                 TextColumn::make('total_farm_area_hectares')
-                ->label('المساحة الاجمالية للمزارع (هكتار)')
-                ->searchable(),
-
+                TextColumn::make('total_farm_area_hectares')
+                    ->label('المساحة الاجمالية للمزارع (هكتار)')
+                    ->searchable(),
                 TextColumn::make('cultivation_types_sum_total_area_hectares')
-                ->label('مجموع أنواع الزراعة (هـ)')
-                ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
-
-//                TextColumn::make('updated_at')
-//                ->label('تاريخ آخر تحديث')
-//                ->date('Y-m-d'),
-
-//                TextColumn::make('farms_count')
-//                    ->label('عدد المزارع'),
-                // TextColumn::make('cropItems_count')
-                //     ->counts('cropItems')
-                //     ->label('عدد المحاصيل'),
+                    ->label('مجموع أنواع الزراعة (هـ)')
+                    ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
             ])
             ->filters([
                 Filter::make('customer_code')
@@ -802,7 +792,12 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['customer_code'] ?? null,
-                            fn (Builder $query, $name) => $query->where('customer_code', 'like', "%{$name}%")
+                            function (Builder $query, $name): Builder {
+                                return $query->where(function (Builder $query) use ($name): void {
+                                    $query->where('customer_code', 'like', "%{$name}%")
+                                        ->orWhereHas('lead', fn (Builder $query) => $query->where('code', 'like', "%{$name}%"));
+                                });
+                            }
                         );
                     }),
                 Filter::make('customer_name')
@@ -814,7 +809,12 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['customer_name'] ?? null,
-                            fn (Builder $query, $name) => $query->where('customer_name', 'like', "%{$name}%")
+                            function (Builder $query, $name): Builder {
+                                return $query->where(function (Builder $query) use ($name): void {
+                                    $query->where('customer_name', 'like', "%{$name}%")
+                                        ->orWhereHas('lead', fn (Builder $query) => $query->where('name', 'like', "%{$name}%"));
+                                });
+                            }
                         );
                     }),
                 Filter::make('engineer_name')
@@ -829,25 +829,32 @@ class BranchCropCompositionCollectionResource extends Resource
                             fn (Builder $query, $engineerName) => static::applySapEngineerNameSearch($query, $engineerName)
                         );
                     }),
-                SelectFilter::make('branch')->label('الفرع')
-                    ->relationship('branch', 'name')
-
+                SelectFilter::make('branch')
+                    ->label('الفرع')
+                    ->relationship('branch', 'name'),
             ])
             ->actions([
-//                Tables\Actions\EditAction::make(),
-               // Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-//                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
     /**
      * Get the resource relations.
      */
     public static function getRelations(): array
     {
         return [];
+    }
+
+    public static function getNavigationItems(): array
+    {
+        return array_merge(parent::getNavigationItems(), [
+            NavigationItem::make('تقرير التركيب المحصولي')
+                ->group(static::getNavigationGroup())
+                ->icon('heroicon-o-chart-bar')
+                ->isActiveWhen(fn (): bool => request()->routeIs(static::getRouteBaseName() . '.report'))
+                ->url(static::getUrl('report')),
+        ]);
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -927,7 +934,7 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return static::applyCollectionAccessScope(
-            parent::getEloquentQuery()->withSum('cultivationTypes', 'total_area_hectares')
+            parent::getEloquentQuery()->with(['lead'])->withSum('cultivationTypes', 'total_area_hectares')
         );
     }
 
@@ -1680,6 +1687,42 @@ class BranchCropCompositionCollectionResource extends Resource
         return $name !== '' ? $name : null;
     }
 
+    public static function getDisplayCustomerCode(Model $record): string
+    {
+        if (($record->type ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION) {
+            return trim((string) (optional($record->lead)->code ?: $record->customer_code ?: '-'));
+        }
+
+        return trim((string) ($record->customer_code ?: optional($record->lead)->code ?: '-'));
+    }
+
+    public static function getDisplayCustomerName(Model $record): string
+    {
+        if (($record->type ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION) {
+            return trim((string) (optional($record->lead)->name ?: $record->customer_name ?: '-'));
+        }
+
+        return trim((string) ($record->customer_name ?: optional($record->lead)->name ?: '-'));
+    }
+
+    public static function getSapCustomerLabel(Model $record): string
+    {
+        if (($record->type ?? null) != static::CUSTOMER_TYPE_REDISTRIBUTION) {
+            return '-';
+        }
+
+        $customerCode = trim((string) ($record->customer_code ?? ''));
+        $customerName = trim((string) ($record->customer_name ?? ''));
+
+        if ($customerCode === '' && $customerName === '') {
+            return '-';
+        }
+
+        return $customerName !== ''
+            ? trim($customerCode . ' - ' . $customerName, ' -')
+            : $customerCode;
+    }
+
     protected static function normalizeOptionalFormValue($value): ?string
     {
         $value = trim((string) $value);
@@ -1687,3 +1730,4 @@ class BranchCropCompositionCollectionResource extends Resource
         return $value !== '' ? $value : null;
     }
 }
+
