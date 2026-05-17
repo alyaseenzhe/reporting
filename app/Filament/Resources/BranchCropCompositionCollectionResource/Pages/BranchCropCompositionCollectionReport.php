@@ -345,8 +345,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 branch_crop_collection_items.crop_catalog_category_id,
                 branch_crop_collection_items.crop_catalog_item_id,
                 accessible_collections.branch_id,
+                accessible_collections.type,
                 accessible_collections.display_customer_code as customer_code,
                 accessible_collections.display_customer_name as customer_name,
+                accessible_collections.sap_customer_code,
+                accessible_collections.sap_customer_name,
                 accessible_collections.engineer_name,
                 categories.name as category_name,
                 crops.name as crop_name,
@@ -381,8 +384,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'branch_crop_collection_items.crop_catalog_category_id',
                 'branch_crop_collection_items.crop_catalog_item_id',
                 'accessible_collections.branch_id',
+                'accessible_collections.type',
                 'accessible_collections.display_customer_code',
                 'accessible_collections.display_customer_name',
+                'accessible_collections.sap_customer_code',
+                'accessible_collections.sap_customer_name',
                 'accessible_collections.engineer_name',
                 'categories.name',
                 'crops.name',
@@ -399,8 +405,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'crop_catalog_category_id' => $row->crop_catalog_category_id,
                     'crop_catalog_item_id' => $row->crop_catalog_item_id,
                     'branch_id' => $row->branch_id,
+                    'type' => trim((string) ($row->type ?? '')),
                     'customer_code' => trim((string) $row->customer_code),
                     'customer_name' => trim((string) ($row->customer_name ?: '-')),
+                    'sap_customer_code' => trim((string) ($row->sap_customer_code ?? '')),
+                    'sap_customer_name' => trim((string) ($row->sap_customer_name ?? '')),
                     'engineer_name' => trim((string) ($row->engineer_name ?: '-')),
                     'category_name' => trim((string) ($row->category_name ?: '-')),
                     'crop_name' => trim((string) ($row->crop_name ?: '-')),
@@ -424,8 +433,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                             ->map(function (array $customerRow): array {
                                 return [
                                     'collection_id' => $customerRow['collection_id'],
+                                    'type' => $customerRow['type'],
                                     'customer_code' => $customerRow['customer_code'],
                                     'customer_name' => $customerRow['customer_name'],
+                                    'sap_customer_code' => $customerRow['sap_customer_code'],
+                                    'sap_customer_name' => $customerRow['sap_customer_name'],
                                     'engineer_name' => $customerRow['engineer_name'],
                                     'total_area_hectares' => $customerRow['total_area_hectares'],
                                 ];
@@ -521,6 +533,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'branch_crop_composition_collections.engineer_name',
                 'branch_crop_composition_collections.type',
             ])
+            ->selectRaw('branch_crop_composition_collections.customer_code as sap_customer_code')
+            ->selectRaw('branch_crop_composition_collections.customer_name as sap_customer_name')
             ->selectRaw("\n                CASE\n                    WHEN branch_crop_composition_collections.type = 'redistribution_customer'\n                        THEN COALESCE(leads.code, branch_crop_composition_collections.customer_code)\n                    ELSE branch_crop_composition_collections.customer_code\n                END as display_customer_code\n            ")
             ->selectRaw("\n                CASE\n                    WHEN branch_crop_composition_collections.type = 'redistribution_customer'\n                        THEN COALESCE(leads.name, branch_crop_composition_collections.customer_name)\n                    ELSE branch_crop_composition_collections.customer_name\n                END as display_customer_name\n            ");
     }

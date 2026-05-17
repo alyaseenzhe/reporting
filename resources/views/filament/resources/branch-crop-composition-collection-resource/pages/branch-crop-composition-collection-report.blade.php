@@ -101,7 +101,7 @@
             </div>
 
 {{--            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">--}}
-{{--                <div class="text-sm font-medium text-gray-500">الفروع</div>--}}
+{{--                <div class="text-sm font-medium text-gray-500">عدد الفروع</div>--}}
 {{--                <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($branchCount) }}</div>--}}
 {{--            </div>--}}
 
@@ -124,8 +124,8 @@
                             <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">اسم المحصول</th>
-{{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">رقم العميل</th>--}}
-{{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">المهندس المسؤول</th>--}}
+{{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">الفرع</th>--}}
+{{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">العميل</th>--}}
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">العملاء</th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مجموع المساحة (هكتار)</th>
                         </tr>
@@ -148,8 +148,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $crop['crop_category'] }}</td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $crop['crop_name'] }}</td>
-{{--
---}}
                                 <td class="px-4 py-3 text-right text-sm text-gray-700">{{ number_format($crop['customers_count']) }}</td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_area_hectares'], 2) }}</td>
                             </tr>
@@ -158,9 +156,7 @@
                                 <tr
                                     x-bind:style="isCropExpanded('{{ $crop['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                     x-cloak
-{{--                                    style="background-color: #E8F2FF;"--}}
-{{--                                   class="bg-gray-50"--}}
-                                   class="branch-row"
+                                    class="branch-row"
                                 >
                                     <td></td>
                                     <td class="px-4 py-3 align-top">
@@ -187,18 +183,23 @@
                                     <tr
                                         x-bind:style="isCropExpanded('{{ $crop['key'] }}') && isBranchExpanded('{{ $crop['key'] }}-{{ $branch['key'] }}') ? 'display: table-row;' : 'display: none;'"
                                         x-cloak
-{{--                                        class="bg-gray-100"--}}
                                         class="customer-row cursor-pointer transition hover:brightness-95"
                                         @if ($customer['collection_id'])
                                             wire:click="openCustomerModal({{ $customer['collection_id'] }})"
                                         @endif
-
                                     >
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 pl-12 text-sm text-gray-400"></td>
-                                        <td class="px-4 py-3 text-sm text-gray-900"> العميل:{{' '.$customer['customer_code'] .' - '. $customer['customer_name'].' ' }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-900 flex ">
+                                            العميل:{{ ' ' . $customer['customer_code'] . ' - ' . $customer['customer_name'] . ' ' }}
+                                            @if (($customer['type'] ?? null) === 'redistribution_customer' && filled($customer['sap_customer_code'] ?? null))
+                                                <div class="mt-1 text-xs  px-6 text-gray-600">
+                                                    SAP: {{ $customer['sap_customer_code'] }}{{ filled($customer['sap_customer_name'] ?? null) ? ' - ' . $customer['sap_customer_name'] : '' }}
+                                                </div>
+                                            @endif
+                                        </td>
 {{--                                        <td class="px-4 py-3 text-sm text-gray-500"></td>--}}
-                                        <td class="px-4 py-3 text-sm text-gray-700"> المهندس المسؤول: {{ ' '.$customer['engineer_name'] }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">المهندس المسؤول: {{ ' ' . $customer['engineer_name'] }}</td>
 {{--                                        <td class="px-4 py-3 text-right text-sm text-gray-400">-</td>--}}
                                         <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_area_hectares'], 2) }}</td>
                                     </tr>
