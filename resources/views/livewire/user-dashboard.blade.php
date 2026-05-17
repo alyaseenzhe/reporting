@@ -1744,8 +1744,8 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
                 </div>
             </a>
         @endif
-        @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
-            <a class="w-full" href="{{ route('list.items') }}">
+        @if (Auth::user()->user_group && in_array('list-items', json_decode(Auth::user()->user_group->report_type)) || Auth::user()->role == 'a')
+             <a class="w-full" href="{{ route('list.items') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
                     <div class="px-5 pt-5">

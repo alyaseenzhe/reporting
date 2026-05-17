@@ -122,125 +122,125 @@
     </div>
     <hr style="color: #cbd5e1;border: 2px solid;">
     <div class="grid md:grid-cols-2">
-    <div>
-    <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
-    <div>
-        <div class="mb-6">
-            <label class="block font-bold mb-3">تعيين الفروع</label>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <label class="flex items-center">
-                    <input wire:model="branch_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                    <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
-                </label>
-{{--                <label class="flex items-center">--}}
-{{--                    <input wire:model="branch_mode" type="radio" value="one" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">--}}
-{{--                    <span class="mr-2 text-sm font-medium text-gray-900">فرع واحد</span>--}}
-{{--                </label>--}}
-                <label class="flex items-center">
-                    <input wire:model="branch_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                    <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
-                </label>
+        <div>
+            <h1 class="mt-4 bold text-2xl mb-6">الفروع</h1>
+            <div>
+                <div class="mb-6">
+                    <label class="block font-bold mb-3">تعيين الفروع</label>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <label class="flex items-center">
+                            <input wire:model="branch_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
+                        </label>
+                        {{--                <label class="flex items-center">--}}
+                        {{--                    <input wire:model="branch_mode" type="radio" value="one" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">--}}
+                        {{--                    <span class="mr-2 text-sm font-medium text-gray-900">فرع واحد</span>--}}
+                        {{--                </label>--}}
+                        <label class="flex items-center">
+                            <input wire:model="branch_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{--        @if($branch_mode === 'one')--}}
+                {{--            <div class="mb-6">--}}
+                {{--                <label class="block font-bold mb-2">الفرع</label>--}}
+                {{--                <select wire:model="one_branch" class="form-select w-full">--}}
+                {{--                    <option value="">اختر الفرع</option>--}}
+                {{--                    @foreach($branchOptions as $branchValue => $branchLabel)--}}
+                {{--                        <option value="{{ $branchValue }}">{{ $branchLabel }}</option>--}}
+                {{--                    @endforeach--}}
+                {{--                </select>--}}
+                {{--            </div>--}}
+                {{--        @endif--}}
+
+                @if($branch_mode === 'selection')
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاحساء</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جدة</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الرياض</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">وادي الدواسر</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الجوف</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدمام</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الخرج</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نجران</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حائل</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تبوك</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">القصيم</label>
+                    </div>
+                    <div class="flex items-center mb-4">
+                        <input wire:model="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ساجر</label>
+                    </div>
+                @endif
+
+                @error('branches')
+                <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
             </div>
         </div>
-
-{{--        @if($branch_mode === 'one')--}}
-{{--            <div class="mb-6">--}}
-{{--                <label class="block font-bold mb-2">الفرع</label>--}}
-{{--                <select wire:model="one_branch" class="form-select w-full">--}}
-{{--                    <option value="">اختر الفرع</option>--}}
-{{--                    @foreach($branchOptions as $branchValue => $branchLabel)--}}
-{{--                        <option value="{{ $branchValue }}">{{ $branchLabel }}</option>--}}
-{{--                    @endforeach--}}
-{{--                </select>--}}
-{{--            </div>--}}
-{{--        @endif--}}
-
-        @if($branch_mode === 'selection')
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="3" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الاحساء</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="10" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">جدة</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="7" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الرياض</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="13" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">وادي الدواسر</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="4" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الجوف</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="6" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الدمام</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="5" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الخرج</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="12" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">نجران</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="11" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">حائل</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="9" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">تبوك</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="8" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">القصيم</label>
-        </div>
-        <div class="flex items-center mb-4">
-            <input wire:model="branches" type="checkbox" value="505" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label   class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">ساجر</label>
-        </div>
-        @endif
-
-        @error('branches')
-        <div class="text-xs mt-1 text-red-500">{{$message}}</div> @enderror
-    </div>
-    </div>
-   <div>
-    <h1 class="mt-4 bold text-2xl mb-6">الأقسام التسويقية</h1>
-    <div>
-        <div class="mb-6">
-            <label class="block font-bold mb-3">تعيين الأقسام التسويقية</label>
-            <div class="flex flex-col sm:flex-row gap-4">
-                <label class="flex items-center">
-                    <input wire:model="mrkt_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                    <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
-                </label>
-                <label class="flex items-center">
-                    <input wire:model="mrkt_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                    <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
-                </label>
+        <div>
+            <h1 class="mt-4 bold text-2xl mb-6">الأقسام التسويقية</h1>
+            <div>
+                <div class="mb-6">
+                    <label class="block font-bold mb-3">تعيين الأقسام التسويقية</label>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <label class="flex items-center">
+                            <input wire:model="mrkt_mode" type="radio" value="all" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="mr-2 text-sm font-medium text-gray-900">الكل</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input wire:model="mrkt_mode" type="radio" value="selection" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
+                            <span class="mr-2 text-sm font-medium text-gray-900">مجموعة مختارة</span>
+                        </label>
+                    </div>
+                </div>
             </div>
+
+            @if($mrkt_mode === 'selection')
+                @foreach(self::MRKT_TYPES as $mrkt_type)
+                    <div class="flex items-center mb-4">
+                        <input wire:model="mrkt_types" type="checkbox" value="{{$mrkt_type}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{__($mrkt_type)}}</label>
+                    </div>
+                @endforeach
+            @endif
+
+            @error('mrkt_types')
+            <div class="text-xs mt-1 text-red-500">{{$message}}</div>
+            @enderror
         </div>
-    </div>
-
-    @if($mrkt_mode === 'selection')
-        @foreach(self::MRKT_TYPES as $mrkt_type)
-            <div class="flex items-center mb-4">
-                <input wire:model="mrkt_types" type="checkbox" value="{{$mrkt_type}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{__($mrkt_type)}}</label>
-            </div>
-        @endforeach
-    @endif
-
-    @error('mrkt_types')
-    <div class="text-xs mt-1 text-red-500">{{$message}}</div>
-    @enderror
-   </div>
     </div>
 
     <div class="mt-8 text-center">
