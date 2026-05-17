@@ -30,6 +30,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static ?string $navigationLabel = 'تقرير التركيب المحصولي';
 
+    protected static ?string $pluralLabel = 'تقرير التركيب المحصولي';
+
+    protected static ?string $label = 'تقرير تركيب محصولي';
+
     protected static string $view = 'filament.resources.branch-crop-composition-collection-resource.pages.branch-crop-composition-collection-report';
 
     protected static ?string $title = 'تقرير التركيب المحصولي';
@@ -38,8 +42,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static ?string $slug = 'report';
 
-    protected static bool $shouldRegisterNavigation = true;
-    
+    protected static bool $shouldRegisterNavigation = false;
+
     public array $filters = [
         'branch_ids' => [self::ALL_FILTER_VALUE],
         'customer_codes' => [self::ALL_FILTER_VALUE],

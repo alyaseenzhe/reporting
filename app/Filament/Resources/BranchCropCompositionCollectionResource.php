@@ -445,10 +445,11 @@ class BranchCropCompositionCollectionResource extends Resource
                 $set('lead_name', null);
                 $set('lead_phone', null);
                 $set('lead_email', null);
-                $set(
-                    'engineer_name',
-                    $state === static::CUSTOMER_TYPE_LEAD || $state === static::CUSTOMER_TYPE_REDISTRIBUTION ? static::getAuthenticatedEngineerName() : null
-                );
+                $set('engineer_name', null);
+//                $set(
+//                    'engineer_name',
+//                    $state === static::CUSTOMER_TYPE_LEAD || $state === static::CUSTOMER_TYPE_REDISTRIBUTION ? static::getAuthenticatedEngineerName() : null
+//                );
             })
             ->reactive();
     }
@@ -476,12 +477,13 @@ class BranchCropCompositionCollectionResource extends Resource
                         $set('lead_name', null);
                         $set('lead_phone', null);
                         $set('lead_email', null);
-                        $set(
-                            'engineer_name',
-                            in_array($get('type'), [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)
-                                ? static::getAuthenticatedEngineerName()
-                                : null
-                        );
+                        $set('engineer_name',null);
+//                        $set(
+//                            'engineer_name',
+//                            in_array($get('type'), [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)
+//                                ? static::getAuthenticatedEngineerName()
+//                                : null
+//                        );
                     }),
 
                 Select::make('customer_code')
@@ -519,7 +521,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         $customer = app(SapCustomerLookupServiceInterface::class)
                             ->findCustomerByCode($value);
 
-                        return $customer['label'] ?? $value;   
+                        return $customer['label'] ?? $value;
                     }),
 
                 TextInput::make('engineer_name')
@@ -635,11 +637,11 @@ class BranchCropCompositionCollectionResource extends Resource
 
                         return Lead::create($data)->id;
                     })
-                    ->afterStateUpdated(function ($state, callable $set): void {
-                        if (filled($state)) {
-                            $set('engineer_name', static::getAuthenticatedEngineerName());
-                        }
-                    })
+//                    ->afterStateUpdated(function ($state, callable $set): void {
+//                        if (filled($state)) {
+//                            $set('engineer_name', static::getAuthenticatedEngineerName());
+//                        }
+//                    })
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Lead::query()->whereKey($value)->value('name');
                     }),
@@ -761,9 +763,9 @@ class BranchCropCompositionCollectionResource extends Resource
                 TextColumn::make('sap_customer')
                     ->label('المؤسسة')
                     ->formatStateUsing(fn ($state, Model $record): string => static::getSapCustomerLabel($record)),
-                TextColumn::make('branch.name')
-                    ->label('الفرع')
-                    ->searchable(),
+//                TextColumn::make('branch.name')
+//                    ->label('الفرع')
+//                    ->searchable(),
                 TextColumn::make('engineer_name')
                     ->label('المهندس المسؤول')
                     ->formatStateUsing(function ($state, Model $record): string {
@@ -776,10 +778,10 @@ class BranchCropCompositionCollectionResource extends Resource
                         query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search)
                     ),
                 TextColumn::make('total_farm_area_hectares')
-                    ->label('المساحة الاجمالية للمزارع (هكتار)')
+                    ->label('مساحة المزارع (هـ)')
                     ->searchable(),
                 TextColumn::make('cultivation_types_sum_total_area_hectares')
-                    ->label('مجموع أنواع الزراعة (هـ)')
+                    ->label('مساحة الزراعة (هـ)')
                     ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
             ])
             ->filters([
@@ -846,17 +848,33 @@ class BranchCropCompositionCollectionResource extends Resource
         return [];
     }
 
+//    public static function getNavigationItems(): array
+//    {
+//        return array_merge(parent::getNavigationItems(), [
+//            NavigationItem::make('تقرير التركيب المحصولي')
+//                ->group(static::getNavigationGroup())
+//                ->icon('heroicon-o-chart-bar')
+//                ->isActiveWhen(fn (): bool => request()->routeIs(static::getRouteBaseName() . '.report'))
+//                ->url(static::getUrl('report')),
+//        ]);
+//    }
+
     public static function getNavigationItems(): array
     {
-        return array_merge(parent::getNavigationItems(), [
+        return [
+            NavigationItem::make(static::getNavigationLabel())
+                ->group(static::getNavigationGroup())
+                ->icon(static::getNavigationIcon())
+                ->isActiveWhen(fn (): bool => request()->routeIs(static::getRouteBaseName() . '.index'))
+                ->url(static::getUrl('index')),
+
             NavigationItem::make('تقرير التركيب المحصولي')
                 ->group(static::getNavigationGroup())
                 ->icon('heroicon-o-chart-bar')
                 ->isActiveWhen(fn (): bool => request()->routeIs(static::getRouteBaseName() . '.report'))
                 ->url(static::getUrl('report')),
-        ]);
+        ];
     }
-
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->check()
@@ -986,7 +1004,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
             $data['customer_code'] = $lead->code ?? null;
             $data['customer_name'] = $lead->name ?? ($data['customer_name'] ?? null);
-            $data['engineer_name'] = static::getAuthenticatedEngineerName();
+//            $data['engineer_name'] = static::getAuthenticatedEngineerName();
             $data['engineer_id'] = Auth::id();
 
             return $data;
@@ -997,7 +1015,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 ->findCustomerByCode($data['customer_code'] ?? null);
 
             $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
-            $data['engineer_name'] = static::getAuthenticatedEngineerName();
+//            $data['engineer_name'] = static::getAuthenticatedEngineerName();
             $data['engineer_id'] = Auth::id();
 
             return $data;

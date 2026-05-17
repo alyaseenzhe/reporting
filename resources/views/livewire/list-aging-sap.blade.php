@@ -2,10 +2,11 @@
     5- فواتير حسب الإستحقاق
 @stop
 <div>
-{{--    <div--}}
-{{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
-{{--        <div class="w-full">الفواتير المُعلقة</div>--}}
-{{--    </div>--}}
+
+    {{--    <div--}}
+    {{--        class="flex flex-col sm:flex-row gap-4 border mb-4 justify-center text-center text-2xl p-3 font-bold bg-gray-50">--}}
+    {{--        <div class="w-full">الفواتير المُعلقة</div>--}}
+    {{--    </div>--}}
     <div id="branch-container" class="mb-6">
         <div class="flex flex-col gap-4">
             <div class="w-full flex flex-col sm:flex-row gap-4">
@@ -88,11 +89,6 @@
     <div wire:loading.remove wire:target="generateReport" class="overflow-x-auto w-full">
 
         @if(count($aging_records) > 0)
-            @php
-                $reportGroups = $area_id === 'all'
-                    ? $branch_reports
-                    : [['branch_code' => $area_id, 'branch_name' => $area_id, 'aging_records' => $aging_records]];
-            @endphp
             <div class="mb-5 p-2">
                 <div class="flex flex-col sm:flex-row gap-4 w-full">
                     <div style="background-color: #f5f5f5; padding-right: 20px; padding-top: 20px" class="w-full">
@@ -110,13 +106,7 @@
                     </div>
                 </div>
             </div>
-            @foreach($reportGroups as $group)
-                @if($area_id === 'all')
-                    <div class="mb-4 mt-6 text-lg font-bold">
-                        {{ $group['branch_name'] }}
-                    </div>
-                @endif
-            <table id="voucherTable-{{ $loop->index }}" class="table-auto w-full border text-center">
+            <table id="voucherTable" class="table-auto w-full border text-center">
                 <thead class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
                 <tr>
                     <th class="border p-2">
@@ -161,7 +151,10 @@
                     $customer_total = 0;
                     $customer_total_120 = 0;
                     ?>
-                @foreach($group['aging_records'] as $record)
+
+{{--                @dd($aging_records)--}}
+
+                @foreach($aging_records as $record)
                     {{--                    @if(\Illuminate\Support\Facades\Auth::user()->role == 'a' || \Illuminate\Support\Facades\Auth::user()->user_group->read_type == '0')--}}
                     {{--                    @if(number_format($record["Debit (LC)"], 2) != '0.00')--}}
                     @if($loop->first)
@@ -261,7 +254,6 @@
                 @endforeach
                 </tbody>
             </table>
-            @endforeach
         @endif
     </div>
 </div>

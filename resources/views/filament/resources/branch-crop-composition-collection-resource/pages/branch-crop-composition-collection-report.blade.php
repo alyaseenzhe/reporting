@@ -38,16 +38,16 @@
 
         .branch-crop-report-table thead {
             position: sticky;
-            top: 0;
+            top: 30px;
             z-index: 20;
         }
 
-        .branch-crop-report-table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background-color: rgb(249 250 251);
-        }
+        /*.branch-crop-report-table thead th {*/
+        /*    position: sticky;*/
+        /*    top: 20px;*/
+        /*    !*z-index: 20;*!*/
+        /*    background-color: rgb(249 250 251);*/
+        /*}*/
     </style>
 
     <div
