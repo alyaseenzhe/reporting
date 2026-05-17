@@ -36,18 +36,12 @@
             border-spacing: 0;
         }
 
-        .branch-crop-report-table thead {
+        .branch-crop-report-table thead th {
             position: sticky;
-            top: 30px;
+            top: 0;
             z-index: 20;
+            background-color: rgb(249 250 251);
         }
-
-        /*.branch-crop-report-table thead th {*/
-        /*    position: sticky;*/
-        /*    top: 20px;*/
-        /*    !*z-index: 20;*!*/
-        /*    background-color: rgb(249 250 251);*/
-        /*}*/
     </style>
 
     <div
@@ -55,12 +49,16 @@
         x-data="{
             expandedCrops: {},
             expandedBranches: {},
+            showFilters: true,
             showCustomerModal: @entangle('isCustomerModalOpen'),
             toggleCrop(key) {
                 this.expandedCrops[key] = ! this.expandedCrops[key];
             },
             toggleBranch(key) {
                 this.expandedBranches[key] = ! this.expandedBranches[key];
+            },
+            toggleFilters() {
+                this.showFilters = ! this.showFilters;
             },
             isCropExpanded(key) {
                 return !! this.expandedCrops[key];
@@ -71,8 +69,29 @@
         }"
         class="space-y-6"
     >
-        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            {{ $this->form }}
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div class="flex items-center justify-between px-4 py-3">
+                <h3 class="text-sm font-semibold text-gray-700">الفلاتر</h3>
+
+                <button
+                    type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition hover:bg-gray-50 hover:text-gray-900"
+                    @click="toggleFilters()"
+                    x-bind:aria-label="showFilters ? 'إغلاق الفلاتر' : 'فتح الفلاتر'"
+                    x-bind:title="showFilters ? 'إغلاق الفلاتر' : 'فتح الفلاتر'"
+                >
+                    <svg x-show="showFilters" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <svg x-show="! showFilters" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+            </div>
+
+            <div x-show="showFilters" x-collapse class="border-t border-gray-100 p-4">
+                {{ $this->form }}
+            </div>
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
@@ -98,9 +117,9 @@
         </div>
 
         <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div class="overflow-x-auto">
+            <div class="max-h-[70vh] overflow-auto">
                 <table class="branch-crop-report-table w-full divide-y divide-gray-200">
-                    <thead class="sticky top-0 z-20 bg-gray-50">
+                    <thead class="bg-gray-50">
                         <tr>
                             <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>
