@@ -118,6 +118,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'branch_ids',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
                                 ))
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                             Forms\Components\Select::make('customer_codes')
                                 ->label('العميل')
@@ -131,6 +132,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'customer_codes',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
                                 ))
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                             Forms\Components\Select::make('engineer_names')
                                 ->label('المهندس المسؤول')
@@ -144,6 +146,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'engineer_names',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
                                 ))
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                             Forms\Components\Select::make('crop_category_ids')
                                 ->label('طبيعة المحصول')
@@ -178,6 +181,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                         count($selectedItemIds) ? $selectedItemIds : [static::ALL_FILTER_VALUE]
                                     );
                                 })
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                             Forms\Components\Select::make('crop_item_ids')
                                 ->label(' المحصول')
@@ -193,9 +197,55 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'crop_item_ids',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
                                 ))
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                         ]),
 //                ]),
+        ];
+    }
+
+    protected function getImmediateAllFilterRemovalAlpineAttributes(): array
+    {
+        $allValue = static::ALL_FILTER_VALUE;
+
+        return [
+            'x-on:change.capture' => <<<JS
+                const allValue = '{$allValue}';
+                const oldState = Array.isArray(state) ? state.map(String) : [];
+                const rawNextState = select.getValue(true) ?? [];
+
+                let nextState = Array.isArray(rawNextState)
+                    ? rawNextState.map(String).filter((value) => value !== '')
+                    : [String(rawNextState)].filter((value) => value !== '');
+
+                const hasAllInNextState = nextState.includes(allValue);
+                const hasAllInOldState = oldState.includes(allValue);
+
+                if (hasAllInNextState && nextState.length > 1) {
+                    nextState = hasAllInOldState
+                        ? nextState.filter((value) => value !== allValue)
+                        : [allValue];
+                }
+
+                if (! nextState.length) {
+                    nextState = [allValue];
+                }
+
+                const normalizedRawState = Array.isArray(rawNextState)
+                    ? rawNextState.map(String).filter((value) => value !== '')
+                    : [String(rawNextState)].filter((value) => value !== '');
+
+                if (JSON.stringify(nextState) === JSON.stringify(normalizedRawState)) {
+                    return;
+                }
+
+                isStateBeingUpdated = true;
+                state = nextState;
+                select.removeActiveItems();
+                select.setChoiceByValue(nextState);
+                refreshPlaceholder();
+                \$nextTick(() => isStateBeingUpdated = false);
+            JS,
         ];
     }
 
