@@ -27,6 +27,8 @@ class EditUser extends Component
     public $group_id;
     public $sales_dept_code;
     public $record;
+    public $users;
+    public $manager_id;
 
 
     protected $messages = [
@@ -71,6 +73,8 @@ class EditUser extends Component
             $this->setBranchModeFromBranches();
             $this->setMrktModeFromTypes();
             $this->sales_dept_code = $this->record->sales_dept_code;
+            $this->manager_id = $this->record->manager_id;
+            $this->users = User::where('is_active', 1)->get();
 
         } catch (ModelNotFoundException $exception) {
             session()->flash('message', 'هذا المستخدم غير موجود');
@@ -126,7 +130,8 @@ class EditUser extends Component
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -137,7 +142,8 @@ class EditUser extends Component
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
 
                         ]);
                     }
@@ -151,6 +157,7 @@ class EditUser extends Component
                     $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
+                    $record->manager_id = $this->manager_id;
 
                 }
                 elseif ($this->role == "a") {
@@ -163,7 +170,8 @@ class EditUser extends Component
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
 
                         ]);
                         $record->password = Hash::make($this->password);
@@ -175,7 +183,8 @@ class EditUser extends Component
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                     }
 
@@ -189,6 +198,7 @@ class EditUser extends Component
                     $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                 }   $record->sales_dept_code = $this->sales_dept_code;
+                $record->manager_id = $this->manager_id;
             }
             else {
                 if ($this->role == "u") {
@@ -200,7 +210,8 @@ class EditUser extends Component
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -211,7 +222,8 @@ class EditUser extends Component
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                     }
 
@@ -224,6 +236,7 @@ class EditUser extends Component
                     $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
+                    $record->manager_id = $this->manager_id;
 
                 } elseif ($this->role == "a") {
                     if (!empty($this->password)) {
@@ -234,7 +247,8 @@ class EditUser extends Component
                             'password' => 'sometimes|min:8',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                         $record->password = Hash::make($this->password);
                     } else {
@@ -245,7 +259,8 @@ class EditUser extends Component
                             'password' => 'sometimes',
                             'branches' => 'required|array|min:1',
                             'mrkt_types' => 'required|array|min:1',
-                            'sales_dept_code'=>'nullable'
+                            'sales_dept_code'=>'nullable',
+                            'manager_id'=> 'nullable'
                         ]);
                     }
 
@@ -258,6 +273,7 @@ class EditUser extends Component
                     $record->mrkt_types = json_encode($this->mrkt_types);
                     $record->group = $this->group_id == '-1' ? null : $this->group_id;
                     $record->sales_dept_code = $this->sales_dept_code;
+                    $record->manager_id = $this->manager_id;
 
                 }
             }

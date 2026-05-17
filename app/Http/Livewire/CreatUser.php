@@ -26,6 +26,7 @@ class CreatUser extends Component
 
     public $role = 'u';
     public $is_active;
+    public $manager_id;
 
     protected $rules = [
         'emp_code' => 'required',
@@ -55,8 +56,10 @@ class CreatUser extends Component
     {
         $groups = UserGroup::all();
         $branchOptions = $this->branchOptions();
+        $users = User::where('is_active',1)->get();
 
-        return view('livewire.creat-user', compact('groups', 'branchOptions'))
+
+        return view('livewire.creat-user', compact('groups', 'branchOptions','users'))
             ->layout('layouts.dashboard');
     }
 
@@ -79,6 +82,7 @@ class CreatUser extends Component
             'group' => $this->group_id == '-1' ? null : $this->group_id,
             'branches' => json_encode($this->branches),
             'mrkt_types' => json_encode($this->mrkt_types),
+            'manager_id' => $this->manager_id
         ]);
 
         if($record) {

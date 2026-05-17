@@ -64,6 +64,22 @@
     <div class="mb-10">
         <div class="flex flex-col sm:flex-row gap-4">
             <div class="w-full">
+                <label class="block font-bold mb-2">المدير المباشر</label>
+                <select id="manager_id" name="manager_id" wire:model="manager_id"
+                        class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        style="@error('item_id') border: solid 1px #fda4af; @enderror">
+                    <option value="-1">الرجاء اختيار المدير</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->emp_code }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
+                @error('manager_id') <span class="error text-red-600 text-sm">{{ $message }}</span> @enderror
+            </div>
+        </div>
+    </div>
+    <div class="mb-10">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="w-full">
                 <label class="block font-bold mb-2">الصلاحية</label>
                 <select id="group_id" name="group_id" wire:model="group_id"
                         class="text-gray-900 form-select block w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"

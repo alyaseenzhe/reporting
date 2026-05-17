@@ -32,7 +32,8 @@ class User extends Authenticatable
         'group',
         'emp_code',
         'is_active',
-        "mrkt_types"
+        "mrkt_types",
+        "manager_id"
     ];
 
     /**
