@@ -14,10 +14,14 @@ class AddColumnsToBranchCropCompositionCollection extends Migration
     public function up()
     {
         Schema::table('branch_crop_composition_collections', function (Blueprint $table) {
-            $table->string('lead_name')->nullable();
-            $table->string('lead_phone')->nullable();
-            $table->string('lead_email')->nullable();
-            $table->string('lead_email')->nullable();
+//            $table->string('lead_name')->nullable();
+//            $table->string('lead_phone')->nullable();
+//            $table->string('lead_email')->nullable();
+//            $table->string('lead_email')->nullable();
+            $table->string('type')->nullable();
+            $table->foreignId('lead_id')->nullable();
+            $table->longText('companies')->nullable();
+            $table->foreignId('created_by')->nullable();
         });
     }
 
