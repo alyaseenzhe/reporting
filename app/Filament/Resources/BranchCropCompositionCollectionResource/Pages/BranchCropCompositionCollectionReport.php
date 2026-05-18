@@ -113,6 +113,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->multiple()
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
+                                ->extraAttributes([
+                                    'style' => 'z-index: 30;',])
                                 ->preload()
                                 ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
                                     'branch_ids',
@@ -128,6 +130,8 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
                                 ->preload()
+                                ->extraAttributes([
+                                    'class' => 'relative z-30',])
                                 ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
                                     'customer_codes',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))

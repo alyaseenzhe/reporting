@@ -535,6 +535,10 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->formatStateUsing(fn ($state): string => (string) $state),
 
 
+
+
+
+
 //                Select::make('lead_id')
 //                    ->label('العميل')
 //                    ->columnSpan(['default' => 1, 'md' => 2])
@@ -654,6 +658,20 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
                     ->maxLength(255),
+                Select::make('engineer_id')
+                    ->label('المهندس المسؤول')
+                    ->options(fn (): array => static::getLeadEngineerOptions())
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) use ($customerType): void {
+                        static::syncLeadEngineerSelection($customerType, $state, $set, $get);
+                    })
+                    ->hidden(fn (): bool => $customerType != static::CUSTOMER_TYPE_LEAD),
+
+                TextInput::make('area')->label('المنطقة')
+                    ->maxLength(255),
+                TextInput::make('contact')->label('جهة التواصل')
+                    ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
+                    ->maxLength(255),
                 TextInput::make('lead_phone')
                     ->label('رقم التواصل')
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
@@ -663,14 +681,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->email()
                     ->maxLength(255),
-               Select::make('engineer_id')
-                   ->label('المهندس المسؤول')
-                   ->options(fn (): array => static::getLeadEngineerOptions())
-                   ->reactive()
-                   ->afterStateUpdated(function ($state, callable $set, callable $get) use ($customerType): void {
-                   static::syncLeadEngineerSelection($customerType, $state, $set, $get);
-               })
-                 ->hidden(fn (): bool => $customerType != static::CUSTOMER_TYPE_LEAD),
+
                 TextInput::make('farms_count')
                     ->label('عدد المزارع')
                     ->required()
