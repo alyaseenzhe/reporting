@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use App\Models\ExpenseDetails;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -20,6 +21,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseResource extends Resource
 {
@@ -223,6 +225,7 @@ class ExpenseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -309,6 +312,52 @@ class ExpenseResource extends Resource
             'index' => Pages\ListExpenses::route('/'),
             'create' => Pages\CreateExpense::route('/create'),
             'edit' => Pages\EditExpense::route('/{record}/edit'),
+            'view' => Pages\ViewExpense::route('/{record}'),
         ];
+    }
+
+
+
+
+    public static function canViewAny(): bool
+    {
+        return auth()->check();
+    }
+//
+    public static function canCreate(): bool
+    {
+        return auth()->check();
+    }
+//
+    public static function canEdit(Model $record): bool
+    {
+                if (static::isAdminUser()) {
+            return true;
+        }
+
+        // Own record
+        if ($record->user_id === auth()->id()) {
+            return true;
+        }
+
+        // Manager can edit employee records
+        return User::where('manager_id', auth()->id())
+                ->where('id', $record->user_id)
+                ->exists();
+    }
+//
+    public static function canDelete(Model $record): bool
+    {
+        return static::canEdit($record);
+    }
+
+//    public function canAccessPanel(Panel $panel): bool
+//    {
+//        return static::isAdminUser();
+//    }
+//
+    protected static function isAdminUser(): bool
+    {
+        return optional(Auth::user())->role === 'a';
     }
 }
