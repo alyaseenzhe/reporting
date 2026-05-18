@@ -13,6 +13,7 @@ use App\Models\AgriType;
 use App\Models\CropCatalogCategory;
 use App\Models\CropCatalogItem;
 use App\Models\Lead;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Checkbox;
@@ -445,6 +446,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 $set('lead_name', null);
                 $set('lead_phone', null);
                 $set('lead_email', null);
+                $set('engineer_id', null);
                 $set('engineer_name', null);
 //                $set(
 //                    'engineer_name',
@@ -477,6 +479,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         $set('lead_name', null);
                         $set('lead_phone', null);
                         $set('lead_email', null);
+                        $set('engineer_id', null);
                         $set('engineer_name',null);
 //                        $set(
 //                            'engineer_name',
@@ -646,7 +649,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         return Lead::query()->whereKey($value)->value('name');
                     }),
                 TextInput::make('lead_name')
-                    ->label('اسم العميل المحتمل')
+                    ->label('اسم العميل ')
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
@@ -660,6 +663,14 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->email()
                     ->maxLength(255),
+               Select::make('engineer_id')
+                   ->label('المهندس المسؤول')
+                   ->options(fn (): array => static::getLeadEngineerOptions())
+                   ->reactive()
+                   ->afterStateUpdated(function ($state, callable $set, callable $get) use ($customerType): void {
+                   static::syncLeadEngineerSelection($customerType, $state, $set, $get);
+               })
+                 ->hidden(fn (): bool => $customerType != static::CUSTOMER_TYPE_LEAD),
                 TextInput::make('farms_count')
                     ->label('عدد المزارع')
                     ->required()
@@ -1005,7 +1016,8 @@ class BranchCropCompositionCollectionResource extends Resource
             $data['customer_code'] = $lead->code ?? null;
             $data['customer_name'] = $lead->name ?? ($data['customer_name'] ?? null);
 //            $data['engineer_name'] = static::getAuthenticatedEngineerName();
-            $data['engineer_id'] = Auth::id();
+            $data['engineer_name'] = static::resolveEngineerNameFromUserId($data['engineer_id'] ?? null)
+                ?? ($data['engineer_name'] ?? null);
 
             return $data;
         }
@@ -1210,6 +1222,7 @@ class BranchCropCompositionCollectionResource extends Resource
             $data['engineer_name'] = $record->engineer_name;
 
             if (($record->type ?? null) === static::CUSTOMER_TYPE_LEAD) {
+                $data['engineer_id'] = $record->engineer_id;
                 $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
             }
         } else {
@@ -1705,6 +1718,44 @@ class BranchCropCompositionCollectionResource extends Resource
         return $name !== '' ? $name : null;
     }
 
+    protected static function getLeadEngineerOptions(): array
+    {
+        return User::query()
+            ->whereHas('user_group', function ($query) {
+                $query->whereIn('id', [7, 8]);
+            })
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    protected static function syncLeadEngineerSelection(
+        string $customerType,
+        $engineerId,
+        callable $set,
+        callable $get
+    ): void {
+        if ($customerType !== static::CUSTOMER_TYPE_LEAD && $get('type') !== static::CUSTOMER_TYPE_LEAD) {
+            return;
+        }
+
+        $set('engineer_name', static::resolveEngineerNameFromUserId($engineerId));
+    }
+
+    protected static function resolveEngineerNameFromUserId($engineerId): ?string
+    {
+        if (blank($engineerId)) {
+            return null;
+        }
+
+        $name = User::query()
+            ->whereKey($engineerId)
+            ->value('name');
+
+        $name = trim((string) $name);
+
+        return $name !== '' ? $name : null;
+    }
+
     public static function getDisplayCustomerCode(Model $record): string
     {
         if (($record->type ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION) {
@@ -1748,4 +1799,3 @@ class BranchCropCompositionCollectionResource extends Resource
         return $value !== '' ? $value : null;
     }
 }
-

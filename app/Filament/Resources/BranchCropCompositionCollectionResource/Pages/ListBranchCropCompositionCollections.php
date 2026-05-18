@@ -33,10 +33,10 @@ class ListBranchCropCompositionCollections extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
-            Actions\Action::make('report')
-                ->label('تقرير التركيب المحصولي')
-                ->icon('heroicon-o-chart-bar')
-                ->url(static::getResource()::getUrl('report')),
+//            Actions\Action::make('report')
+//                ->label('تقرير التركيب المحصولي')
+//                ->icon('heroicon-o-chart-bar')
+//                ->url(static::getResource()::getUrl('report')),
         ];
     }
 }
