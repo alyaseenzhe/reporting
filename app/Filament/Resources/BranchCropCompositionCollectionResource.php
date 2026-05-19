@@ -57,6 +57,8 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static ?string $label = 'نموذج تركيب محصولي';
 
+    //protected ?string $maxContentWidth = Width::Full;
+
     /**
      * Build the Filament form schema.
      */
@@ -375,7 +377,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->rules(['integer', 'min:1']),
 
                                 TextInput::make('total_area_hectares')
-                                    ->label('مساحة كل العروات (هكتار)')
+                                    ->label('مساحة كل العروات (هـ)')
                                     ->required()
                                     ->numeric()
                                     ->maxValue(9999999999.99)
@@ -660,7 +662,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->maxLength(255),
                 Select::make('engineer_id')
                     ->label('المهندس المسؤول')
-                    ->options(fn (): array => static::getLeadEngineerOptions())
+                    ->options(fn (callable $get): array => static::getLeadEngineerOptions($get('branch_id')))
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $set, callable $get) use ($customerType): void {
                         static::syncLeadEngineerSelection($customerType, $state, $set, $get);
@@ -689,7 +691,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->maxValue(9999999999)
                     ->rules(['integer', 'min:1']),
                 TextInput::make('total_farm_area_hectares')
-                    ->label('المساحة الإجمالية (هكتار)')
+                    ->label('المساحة الإجمالية (هـ)')
                     ->required()
                     ->numeric()
                     ->maxValue(9999999999.99)
@@ -1022,6 +1024,12 @@ class BranchCropCompositionCollectionResource extends Resource
         );
 
         if (($data['type'] ?? null) === static::CUSTOMER_TYPE_LEAD) {
+            if (! static::isLeadEngineerAssignableToBranch($data['engineer_id'] ?? null, $data['branch_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'engineer_id' => 'The selected engineer is not assigned to the selected branch.',
+                ]);
+            }
+
             $lead = Lead::query()->find($data['lead_id'] ?? null);
 
             $data['customer_code'] = $lead->code ?? null;
@@ -1626,9 +1634,9 @@ class BranchCropCompositionCollectionResource extends Resource
         }
 
         foreach (static::getCustomerPrefixesForBranchCode($branchCode) as $prefix) {
-            if (str_starts_with($customerCode, $prefix)) {
+//            if (str_starts_with($customerCode, $prefix)) {
                 return true;
-            }
+//            }
         }
 
         return false;
@@ -1729,14 +1737,45 @@ class BranchCropCompositionCollectionResource extends Resource
         return $name !== '' ? $name : null;
     }
 
-    protected static function getLeadEngineerOptions(): array
+    protected static function getLeadEngineerOptions($branchId = null): array
     {
+        $branchCode = static::resolveBranchCodeFromState($branchId);
+
+        if (blank($branchCode)) {
+            return [];
+        }
+
         return User::query()
             ->whereHas('user_group', function ($query) {
                 $query->whereIn('id', [7, 8]);
             })
+            ->where('sales_dept_code', $branchCode)
+            ->get(['id', 'name'])
             ->pluck('name', 'id')
             ->toArray();
+    }
+
+    protected static function isLeadEngineerAssignableToBranch($engineerId, $branchId): bool
+    {
+        if (blank($engineerId) || blank($branchId)) {
+            return false;
+        }
+
+        $branchCode = static::resolveBranchCodeFromState($branchId);
+
+        if (blank($branchCode)) {
+            return false;
+        }
+
+        $engineer = User::query()
+            ->whereKey($engineerId)
+            ->whereHas('user_group', function ($query) {
+                $query->whereIn('id', [7, 8]);
+            })
+            ->where('sales_dept_code', $branchCode)
+            ->first(['id']);
+
+        return (bool) $engineer;
     }
 
     protected static function syncLeadEngineerSelection(

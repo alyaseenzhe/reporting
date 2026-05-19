@@ -111,7 +111,7 @@
             </div>
 
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <div class="text-sm font-medium text-gray-500">المساحة الإجمالية (هكتار)</div>
+                <div class="text-sm font-medium text-gray-500">المساحة الإجمالية (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalAreaHectares, 2) }}</div>
             </div>
         </div>
@@ -127,7 +127,7 @@
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">الفرع</th>--}}
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">العميل</th>--}}
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">العملاء</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مجموع المساحة (هكتار)</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مجموع المساحة (هـ)</th>
                         </tr>
                     </thead>
 
@@ -194,7 +194,7 @@
                                             العميل:{{ ' ' . $customer['customer_code'] . ' - ' . $customer['customer_name'] . ' ' }}
                                             @if (($customer['type'] ?? null) === 'redistribution_customer' && filled($customer['sap_customer_code'] ?? null))
                                                 <div class="mt-1 text-xs  px-6 text-gray-600">
-                                                    SAP: {{ $customer['sap_customer_code'] }}{{ filled($customer['sap_customer_name'] ?? null) ? ' - ' . $customer['sap_customer_name'] : '' }}
+                                                    المؤسسة: {{ $customer['sap_customer_code'] }}{{ filled($customer['sap_customer_name'] ?? null) ? ' - ' . $customer['sap_customer_name'] : '' }}
                                                 </div>
                                             @endif
                                         </td>

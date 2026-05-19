@@ -32,7 +32,7 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         ], static::canCreateAnother() ? [
             Actions\Action::make('createAnother')
 //                ->label(__('filament::resources/pages/create-record.form.actions.create_another.label'))
-                ->label(__('حفظ وادخال سجل جديد'))
+                ->label(__('حفظ واضافة سجل جديد'))
                 ->action('createAnother')
                 ->keyBindings(['mod+shift+s'])
                 ->color('secondary'),
