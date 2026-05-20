@@ -1830,6 +1830,153 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
 
     </div>
 </div>
+<div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
+
+
+    @if ((Auth::user()->user_group && in_array('item-sales-by-branch', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ asset('/admin/branch-crop-composition-collections')}}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 64 64" version="1.1"
+                                 xmlns="http://www.w3.org/2000/svg">
+
+                                <!-- Background window -->
+                                <g transform="translate(0,0)">
+                                    <!-- Top bar -->
+                                    <path d="M8 8H56V14H8Z"
+                                          style="fill:#3e4f59;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Body -->
+                                    <path d="M8 14H56V50H8Z"
+                                          style="fill:#acbec2;fill-opacity:1;fill-rule:evenodd;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Right light panel -->
+                                    <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z"
+                                          style="fill:#e8edee;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Outer stroke / frame -->
+                                    <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                          style="fill:#000000;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Top dots -->
+                                    <circle cx="48" cy="11" r="1" style="fill:#ed7161"/>
+                                    <circle cx="44" cy="11" r="1" style="fill:#ecba16"/>
+                                    <circle cx="40" cy="11" r="1" style="fill:#42b05c"/>
+
+                                    <!-- Left bottom dot -->
+                                    <circle cx="6" cy="52" r="1" style="fill:#000000"/>
+
+                                    <!-- Small dot near body -->
+                                    <circle cx="11" cy="16" r="1" style="fill:#000000"/>
+
+                                    <!-- Trend line (items quantity over branches) -->
+                                    <path d="M16 42L23 32L30 36L38 26L46 30"
+                                          style="fill:none;stroke:#fe73c5;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Trend line highlight -->
+                                    <path d="M16 42L23 32L30 36L38 26L46 30"
+                                          style="fill:none;stroke:#fe93d3;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.5"/>
+
+                                    <!-- Bars: quantity by branch -->
+                                    <!-- Branch A -->
+                                    <rect x="18" y="34" width="6" height="12"
+                                          style="fill:#ffa221;fill-rule:evenodd"/>
+                                    <path d="M18 34c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                          style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Branch B -->
+                                    <rect x="28" y="30" width="6" height="16"
+                                          style="fill:#0075d3;fill-rule:evenodd"/>
+                                    <path d="M28 30c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                          style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- Branch C -->
+                                    <rect x="38" y="24" width="6" height="22"
+                                          style="fill:#42b05c;fill-rule:evenodd"/>
+                                    <path d="M38 24c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v22c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2z"
+                                          style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"/>
+
+                                    <!-- X axis -->
+                                    <path d="M14 48H50"
+                                          style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.7"/>
+
+                                    <!-- Branch labels (optional, minimal) -->
+                                    <circle cx="21" cy="51" r="1" style="fill:#000000"/>
+                                    <circle cx="31" cy="51" r="1" style="fill:#000000"/>
+                                    <circle cx="41" cy="51" r="1" style="fill:#000000"/>
+
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">التركيب المحصولي</div>
+                </div>
+            </div>
+        </a>
+    @endif
+
+    @if ((Auth::user()->user_group && in_array('item-sales-by-branch', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        <a class="w-full" href="{{ asset('/admin/branch-crop-composition-collections/report')}}">
+            <div
+                class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                <div class="px-5 pt-5">
+                    <div class="flex items-center justify-center mb-8">
+                        <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                            <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+
+                                <!-- Background window -->
+                                <g>
+                                    <!-- Top bar -->
+                                    <path d="M8 8H56V14H8Z" fill="#3e4f59"/>
+
+                                    <!-- Body -->
+                                    <path d="M8 14H56V50H8Z" fill="#acbec2"/>
+
+                                    <!-- Right light panel -->
+                                    <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z" fill="#e8edee"/>
+
+                                    <!-- Outer frame -->
+                                    <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                          fill="#000"/>
+
+                                    <!-- Top dots -->
+                                    <circle cx="48" cy="11" r="1" fill="#ed7161"/>
+                                    <circle cx="44" cy="11" r="1" fill="#ecba16"/>
+                                    <circle cx="40" cy="11" r="1" fill="#42b05c"/>
+
+                                    <!-- Left bottom dot -->
+                                    <circle cx="6" cy="52" r="1" fill="#000"/>
+
+                                    <!-- Small dot -->
+                                    <circle cx="11" cy="16" r="1" fill="#000"/>
+
+                                    <!-- Clipboard -->
+                                    <rect x="20" y="22" width="24" height="26" rx="2" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+                                    <rect x="26" y="18" width="12" height="6" rx="2" fill="#3e4f59" stroke="#000" stroke-width="1"/>
+
+                                    <!-- Leaf icon -->
+                                    <path d="M28 32c4-6 10-8 14-6-2 6-6 12-12 14-4-2-4-6-2-8Z"
+                                          fill="#42b05c" stroke="#000" stroke-width="1"/>
+
+                                    <!-- Checkmarks -->
+                                    <path d="M24 40l3 3l5-6" stroke="#0075d3" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    <path d="M24 46l3 3l5-6" stroke="#ffa221" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                                </g>
+                            </svg>
+
+
+                        </div>
+                    </div>
+                    <div class="text-3xl font-semibold text-gray-800 text-center">25- تقرير التركيب المحصولي </div>
+                </div>
+            </div>
+        </a>
+    @endif
+</div>
 <div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
 
@@ -1841,31 +1988,50 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
                         <div class="flex items-center justify-center mb-8">
                             <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
                                 <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                    <!-- Window Header -->
-                                    <rect x="6" y="8" width="52" height="6" rx="1.5" fill="#3e4f59"/>
-                                    <circle cx="46" cy="11" r="1.3" fill="#ed7161"/>
-                                    <circle cx="42" cy="11" r="1.3" fill="#ecba16"/>
-                                    <circle cx="38" cy="11" r="1.3" fill="#42b05c"/>
 
-                                    <!-- Window Body -->
-                                    <rect x="6" y="14" width="52" height="42" rx="2" fill="#acbec2"/>
-                                    <path d="M6 14h32c8 0 14 14 14 42H6z" fill="#e8edee"/>
+                                    <!-- Background window -->
+                                    <g>
+                                        <!-- Top bar -->
+                                        <path d="M8 8H56V14H8Z" fill="#3e4f59"/>
 
-                                    <!-- Visit Location Pin -->
-                                    <path
-                                        d="M32 24c-4.4 0-8 3.3-8 7.5 0 5.7 8 13.5 8 13.5s8-7.8 8-13.5c0-4.2-3.6-7.5-8-7.5z"
-                                        fill="#fe73c5"/>
-                                    <circle cx="32" cy="31" r="3" fill="#fe93d3"/>
+                                        <!-- Body -->
+                                        <path d="M8 14H56V50H8Z" fill="#acbec2"/>
 
-                                    <!-- Calendar / Visit Line -->
-                                    <rect x="20" y="46" width="24" height="6" rx="1.5" fill="#0075d3"/>
-                                    <rect x="20" y="46" width="12" height="6" rx="1.5" fill="#0588e2"/>
+                                        <!-- Right light panel -->
+                                        <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z" fill="#e8edee"/>
 
-                                    <!-- Outline -->
-                                    <path
-                                        d="M6 8c-1.7 0-3 1.3-3 3v42c0 1.7 1.3 3 3 3h52c1.7 0 3-1.3 3-3V11c0-1.7-1.3-3-3-3H6zm0 2h52c.6 0 1 .4 1 1v42c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1V11c0-.6.4-1 1-1z"
-                                        fill="#000"/>
+                                        <!-- Outer frame -->
+                                        <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                              fill="#000"/>
+
+                                        <!-- Top dots -->
+                                        <circle cx="48" cy="11" r="1" fill="#ed7161"/>
+                                        <circle cx="44" cy="11" r="1" fill="#ecba16"/>
+                                        <circle cx="40" cy="11" r="1" fill="#42b05c"/>
+
+                                        <!-- Left bottom dot -->
+                                        <circle cx="6" cy="52" r="1" fill="#000"/>
+
+                                        <!-- Small dot -->
+                                        <circle cx="11" cy="16" r="1" fill="#000"/>
+
+                                        <!-- Document -->
+                                        <rect x="18" y="20" width="28" height="28" rx="2" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+
+                                        <!-- Folded corner -->
+                                        <path d="M40 20L46 26H40Z" fill="#e8edee" stroke="#000" stroke-width="1"/>
+
+                                        <!-- Bars -->
+                                        <rect x="22" y="38" width="6" height="10" fill="#ffa221" stroke="#000"/>
+                                        <rect x="30" y="34" width="6" height="14" fill="#0075d3" stroke="#000"/>
+                                        <rect x="38" y="30" width="6" height="18" fill="#42b05c" stroke="#000"/>
+
+                                        <!-- Chart line -->
+                                        <path d="M22 38L30 34L38 30L44 32" stroke="#fe73c5" stroke-width="2" fill="none"/>
+
+                                    </g>
                                 </svg>
+
 
                             </div>
                         </div>

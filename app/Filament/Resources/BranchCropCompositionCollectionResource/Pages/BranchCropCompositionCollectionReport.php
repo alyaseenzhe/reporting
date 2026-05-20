@@ -36,7 +36,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static string $view = 'filament.resources.branch-crop-composition-collection-resource.pages.branch-crop-composition-collection-report';
 
-    protected static ?string $title = 'تقرير التركيب المحصولي';
+    protected static ?string $title = '25- تقرير التركيب المحصولي';
 
     protected ?string $maxContentWidth = 'full';
 

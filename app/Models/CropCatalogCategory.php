@@ -22,4 +22,14 @@ class CropCatalogCategory extends Model
     {
         return $this->hasMany(CropCatalogItem::class)->orderBy('sort_order');
     }
+
+    public function branchCropCompositionCollections()
+    {
+        return $this->belongsToMany(
+            BranchCropCompositionCollection::class,
+            'branch_crop_collection_items',
+            'crop_catalog_category_id',
+            'branch_crop_composition_collection_id'
+        );
+    }
 }

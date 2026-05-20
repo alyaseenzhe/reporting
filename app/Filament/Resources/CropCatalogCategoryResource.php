@@ -7,6 +7,8 @@ use App\Filament\Resources\CropCatalogCategoryResource\RelationManagers;
 use App\Models\CropCatalogCategory;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -29,7 +31,7 @@ class CropCatalogCategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'طبيعة المحصول';
+    protected static ?string $navigationLabel = 'المحاصيل وطبيعتها';
 
     protected static ?string $pluralLabel = 'طبيعة المحصول';
 
@@ -39,12 +41,26 @@ class CropCatalogCategoryResource extends Resource
     {
         return $form
             ->schema([
+                Section::make('أنواع الزراعة')->schema([
                 TextInput::make('name')
                     ->label('اسم نوع الزراعة')
                     ->required(),
                 Checkbox::make('has_trees')
                     ->label('اضافة عدد الأشجار'),
 
+                    Repeater::make('items')
+                        ->relationship()
+                        ->label('')
+                        ->view('components.filament.forms.compact-inline-repeater')
+                        ->disableItemMovement()
+//                    ->defaultItems(1)
+                        ->schema([
+                            TextInput::make('name')
+                                ->label('اسم المحصول')
+//                            ->required()
+                                ->columnSpan(8),
+                        ])
+                ])
             ]);
     }
 
@@ -65,7 +81,7 @@ class CropCatalogCategoryResource extends Resource
 //                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+//                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
@@ -107,6 +123,7 @@ class CropCatalogCategoryResource extends Resource
             'index' => Pages\ListCropCatalogCategories::route('/'),
             'create' => Pages\CreateCropCatalogCategory::route('/create'),
             'edit' => Pages\EditCropCatalogCategory::route('/{record}/edit'),
+            'view' => Pages\ViewCropCatalogCategory::route('/{record}'),
         ];
     }
 

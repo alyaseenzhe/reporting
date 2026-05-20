@@ -4,9 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AgriTypeResource\Pages;
 use App\Filament\Resources\AgriTypeResource\RelationManagers;
+use App\Models\AgriDetais;
 use App\Models\AgriType;
+use App\Models\BranchCropCollectionCultivationType;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -28,7 +34,7 @@ class AgriTypeResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'أنواع الزاعة';
+    protected static ?string $navigationLabel = 'أنواع الزاعة وتفاصيلها';
 
     protected static ?string $pluralLabel = 'نوع الزراعة';
 
@@ -37,12 +43,29 @@ class AgriTypeResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+
             ->schema([
+                Section::make('معلومات التركيب المحصولي للعملاء')
+                    ->schema([
                 TextInput::make('name')
                     ->label('اسم نوع الزراعة')
                     ->required(),
                 Checkbox::make('has_units')
                     ->label('يحتوي على وحدات'),
+
+                Repeater::make('agriDetails')
+                    ->relationship()
+                    ->label('')
+                    ->view('components.filament.forms.compact-inline-repeater')
+                    ->disableItemMovement()
+//                    ->defaultItems(1)
+                    ->schema([
+                        TextInput::make('details')
+                            ->label('تفصيل النوع')
+//                            ->required()
+                        ->columnSpan(8),
+                    ])
+             ])
             ]);
     }
 
@@ -76,7 +99,7 @@ class AgriTypeResource extends Resource
 //                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+////                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
@@ -118,6 +141,7 @@ class AgriTypeResource extends Resource
             'index' => Pages\ListAgriTypes::route('/'),
             'create' => Pages\CreateAgriType::route('/create'),
             'edit' => Pages\EditAgriType::route('/{record}/edit'),
+            'view' => Pages\ViewAgriType::route('/{record}'),
         ];
     }
 
@@ -138,4 +162,18 @@ class AgriTypeResource extends Resource
     {
         return optional(Auth::user())->role === 'a';
     }
+
+//    public static function mutateDataBeforeFill(array $data, Model $record): array
+//    {
+//
+//        $data['agri_details'] = $record->agriDetails
+//            ->map(function (AgriDetais $row): array {
+//                return [
+//                    'details' => $row->details,
+//
+//                ];
+//            })
+//            ->toArray();
+//        return $data;
+//    }
 }

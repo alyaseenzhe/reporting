@@ -58,7 +58,7 @@ class AgriDetailsResource extends Resource
 //                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+////                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
@@ -71,7 +71,8 @@ class AgriDetailsResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return static::canViewAny();
+//        return static::canViewAny();
+        return false;
     }
 
     public static function canViewAny(): bool
