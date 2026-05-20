@@ -31,11 +31,11 @@ class CropCatalogCategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'المحاصيل وطبيعتها';
+    protected static ?string $navigationLabel = 'المحاصيل وأنواعها';
 
     protected static ?string $pluralLabel = 'طبيعة المحصول';
 
-    protected static ?string $label = ' نوع الزراعة';
+    protected static ?string $label = 'المحصول';
 //
     public static function form(Form $form): Form
     {
@@ -43,10 +43,10 @@ class CropCatalogCategoryResource extends Resource
             ->schema([
                 Section::make('أنواع الزراعة')->schema([
                 TextInput::make('name')
-                    ->label('اسم نوع الزراعة')
+                    ->label('المحصول')
                     ->required(),
                 Checkbox::make('has_trees')
-                    ->label('اضافة عدد الأشجار'),
+                    ->label('اضافة عدد النباتات'),
 
                     Repeater::make('items')
                         ->relationship()
@@ -56,7 +56,7 @@ class CropCatalogCategoryResource extends Resource
 //                    ->defaultItems(1)
                         ->schema([
                             TextInput::make('name')
-                                ->label('اسم المحصول')
+                                ->label('نوع المحصول')
 //                            ->required()
                                 ->columnSpan(8),
                         ])
@@ -69,10 +69,10 @@ class CropCatalogCategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('اسم نوع الزراعة')
+                    ->label('اسم المحصول')
                     ->searchable(),
                 BooleanColumn::make('has_trees')
-                ->label('اضافة عدد الأشجار')
+                ->label('اضافة عدد نباتات')
             ])
             ->filters([
                 //

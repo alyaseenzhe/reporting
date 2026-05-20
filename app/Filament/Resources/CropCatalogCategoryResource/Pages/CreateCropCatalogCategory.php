@@ -10,6 +10,7 @@ class CreateCropCatalogCategory extends CreateRecord
 {
     protected static string $resource = CropCatalogCategoryResource::class;
 
+    protected array $initialFormData = [];
     protected function getActions(): array
     {
         return array_merge([
@@ -42,5 +43,30 @@ class CreateCropCatalogCategory extends CreateRecord
     protected function getFormActions(): array
     {
         return [];
+    }
+
+    protected function hasUnsavedChanges(): bool
+    {
+        return $this->snapshotFormState() !== $this->initialFormData;
+    }
+
+    protected function snapshotFormState(): array
+    {
+        return $this->normalizeSnapshotValue($this->form->getRawState());
+    }
+
+    protected function normalizeSnapshotValue($value)
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $normalized = [];
+
+        foreach ($value as $key => $item) {
+            $normalized[$key] = $this->normalizeSnapshotValue($item);
+        }
+
+        return $normalized;
     }
 }

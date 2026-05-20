@@ -265,7 +265,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
                             Select::make('agri_detail_id')
                                 ->label('تفاصيل الزراعة')
-                                ->searchable()
+//                                ->searchable()
                                 ->preload()
                                 ->reactive()
                                 ->columnSpan(['default' => 1, 'md' => 3])
@@ -465,7 +465,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 Select::make('branch_id')
                     ->label('الفرع')
                     ->required()
-                    ->searchable()
+//                    ->searchable()
                     ->reactive()
                     ->default(fn (): ?int => static::getSingleAuthorizedBranchId())
                     ->options(function () {
@@ -1750,6 +1750,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 $query->whereIn('id', [7, 8]);
             })
             ->where('sales_dept_code', $branchCode)
+            ->where('is_active',1)
             ->get(['id', 'name'])
             ->pluck('name', 'id')
             ->toArray();
