@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
 
 class BranchCropCompositionCollectionResource extends Resource
 {
@@ -205,7 +206,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             Select::make('agri_type_id')
                                     ->label('نوع الزراعة')
                                     ->required()
-                                    ->searchable()
+//                                    ->searchable()
                                     ->preload()
                                     ->columnSpan(['default' => 1, 'md' => 3])
                                     ->options(function (callable $get): array {
@@ -266,7 +267,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             Select::make('agri_detail_id')
                                 ->label('تفاصيل الزراعة')
 //                                ->searchable()
-                                ->preload()
+//                                ->preload()
                                 ->reactive()
                                 ->columnSpan(['default' => 1, 'md' => 3])
                                 ->options(function (callable $get): array {
@@ -495,8 +496,9 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->label('العميل')
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->searchable()
-                    ->preload()
-                    ->optionsLimit(10000)
+                    ->preload(false)
+                    ->optionsLimit(50)
+                   // ->optionsLimit(10000)
                     ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
 //                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
@@ -514,8 +516,10 @@ class BranchCropCompositionCollectionResource extends Resource
                         );
                     })
                     ->afterStateUpdated(function ($state, callable $set): void {
-                        $customer = app(SapCustomerLookupServiceInterface::class)
-                            ->findCustomerByCode($state);
+//                        $customer = app(SapCustomerLookupServiceInterface::class)
+//                            ->findCustomerByCode($state);
+
+                        $customer = static::getCachedSapCustomer($state);
 
                         $set(
                             'engineer_name',
@@ -523,8 +527,10 @@ class BranchCropCompositionCollectionResource extends Resource
                         );
                     })
                     ->getOptionLabelUsing(function ($value): ?string {
-                        $customer = app(SapCustomerLookupServiceInterface::class)
-                            ->findCustomerByCode($value);
+//                        $customer = app(SapCustomerLookupServiceInterface::class)
+//                            ->findCustomerByCode($value);
+
+                        $customer = static::getCachedSapCustomer($value);
 
                         return $customer['label'] ?? $value;
                     }),
@@ -793,8 +799,9 @@ class BranchCropCompositionCollectionResource extends Resource
                 TextColumn::make('engineer_name')
                     ->label('المهندس المسؤول')
                     ->formatStateUsing(function ($state, Model $record): string {
-                        $customer = app(SapCustomerLookupServiceInterface::class)
-                            ->findCustomerByCode($record->customer_code);
+//                        $customer = app(SapCustomerLookupServiceInterface::class)
+//                            ->findCustomerByCode($record->customer_code);
+                        $customer = static::getCachedSapCustomer($record->customer_code);
 
                         return (string) ($customer['slp_name'] ?? $state ?? '');
                     })
@@ -1042,9 +1049,10 @@ class BranchCropCompositionCollectionResource extends Resource
         }
 
         if (($data['type'] ?? null) === static::CUSTOMER_TYPE_REDISTRIBUTION) {
-            $customer = app(SapCustomerLookupServiceInterface::class)
-                ->findCustomerByCode($data['customer_code'] ?? null);
+//            $customer = app(SapCustomerLookupServiceInterface::class)
+//                ->findCustomerByCode($data['customer_code'] ?? null);
 
+            $customer = static::getCachedSapCustomer($data['customer_code'] ?? null);
             $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
 //            $data['engineer_name'] = static::getAuthenticatedEngineerName();
             $data['engineer_id'] = Auth::id();
@@ -1052,8 +1060,10 @@ class BranchCropCompositionCollectionResource extends Resource
             return $data;
         }
 
-        $customer = app(SapCustomerLookupServiceInterface::class)
-            ->findCustomerByCode($data['customer_code'] ?? null);
+//        $customer = app(SapCustomerLookupServiceInterface::class)
+//            ->findCustomerByCode($data['customer_code'] ?? null);
+
+        $customer = static::getCachedSapCustomer($data['customer_code'] ?? null);
 
         $data['customer_name'] = $customer['name'] ?? ($data['customer_name'] ?? null);
         $data['engineer_name'] = $customer['slp_name'] ?? ($data['engineer_name'] ?? null);
@@ -1245,8 +1255,10 @@ class BranchCropCompositionCollectionResource extends Resource
                 $data['customer_name'] = optional($record->lead)->name ?? $record->customer_name;
             }
         } else {
-            $customer = app(SapCustomerLookupServiceInterface::class)
-                ->findCustomerByCode($record->customer_code);
+//            $customer = app(SapCustomerLookupServiceInterface::class)
+//                ->findCustomerByCode($record->customer_code);
+
+            $customer = static::getCachedSapCustomer($record->customer_code);
 
             $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
             $data['lead_name'] = null;
@@ -1345,8 +1357,10 @@ class BranchCropCompositionCollectionResource extends Resource
             return false;
         }
 
-        $customer = app(SapCustomerLookupServiceInterface::class)
-            ->findCustomerByCode($record->customer_code);
+//        $customer = app(SapCustomerLookupServiceInterface::class)
+//            ->findCustomerByCode($record->customer_code);
+
+        $customer = static::getCachedSapCustomer($record->customer_code);
 
         $engineerName = $customer['slp_name'] ?? $record->engineer_name;
 
@@ -1448,8 +1462,10 @@ class BranchCropCompositionCollectionResource extends Resource
 
         return collect($customers)
             ->filter(function ($label, $customerCode) use ($user): bool {
-                $customer = app(SapCustomerLookupServiceInterface::class)
-                    ->findCustomerByCode($customerCode);
+//                $customer = app(SapCustomerLookupServiceInterface::class)
+//                    ->findCustomerByCode($customerCode);
+
+                $customer = static::getCachedSapCustomer($customerCode);
 
                 return trim((string) ($customer['slp_name'] ?? '')) === trim((string) $user->name);
             })
@@ -1477,8 +1493,10 @@ class BranchCropCompositionCollectionResource extends Resource
                 $engineerName = $customer['slp_name'] ?? null;
 
                 if (blank($engineerName) && filled($customer['code'] ?? null)) {
-                    $customerDetails = app(SapCustomerLookupServiceInterface::class)
-                        ->findCustomerByCode($customer['code']);
+//                    $customerDetails = app(SapCustomerLookupServiceInterface::class)
+//                        ->findCustomerByCode($customer['code']);
+
+                    $customerDetails = static::getCachedSapCustomer($customer['code']);
 
                     $engineerName = $customerDetails['slp_name'] ?? null;
                 }
@@ -1536,8 +1554,10 @@ class BranchCropCompositionCollectionResource extends Resource
             ->pluck('customer_code')
             ->unique()
             ->filter(function ($customerCode) use ($engineerName): bool {
-                $customer = app(SapCustomerLookupServiceInterface::class)
-                    ->findCustomerByCode($customerCode);
+//                $customer = app(SapCustomerLookupServiceInterface::class)
+//                    ->findCustomerByCode($customerCode);
+
+                $customer = static::getCachedSapCustomer($customerCode);
 
                 $sapEngineerName = trim(mb_strtolower((string) ($customer['slp_name'] ?? '')));
 
@@ -1848,5 +1868,21 @@ class BranchCropCompositionCollectionResource extends Resource
         $value = trim((string) $value);
 
         return $value !== '' ? $value : null;
+    }
+
+    protected static function getCachedSapCustomer(?string $code): array
+    {
+        if (blank($code)) {
+            return [];
+        }
+
+        $customer = Cache::remember(
+            'sap_customer_' . $code,
+            now()->addHours(6),
+            fn () => app(SapCustomerLookupServiceInterface::class)
+                ->findCustomerByCode($code)
+        );
+
+        return is_array($customer) ? $customer : [];
     }
 }
