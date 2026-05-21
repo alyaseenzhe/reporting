@@ -988,7 +988,7 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return static::applyCollectionAccessScope(
-            parent::getEloquentQuery()->with(['lead'])->withSum('cultivationTypes', 'total_area_hectares')
+            parent::getEloquentQuery()->with(['lead'])->withSum('cropItems as cultivation_types_sum_total_area_hectares', 'total_area_hectares')
         );
     }
 
