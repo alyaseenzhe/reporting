@@ -142,7 +142,7 @@ class ListMarketingDeptSales extends Component
         $sql =   $this->buildMarketingDepartmentSalesSql($dateRange, $departments, $marketingGroups);
 
         $result = odbc_exec($conn, $sql );
-//        dd($sql);
+//    git     dd($sql);
 
         if (! $result) {
             echo "Error while sending SQL statement to the database server.\n";

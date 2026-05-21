@@ -52,9 +52,10 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
-    protected static ?string $navigationLabel = 'التركيب المحصولي';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationLabel = 'التركيب المحصولي: قائمة العملاء';
 
-    protected static ?string $pluralLabel = 'نماذج التركيب المحصولي';
+    protected static ?string $pluralLabel = 'التركيب المحصولي: قائمة العملاء';
 
     protected static ?string $label = 'نموذج تركيب محصولي';
 
@@ -330,7 +331,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
                                     }),
                                 Select::make('crop_catalog_item_id')
-                                    ->label('المحصول')
+                                    ->label('نوع المحصول')
                                     ->required()
                                     ->searchable()
                                     ->columnSpan(['default' => 1, 'md' => 2])
@@ -420,13 +421,14 @@ class BranchCropCompositionCollectionResource extends Resource
                     Textarea::make('challenges')
                         ->label('التحديات مع المزارع')
                         ->rows(4),
+                        Textarea::make('companies')
+                            ->label('المؤسسات التي يتعامل معها')
+                            ->rows(4),
+                    ]),
                     Textarea::make('notes')
                         ->label('ملاحظات')
                         ->rows(4),
-                    Textarea::make('companies')
-                        ->label('المؤسسات التي يتعامل معها')
-                        ->rows(4),
-                        ]),
+
                 ]),
         ]);
     }
@@ -677,11 +679,11 @@ class BranchCropCompositionCollectionResource extends Resource
 
                 TextInput::make('area')->label('المنطقة')
                     ->maxLength(255),
-                TextInput::make('contact')->label('جهة التواصل')
+                TextInput::make('contact')->label('جهة الاتصال')
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->maxLength(255),
                 TextInput::make('lead_phone')
-                    ->label('رقم التواصل')
+                    ->label('رقم الجوال')
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->maxLength(10),
                 TextInput::make('lead_email')
@@ -697,19 +699,20 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->maxValue(9999999999)
                     ->rules(['integer', 'min:1']),
                 TextInput::make('total_farm_area_hectares')
-                    ->label('المساحة الإجمالية (هـ)')
+//                    ->label('المساحة الإجمالية (هـ)')
+                    ->label('مساحة كل المزارع (هـ)')
                     ->required()
                     ->numeric()
                     ->maxValue(9999999999.99)
                     ->rules(['numeric', 'min:0.01']),
 
                 DatePicker::make('created_at')
-                    ->label('تاريخ جمع المعلومات')
+                    ->label('تاريخ انشاء السجل')
                     ->hiddenOn('create')
                     ->disabled(),
 
                 TextInput::make('created_by')
-                    ->label('تم انشاؤه بواسطة')
+                    ->label('انشيء بواسطة')
                     ->hiddenOn('create')
                     ->disabled()
                     ->dehydrated(false)
@@ -723,7 +726,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->disabled(),
 
                 TextInput::make('updated_by')
-                    ->label('تم التعديل بواسطة')
+                    ->label('عدل بواسطة')
                     ->hiddenOn('create')
                     ->disabled()
                     ->dehydrated(false)

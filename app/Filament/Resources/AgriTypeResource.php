@@ -34,11 +34,12 @@ class AgriTypeResource extends Resource
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
+    protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'أنواع الزاعة وتفاصيلها';
 
-    protected static ?string $pluralLabel = 'تفصيل الزراعة';
+    protected static ?string $pluralLabel = 'أنواع الزراعة';
 
-    protected static ?string $label = 'تفصيل الزراعة';
+    protected static ?string $label = 'أنواع الزراعة';
 
     public static function form(Form $form): Form
     {

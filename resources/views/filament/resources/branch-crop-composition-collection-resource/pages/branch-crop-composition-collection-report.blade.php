@@ -111,7 +111,8 @@
             </div>
 
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <div class="text-sm font-medium text-gray-500">المساحة الإجمالية (هـ)</div>
+{{--                <div class="text-sm font-medium text-gray-500">المساحة الإجمالية (هـ)</div>--}}
+                <div class="text-sm font-medium text-gray-500">محموع مساحة المزارع (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalAreaHectares, 2) }}</div>
             </div>
         </div>
@@ -121,13 +122,13 @@
                 <table class="branch-crop-report-table w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="w-16 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">اسم المحصول</th>
+                            <th class="w-16 px-4 py-3  text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
+                            <th class="px-4 py-3  text-right text-xs font-semibold uppercase tracking-wide text-gray-500">طبيعة المحصول</th>
+                            <th class="px-4 py-3  text-right text-xs font-semibold uppercase tracking-wide text-gray-500">نوع المحصول</th>
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">الفرع</th>--}}
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">العميل</th>--}}
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">العملاء</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مجموع المساحة (هـ)</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">عدد العملاء</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مساحة المزارع (هـ)</th>
                         </tr>
                     </thead>
 

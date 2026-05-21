@@ -28,6 +28,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
 
     protected static ?string $navigationGroup = 'النماذج الزراعية';
 
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'تقرير التركيب المحصولي';
 
     protected static ?string $pluralLabel = 'تقرير التركيب المحصولي';
@@ -188,7 +189,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
                                 ->reactive(),
                             Forms\Components\Select::make('crop_item_ids')
-                                ->label(' المحصول')
+                                ->label('نوع المحصول')
                                 ->placeholder('')
                                 ->options(fn (callable $get): array => $this->getCropItemOptions(
                                     $get('crop_category_ids') ?? []
