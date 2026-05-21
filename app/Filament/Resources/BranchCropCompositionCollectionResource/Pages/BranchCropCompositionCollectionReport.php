@@ -48,6 +48,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     public array $filters = [
         'branch_ids' => [self::ALL_FILTER_VALUE],
         'customer_codes' => [self::ALL_FILTER_VALUE],
+        'company_codes' => [self::ALL_FILTER_VALUE],
         'engineer_names' => [self::ALL_FILTER_VALUE],
         'crop_category_ids' => [self::ALL_FILTER_VALUE],
         'crop_item_ids' => [self::ALL_FILTER_VALUE],
@@ -86,6 +87,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     $this->filters = [
                         'branch_ids' => [static::ALL_FILTER_VALUE],
                         'customer_codes' => [static::ALL_FILTER_VALUE],
+                        'company_codes' => [static::ALL_FILTER_VALUE],
                         'engineer_names' => [static::ALL_FILTER_VALUE],
                         'crop_category_ids' => [static::ALL_FILTER_VALUE],
                         'crop_item_ids' => [static::ALL_FILTER_VALUE],
@@ -105,7 +107,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         return [
 //            Forms\Components\Section::make('Filters')
 //                ->schema([
-                    Forms\Components\Grid::make(5)
+                    Forms\Components\Grid::make(6)
                         ->schema([
                             Forms\Components\Select::make('branch_ids')
                                 ->label('الفرع')
@@ -135,6 +137,20 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'class' => 'relative z-30',])
                                 ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
                                     'customer_codes',
+                                    $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
+                                ))
+                                ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
+                                ->reactive(),
+                            Forms\Components\Select::make('company_codes')
+                                ->label('المؤسسة')
+                                ->placeholder('')
+                                ->options($this->getCompanyOptions())
+                                ->multiple()
+                                ->default([static::ALL_FILTER_VALUE])
+                                ->searchable()
+                                ->preload()
+                                ->afterStateUpdated(fn ($state, $old, callable $set) => $set(
+                                    'company_codes',
                                     $this->resolveSelectableFilterState((array) $state, (array) ($old ?? []))
                                 ))
                                 ->extraAlpineAttributes($this->getImmediateAllFilterRemovalAlpineAttributes())
@@ -194,6 +210,23 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                 ->options(fn (callable $get): array => $this->getCropItemOptions(
                                     $get('crop_category_ids') ?? []
                                 ))
+//                                ->options(function (callable $get): array {
+//
+//                                    return \App\Models\CropCatalogItem::query()
+//                                        ->with('category')
+//                                        ->when(
+//                                            ! in_array(static::ALL_FILTER_VALUE, $get('crop_category_ids') ?? []),
+//                                            fn ($query) => $query->whereIn(
+//                                                'crop_category_id',
+//                                                $get('crop_category_ids') ?? []
+//                                            )
+//                                        )
+//                                        ->get()
+//                                        ->mapWithKeys(fn ($item) => [
+//                                            $item->id => $item->name . ' - ' . optional($item->category)->name,
+//                                        ])
+//                                        ->toArray();
+//                                })
                                 ->multiple()
                                 ->default([static::ALL_FILTER_VALUE])
                                 ->searchable()
@@ -547,6 +580,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     {
         $branchIds = $this->getEffectiveFilterValues($this->filters['branch_ids'] ?? []);
         $customerCodes = $this->getEffectiveFilterValues($this->filters['customer_codes'] ?? []);
+        $companyCodes = $this->getEffectiveFilterValues($this->filters['company_codes'] ?? []);
         $engineerNames = $this->getEffectiveFilterValues($this->filters['engineer_names'] ?? []);
 
         return $this->getDisplayCustomerCollectionsQuery()
@@ -557,6 +591,12 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->when(
                 count($customerCodes),
                 fn (Builder $query) => $query->whereIn(DB::raw("CASE WHEN branch_crop_composition_collections.type = 'redistribution_customer' THEN COALESCE(leads.code, branch_crop_composition_collections.customer_code) ELSE branch_crop_composition_collections.customer_code END"), $customerCodes)
+            )
+            ->when(
+                count($companyCodes),
+                fn (Builder $query) => $query
+                    ->where('branch_crop_composition_collections.type', 'redistribution_customer')
+                    ->whereIn('branch_crop_composition_collections.customer_code', $companyCodes)
             )
             ->when(
                 count($engineerNames),
@@ -606,6 +646,31 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ->all());
     }
 
+    protected function getCompanyOptions(): array
+    {
+        return $this->withAllOption(static::getResource()::getAccessibleCollectionsQuery()
+            ->where('type', 'redistribution_customer')
+            ->orderBy('customer_name')
+            ->get([
+                'customer_code',
+                'customer_name',
+            ])
+            ->mapWithKeys(function ($row): array {
+                $code = trim((string) ($row->customer_code ?? ''));
+
+                if ($code === '') {
+                    return [];
+                }
+
+                $name = trim((string) ($row->customer_name ?? ''));
+
+                return [
+                    $code => $name !== '' ? $code . ' - ' . $name : $code,
+                ];
+            })
+            ->all());
+    }
+
     protected function getCropCategoryOptions(): array
     {
         $accessibleCollections = static::getResource()::getAccessibleCollectionsQuery()
@@ -641,6 +706,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'branch_crop_collection_items.branch_crop_composition_collection_id'
                 );
             })
+            ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
             ->leftJoin('crop_catalog_items as items', 'items.id', '=', 'branch_crop_collection_items.crop_catalog_item_id')
             ->when(
                 count($selectedCategoryIds),
@@ -649,10 +715,27 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     $selectedCategoryIds
                 )
             )
+            ->orderBy('categories.name')
             ->orderBy('items.name')
-            ->pluck('items.name', 'branch_crop_collection_items.crop_catalog_item_id')
-            ->filter()
-            ->toArray());
+            ->get([
+                'branch_crop_collection_items.crop_catalog_item_id',
+                'items.name as item_name',
+                'categories.name as category_name',
+            ])
+            ->mapWithKeys(function ($row): array {
+                $itemId = $row->crop_catalog_item_id;
+                $itemName = trim((string) ($row->item_name ?? ''));
+
+                if (! filled($itemId) || $itemName === '') {
+                    return [];
+                }
+
+                $categoryName = trim((string) ($row->category_name ?? ''));
+                $label = $categoryName !== '' ? $categoryName . ' - ' . $itemName : $itemName;
+
+                return [$itemId => $label];
+            })
+            ->all());
     }
 
     protected function withAllOption(array $options): array
@@ -738,4 +821,3 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     }
 
 }
-
