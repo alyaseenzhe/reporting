@@ -36,6 +36,7 @@ class EditBranchCropCompositionCollection extends EditRecord
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
         BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
         BranchCropCompositionCollectionResource::validateCropRowsUnique($cropRows);
+
         return DB::transaction(function () use ($record, $data, $cultivationRows, $cropRows) {
             $parentData = BranchCropCompositionCollectionResource::prepareParentData($data);
             $parentData['updated_by'] = auth()->id();
@@ -67,13 +68,8 @@ class EditBranchCropCompositionCollection extends EditRecord
                         'record' => $this->record,
                     ]));
                 }),
-//            Actions\Action::make('saveAndContinueToEdit')
-//                ->label('حفظ والاستمرار في التعديل' )
-//                ->action('save')
-//                ->keyBindings(['mod+s']),
-
-
             $this->getCancelFormAction(),
+            $this->getCancelFormActionWithConfirmation(),
         ];
     }
 
@@ -87,7 +83,19 @@ class EditBranchCropCompositionCollection extends EditRecord
         return Actions\Action::make('cancel')
             ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->color('secondary')
-            ->requiresConfirmation(fn (): bool => $this->hasUnsavedChanges())
+            ->visible(fn (): bool => ! $this->hasUnsavedChanges())
+            ->action(function (): void {
+                $this->redirect($this->previousUrl ?? static::getResource()::getUrl());
+            });
+    }
+
+    protected function getCancelFormActionWithConfirmation(): Actions\Action
+    {
+        return Actions\Action::make('cancelWithConfirmation')
+            ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->color('secondary')
+            ->requiresConfirmation()
+            ->visible(fn (): bool => $this->hasUnsavedChanges())
             ->modalHeading(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->modalButton(__('filament-support::actions/modal.actions.confirm.label'))
             ->action(function (): void {

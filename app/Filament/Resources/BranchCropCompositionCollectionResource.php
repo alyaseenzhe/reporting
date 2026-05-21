@@ -796,18 +796,20 @@ class BranchCropCompositionCollectionResource extends Resource
 //                TextColumn::make('branch.name')
 //                    ->label('الفرع')
 //                    ->searchable(),
+//                TextColumn::make('engineer_name')
+//                    ->label('المهندس المسؤول')
+//                    ->formatStateUsing(function ($state, Model $record): string {
+////                        $customer = app(SapCustomerLookupServiceInterface::class)
+////                            ->findCustomerByCode($record->customer_code);
+//                        $customer = static::getCachedSapCustomer($record->customer_code);
+//
+//                        return (string) ($customer['slp_name'] ?? $state ?? '');
+//                    })
+//                    ->searchable(
+//                        query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search)
+//                    ),
                 TextColumn::make('engineer_name')
-                    ->label('المهندس المسؤول')
-                    ->formatStateUsing(function ($state, Model $record): string {
-//                        $customer = app(SapCustomerLookupServiceInterface::class)
-//                            ->findCustomerByCode($record->customer_code);
-                        $customer = static::getCachedSapCustomer($record->customer_code);
-
-                        return (string) ($customer['slp_name'] ?? $state ?? '');
-                    })
-                    ->searchable(
-                        query: fn (Builder $query, string $search): Builder => static::applySapEngineerNameSearch($query, $search)
-                    ),
+                    ->label('المهندس المسؤول'),
                 TextColumn::make('total_farm_area_hectares')
                     ->label('مساحة المزارع (هـ)')
                     ->searchable(),
@@ -850,18 +852,18 @@ class BranchCropCompositionCollectionResource extends Resource
                             }
                         );
                     }),
-                Filter::make('engineer_name')
-                    ->form([
-                        TextInput::make('engineer_name')
-                            ->label('اسم المهندس')
-                            ->placeholder('اكتب اسم المهندس'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['engineer_name'] ?? null,
-                            fn (Builder $query, $engineerName) => static::applySapEngineerNameSearch($query, $engineerName)
-                        );
-                    }),
+//                Filter::make('engineer_name')
+//                    ->form([
+//                        TextInput::make('engineer_name')
+//                            ->label('اسم المهندس')
+//                            ->placeholder('اكتب اسم المهندس'),
+//                    ])
+//                    ->query(function (Builder $query, array $data): Builder {
+//                        return $query->when(
+//                            $data['engineer_name'] ?? null,
+//                            fn (Builder $query, $engineerName) => static::applySapEngineerNameSearch($query, $engineerName)
+//                        );
+//                    }),
                 SelectFilter::make('branch')
                     ->label('الفرع')
                     ->relationship('branch', 'name'),

@@ -23,32 +23,23 @@ class CreateBranchCropCompositionCollection extends CreateRecord
     protected function getActions(): array
     {
         return array_merge([
-
             Actions\Action::make('create')
-//                ->label(__('filament::resources/pages/create-record.form.actions.create.label'))
                 ->label(__('filament::resources/pages/edit-record.form.actions.save.label'))
                 ->action('create')
                 ->keyBindings(['mod+s']),
         ], static::canCreateAnother() ? [
             Actions\Action::make('createAnother')
-//                ->label(__('filament::resources/pages/create-record.form.actions.create_another.label'))
                 ->label(__('حفظ واضافة سجل جديد'))
                 ->action('createAnother')
                 ->keyBindings(['mod+shift+s'])
                 ->color('secondary'),
             $this->getCancelFormAction(),
-            Actions\Action::make('back')
-                ->label('عودة')
-                ->requiresConfirmation(fn (): bool => $this->hasUnsavedChanges())
-//                ->url(static::getResource()::getUrl('index'))
-                ->action(function () {
-                    $this->redirect(static::getResource()::getUrl('index'));
-                })
-                ->color('secondary')
-                ->icon('heroicon-o-arrow-left'),
+            $this->getCancelFormActionWithConfirmation(),
+            $this->getBackAction(),
+            $this->getBackActionWithConfirmation(),
         ] : []);
-
     }
+
     protected function getFormActions(): array
     {
         return [];
@@ -59,13 +50,51 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         return Actions\Action::make('cancel')
             ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->color('secondary')
-            ->requiresConfirmation(fn (): bool => $this->hasUnsavedChanges())
+            ->visible(fn (): bool => ! $this->hasUnsavedChanges())
+            ->action(function (): void {
+                $this->redirect(static::getResource()::getUrl('create'));
+            });
+    }
+
+    protected function getCancelFormActionWithConfirmation(): Actions\Action
+    {
+        return Actions\Action::make('cancelWithConfirmation')
+            ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
+            ->color('secondary')
+            ->requiresConfirmation()
+            ->visible(fn (): bool => $this->hasUnsavedChanges())
             ->modalHeading(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
             ->modalButton(__('filament-support::actions/modal.actions.confirm.label'))
             ->action(function (): void {
                 $this->redirect(static::getResource()::getUrl('create'));
             });
     }
+
+    protected function getBackAction(): Actions\Action
+    {
+        return Actions\Action::make('back')
+            ->label("\u{0639}\u{0648}\u{062F}\u{0629}")
+            ->visible(fn (): bool => ! $this->hasUnsavedChanges())
+            ->action(function (): void {
+                $this->redirect(static::getResource()::getUrl('index'));
+            })
+            ->color('secondary')
+            ->icon('heroicon-o-arrow-left');
+    }
+
+    protected function getBackActionWithConfirmation(): Actions\Action
+    {
+        return Actions\Action::make('backWithConfirmation')
+            ->label("\u{0639}\u{0648}\u{062F}\u{0629}")
+            ->requiresConfirmation()
+            ->visible(fn (): bool => $this->hasUnsavedChanges())
+            ->action(function (): void {
+                $this->redirect(static::getResource()::getUrl('index'));
+            })
+            ->color('secondary')
+            ->icon('heroicon-o-arrow-left');
+    }
+
     /**
      * Persist the parent and child rows in one transaction.
      */
@@ -75,6 +104,7 @@ class CreateBranchCropCompositionCollection extends CreateRecord
         $cropRows = BranchCropCompositionCollectionResource::extractCropRows($data);
         BranchCropCompositionCollectionResource::validateCultivationRowsUnique($cultivationRows);
         BranchCropCompositionCollectionResource::validateCropRowsUnique($cropRows);
+
         return DB::transaction(function () use ($data, $cultivationRows, $cropRows) {
             $parentData = BranchCropCompositionCollectionResource::prepareParentData($data);
             $parentData['user_id'] = auth()->id();
