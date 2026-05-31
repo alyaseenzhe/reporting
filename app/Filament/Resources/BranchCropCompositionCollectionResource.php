@@ -424,10 +424,11 @@ class BranchCropCompositionCollectionResource extends Resource
                         Textarea::make('companies')
                             ->label('المؤسسات التي يتعامل معها')
                             ->rows(4),
+                        Textarea::make('notes')
+                            ->label('ملاحظات')
+                            ->rows(4),
                     ]),
-                    Textarea::make('notes')
-                        ->label('ملاحظات')
-                        ->rows(4),
+
 
                 ]),
         ]);
@@ -495,7 +496,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     }),
 
                 Select::make('customer_code')
-                    ->label('العميل')
+                    ->label(static::getCustomerCodeFieldLabel($customerType))
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->searchable()
                     ->preload(false)
@@ -744,6 +745,13 @@ class BranchCropCompositionCollectionResource extends Resource
             static::CUSTOMER_TYPE_LEAD => 'عميل محتمل',
             static::CUSTOMER_TYPE_REDISTRIBUTION => 'عميل اعادة التوزيع',
         ];
+    }
+
+    protected static function getCustomerCodeFieldLabel(string $customerType): string
+    {
+        return $customerType === static::CUSTOMER_TYPE_REDISTRIBUTION
+            ? 'المؤسسة'
+            : 'العميل';
     }
 
     protected static function getCustomerSelectOptionsForType(
