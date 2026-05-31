@@ -112,7 +112,7 @@
 
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
 {{--                <div class="text-sm font-medium text-gray-500">المساحة الإجمالية (هـ)</div>--}}
-                <div class="text-sm font-medium text-gray-500">محموع مساحة المزارع (هـ)</div>
+                <div class="text-sm font-medium text-gray-500">محموع التركيب المحصولي (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalAreaHectares, 2) }}</div>
             </div>
         </div>
@@ -128,7 +128,7 @@
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">الفرع</th>--}}
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">العميل</th>--}}
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">عدد العملاء</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مساحة المزارع (هـ)</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>
                         </tr>
                     </thead>
 
@@ -203,6 +203,7 @@
                                         <td class="px-4 py-3 text-sm text-gray-700">المهندس المسؤول: {{ ' ' . $customer['engineer_name'] }}</td>
 {{--                                        <td class="px-4 py-3 text-right text-sm text-gray-400">-</td>--}}
                                         <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_area_hectares'], 2) }}</td>
+                                        <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_farm_area_hectares'], 2) }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach

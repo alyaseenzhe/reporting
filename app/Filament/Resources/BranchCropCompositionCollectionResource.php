@@ -822,10 +822,15 @@ class BranchCropCompositionCollectionResource extends Resource
                 TextColumn::make('engineer_name')
                     ->label('المهندس المسؤول'),
                 TextColumn::make('total_farm_area_hectares')
-                    ->label('مساحة المزارع (هـ)')
+//                    ->label('مساحة المزارع (هـ)')
+                    ->label(' المزارع (هـ)')
                     ->searchable(),
                 TextColumn::make('cultivation_types_sum_total_area_hectares')
-                    ->label('مساحة الزراعة (هـ)')
+//                    ->label('مساحة الزراعة (هـ)')
+                    ->label(' الزراعة (هـ)')
+                    ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
+                TextColumn::make('items_sum_total_area_hectares')
+                    ->label('التركيب المحصولي (هـ)')
                     ->formatStateUsing(fn ($state): string => number_format((float) ($state ?? 0), 2)),
             ])
             ->filters([
@@ -996,7 +1001,8 @@ class BranchCropCompositionCollectionResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return static::applyCollectionAccessScope(
-            parent::getEloquentQuery()->with(['lead'])->withSum('cropItems as cultivation_types_sum_total_area_hectares', 'total_area_hectares')
+            parent::getEloquentQuery()->with(['lead'])->withSum('cultivationTypes as cultivation_types_sum_total_area_hectares', 'total_area_hectares')
+            ->withSum('cropItems as items_sum_total_area_hectares', 'total_area_hectares' )
         );
     }
 
