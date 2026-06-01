@@ -22,19 +22,19 @@ class ViewBranchCropCompositionCollection extends ViewRecord
 
             Actions\DeleteAction::make(),
 //
-//            Actions\Action::make('cancel')
-////                ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
-//                ->label('عودة')
-//                ->url(static::getResource()::getUrl('index'))
-//                ->color('secondary')
-//                ->icon('heroicon-o-arrow-left'),
-             Actions\Action::make('back')
+            Actions\Action::make('cancel')
+//                ->label(__('filament::resources/pages/edit-record.form.actions.cancel.label'))
                 ->label('عودة')
+                ->url(static::getResource()::getUrl('index'))
                 ->color('secondary')
-                 ->icon('heroicon-o-arrow-left')
-                 ->extraAttributes([
-                     'onclick' => 'history.back()',
-                 ])
+                ->icon('heroicon-o-arrow-left'),
+//             Actions\Action::make('back')
+//                ->label('عودة')
+//                ->color('secondary')
+//                 ->icon('heroicon-o-arrow-left')
+//                 ->extraAttributes([
+//                     'onclick' => 'history.back()',
+//                 ])
         ];
     }
 }
