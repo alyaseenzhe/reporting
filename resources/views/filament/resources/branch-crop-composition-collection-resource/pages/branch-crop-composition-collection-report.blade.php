@@ -143,7 +143,7 @@
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مساحة المزارع (هـ)</th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">أنواع الزراعة (هـ)</th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>
+{{--                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>--}}
                         </tr>
                     </thead>
 
@@ -168,7 +168,7 @@
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_farm_area_hectares'], 2) }}</td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_cultivation_area_hectares'], 2) }}</td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_crop_item_area_hectares'], 2) }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_area_hectares'], 2) }}</td>
+{{--                                <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_area_hectares'], 2) }}</td>--}}
                             </tr>
 
                             @foreach ($crop['branches'] as $branch)
@@ -226,7 +226,7 @@
                                         <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_cultivation_area_hectares'], 2) }}</td>
                                         <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_crop_item_area_hectares'], 2) }}</td>
 {{--                                        <td class="px-4 py-3 text-right text-sm text-gray-400">-</td>--}}
-                                        <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_area_hectares'], 2) }}</td>
+{{--                                        <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($customer['total_area_hectares'], 2) }}</td>--}}
                                     </tr>
                                 @endforeach
                             @endforeach

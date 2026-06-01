@@ -508,7 +508,7 @@ class BranchCropCompositionCollectionResource extends Resource
 //                    ->required(fn (): bool => ! in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
                     ->unique(ignoreRecord: true)
                     ->reactive()
-                    ->placeholder('اختر الفرع أولا ثم ابحث عن العميل')
+                    ->placeholder('اختر الفرع أولا ثم ابحث ')
                     ->options(function (callable $get) use ($customerType): array {
                         return static::getCustomerSelectOptionsForType(
                             $customerType,
@@ -707,34 +707,64 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->maxValue(9999999999.99)
                     ->rules(['numeric', 'min:0.01']),
 
-                DatePicker::make('created_at')
-                    ->label('تاريخ انشاء السجل')
-                    ->hiddenOn('create')
-                    ->disabled(),
-
-                TextInput::make('created_by')
-                    ->label('انشيء بواسطة')
-                    ->hiddenOn('create')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->formatStateUsing(function ($state, ?Model $record): string {
-                        return (string) optional(optional($record)->userCreate)->name;
-                    }),
-
-                DatePicker::make('updated_at')
-                    ->label('تاريخ آخر تعديل')
-                    ->hiddenOn('create')
-                    ->disabled(),
-
-                TextInput::make('updated_by')
-                    ->label('عدل بواسطة')
-                    ->hiddenOn('create')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->formatStateUsing(function ($state, ?Model $record): string {
-                        return (string) optional(optional($record)->userUpdate)->name;
-                    }),
+//                DatePicker::make('created_at')
+//                    ->label('تاريخ انشاء السجل')
+//                    ->hiddenOn('create')
+//                    ->disabled(),
+//
+//                TextInput::make('created_by')
+//                    ->label('انشيء بواسطة')
+//                    ->hiddenOn('create')
+//                    ->disabled()
+//                    ->dehydrated(false)
+//                    ->formatStateUsing(function ($state, ?Model $record): string {
+//                        return (string) optional(optional($record)->userCreate)->name;
+//                    }),
+//
+//                DatePicker::make('updated_at')
+//                    ->label('تاريخ آخر تعديل')
+//                    ->hiddenOn('create')
+//                    ->disabled(),
+//
+//                TextInput::make('updated_by')
+//                    ->label('عدل بواسطة')
+//                    ->hiddenOn('create')
+//                    ->disabled()
+//                    ->dehydrated(false)
+//                    ->formatStateUsing(function ($state, ?Model $record): string {
+//                        return (string) optional(optional($record)->userUpdate)->name;
+//                    }),
             ]),
+            Grid::make(4)
+                ->schema([
+                    DatePicker::make('created_at')
+                        ->label('تاريخ انشاء السجل')
+                        ->hiddenOn('create')
+                        ->disabled(),
+
+                    TextInput::make('created_by')
+                        ->label('انشيء بواسطة')
+                        ->hiddenOn('create')
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->formatStateUsing(function ($state, ?Model $record): string {
+                            return (string) optional(optional($record)->userCreate)->name;
+                        }),
+
+                    DatePicker::make('updated_at')
+                        ->label('تاريخ آخر تعديل')
+                        ->hiddenOn('create')
+                        ->disabled(),
+
+                    TextInput::make('updated_by')
+                        ->label('عدل بواسطة')
+                        ->hiddenOn('create')
+                        ->disabled()
+                        ->dehydrated(false)
+                        ->formatStateUsing(function ($state, ?Model $record): string {
+                            return (string) optional(optional($record)->userUpdate)->name;
+                        }),
+                    ])
         ];
     }
 
