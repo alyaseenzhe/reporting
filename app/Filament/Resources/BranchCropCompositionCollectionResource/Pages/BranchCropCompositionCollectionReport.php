@@ -348,7 +348,10 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 ->pluck('customer_code')
                 ->unique()
                 ->count(),
-            'totalAreaHectares' => collect($reportRows)->sum('total_area_hectares'),
+//            'totalAreaHectares' => collect($reportRows)->sum('total_area_hectares'),
+            'totalFarmAreaHectares' => collect($reportRows)->sum('total_farm_area_hectares'),
+            'totalCultivationAreaHectares' => collect($reportRows)->sum('total_cultivation_area_hectares'),
+            'totalCropAreaHectares' => collect($reportRows)->sum('total_crop_item_area_hectares'),
         ];
     }
 
@@ -376,6 +379,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery();
         $cropCategoryIds = $this->getEffectiveFilterValues($this->filters['crop_category_ids'] ?? []);
         $cropItemIds = $this->getEffectiveFilterValues($this->filters['crop_item_ids'] ?? []);
+        $cultivationAreaTotals = DB::table('branch_crop_collection_cultivation_types')
+            ->selectRaw('branch_crop_composition_collection_id, SUM(total_area_hectares) as total_cultivation_area_hectares')
+            ->groupBy('branch_crop_composition_collection_id');
 
         return BranchCropCollectionItem::query()
             ->selectRaw('
@@ -389,9 +395,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 accessible_collections.sap_customer_code,
                 accessible_collections.sap_customer_name,
                 accessible_collections.engineer_name,
+                accessible_collections.total_farm_area_hectares,
                 categories.name as category_name,
                 crops.name as crop_name,
                 branches.name as branch_name,
+                COALESCE(cultivation_area_totals.total_cultivation_area_hectares, 0) as total_cultivation_area_hectares,
                 SUM(branch_crop_collection_items.total_area_hectares) as total_area_hectares
             ')
             ->joinSub($accessibleCollections, 'accessible_collections', function ($join): void {
@@ -399,6 +407,13 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'accessible_collections.id',
                     '=',
                     'branch_crop_collection_items.branch_crop_composition_collection_id'
+                );
+            })
+            ->leftJoinSub($cultivationAreaTotals, 'cultivation_area_totals', function ($join): void {
+                $join->on(
+                    'cultivation_area_totals.branch_crop_composition_collection_id',
+                    '=',
+                    'accessible_collections.id'
                 );
             })
             ->leftJoin('crop_catalog_categories as categories', 'categories.id', '=', 'branch_crop_collection_items.crop_catalog_category_id')
@@ -428,9 +443,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'accessible_collections.sap_customer_code',
                 'accessible_collections.sap_customer_name',
                 'accessible_collections.engineer_name',
+                'accessible_collections.total_farm_area_hectares',
                 'categories.name',
                 'crops.name',
                 'branches.name',
+                'cultivation_area_totals.total_cultivation_area_hectares',
             ])
             ->orderBy('categories.name')
             ->orderBy('crops.name')
@@ -452,10 +469,14 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'category_name' => trim((string) ($row->category_name ?: '-')),
                     'crop_name' => trim((string) ($row->crop_name ?: '-')),
                     'branch_name' => trim((string) ($row->branch_name ?: '-')),
+                    'total_farm_area_hectares' => round((float) ($row->total_farm_area_hectares ?? 0), 2),
+                    'total_cultivation_area_hectares' => round((float) ($row->total_cultivation_area_hectares ?? 0), 2),
+                    'total_crop_item_area_hectares' => round((float) $row->total_area_hectares, 2),
                     'total_area_hectares' => round((float) $row->total_area_hectares, 2),
                 ];
             });
     }
+
     protected function buildHierarchy(Collection $rows): array
     {
         return $rows
@@ -477,6 +498,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                                     'sap_customer_code' => $customerRow['sap_customer_code'],
                                     'sap_customer_name' => $customerRow['sap_customer_name'],
                                     'engineer_name' => $customerRow['engineer_name'],
+                                    'total_farm_area_hectares' => $customerRow['total_farm_area_hectares'],
+                                    'total_cultivation_area_hectares' => $customerRow['total_cultivation_area_hectares'],
+                                    'total_crop_item_area_hectares' => $customerRow['total_crop_item_area_hectares'],
                                     'total_area_hectares' => $customerRow['total_area_hectares'],
                                 ];
                             })
@@ -491,6 +515,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                             'key' => 'branch-' . $firstBranchRow['branch_id'],
                             'branch_name' => $firstBranchRow['branch_name'],
                             'customers_count' => collect($customers)->pluck('customer_code')->unique()->count(),
+                            'total_farm_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_farm_area_hectares'),
+                            'total_cultivation_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_cultivation_area_hectares'),
+                            'total_crop_item_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_crop_item_area_hectares'),
                             'total_area_hectares' => round((float) $branchGroup->sum('total_area_hectares'), 2),
                             'customers' => $customers,
                         ];
@@ -504,6 +531,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'crop_category' => $firstRow['category_name'],
                     'crop_name' => $firstRow['crop_name'],
                     'customers_count' => $cropGroup->pluck('customer_code')->unique()->count(),
+                    'total_farm_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_farm_area_hectares'),
+                    'total_cultivation_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_cultivation_area_hectares'),
+                    'total_crop_item_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_crop_item_area_hectares'),
                     'total_area_hectares' => round((float) $cropGroup->sum('total_area_hectares'), 2),
                     'branches' => $branches,
                 ];
@@ -514,6 +544,11 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
             ])
             ->values()
             ->all();
+    }
+
+    protected function sumAreaMetric(Collection $rows, string $key): float
+    {
+        return round((float) $rows->sum($key), 2);
     }
 
     protected function buildBranchAreaPieChartData(Collection $rows): array
@@ -569,6 +604,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'branch_crop_composition_collections.customer_code',
                 'branch_crop_composition_collections.customer_name',
                 'branch_crop_composition_collections.engineer_name',
+                'branch_crop_composition_collections.total_farm_area_hectares',
                 'branch_crop_composition_collections.type',
             ])
             ->selectRaw('branch_crop_composition_collections.customer_code as sap_customer_code')
