@@ -117,4 +117,5 @@ Route::middleware([
             return $e->getMessage();
         }
     });
+    Route::view('/offline-experiment', 'offline-experiment');
 });

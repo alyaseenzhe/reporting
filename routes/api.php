@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\OfflineExperimentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::post('/offline/experiments/sync', [OfflineExperimentController::class, 'sync']);
 //Route::get('customers', [App\Http\Controllers\Api\CustomersController::class, 'index']);
 
 //Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
