@@ -19,6 +19,7 @@ use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -174,7 +175,8 @@ class ExpenseResource extends Resource
                                                 $set('total', static::calculateTotal($get('amount'), $state));
                                             })
                                             ->maxValue(9999999999.99)
-                                            ->rules(['numeric', 'min:0.01']),
+                                            ->default(0)
+                                            ->rules(['numeric', 'min:0']),
 
                                         TextInput::make('total')
                                             ->label('Total')
@@ -319,6 +321,32 @@ class ExpenseResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = Auth::user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (static::isAdminUser()) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $query) use ($user): void {
+            $query->where('user_id', $user->id);
+
+            if (filled($user->emp_code)) {
+                $managedEmployeeIds = User::where('manager_id', $user->emp_code)->pluck('id');
+
+                if ($managedEmployeeIds->isNotEmpty()) {
+                    $query->orWhereIn('user_id', $managedEmployeeIds);
+                }
+            }
+        });
+    }
+
 
 
 
@@ -339,7 +367,7 @@ class ExpenseResource extends Resource
 //
     public static function canEdit(Model $record): bool
     {
-                if (static::isAdminUser()) {
+        if (static::isAdminUser()) {
             return true;
         }
 
