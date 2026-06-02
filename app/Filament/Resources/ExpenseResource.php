@@ -58,7 +58,7 @@ class ExpenseResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('معلومات التركيب المحصولي للعملاء')
+                Section::make('المطالبات المالية')
                     ->schema([
                         Grid::make(4)->schema([
                             DatePicker::make('created_at')
@@ -68,7 +68,14 @@ class ExpenseResource extends Resource
 //
                             Select::make('user_id')->label('اسم الموظف')
                                 ->relationship('user', 'name'),
+
+                            Select::make('status')->label('الحالة')
+                                ->options(static::getStatusOptions())
+                                ->hiddenOn('create')
+                                ->default('1')
+                                ->disablePlaceholderSelection(),
                         ]),
+
                     ])->hiddenOn('create'),
 //                Section::make('معلومات التركيب المحصولي للعملاء')
 //                    ->schema([
@@ -109,11 +116,7 @@ class ExpenseResource extends Resource
 ////                                ->label('الوصف')
 ////                                ->columnSpan(2)->required(),
 //
-//                            Select::make('status')->label('الحالة')
-//                                ->options(static::getStatusOptions())
-//                                ->hiddenOn('create')
-//                                ->default('1')
-//                                ->disablePlaceholderSelection(),
+
 //
 ////                TextInput::make('created_by')
 ////                    ->label('تم انشاؤه بواسطة')
@@ -323,6 +326,11 @@ class ExpenseResource extends Resource
     {
         return auth()->check();
     }
+    public static function canView(Model $record): bool
+    {
+        return static::canEdit($record);
+    }
+
 //
     public static function canCreate(): bool
     {
@@ -341,7 +349,7 @@ class ExpenseResource extends Resource
         }
 
         // Manager can edit employee records
-        return User::where('manager_id', auth()->id())
+        return User::where('manager_id', auth()->user()->emp_code)
                 ->where('id', $record->user_id)
                 ->exists();
     }

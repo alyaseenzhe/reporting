@@ -339,7 +339,7 @@
                             data-outstanding  ="{{floatval($record["Outstanding Receivables"])/1000}}"
                             data-outstanding_per="{{(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? number_format(((floatval($record["Outstanding Receivables"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])))*100) : 0}}"
                             data-due_per ="{{number_format((floatval($record["Outstanding Receivables Over 120"]) / floatval($record["Outstanding Receivables"])) * 100)}}"
-                            data-due_value="  {{floatval($record["Outstanding Receivables Over 120"]) }}"
+                            data-due_value="  {{floatval($record["Outstanding Receivables Over 120"]) /1000 }}"
                             data-stock ="{{ $record['Stock Value']/1000 }}"
                             data-stock_sales="{{ (floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"])) != 0 ? ((floatval($record["Stock Value"]))/(floatval($record["S1 Sales Year"])+floatval($record["S2 Sales Year"]))*100) : 0 }}"
                             data-dist_num ="{{ $record["TotalDistNum"] }}"
