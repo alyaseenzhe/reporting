@@ -81,11 +81,13 @@ class ListCashStatement extends Component
     public function proccess_report() {
 
         $branches = json_decode(Auth::user()->branches);
-
+        try {
         $customer = AccMast::where('Code', $this->customer_code)
             ->whereIn('Accmast_Department', $branches)
             ->count();
-
+        } catch (\Throwable $e) {
+            $customer = 1;
+        }
         if ($customer < 1) {
             $this->results = [];
 //            return $this->results;
@@ -132,7 +134,7 @@ class ListCashStatement extends Component
 
         $this->results = [];
         $this->sap_results = [];
-
+        try {
         $query = DB::connection('sqlsrv')->select("SELECT Code, Name, VoucherNo, VoucherDate,item_code, qty, rate, Arabic_Name, BaseUnits as Unit, svalue as item_value, (Value/1.15) as Value, customer_code, emp_name FROM (
 select accmast.code,accmast.name, ProductMast.Code as item_code , SInvoice.Rate, productmast.Arabic_Name, ProductMast.BaseUnits, PaymentMethodDetails.*
 ,ActualQty as qty, (sinvoice.Value*exchangerate+extrafieldstotal) as svalue
@@ -168,7 +170,9 @@ order by VoucherDate asc", [
 
         $this->results = json_decode(json_encode($query), true);
 
-
+        } catch (\Throwable $e) {
+            $this->results = [];
+        }
 
         $this->sapQuery($start_date, $end_date, $this->customer_code);
 //        return $this->results;
