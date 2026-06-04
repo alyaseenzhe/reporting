@@ -111,15 +111,15 @@
             </div>
 
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <div class="text-sm font-medium text-gray-500">محموع المزارع (هـ)</div>
+                <div class="text-sm font-medium text-gray-500">مجموع المزارع (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalFarmAreaHectares, 2) }}</div>
             </div>
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <div class="text-sm font-medium text-gray-500">محموع أنواع الزراعة (هـ)</div>
+                <div class="text-sm font-medium text-gray-500">مجموع أنواع الزراعة (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalCultivationAreaHectares, 2) }}</div>
             </div>
             <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <div class="text-sm font-medium text-gray-500">محموع التركيب المحصولي (هـ)</div>
+                <div class="text-sm font-medium text-gray-500">مجموع التركيب المحصولي (هـ)</div>
                 <div class="mt-2 text-2xl font-semibold text-gray-900">{{ number_format($totalCropAreaHectares, 2) }}</div>
             </div>
 {{--            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">--}}
@@ -141,9 +141,9 @@
 {{--                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">العميل</th>--}}
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">عدد العملاء</th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مساحة المزارع (هـ)</th>
-                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">أنواع الزراعة (هـ)</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">مساحة أنواع الزراعة (هـ) </th>
                             <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>
-{{--                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>--}}
+                            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">التركيب المحصولي (هـ)</th>
                         </tr>
                     </thead>
 
@@ -168,7 +168,7 @@
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_farm_area_hectares'], 2) }}</td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_cultivation_area_hectares'], 2) }}</td>
                                 <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_crop_item_area_hectares'], 2) }}</td>
-{{--                                <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_area_hectares'], 2) }}</td>--}}
+                                <td class="px-4 py-3 text-right text-sm font-medium text-gray-900">{{ number_format($crop['total_area_hectares'], 2) }}</td>
                             </tr>
 
                             @foreach ($crop['branches'] as $branch)
