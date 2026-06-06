@@ -54,6 +54,14 @@
     <button onclick="saveOffline()">حفظ</button>
 
     <div class="status" id="status"></div>
+
+    <button onclick="getLocation()">Get My Location</button>
+    <p id="output"></p>
+
+    <script>
+
+    </script>
+
 </div>
 
 <script>
@@ -212,6 +220,20 @@
     window.addEventListener('offline', function () {
         setStatus('لا يوجد إنترنت، سيتم الحفظ محليًا');
     });
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            document.getElementById("output").innerText = "Geolocation not supported";
+        }
+    }
+
+    function showPosition(position) {
+        document.getElementById("output").innerText =
+            "Latitude: " + position.coords.latitude +
+            "\nLongitude: " + position.coords.longitude;
+    }
 </script>
 
 </body>

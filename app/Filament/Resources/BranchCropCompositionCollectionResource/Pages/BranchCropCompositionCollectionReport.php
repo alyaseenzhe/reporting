@@ -379,6 +379,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
         $accessibleCollections = $this->getFilteredAccessibleCollectionsQuery();
         $cropCategoryIds = $this->getEffectiveFilterValues($this->filters['crop_category_ids'] ?? []);
         $cropItemIds = $this->getEffectiveFilterValues($this->filters['crop_item_ids'] ?? []);
+        $cropAreaTotals = DB::table('branch_crop_collection_items')
+            ->selectRaw('branch_crop_composition_collection_id, SUM(total_area_hectares) as total_crop_item_area_hectares')
+            ->groupBy('branch_crop_composition_collection_id');
         $cultivationAreaTotals = DB::table('branch_crop_collection_cultivation_types')
             ->selectRaw('branch_crop_composition_collection_id, SUM(total_area_hectares) as total_cultivation_area_hectares')
             ->groupBy('branch_crop_composition_collection_id');
@@ -399,6 +402,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 categories.name as category_name,
                 crops.name as crop_name,
                 branches.name as branch_name,
+                COALESCE(crop_area_totals.total_crop_item_area_hectares, 0) as collection_total_crop_item_area_hectares,
                 COALESCE(cultivation_area_totals.total_cultivation_area_hectares, 0) as total_cultivation_area_hectares,
                 SUM(branch_crop_collection_items.total_area_hectares) as total_area_hectares
             ')
@@ -407,6 +411,13 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'accessible_collections.id',
                     '=',
                     'branch_crop_collection_items.branch_crop_composition_collection_id'
+                );
+            })
+            ->leftJoinSub($cropAreaTotals, 'crop_area_totals', function ($join): void {
+                $join->on(
+                    'crop_area_totals.branch_crop_composition_collection_id',
+                    '=',
+                    'accessible_collections.id'
                 );
             })
             ->leftJoinSub($cultivationAreaTotals, 'cultivation_area_totals', function ($join): void {
@@ -447,6 +458,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 'categories.name',
                 'crops.name',
                 'branches.name',
+                'crop_area_totals.total_crop_item_area_hectares',
                 'cultivation_area_totals.total_cultivation_area_hectares',
             ])
             ->orderBy('categories.name')
@@ -471,7 +483,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'branch_name' => trim((string) ($row->branch_name ?: '-')),
                     'total_farm_area_hectares' => round((float) ($row->total_farm_area_hectares ?? 0), 2),
                     'total_cultivation_area_hectares' => round((float) ($row->total_cultivation_area_hectares ?? 0), 2),
-                    'total_crop_item_area_hectares' => round((float) $row->total_area_hectares, 2),
+                    'total_crop_item_area_hectares' => round((float) ($row->collection_total_crop_item_area_hectares ?? 0), 2),
                     'total_area_hectares' => round((float) $row->total_area_hectares, 2),
                 ];
             });

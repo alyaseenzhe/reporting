@@ -191,7 +191,7 @@ ORDER BY "Account Code2"
 ORDER BY 1;
 ';
 
-//    dd($sql);
+    dd($sql);
 
 
             $result = odbc_exec($conn, $sql);

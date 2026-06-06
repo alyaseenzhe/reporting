@@ -311,6 +311,6 @@ group by studentmast.code,studentmast.arabic_name,SpecialityCode,areamast.Arabic
         ]);
 
         $this->result_tbl2 = json_decode(json_encode($tbl2_result), true);
-//        dd($this->result_tbl2);
+//      /  dd($this->result_tbl2);
     }
 }
