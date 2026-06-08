@@ -224,6 +224,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                         return AgriType::query()
                                             ->orderBy('name')
                                             ->get(['id', 'name'])
+                                            ->filter(fn (AgriType $agriType): bool => filled($agriType->name))
                                             ->reject(function (AgriType $agriType) use ($selectedAgriTypeIds): bool {
                                                 if (static::isRepeatableAgriType($agriType)) {
                                                     return false;
@@ -232,7 +233,9 @@ class BranchCropCompositionCollectionResource extends Resource
                                                 return in_array($agriType->getKey(), $selectedAgriTypeIds, false)
                                                     || in_array((string) $agriType->getKey(), $selectedAgriTypeIds, true);
                                             })
-                                            ->pluck('name', 'id')
+                                            ->mapWithKeys(fn (AgriType $agriType): array => [
+                                                $agriType->getKey() => trim((string) $agriType->name),
+                                            ])
                                             ->toArray();
                                     })
                                     ->reactive()
@@ -248,6 +251,61 @@ class BranchCropCompositionCollectionResource extends Resource
                                     ->maxValue(9999999999.99)
                                     ->columnSpan(['default' => 1, 'md' => 3])
                                     ->rules(['numeric', 'min:0.01']),
+                            Select::make('agri_detail_id')
+                                ->label('تفاصيل الزراعة')
+//                                ->searchable()
+//                                ->preload()
+                                ->reactive()
+                                ->columnSpan(['default' => 1, 'md' => 3])
+                                ->options(function (callable $get): array {
+                                    $agriTypeId = $get('agri_type_id');
+
+                                    if (blank($agriTypeId)) {
+                                        return [];
+                                    }
+
+                                    $currentAgriDetailId = $get('agri_detail_id');
+                                    $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
+                                        ->pluck('agri_detail_id')
+                                        ->filter()
+                                        ->reject(function ($agriDetailId) use ($currentAgriDetailId) {
+                                            return (string) $agriDetailId === (string) $currentAgriDetailId;
+                                        })
+                                        ->values()
+                                        ->all();
+
+                                    $query = AgriDetais::query()
+                                        ->where('agri_type_id', $agriTypeId)
+                                        ->whereNotNull('details')
+                                        ->where('details', '!=', '')
+                                        ->orderBy('details');
+
+                                    if (count($selectedAgriDetailIds)) {
+                                        $query->whereNotIn('id', $selectedAgriDetailIds);
+                                    }
+
+                                    return $query
+                                        ->get(['id', 'details'])
+                                        ->mapWithKeys(fn (AgriDetais $agriDetail): array => [
+                                            $agriDetail->getKey() => trim((string) $agriDetail->details),
+                                        ])
+                                        ->toArray();
+                                })
+
+                                ->hidden(function (callable $get): bool {
+                                    $agriDetailId = $get('agri_type_id');
+
+                                    if (blank($agriDetailId)) {
+                                        return true;
+                                    }
+
+                                    return ! AgriDetais::query()
+                                        ->where('agri_type_id', $agriDetailId)
+                                        ->whereNotNull('details')
+                                        ->where('details', '!=', '')
+                                        ->exists();
+//                                    return ! optional(AgriType::find($agriDetailId))->has_details;
+                                }),
 
                             TextInput::make('unit_count')
                                 ->label('عدد الوحدات')
@@ -265,41 +323,7 @@ class BranchCropCompositionCollectionResource extends Resource
                                 })
                                 ->rules(['nullable', 'numeric', 'min:0']),
 
-                            Select::make('agri_detail_id')
-                                ->label('تفاصيل الزراعة')
-//                                ->searchable()
-//                                ->preload()
-                                ->reactive()
-                                ->columnSpan(['default' => 1, 'md' => 3])
-                                ->options(function (callable $get): array {
-                                    $currentAgriDetailId = $get('agri_detail_id');
-                                    $selectedAgriDetailIds = collect($get('../../cultivation_types') ?? [])
-                                        ->pluck('agri_detail_id')
-                                        ->filter()
-                                        ->reject(function ($agriDetailId) use ($currentAgriDetailId) {
-                                            return (string) $agriDetailId === (string) $currentAgriDetailId;
-                                        })
-                                        ->values()
-                                        ->all();
 
-                                    $query = AgriDetais::query()->orderBy('details');
-
-                                    if (count($selectedAgriDetailIds)) {
-                                        $query->whereNotIn('id', $selectedAgriDetailIds);
-                                    }
-
-                                    return $query->pluck('details', 'id')->toArray();
-                                })
-
-                                ->hidden(function (callable $get): bool {
-                                    $agriDetailId = $get('agri_type_id');
-
-                                    if (! $agriDetailId) {
-                                        return true;
-                                    }
-
-                                    return ! optional(AgriType::find($agriDetailId))->has_details;
-                                }),
 
 
                         ]),
