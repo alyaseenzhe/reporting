@@ -473,6 +473,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 $set('customer_code', null);
                 $set('lead_id', null);
                 $set('customer_name', null);
+                $set('lead_code', null);
                 $set('lead_name', null);
                 $set('lead_phone', null);
                 $set('lead_email', null);
@@ -507,6 +508,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         $set('customer_code', null);
                         $set('lead_id', null);
                         $set('customer_name', null);
+                        $set('lead_code', null);
                         $set('lead_name', null);
                         $set('lead_phone', null);
                         $set('lead_email', null);
@@ -688,9 +690,18 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Lead::query()->whereKey($value)->value('name');
                     }),
+                TextInput::make('lead_code')
+                    ->label('كود العميل')
+                    ->columnSpan(['default' => 1])
+//                    ->hiddenOn('create')
+//                    ->hidden(fn (): bool =>  $customerType == static::CUSTOMER_TYPE_REGISTERED)
+                    ->hidden(fn (callable $get, string $context): bool =>
+                        $context !== 'view'
+                        || $get('customer_type') == static::CUSTOMER_TYPE_REGISTERED
+                    ),
                 TextInput::make('lead_name')
                     ->label('اسم العميل ')
-                    ->columnSpan(['default' => 1, 'md' => 2])
+                    ->columnSpan(['default' => 1])
                     ->hidden(fn (): bool => $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_REGISTERED)
                     ->maxLength(255),
@@ -1157,6 +1168,7 @@ class BranchCropCompositionCollectionResource extends Resource
         }
 
         $attributes = [
+            'code' => trim((string) (($data['lead_code'] ) ?? '')),
             'name' => trim((string) (($data['lead_name'] ?? $data['customer_name']) ?? '')),
             'phone' => static::normalizeOptionalFormValue($data['lead_phone'] ?? null),
             'email' => static::normalizeOptionalFormValue($data['lead_email'] ?? null),
@@ -1319,6 +1331,7 @@ class BranchCropCompositionCollectionResource extends Resource
     {
         if (in_array($record->type ?? null, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true)) {
             $data['lead_id'] = $record->lead_id;
+            $data['lead_code'] = optional($record->lead)->code;
             $data['lead_name'] = optional($record->lead)->name;
             $data['lead_phone'] = optional($record->lead)->phone;
             $data['lead_email'] = optional($record->lead)->email;
@@ -1335,6 +1348,7 @@ class BranchCropCompositionCollectionResource extends Resource
             $customer = static::getCachedSapCustomer($record->customer_code);
 
             $data['engineer_name'] = $customer['slp_name'] ?? ($record->engineer_name ?? null);
+            $data['lead_code'] = null;
             $data['lead_name'] = null;
             $data['lead_phone'] = null;
             $data['lead_email'] = null;
