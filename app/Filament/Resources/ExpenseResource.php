@@ -18,6 +18,8 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -74,7 +76,8 @@ class ExpenseResource extends Resource
                                 ->options(static::getStatusOptions())
                                 ->hiddenOn('create')
                                 ->default('1')
-                                ->disablePlaceholderSelection(),
+//                                ->disablePlaceholderSelection()
+                            ->disabled(fn () => auth()->user()->user_group->id != 6),
                         ]),
 
                     ])->hiddenOn('create'),
@@ -224,6 +227,17 @@ class ExpenseResource extends Resource
 //                    ->label('الضريبة'),
                 TextColumn::make('total')
                     ->label('الاجمالي'),
+
+//                 TextColumn::make('status')
+//                  ->label('الحالة')
+
+                SelectColumn::make('status')
+                    ->label('الحالة')
+                    ->options([
+                        1 => 'تحت الإجراء',
+                        2 => 'تمت الموافقة',
+                        3 => 'مرفوضة',
+                    ])->disabled()
             ])
             ->filters([
                 //
@@ -333,6 +347,10 @@ class ExpenseResource extends Resource
         if (static::isAdminUser()) {
             return $query;
         }
+        if(auth()->user()->user_group->id == 6 || auth()->user()->user_group->id == 5){
+
+            return $query;
+        }
 
         return $query->where(function (Builder $query) use ($user): void {
             $query->where('user_id', $user->id);
@@ -373,6 +391,11 @@ class ExpenseResource extends Resource
 
         // Own record
         if ($record->user_id === auth()->id()) {
+            return true;
+        }
+
+        if(auth()->user()->user_group->id == 6 || auth()->user()->user_group->id == 5){
+
             return true;
         }
 

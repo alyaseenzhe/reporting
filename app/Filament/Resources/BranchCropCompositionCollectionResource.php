@@ -475,6 +475,7 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->options(function () {
                         return static::getAuthorizedBranchesQuery()
                             ->orderBy('name')
+//                            ->pluck('name', 'id')
                             ->pluck('name', 'id')
                             ->toArray();
                     })
@@ -1703,9 +1704,9 @@ class BranchCropCompositionCollectionResource extends Resource
         }
 
         foreach (static::getCustomerPrefixesForBranchCode($branchCode) as $prefix) {
-//            if (str_starts_with($customerCode, $prefix)) {
+            if (str_starts_with($customerCode, $prefix)) {
                 return true;
-//            }
+            }
         }
 
         return false;
