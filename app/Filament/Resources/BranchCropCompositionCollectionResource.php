@@ -526,23 +526,55 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->label(static::getCustomerCodeFieldLabel($customerType))
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->searchable()
-                    ->preload(false)
-                    ->optionsLimit(50)
-                   // ->optionsLimit(10000)
+//                    ->preload(false)
+                    ->preload()
+                    //->optionsLimit(50)
+                   ->optionsLimit(1000)
                     ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
 //                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
 //                    ->required(fn (): bool => ! in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
                     ->unique(ignoreRecord: true)
                     ->reactive()
-                    ->placeholder('اختر الفرع أولا ثم ابحث ')
+//                    ->placeholder('اختر الفرع أولا ثم ابحث ')
+                    ->placeholder('ابدأ بكتابة الكود للبحث ')
+//                    ->options(function (callable $get) use ($customerType): array {
+//                        return static::getCustomerSelectOptionsForType(
+//                            $customerType,
+//                            static::resolveBranchCodeFromState($get('branch_id')),
+//                            '',
+//                            $get('customer_code'),
+//                            null
+////                            1000
+//                        );
+//                    })
+//                                        ->options([])
+//                    ->getSearchResultsUsing(function (string $search, callable $get) use ($customerType): array {
+//                        return static::getCustomerSelectOptionsForType(
+//                            $customerType,
+//                            static::resolveBranchCodeFromState($get('branch_id')),
+//                            $search,
+//                            $get('customer_code'),
+//                            1000
+//                        );
+//                     })
+
                     ->options(function (callable $get) use ($customerType): array {
                         return static::getCustomerSelectOptionsForType(
                             $customerType,
                             static::resolveBranchCodeFromState($get('branch_id')),
                             '',
                             $get('customer_code'),
-                            null
+                            1000
+                        );
+                    })
+                    ->getSearchResultsUsing(function (string $search, callable $get) use ($customerType): array {
+                        return static::getCustomerSelectOptionsForType(
+                            $customerType,
+                            static::resolveBranchCodeFromState($get('branch_id')),
+                            $search,
+                            $get('customer_code'),
+                            1000
                         );
                     })
                     ->afterStateUpdated(function ($state, callable $set): void {
@@ -556,6 +588,7 @@ class BranchCropCompositionCollectionResource extends Resource
                             $customer['slp_name'] ?? null
                         );
                     })
+
                     ->getOptionLabelUsing(function ($value): ?string {
 //                        $customer = app(SapCustomerLookupServiceInterface::class)
 //                            ->findCustomerByCode($value);
