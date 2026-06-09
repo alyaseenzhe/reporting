@@ -15,6 +15,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
      */
     public function searchCustomers(?string $search, array $customerCodePrefixes = [], ?int $limit = 50): array
     {
+
         return collect($this->searchCustomerRows($search, $customerCodePrefixes, $limit))
             ->mapWithKeys(function (array $customer): array {
                 return [
@@ -38,6 +39,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         }
 
         try {
+
             return Cache::remember(
                 'sap_customers_search_rows_v2_' . md5($search . '|' . implode(',', $customerCodePrefixes) . '|' . ($limit ?? 'all')),
                 now()->addMinutes(10),
@@ -110,19 +112,44 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         if ($limit !== null) {
             $query .= ' LIMIT ' . $limit;
         }
+        $rows = $this->querySapRows($query, $limit);
 
-        return collect($this->querySapRows($query, $limit))
+//        dd([
+//            'query' => $query,
+//            'rows_count' => count($rows),
+//            'first_5_rows' => array_slice($rows, 0, 5),
+//        ]);
+
+        return collect($rows)
             ->map(function (array $row): array {
+                $code = (string) ($row['CardCode'] ?? '');
+                $name = (string) ($row['CardName'] ?? '');
+
                 return [
-                    'code' => $row['CardCode'],
-                    'name' => $row['CardName'],
+                    'code' => $code,
+                    'name' => $name,
                     'slp_code' => $row['SlpCode'] ?? null,
                     'slp_name' => $row['SlpName'] ?? null,
                     'property_1' => ($row['QryGroup1'] ?? null) === 'Y',
-                    'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
+                    'label' => $this->formatLabel($code, $name),
                 ];
             })
+            ->filter(fn (array $customer): bool => $customer['code'] !== '')
+            ->values()
             ->toArray();
+         //dd($query);
+//        return collect($this->querySapRows($query, $limit))
+//            ->map(function (array $row): array {
+//                return [
+//                    'code' => $row['CardCode'],
+//                    'name' => $row['CardName'],
+//                    'slp_code' => $row['SlpCode'] ?? null,
+//                    'slp_name' => $row['SlpName'] ?? null,
+//                    'property_1' => ($row['QryGroup1'] ?? null) === 'Y',
+//                    'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
+//                ];
+//            })
+//            ->toArray();
     }
 
     protected function findCustomerByCodeFromSap(string $customerCode): ?array
