@@ -171,7 +171,7 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
 
         return [
             'code' => $row['CardCode'],
-            'name' => $row['CardName'],
+            'name' => $row['CardName'] ?? null,
             'slp_code' => $row['SlpCode'] ?? null,
             'slp_name' => $row['SlpName'] ?? null,
             'property_1' => ($row['QryGroup1'] ?? null) === 'Y',

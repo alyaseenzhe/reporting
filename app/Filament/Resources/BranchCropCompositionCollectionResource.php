@@ -868,6 +868,7 @@ class BranchCropCompositionCollectionResource extends Resource
         );
 
         if ($customerType === static::CUSTOMER_TYPE_REDISTRIBUTION) {
+
             $customers = static::filterRedistributionCustomerRows($customers);
         }
 
@@ -1550,6 +1551,13 @@ class BranchCropCompositionCollectionResource extends Resource
         $customers = app(SapCustomerLookupServiceInterface::class)
             ->searchCustomerRows($search, $customerPrefixes, $limit);
 
+//        dd([
+//            'branchCode' => $branchCode,
+//            'search' => $search,
+//            'prefixes' => $customerPrefixes,
+//            'count_before_filters' => count($customers),
+//            'sample_before_filters' => array_slice($customers, 0, 5),
+//        ]);
         $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
         $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode);
         $customers = static::filterCustomerRowsForCreatePermission($customers);
