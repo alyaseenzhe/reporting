@@ -209,7 +209,8 @@
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                 <div class="text-sm">
 {{--                                    طلبات الشراء--}}
-                                    التسعيرة
+{{--                                    التسعيرة--}}
+                                    طلب الشراء
                                     {{--                                <br>--}}
                                     {{--                                @if($record["OpenQty"])--}}
                                     {{--                                    <span class="text-xs">({{ $record["DocDueDate"]? $record["DocDueDate"]: "N/A" }}){{intval($record->count_purchase_order) > 1 ? "*" : ""}} </span>--}}

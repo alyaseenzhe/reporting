@@ -33,11 +33,16 @@
                 طلبات الشراء
             </div>
         </th>
-{{--        <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">--}}
-{{--            <div class="text-sm">--}}
-{{--                تاريخ الوصول--}}
-{{--            </div>--}}
-{{--        </th>--}}
+        <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">
+            <div class="text-sm">
+                امر الشراء
+            </div>
+        </th>
+        {{--        <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">--}}
+        {{--            <div class="text-sm">--}}
+        {{--                تاريخ الوصول--}}
+        {{--            </div>--}}
+        {{--        </th>--}}
         <th style="background-color: #FFC000; border: 2px solid black; z-index: 10" class="border p-2">
             <div class="text-sm">المتاح</div>
         </th>
@@ -161,7 +166,10 @@
                     <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                     <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
                     <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                    <td  class="w-full text-sm text-center">{{ number_format(intval($record["OpenQoutation"])) }}</td>
+                    {{--                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder']) }}</td>
+{{--                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
 {{--                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
                     <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
                     <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
@@ -208,7 +216,10 @@
                         <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                         <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
                         <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
-                        <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                        <td  class="w-full text-sm text-center">{{ number_format(intval($record["OpenQoutation"])) }}</td>
+                        {{--                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
+                        <td  class="w-full text-sm text-center">{{ intval($record['OnOrder']) }}</td>
+{{--                        <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
 {{--                        <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
                         <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
                         <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
@@ -255,8 +266,11 @@
                     <td  class="w-full text-sm text-center">{{ $record['LeadTime'] }}</td>
                     <td  class="w-full text-sm text-center">{{ $dist_days }}</td>
                     <td  class="w-full text-sm text-center">{{ ceil($full_days/30) }}</td>
-                    <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
-                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
+                     <td  class="w-full text-sm text-center">{{ $record['OnHand'] }}</td>
+                     <td  class="w-full text-sm text-center">{{ number_format(intval($record["OpenQoutation"])) }}</td>
+{{--                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
+                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder']) }}</td>
+{{--                    <td  class="w-full text-sm text-center">{{ intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>--}}
 {{--                    <td  class="w-full text-sm text-center">({{ $record['purchase_arrival_date']? $record['purchase_arrival_date']: "N/A" }}){{intval($record['count_purchase_order']) > 1 ? "*" : ""}}</td>--}}
                     <td  class="w-full text-sm text-center">{{ intval($record['OnHand']) + intval($record['OnOrder'])+intval($record['OpenQoutation']) }}</td>
                     <td  class="w-full text-sm text-center">{{ $record['U_SafetyStock'] }}</td>
