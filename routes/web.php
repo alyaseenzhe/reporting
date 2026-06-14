@@ -118,4 +118,6 @@ Route::middleware([
         }
     });
     Route::view('/offline-experiment', 'offline-experiment');
+
+    Route::get('/stock-coverage', \App\Http\Livewire\StockCoverage::class)->name('stock.coverage');
 });
