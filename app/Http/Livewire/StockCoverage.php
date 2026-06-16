@@ -302,6 +302,7 @@ class StockCoverage extends Component
                             'BranchId' => $row['BPLId'],
                             'BranchName' => $row['BPLName'],
                             'InventoryQuantity' => $branchRows->sum('InventoryQuantity'),
+//                            'BasePrice' => $branchRows->sum('BasePrice'),
                             'BasePrice' => $branchRows->sum('BasePrice'),
                             'Cost' => $branchRows->sum('Cost'),
                             'InventoryCost' => $branchRows->sum('InventoryCost'),
@@ -338,7 +339,8 @@ class StockCoverage extends Component
                     'mrkt_type' => $itemMeta['mrkt_type'],
                     'Speciality' => $itemMeta['Speciality'],
                     'InventoryQuantity' => $itemRows->sum('InventoryQuantity'),
-                    'BasePrice' => $itemRows->sum('BasePrice'),
+//                    'BasePrice' => $itemRows->sum('BasePrice'),
+                    'BasePrice' => $itemMeta['BasePrice'],
                     'Cost' => $itemRows->sum('Cost'),
                     'InventoryCost' => $itemRows->sum('InventoryCost'),
                     'InventoryValue' => $itemRows->sum('InventoryValue'),
@@ -547,32 +549,32 @@ class StockCoverage extends Component
 //        }
 //    }
 //
-
-    protected function normalizeValidityFilter($item_validity)
-    {
-        $item_validity = array_values(array_filter((array) $item_validity));
-
-        if (in_array('valid', $item_validity, true) && in_array('invalid', $item_validity, true)) {
-            return [];
-        }
-
-        return $item_validity;
-    }
-
-    protected function buildValidityCondition($item_validity, $column = 'T0."validFor"')
-    {
-        $item_validity = $this->normalizeValidityFilter($item_validity);
-
-        if ($item_validity === ['valid']) {
-            return $column . ' = \'Y\'';
-        }
-
-        if ($item_validity === ['invalid']) {
-            return $column . ' = \'N\'';
-        }
-
-        return null;
-    }
+//
+//    protected function normalizeValidityFilter($item_validity)
+//    {
+//        $item_validity = array_values(array_filter((array) $item_validity));
+//
+//        if (in_array('valid', $item_validity, true) && in_array('invalid', $item_validity, true)) {
+//            return [];
+//        }
+//
+//        return $item_validity;
+//    }
+//
+//    protected function buildValidityCondition($item_validity, $column = 'T0."validFor"')
+//    {
+//        $item_validity = $this->normalizeValidityFilter($item_validity);
+//
+//        if ($item_validity === ['valid']) {
+//            return $column . ' = \'Y\'';
+//        }
+//
+//        if ($item_validity === ['invalid']) {
+//            return $column . ' = \'N\'';
+//        }
+//
+//        return null;
+//    }
 
 
     public function productCodes($group_type, $cat_type, $sp_type, $vendor_type, $search_type, $product_code, $catalog_number, $marketing_type, $item_validity)
@@ -582,7 +584,7 @@ class StockCoverage extends Component
         $sp_type        = array_filter((array) $sp_type);
         $vendor_type    = array_filter((array) $vendor_type);
         $marketing_type = $this->resolveSelectedMarketingTypes($marketing_type);
-        $item_validity  = $this->normalizeValidityFilter($item_validity);
+//        $item_validity  = $this->normalizeValidityFilter($item_validity);
         $group_type     = is_array($group_type) ? reset($group_type) : $group_type;
 
         if (count($cat_type) > 1) {
@@ -678,16 +680,16 @@ class StockCoverage extends Component
             $conditions[] = 'T0."CardCode" IN (' . implode(',', $escapedVendors) . ')';
         }
 
-        $validityCondition = $this->buildValidityCondition($item_validity);
+//        $validityCondition = $this->buildValidityCondition($item_validity);
 
-        if ($validityCondition !== null) {
-            $conditions[] = $validityCondition;
-        }
+//        if ($validityCondition !== null) {
+//            $conditions[] = $validityCondition;
+//        }
 
-        // Add conditions to query
-        if (count($conditions) > 0) {
-            $categoryQuery .= ' AND ' . implode(' AND ', $conditions);
-        }
+//        // Add conditions to query
+//        if (count($conditions) > 0) {
+//            $categoryQuery .= ' AND ' . implode(' AND ', $conditions);
+//        }
 
 //        dd($categoryQuery);
 
@@ -821,8 +823,8 @@ class StockCoverage extends Component
             }
 
             $selectedItemCodes = implode(',', $this->sap_codes);
-            $validityCondition = $this->buildValidityCondition($item_validity);
-            $validitySql = $validityCondition ? "\n    AND {$validityCondition}" : '';
+//            $validityCondition = $this->buildValidityCondition($item_validity);
+//            $validitySql = $validityCondition ? "\n    AND {$validityCondition}" : '';
 
             $sql = <<<SQL
 WITH SalesQty AS
@@ -1019,6 +1021,12 @@ SQL;
  AND B."BPLId" IN ($deptIds)
 SQL;
             }
+
+//            if (!empty($sap_depts)) {
+//                $sql .=  <<<SQL
+//     AND B."BPLId" IN ( implode(', ', $sap_depts))
+//     SQL;
+//            }
 //            if (!empty($this->inventory_value)) {
 //                $sql .= <<<SQL
 //             AND (T2."OnHand" * IFNULL(P1."Price", 0)) >= $this->inventory_value

@@ -41,6 +41,20 @@
 {{--@dd($group_results);--}}
 
                 @if(count($group_results) > 0)
+                    @php
+                        $totals = [
+                            'InventoryQuantity' => collect($group_results)->sum('InventoryQuantity'),
+                            'BasePrice' => collect($group_results)->sum('BasePrice'),
+                            'Cost' => collect($group_results)->sum('Cost'),
+                            'InventoryCost' => collect($group_results)->sum('InventoryCost'),
+                            'InventoryValue' => collect($group_results)->sum('InventoryValue'),
+                            'AnnualQuantitySale' => collect($group_results)->sum('AnnualQuantitySale'),
+                        ];
+
+                        $totals['SufficiencyDays'] = $totals['AnnualQuantitySale'] > 0
+                            ? round(($totals['InventoryQuantity'] / $totals['AnnualQuantitySale']) * 365, 2)
+                            : null;
+                    @endphp
 
                     <table id="tbl2" style="border: 2px solid black;" class="table-container table-auto w-full border text-center">
                         <thead style="border: 2px solid black;" class="text-xs uppercase text-gray-400 bg-gray-50 rounded-sm">
@@ -85,6 +99,8 @@
                                 $code = $item['ItemCode'] ?? '';
                                 $itemCodeJs = json_encode((string) $code);
                             @endphp
+{{--                           @dd($item['branches'])--}}
+{{--                            @if(count($item['branches']) >0)--}}
                             <tr
                                 style="border-bottom: 2px solid #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer"
                                 wire:key="item-{{ $code }}"
@@ -140,9 +156,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span>
-                                        {{number_format($item['Cost'],2)}}
-                                    </span>
+{{--                                    <span>--}}
+{{--                                        {{number_format($item['Cost'],2)}}--}}
+{{--                                    </span>--}}
                                 </td>
                                 <td>
                                     <span>
@@ -197,10 +213,28 @@
 
                                 </tr>
 
-                            @endforeach
 
+                            @endforeach
+{{--                            @endif--}}
                         @endforeach
                         </tbody>
+                        <tfoot>
+                        <tr style="border-top: 2px solid black; background-color: #f3f4f6; font-weight: bold;">
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap"></td>
+                            <td style="border-left: 2px solid black;" class="border p-2 whitespace-nowrap">الإجمالي</td>
+                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['InventoryQuantity']) }}</td>
+                            <td class="border p-2 whitespace-nowrap"></td>
+                            <td class="border p-2 whitespace-nowrap"></td>
+{{--                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['BasePrice'], 2) }}</td>--}}
+{{--                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['Cost'], 2) }}</td>--}}
+                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['InventoryCost'], 2) }}</td>
+                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['InventoryValue'], 2) }}</td>
+                            <td class="border p-2 whitespace-nowrap">{{ number_format($totals['AnnualQuantitySale']) }}</td>
+                            <td class="border p-2 whitespace-nowrap">
+{{--                                {{ $totals['SufficiencyDays'] !== null ? number_format($totals['SufficiencyDays']) : '' }}--}}
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
 
                 @endif

@@ -169,13 +169,17 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
 
         $row = $rows[0];
 
+        $code = (string) ($row['CardCode'] ?? '');
+        $name = (string) ($row['CardName'] ?? '');
+
         return [
             'code' => $row['CardCode'],
             'name' => $row['CardName'] ?? null,
             'slp_code' => $row['SlpCode'] ?? null,
             'slp_name' => $row['SlpName'] ?? null,
             'property_1' => ($row['QryGroup1'] ?? null) === 'Y',
-            'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
+//            'label' => $this->formatLabel($row['CardCode'], $row['CardName']),
+            'label' => $this->formatLabel($code, $name),
         ];
     }
 
@@ -209,16 +213,29 @@ class SapCustomerLookupService implements SapCustomerLookupServiceInterface
         }
     }
 
+//    protected function querySapAsMap(string $sql): array
+//    {
+//        $rows = $this->querySapRows($sql);
+//        return array_reduce($rows, function ($carry, $row) {
+//            $carry[$row['CardCode']] = $this->formatLabel($row['CardCode'], $row['CardName']);
+//            return $carry;
+//        }, []);
+//    }
     protected function querySapAsMap(string $sql): array
     {
         $rows = $this->querySapRows($sql);
 
         return array_reduce($rows, function ($carry, $row) {
-            $carry[$row['CardCode']] = $this->formatLabel($row['CardCode'], $row['CardName']);
+            $code = (string) ($row['CardCode'] ?? '');
+            $name = (string) ($row['CardName'] ?? '');
+
+            if ($code !== '') {
+                $carry[$code] = $this->formatLabel($code, $name);
+            }
+
             return $carry;
         }, []);
     }
-
     protected function getOdbcConnection()
     {
         if (! extension_loaded('odbc')) {

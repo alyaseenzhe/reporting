@@ -46,6 +46,7 @@ class ExpenseResource extends Resource
             '1' => 'تحت الإجراء',
             '2' => 'تمت الموافقة',
             '3' => 'مرفوضة',
+            '4'=> 'موافقة نهائية'
         ];
     }
 
@@ -73,7 +74,17 @@ class ExpenseResource extends Resource
                                 ->relationship('user', 'name'),
 
                             Select::make('status')->label('الحالة')
-                                ->options(static::getStatusOptions())
+                                ->options(function () {
+                                    $options = static::getStatusOptions();
+
+                                    // Only user ID 123 can see/select final approval
+                                    if (auth()->id() !== 18) {
+                                        unset($options['4']);
+                                    }
+
+                                    return $options;
+                                })
+
                                 ->hiddenOn('create')
                                 ->default('1')
 //                                ->disablePlaceholderSelection()
@@ -418,5 +429,9 @@ class ExpenseResource extends Resource
     protected static function isAdminUser(): bool
     {
         return optional(Auth::user())->role === 'a';
+    }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
     }
 }

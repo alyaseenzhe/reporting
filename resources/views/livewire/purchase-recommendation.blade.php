@@ -313,7 +313,7 @@
 //                                $val = \Illuminate\Support\Facades\DB::selectOne("select SUM(target) as target from product_target_branch_totals where product_id = '310245' and month = '". $month ."' and year = '". $year."'");
                                 ?>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
-                                <div class="text-sm">{{ number_format($val_target->target) }}</div>
+                                <div class="text-sm">{{ number_format($val_target->target) }} here</div>
                             </th>
                             <th style="border: 2px solid black; z-index: 10" class="border p-2">
                                     <?php

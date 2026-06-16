@@ -1487,6 +1487,7 @@ class BranchCropCompositionCollectionResource extends Resource
         $engineerName = $customer['slp_name'] ?? $record->engineer_name;
 
         return trim((string) $engineerName) === trim((string) $user->name);
+//          return (string) ($customer['slp_code'] ?? '') === (string) $user->emp_code;
     }
 
     protected static function userCanManageOthersCropRecords(): bool
@@ -1631,6 +1632,7 @@ class BranchCropCompositionCollectionResource extends Resource
                 }
 
                 return trim((string) $engineerName) === trim((string) $user->name);
+//                 return (string) ($customer['slp_code'] ?? '') === (string) $user->emp_code;
             })
             ->values()
             ->all();
