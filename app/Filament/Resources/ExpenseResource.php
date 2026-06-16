@@ -72,23 +72,23 @@ class ExpenseResource extends Resource
 //
                             Select::make('user_id')->label('اسم الموظف')
                                 ->relationship('user', 'name'),
-
-                            Select::make('status')->label('الحالة')
-                                ->options(function () {
-                                    $options = static::getStatusOptions();
-
-                                    // Only user ID 123 can see/select final approval
-                                    if (auth()->id() !== 18) {
-                                        unset($options['4']);
-                                    }
-
-                                    return $options;
-                                })
-
-                                ->hiddenOn('create')
-                                ->default('1')
-//                                ->disablePlaceholderSelection()
-                            ->disabled(fn () => auth()->user()->user_group->id != 6),
+//
+//                            Select::make('status')->label('الحالة')
+//                                ->options(function () {
+//                                    $options = static::getStatusOptions();
+//
+//                                    // Only user ID 123 can see/select final approval
+//                                    if (auth()->id() !== 18) {
+//                                        unset($options['4']);
+//                                    }
+//
+//                                    return $options;
+//                                })
+//
+//                                ->hiddenOn('create')
+//                                ->default('1')
+////                                ->disablePlaceholderSelection()
+//                            ->disabled(fn () => auth()->user()->user_group->id != 6),
                         ]),
 
                     ])->hiddenOn('create'),
@@ -172,7 +172,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
-                                            ->columnSpan(2)
+//                                            ->columnSpan(2)
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($state, $get('vat')));
                                             })
@@ -184,7 +184,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
-                                            ->columnSpan(2)
+//                                            ->columnSpan(2)
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($get('amount'), $state));
                                             })
@@ -193,15 +193,34 @@ class ExpenseResource extends Resource
                                             ->rules(['numeric', 'min:0']),
 
                                         TextInput::make('total')
-                                            ->label('Total')
+                                            ->label('المجموع')
                                             ->numeric()
                                             ->disabled()
                                             ->dehydrated()
-                                            ->default(0)
-                                            ->columnSpan(2),
+                                            ->default(0),
+//                                            ->columnSpan(1),
 
-                                         ]),
 
+//                                         ]),
+
+                                        Select::make('status')->label('الحالة')
+                                            ->options(function () {
+                                                $options = static::getStatusOptions();
+
+                                                // Only user ID 123 can see/select final approval
+                                                if (auth()->id() !== 18) {
+                                                    unset($options['4']);
+                                                }
+
+                                                return $options;
+                                            })
+
+                                            ->hiddenOn('create')
+                                            ->default('1')
+                                            ->columnSpan(3)
+//                                ->disablePlaceholderSelection()
+                                            ->disabled(fn () => auth()->user()->user_group->id != 6),
+                                    ]),
 
                         ]),
                 Section::make('المرفقات')
