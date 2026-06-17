@@ -6,6 +6,7 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use App\Models\ExpenseDetails;
 use App\Models\User;
+use BaconQrCode\Common\Mode;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExpenseResource extends Resource
 {
@@ -64,7 +66,7 @@ class ExpenseResource extends Resource
             ->schema([
                 Section::make('المطالبات المالية')
                     ->schema([
-                        Grid::make(4)->schema([
+                        Grid::make(['default' =>3 , 'md'=> 4])->schema([
                             DatePicker::make('created_at')
                                 ->label('التاريخ')
                                 ->hiddenOn('create')
@@ -72,6 +74,9 @@ class ExpenseResource extends Resource
 //
                             Select::make('user_id')->label('اسم الموظف')
                                 ->relationship('user', 'name'),
+
+                            TextInput::make('total')->label('المجموع')
+                            ->disabled(),
 //
 //                            Select::make('status')->label('الحالة')
 //                                ->options(function () {
@@ -146,8 +151,8 @@ class ExpenseResource extends Resource
                             ->schema([
                                 Repeater::make('crop_composition_items')
                                     ->label('')
-                                    ->view('components.filament.forms.compact-inline-repeater')
-                                    ->columns(['default' => 1, 'md' => 12])
+//                                    ->view('components.filament.forms.compact-inline-repeater')
+                                    ->columns(['default' => 12, 'md' => 12])
                                     ->disableItemMovement()
                                     ->minItems(1)
                                     ->defaultItems(1)
@@ -156,7 +161,9 @@ class ExpenseResource extends Resource
 
                                         TextInput::make('location')
                                             ->label('الموقع')
-                                            ->columnSpan(2)
+//                                            ->columnSpan(2)
+                                            ->columnSpan(['default' =>3, 'md'=> 1])
+
                                             ->required(),
 
 
@@ -172,7 +179,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
-//                                            ->columnSpan(2)
+                                            ->columnSpan(['default' =>3, 'md'=> 1])
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($state, $get('vat')));
                                             })
@@ -184,7 +191,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
-//                                            ->columnSpan(2)
+                                            ->columnSpan(['default' => 3 ,'sm'=> 2, 'md' => 1])
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($get('amount'), $state));
                                             })
@@ -197,9 +204,10 @@ class ExpenseResource extends Resource
                                             ->numeric()
                                             ->disabled()
                                             ->dehydrated()
-                                            ->default(0),
+                                            ->default(0)
 //                                            ->columnSpan(1),
-
+                                            ->columnSpan(['default' => 3 ,'sm'=> 2, 'md' => 1])
+                                        ,
 
 //                                         ]),
 
@@ -217,7 +225,9 @@ class ExpenseResource extends Resource
 
                                             ->hiddenOn('create')
                                             ->default('1')
-                                            ->columnSpan(3)
+//                                            ->columnSpan(3)
+                                            ->columnSpan(['default' => 4 ,'sm'=> 3, 'md' => 3])
+
 //                                ->disablePlaceholderSelection()
                                             ->disabled(fn () => auth()->user()->user_group->id != 6),
                                     ]),
@@ -240,6 +250,7 @@ class ExpenseResource extends Resource
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                             ])
                             ->enableOpen()
+
                             ->enableDownload(),
                     ]),
             ]);
@@ -291,6 +302,16 @@ class ExpenseResource extends Resource
                             ->update(['status' => $data['status']]);
                     })
                     ->deselectRecordsAfterCompletion(),
+//                Tables\Actions\BulkAction::make('exportPdf')
+//                    ->label('Export PDF')
+////                    ->icon('heroicon-o-document-arrow-down')
+//                    ->action(function (Collection $records) {
+//                        // Load the view and pass the selected records
+//                        $pdf = Pdf::loadView('pdf.expenses', ['records' => $records]);
+//
+//                        // Return a stream download response
+//                        return response()->streamDownload(fn () => print($pdf->output()), 'exported-records.pdf');
+//                    })
             ]);
     }
 
