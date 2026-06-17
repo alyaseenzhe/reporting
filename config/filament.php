@@ -37,5 +37,6 @@ return [
             DispatchServingFilamentEvent::class,
             MirrorConfigToSubpackages::class,
         ],
+
     ],
 ];

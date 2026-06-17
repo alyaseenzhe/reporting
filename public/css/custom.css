@@ -4559,3 +4559,28 @@ button.active:after {
 .bg-blue-100{
     background-color: oklch(93.2% 0.032 255.585);
 }
+
+
+@media print {
+    aside.fi-sidebar,
+    header.fi-topbar,
+    .filament-sidebar,
+    .filament-main-topbar,
+    .fi-breadcrumbs,
+    .fi-page-actions,
+    .no-print {
+        display: none !important;
+    }
+
+    .fi-main,
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body {
+        background: white !important;
+    }
+}
