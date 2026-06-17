@@ -5,8 +5,9 @@ namespace App\Filament\Resources\ExpenseResource\Pages;
 use App\Filament\Resources\ExpenseResource;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Pages\Actions\Action;
+use Filament\Pages\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-
+use Filament\Pages\Actions;
 class ViewExpense extends ViewRecord
 {
     protected static string $resource = ExpenseResource::class;
@@ -37,6 +38,7 @@ class ViewExpense extends ViewRecord
                 ->extraAttributes([
                     'onclick' => 'window.print();',
                 ]),
+            Actions\EditAction::make(),
         ];
     }
 }

@@ -67,10 +67,10 @@ class ExpenseResource extends Resource
                 Section::make('المطالبات المالية')
                     ->schema([
                         Grid::make(['default' =>3 , 'md'=> 4])->schema([
-                            DatePicker::make('created_at')
+                            TextInput::make('created_at')
                                 ->label('التاريخ')
-                                ->hiddenOn('create')
-                                ->disabled(),
+                                ->disabled()
+                                ->formatStateUsing(fn ($record) => $record?->created_at?->format('Y-m-d')),
 //
                             Select::make('user_id')->label('اسم الموظف')
                                 ->relationship('user', 'name'),
@@ -162,14 +162,14 @@ class ExpenseResource extends Resource
                                         TextInput::make('location')
                                             ->label('الموقع')
 //                                            ->columnSpan(2)
-                                            ->columnSpan(['default' =>3, 'md'=> 1])
+                                            ->columnSpan(['default' =>12, 'md'=> 1])
 
                                             ->required(),
 
 
                                         TextInput::make('description')
                                             ->label('الوصف')
-                                            ->columnSpan(3)
+                                            ->columnSpan(['default'=>12, 'sm'=> 3])
                                             ->required(),
 
 
@@ -179,7 +179,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
-                                            ->columnSpan(['default' =>3, 'md'=> 1])
+                                            ->columnSpan(['default' => 6 ,'sm'=> 3, 'md' => 2])
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($state, $get('vat')));
                                             })
@@ -206,7 +206,7 @@ class ExpenseResource extends Resource
                                             ->dehydrated()
                                             ->default(0)
 //                                            ->columnSpan(1),
-                                            ->columnSpan(['default' => 3 ,'sm'=> 2, 'md' => 1])
+                                            ->columnSpan(['default' => 6 ,'sm'=> 3, 'md' => 2])
                                         ,
 
 //                                         ]),
@@ -226,7 +226,7 @@ class ExpenseResource extends Resource
                                             ->hiddenOn('create')
                                             ->default('1')
 //                                            ->columnSpan(3)
-                                            ->columnSpan(['default' => 4 ,'sm'=> 3, 'md' => 3])
+                                            ->columnSpan(['default' => 12 ,'sm'=> 3, 'md' => 3])
 
 //                                ->disablePlaceholderSelection()
                                             ->disabled(fn () => auth()->user()->user_group->id != 6),
@@ -259,6 +259,7 @@ class ExpenseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id','desc')
             ->columns([
                 TextColumn::make('user.name')
                     ->label('اسم الموظف'),
@@ -272,13 +273,14 @@ class ExpenseResource extends Resource
 //                 TextColumn::make('status')
 //                  ->label('الحالة')
 
-                SelectColumn::make('status')
-                    ->label('الحالة')
-                    ->options([
-                        1 => 'تحت الإجراء',
-                        2 => 'تمت الموافقة',
-                        3 => 'مرفوضة',
-                    ])->disabled()
+//                SelectColumn::make('status')
+//                    ->label('الحالة')
+//                    ->options([
+//                        1 => 'تحت الإجراء',
+//                        2 => 'تمت الموافقة',
+//                        3 => 'مرفوضة',
+//                        4 => 'وافقة نهائية',
+//                    ])->disabled()
             ])
             ->filters([
                 //
@@ -289,19 +291,19 @@ class ExpenseResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                Tables\Actions\BulkAction::make('update_status')
-                    ->label('Update Status')
-                    ->form([
-                        Forms\Components\Select::make('status')
-                            ->options(static::getStatusOptions())
-                            ->required(),
-                    ])
-                    ->action(function (Collection $records, array $data) {
-                        Expense::query()
-                            ->whereIn('id', $records->pluck('id'))
-                            ->update(['status' => $data['status']]);
-                    })
-                    ->deselectRecordsAfterCompletion(),
+//                Tables\Actions\BulkAction::make('update_status')
+//                    ->label('Update Status')
+//                    ->form([
+//                        Forms\Components\Select::make('status')
+//                            ->options(static::getStatusOptions())
+//                            ->required(),
+//                    ])
+//                    ->action(function (Collection $records, array $data) {
+//                        Expense::query()
+//                            ->whereIn('id', $records->pluck('id'))
+//                            ->update(['status' => $data['status']]);
+//                    })
+//                    ->deselectRecordsAfterCompletion(),
 //                Tables\Actions\BulkAction::make('exportPdf')
 //                    ->label('Export PDF')
 ////                    ->icon('heroicon-o-document-arrow-down')
@@ -327,6 +329,10 @@ class ExpenseResource extends Resource
         unset($data['crop_composition_items'], $data['attachments']);
 
         $data['total'] = collect($detailRows)->sum(function (array $row): float {
+            if ((string) ($row['status'] ?? '') !== '4') {
+                return 0;
+            }
+
             return (float) ($row['total'] ?? 0);
         });
 
@@ -348,6 +354,7 @@ class ExpenseResource extends Resource
                 'amount' => $row['amount'] ?? null,
                 'vat' => $row['vat'] ?? null,
                 'total' => $row['total'] ?? null,
+                'status' => $row['status'] ?? null,
             ]);
         }
     }
@@ -362,6 +369,7 @@ class ExpenseResource extends Resource
                     'amount' => $row->amount,
                     'vat' => $row->vat,
                     'total' => $row->total,
+                    'status' => $row->status,
                 ];
             })
             ->toArray();
