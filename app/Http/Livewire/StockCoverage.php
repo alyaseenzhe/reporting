@@ -345,20 +345,45 @@ class StockCoverage extends Component
                     'InventoryCost' => $itemRows->sum('InventoryCost'),
                     'InventoryValue' => $itemRows->sum('InventoryValue'),
                     'AnnualQuantitySale' => $itemRows->sum('AnnualQuantitySale'),
-                    'SufficiencyDays' => $itemRows->sum('SufficiencyDays'),
+                    'SufficiencyDays' => $itemRows->sum('AnnualQuantitySale') > 0
+                        ? round(($itemRows->sum('InventoryQuantity') / $itemRows->sum('AnnualQuantitySale')) * 365, 2)
+                        : null,
 //                    'ItemGroup' => $itemMeta['ItemGroup'],
 //                    'TransCount' => $itemRows->sum('EmployeeTransCount'),
 //                    'TotalQuantitySale' => $totalQuantitySale,
                     'branches' => $branches,
                 ];
             })
+//            ->filter(function ($itemMeta) {
+//                if ($this->inventory_value === null || $this->inventory_value === '') {
+//                    return true;
+//                }
+//
+//                return $itemMeta['InventoryValue'] !== null
+//                    && $itemMeta['InventoryValue'] >= (float) $this->inventory_value;
+//            })
+//            ->filter(function ($itemMeta) {
+//                if ($this->sufficiency_days === null || $this->sufficiency_days === '') {
+//                    return true;
+//                }
+//
+//                return count($itemMeta['branches']) > 0;
+//            })
             ->filter(function ($itemMeta) {
-                if ($this->inventory_value === null || $this->inventory_value === '') {
+
+                if (empty($this->inventory_value) && empty($this->sufficiency_days)) {
                     return true;
                 }
 
-                return $itemMeta['InventoryValue'] !== null
+                $inventoryMatch =
+                    !empty($this->inventory_value)
                     && $itemMeta['InventoryValue'] >= (float) $this->inventory_value;
+
+                $sufficiencyMatch =
+                    !empty($this->sufficiency_days)
+                    && $itemMeta['SufficiencyDays'] >= (float) $this->sufficiency_days;
+
+                return $inventoryMatch || $sufficiencyMatch;
             })
             ->values()
             ->all();

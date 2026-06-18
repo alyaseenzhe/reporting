@@ -100,7 +100,8 @@
                                 $itemCodeJs = json_encode((string) $code);
                             @endphp
 {{--                           @dd($item['branches'])--}}
-{{--                            @if(count($item['branches']) >0)--}}
+                            @if(count($item['branches']) >0)
+{{--                                <tr>{{count($item['branches'])}}</tr>--}}
                             <tr
                                 style="border-bottom: 2px solid #a8a8a8; background-color: #e4fbff; font-weight: bold; cursor: pointer"
                                 wire:key="item-{{ $code }}"
@@ -182,14 +183,16 @@
                                 </td>
 
                             </tr>
+
 {{--                            @dd($item)--}}
                             @foreach ($item['branches'] as $branch)
                                 @php
                                     $branchIdJs = json_encode((string) $branch['BranchId']);
                                 @endphp
                                 <tr
-{{--                                    wire:key="branch-{{ $code }}-{{ $branch['BranchId'] }}"--}}
+                                    wire:key="branch-{{ $code }}-{{ $branch['BranchId'] }}"
                                     x-show="isItemExpanded({{ $itemCodeJs }})"
+                                    x-cloak
 {{--                                    x-transition--}}
                                     class="bg-white border-b"
                                 >
@@ -215,7 +218,7 @@
 
 
                             @endforeach
-{{--                            @endif--}}
+                            @endif
                         @endforeach
                         </tbody>
                         <tfoot>
