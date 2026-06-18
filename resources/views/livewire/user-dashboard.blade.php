@@ -1980,7 +1980,89 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
 <div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
 
-        @if ((Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
+        @if ((Auth::user()->user_group->visits && in_array('stock-coverage', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+            <a class="w-full" href="{{ route('stock.coverage') }}">
+                <div
+                    class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
+                    <div class="px-5 pt-5">
+                        <div class="flex items-center justify-center mb-8">
+                            <div class="font-bold text-green-500 mr-2" style="font-size: 40pt">
+                                <svg class="w-20 h-20" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+
+                                    <!-- Background window -->
+                                    <g>
+                                        <!-- Top bar -->
+                                        <path d="M8 8H56V14H8Z" fill="#3e4f59"/>
+
+                                        <!-- Body -->
+                                        <path d="M8 14H56V50H8Z" fill="#acbec2"/>
+
+                                        <!-- Right light panel -->
+                                        <path d="M8 14V50H36.5A20 36 0 0 0 56 14Z" fill="#e8edee"/>
+
+                                        <!-- Outer frame -->
+                                        <path d="M10 7c-1.7 0-3 1.3-3 3v40c0 .6.4 1 1 1s1-.4 1-1V10c0-.6.4-1 1-1h42c.6 0 1 .4 1 1v3H15c-.6 0-1 .4-1 1s.4 1 1 1h38v35c0 .6-.4 1-1 1H8c-.6 0-1 .4-1 1s.4 1 1 1h46c1.7 0 3-1.3 3-3V10c0-1.7-1.3-3-3-3Z"
+                                              fill="#000"/>
+
+                                        <!-- Top dots -->
+                                        <circle cx="48" cy="11" r="1" fill="#ed7161"/>
+                                        <circle cx="44" cy="11" r="1" fill="#ecba16"/>
+                                        <circle cx="40" cy="11" r="1" fill="#42b05c"/>
+
+                                        <!-- Left bottom dot -->
+                                        <circle cx="6" cy="52" r="1" fill="#000"/>
+
+                                        <!-- Small dot -->
+                                        <circle cx="11" cy="16" r="1" fill="#000"/>
+
+                                        <!-- Document -->
+                                        <rect x="18" y="20" width="28" height="28" rx="2"
+                                              fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+
+                                        <!-- Folded corner -->
+                                        <path d="M40 20L46 26H40Z"
+                                              fill="#e8edee" stroke="#000" stroke-width="1"/>
+
+                                        <!-- Warehouse shelves -->
+                                        <rect x="22" y="28" width="20" height="3" fill="#3e4f59"/>
+                                        <rect x="22" y="34" width="20" height="3" fill="#3e4f59"/>
+                                        <rect x="22" y="40" width="20" height="3" fill="#3e4f59"/>
+
+                                        <!-- Stock boxes -->
+                                        <rect x="23" y="25" width="4" height="3" fill="#ffa221" stroke="#000"/>
+                                        <rect x="30" y="25" width="4" height="3" fill="#0075d3" stroke="#000"/>
+                                        <rect x="37" y="25" width="4" height="3" fill="#42b05c" stroke="#000"/>
+
+                                        <rect x="25" y="31" width="4" height="3" fill="#42b05c" stroke="#000"/>
+                                        <rect x="32" y="31" width="4" height="3" fill="#ffa221" stroke="#000"/>
+
+                                        <rect x="28" y="37" width="4" height="3" fill="#0075d3" stroke="#000"/>
+                                        <rect x="35" y="37" width="4" height="3" fill="#42b05c" stroke="#000"/>
+
+                                        <!-- Coverage gauge -->
+                                        <path d="M24 46 A10 10 0 0 1 40 46"
+                                              fill="none"
+                                              stroke="#fe73c5"
+                                              stroke-width="2"/>
+
+                                        <line x1="32" y1="46" x2="38" y2="42"
+                                              stroke="#fe73c5"
+                                              stroke-width="2"/>
+
+                                        <circle cx="32" cy="46" r="1.5" fill="#fe73c5"/>
+
+                                    </g>
+                                </svg>
+
+
+                            </div>
+                        </div>
+                        <div class="text-3xl font-semibold text-gray-800 text-center">26- تقرير كفاية المخزون</div>
+                    </div>
+                </div>
+            </a>
+        @endif
+        @if ((Auth::user()->user_group && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('visit-calendar') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">

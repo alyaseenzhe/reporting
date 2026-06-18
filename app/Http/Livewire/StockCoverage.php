@@ -711,15 +711,21 @@ class StockCoverage extends Component
 //            $conditions[] = $validityCondition;
 //        }
 
-//        // Add conditions to query
-//        if (count($conditions) > 0) {
-//            $categoryQuery .= ' AND ' . implode(' AND ', $conditions);
-//        }
+        if (count($conditions) > 0) {
+            $categoryQuery .= ' AND ' . implode(' AND ', $conditions);
+        }
 
 //        dd($categoryQuery);
 
         // Execute
         $result = odbc_exec($conn, $categoryQuery);
+
+        if (! $result) {
+            echo "Error while sending SQL statement to the database server.\n";
+            echo "ODBC error code: " . odbc_error() . ". Message: " . odbc_errormsg();
+            odbc_close($conn);
+            return;
+        }
 
         while ($row = odbc_fetch_array($result)) {
             $this->sap_codes[] = "'" . $row['ItemCode'] . "'";
