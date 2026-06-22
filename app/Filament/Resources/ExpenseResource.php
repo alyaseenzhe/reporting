@@ -73,6 +73,7 @@ class ExpenseResource extends Resource
                                 ->formatStateUsing(fn ($record) => $record?->created_at?->format('Y-m-d')),
 //
                             Select::make('user_id')->label('اسم الموظف')
+                                ->disabled()
                                 ->relationship('user', 'name'),
 
                             TextInput::make('total')->label('المجموع')
@@ -163,13 +164,14 @@ class ExpenseResource extends Resource
                                             ->label('الموقع')
 //                                            ->columnSpan(2)
                                             ->columnSpan(['default' =>12, 'md'=> 1])
-
+                                            ->disabledOn('edit')
                                             ->required(),
 
 
                                         TextInput::make('description')
                                             ->label('الوصف')
                                             ->columnSpan(['default'=>12, 'sm'=> 3])
+                                            ->disabledOn('edit')
                                             ->required(),
 
 
@@ -179,6 +181,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
+                                            ->disabledOn('edit')
                                             ->columnSpan(['default' => 6 ,'sm'=> 3, 'md' => 2])
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($state, $get('vat')));
@@ -191,6 +194,7 @@ class ExpenseResource extends Resource
                                             ->required()
                                             ->numeric()
                                             ->reactive()
+                                            ->disabledOn('edit')
                                             ->columnSpan(['default' => 3 ,'sm'=> 2, 'md' => 1])
                                             ->afterStateUpdated(function ($state, callable $get, callable $set): void {
                                                 $set('total', static::calculateTotal($get('amount'), $state));
@@ -205,39 +209,91 @@ class ExpenseResource extends Resource
                                             ->disabled()
                                             ->dehydrated()
                                             ->default(0)
+                                            ->disabledOn('edit')
 //                                            ->columnSpan(1),
                                             ->columnSpan(['default' => 6 ,'sm'=> 3, 'md' => 2])
                                         ,
 
 //                                         ]),
 
-                                        Select::make('status')->label('الحالة')
-                                            ->options(function () {
-                                                $options = static::getStatusOptions();
+//                                        Select::make('status')->label('الحالة')
+////                                            ->options(function () {
+////                                                $options = static::getStatusOptions();
+////
+////                                                // Only user ID 4 can see/select final approval
+////                                                if (auth()->id() !== 18) {
+////                                                    unset($options['4']);
+////                                                }
+////
+////                                                return $options;
+////                                            })
+//
+//                                            ->options(static::getStatusOptions())
+//                                            ->disabled(function (?Model $record) {
+//                                                return $record?->status == '4'
+//                                                    && auth()->id() !== 18;
+//                                            })
+//                                            ->hiddenOn('create')
+//                                            ->default('1')
+////                                            ->columnSpan(3)
+//                                            ->columnSpan(['default' => 12 ,'sm'=> 3, 'md' => 3])
+//
+////                                ->disablePlaceholderSelection()
+//                                            ->disabled(fn () => auth()->user()->user_group->id != 6),
+//                                    ]),
 
-                                                // Only user ID 123 can see/select final approval
-                                                if (auth()->id() !== 18) {
-                                                    unset($options['4']);
+                                        Select::make('status')
+                                            ->label('الحالة')
+                                            ->columnSpan(['default' => 12, 'sm' => 3, 'md' => 3])
+                                            ->options(function (callable $get) {
+                                                $options = [
+                                                    '1' => 'تحت الإجراء',
+                                                    '2' => 'تمت الموافقة',
+                                                    '3' => 'مرفوضة',
+                                                ];
+
+                                                if (auth()->id() === 18 || (string) $get('status') === '4') {
+                                                    $options['4'] = 'موافقة نهائية';
                                                 }
 
                                                 return $options;
                                             })
-
                                             ->hiddenOn('create')
                                             ->default('1')
-//                                            ->columnSpan(3)
-                                            ->columnSpan(['default' => 12 ,'sm'=> 3, 'md' => 3])
-
-//                                ->disablePlaceholderSelection()
-                                            ->disabled(fn () => auth()->user()->user_group->id != 6),
-                                    ]),
+                                            ->disabled(function (callable $get, ?Model $record): bool {
+                                                return request()->routeIs('filament.resources.expenses.view')
+                                                    || ((string) $get('status') === '4' && auth()->id() !== 18) || auth()->id() == $record->user_id;
+                                            }),
+                                        ])
 
                         ]),
+//                Section::make('المرفقات')
+//                    ->schema([
+//                        SpatieMediaLibraryFileUpload::make('attachments')
+//                            ->label('المرفقات')
+//                            ->collection('expense_attachments')
+//                            ->multiple()
+//                            ->preserveFilenames()
+//                            ->acceptedFileTypes([
+//                                'application/pdf',
+//                                'image/png',
+//                                'image/jpeg',
+//                                'application/msword',
+//                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+//                                'application/vnd.ms-excel',
+//                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//                            ])
+//                            ->enableOpen()
+//
+//                            ->enableDownload(),
+//                    ]),
                 Section::make('المرفقات')
                     ->schema([
                         SpatieMediaLibraryFileUpload::make('attachments')
                             ->label('المرفقات')
                             ->collection('expense_attachments')
+                            ->disk('expense_attachments')
+                            ->directory('')
                             ->multiple()
                             ->preserveFilenames()
                             ->acceptedFileTypes([
@@ -250,7 +306,6 @@ class ExpenseResource extends Resource
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                             ])
                             ->enableOpen()
-
                             ->enableDownload(),
                     ]),
             ]);
