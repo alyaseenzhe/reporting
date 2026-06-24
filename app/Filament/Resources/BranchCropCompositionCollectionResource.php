@@ -76,124 +76,124 @@ class BranchCropCompositionCollectionResource extends Resource
                     return static::getCustomerInformationSectionSchema(
                         (string) ($get('type') ?: static::CUSTOMER_TYPE_REGISTERED)
                     );
-/*
-                    Grid::make(5)->schema([
-                          //  ->required(),
-//                        TextInput::make('branch_name')
-//                            ->label('الفرع')
-//                            ->required()
-//                            ->maxLength(255),
-                        Select::make('branch_id')
-                            ->label('الفرع')
-                            ->required()
-                            ->searchable()
-                            ->reactive()
-                            ->default(fn (): ?int => static::getSingleAuthorizedBranchId())
-                            ->options(function () {
-                                return static::getAuthorizedBranchesQuery()
-                                    ->orderBy('name')
-                                    ->pluck('name', 'id')
-                                    ->toArray();
-                            })
-                            ->afterStateUpdated(function (callable $set): void {
-                                $set('customer_code', null);
-                                $set('engineer_name', null);
-                            }),
+                    /*
+                                        Grid::make(5)->schema([
+                                              //  ->required(),
+                    //                        TextInput::make('branch_name')
+                    //                            ->label('الفرع')
+                    //                            ->required()
+                    //                            ->maxLength(255),
+                                            Select::make('branch_id')
+                                                ->label('الفرع')
+                                                ->required()
+                                                ->searchable()
+                                                ->reactive()
+                                                ->default(fn (): ?int => static::getSingleAuthorizedBranchId())
+                                                ->options(function () {
+                                                    return static::getAuthorizedBranchesQuery()
+                                                        ->orderBy('name')
+                                                        ->pluck('name', 'id')
+                                                        ->toArray();
+                                                })
+                                                ->afterStateUpdated(function (callable $set): void {
+                                                    $set('customer_code', null);
+                                                    $set('engineer_name', null);
+                                                }),
 
-                        Select::make('customer_code')
-                            ->label('العميل')
-                            ->columnSpan(['default' => 1, 'md' =>2])
-                            ->searchable()
-                            ->preload()
-                            ->optionsLimit(10000)
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->reactive()
-                            ->placeholder('اختر الفرع أولاً ثم ابحث عن العميل')
-//                            ->helperText(function (callable $get): string {
-//                                if (blank($get('branch_id'))) {
-//                                    return 'اختر الفرع أولاً، ثم ابحث باسم العميل أو رقمه من SAP.';
-//                                }
-//
-//                                return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
-//                            })
-                            ->options(function (callable $get): array {
-                                return static::getCustomerSelectOptionsForBranch(
-                                    static::resolveBranchCodeFromState($get('branch_id')),
-                                    '',
-                                    $get('customer_code'),
-                                    null
-                                );
-                            })
-                            ->afterStateUpdated(function ($state, callable $set): void {
-                                $customer = app(SapCustomerLookupServiceInterface::class)
-                                    ->findCustomerByCode($state);
+                                            Select::make('customer_code')
+                                                ->label('العميل')
+                                                ->columnSpan(['default' => 1, 'md' =>2])
+                                                ->searchable()
+                                                ->preload()
+                                                ->optionsLimit(10000)
+                                                ->required()
+                                                ->unique(ignoreRecord: true)
+                                                ->reactive()
+                                                ->placeholder('اختر الفرع أولاً ثم ابحث عن العميل')
+                    //                            ->helperText(function (callable $get): string {
+                    //                                if (blank($get('branch_id'))) {
+                    //                                    return 'اختر الفرع أولاً، ثم ابحث باسم العميل أو رقمه من SAP.';
+                    //                                }
+                    //
+                    //                                return 'سيتم عرض العملاء التابعين للفرع المحدد فقط.';
+                    //                            })
+                                                ->options(function (callable $get): array {
+                                                    return static::getCustomerSelectOptionsForBranch(
+                                                        static::resolveBranchCodeFromState($get('branch_id')),
+                                                        '',
+                                                        $get('customer_code'),
+                                                        null
+                                                    );
+                                                })
+                                                ->afterStateUpdated(function ($state, callable $set): void {
+                                                    $customer = app(SapCustomerLookupServiceInterface::class)
+                                                        ->findCustomerByCode($state);
 
-                                $set(
-                                    'engineer_name',
-                                    $customer['slp_name'] ?? null
-                                );
-                            })
-                            ->getOptionLabelUsing(function ($value): ?string {
-                                $customer = app(SapCustomerLookupServiceInterface::class)
-                                    ->findCustomerByCode($value);
+                                                    $set(
+                                                        'engineer_name',
+                                                        $customer['slp_name'] ?? null
+                                                    );
+                                                })
+                                                ->getOptionLabelUsing(function ($value): ?string {
+                                                    $customer = app(SapCustomerLookupServiceInterface::class)
+                                                        ->findCustomerByCode($value);
 
-                                return $customer['label'] ?? $value;
-                            }),
+                                                    return $customer['label'] ?? $value;
+                                                }),
 
-                        TextInput::make('engineer_name')
-                            ->label('المهندس المسؤول')
-                            ->disabled()
-                            ->dehydrated()
-//                            ->columnSpan(2)
-//                            ->required()
-//                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
-                            ->formatStateUsing(fn ($state): string => (string) $state),
-                        TextInput::make('farms_count')
-                            ->label('عدد المزارع الخاصة بالعميل')
-                            ->required()
-                            ->numeric()
-                            ->maxValue(9999999999)
-                            ->rules(['integer', 'min:1']),
-                        TextInput::make('total_farm_area_hectares')
-                            ->label('المساحة الاجمالية للمزارع (هكتار)')
-                            ->required()
-                            ->numeric()
-//                            ->columnSpan(2)
-                            ->maxValue(9999999999.99)
-                            ->rules(['numeric', 'min:0.01']),
+                                            TextInput::make('engineer_name')
+                                                ->label('المهندس المسؤول')
+                                                ->disabled()
+                                                ->dehydrated()
+                    //                            ->columnSpan(2)
+                    //                            ->required()
+                    //                            ->helperText('يظهر المهندس تلقائيا من العميل المختار.')
+                                                ->formatStateUsing(fn ($state): string => (string) $state),
+                                            TextInput::make('farms_count')
+                                                ->label('عدد المزارع الخاصة بالعميل')
+                                                ->required()
+                                                ->numeric()
+                                                ->maxValue(9999999999)
+                                                ->rules(['integer', 'min:1']),
+                                            TextInput::make('total_farm_area_hectares')
+                                                ->label('المساحة الاجمالية للمزارع (هكتار)')
+                                                ->required()
+                                                ->numeric()
+                    //                            ->columnSpan(2)
+                                                ->maxValue(9999999999.99)
+                                                ->rules(['numeric', 'min:0.01']),
 
-                        DatePicker::make('created_at')
-                            ->label('تاريخ جمع البيانات')
-                            ->hiddenOn('create')
-                            ->disabled(),
+                                            DatePicker::make('created_at')
+                                                ->label('تاريخ جمع البيانات')
+                                                ->hiddenOn('create')
+                                                ->disabled(),
 
-                        TextInput::make('created_by')
-                            ->label('تم انشاؤه بواسطة')
-                            ->hiddenOn('create')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->formatStateUsing(function ($state, ?Model $record): string {
-                                return (string) optional(optional($record)->userUpdate)->name;
-                            }),
+                                            TextInput::make('created_by')
+                                                ->label('تم انشاؤه بواسطة')
+                                                ->hiddenOn('create')
+                                                ->disabled()
+                                                ->dehydrated(false)
+                                                ->formatStateUsing(function ($state, ?Model $record): string {
+                                                    return (string) optional(optional($record)->userUpdate)->name;
+                                                }),
 
-                        DatePicker::make('updated_at')
-                            ->label('تاريخ آخر تحديث')
-                            ->hiddenOn('create')
-                            ->disabled(),
-                        //  ->required(),
+                                            DatePicker::make('updated_at')
+                                                ->label('تاريخ آخر تحديث')
+                                                ->hiddenOn('create')
+                                                ->disabled(),
+                                            //  ->required(),
 
 
-                        TextInput::make('updated_by')
-                            ->label('آخر تعديل بواسطة')
-                            ->hiddenOn('create')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->formatStateUsing(function ($state, ?Model $record): string {
-                                return (string) optional(optional($record)->userUpdate)->name;
-                            }),
-                    ]),
-*/
+                                            TextInput::make('updated_by')
+                                                ->label('آخر تعديل بواسطة')
+                                                ->hiddenOn('create')
+                                                ->disabled()
+                                                ->dehydrated(false)
+                                                ->formatStateUsing(function ($state, ?Model $record): string {
+                                                    return (string) optional(optional($record)->userUpdate)->name;
+                                                }),
+                                        ]),
+                    */
                 }),
             Section::make('أنواع الزراعة')
                 ->schema([
@@ -205,52 +205,52 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->defaultItems(1)
                         ->schema([
                             Select::make('agri_type_id')
-                                    ->label('نوع الزراعة')
-                                    ->required()
+                                ->label('نوع الزراعة')
+                                ->required()
 //                                    ->searchable()
-                                    ->preload()
-                                    ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->options(function (callable $get): array {
-                                        $currentAgriTypeId = $get('agri_type_id');
-                                        $selectedAgriTypeIds = collect($get('../../cultivation_types') ?? [])
-                                            ->pluck('agri_type_id')
-                                            ->filter()
-                                            ->reject(function ($agriTypeId) use ($currentAgriTypeId) {
-                                                return (string) $agriTypeId === (string) $currentAgriTypeId;
-                                            })
-                                            ->values()
-                                            ->all();
+                                ->preload()
+                                ->columnSpan(['default' => 1, 'md' => 3])
+                                ->options(function (callable $get): array {
+                                    $currentAgriTypeId = $get('agri_type_id');
+                                    $selectedAgriTypeIds = collect($get('../../cultivation_types') ?? [])
+                                        ->pluck('agri_type_id')
+                                        ->filter()
+                                        ->reject(function ($agriTypeId) use ($currentAgriTypeId) {
+                                            return (string) $agriTypeId === (string) $currentAgriTypeId;
+                                        })
+                                        ->values()
+                                        ->all();
 
-                                        return AgriType::query()
-                                            ->orderBy('name')
-                                            ->get(['id', 'name'])
-                                            ->filter(fn (AgriType $agriType): bool => filled($agriType->name))
-                                            ->reject(function (AgriType $agriType) use ($selectedAgriTypeIds): bool {
-                                                if (static::isRepeatableAgriType($agriType)) {
-                                                    return false;
-                                                }
+                                    return AgriType::query()
+                                        ->orderBy('name')
+                                        ->get(['id', 'name'])
+                                        ->filter(fn (AgriType $agriType): bool => filled($agriType->name))
+                                        ->reject(function (AgriType $agriType) use ($selectedAgriTypeIds): bool {
+                                            if (static::isRepeatableAgriType($agriType)) {
+                                                return false;
+                                            }
 
-                                                return in_array($agriType->getKey(), $selectedAgriTypeIds, false)
-                                                    || in_array((string) $agriType->getKey(), $selectedAgriTypeIds, true);
-                                            })
-                                            ->mapWithKeys(fn (AgriType $agriType): array => [
-                                                $agriType->getKey() => trim((string) $agriType->name),
-                                            ])
-                                            ->toArray();
-                                    })
-                                    ->reactive()
-                                    ->afterStateUpdated(function (callable $set) {
-                                        $set('agri_detail_id', null);
-                                    }),
+                                            return in_array($agriType->getKey(), $selectedAgriTypeIds, false)
+                                                || in_array((string) $agriType->getKey(), $selectedAgriTypeIds, true);
+                                        })
+                                        ->mapWithKeys(fn (AgriType $agriType): array => [
+                                            $agriType->getKey() => trim((string) $agriType->name),
+                                        ])
+                                        ->toArray();
+                                })
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set) {
+                                    $set('agri_detail_id', null);
+                                }),
 
 
-                                TextInput::make('total_area_hectares')
-                                    ->label('مساحة اجمالية (هـ)')
-                                    ->required()
-                                    ->numeric()
-                                    ->maxValue(9999999999.99)
-                                    ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->rules(['numeric', 'min:0.01']),
+                            TextInput::make('total_area_hectares')
+                                ->label('مساحة اجمالية (هـ)')
+                                ->required()
+                                ->numeric()
+                                ->maxValue(9999999999.99)
+                                ->columnSpan(['default' => 1, 'md' => 3])
+                                ->rules(['numeric', 'min:0.01']),
                             Select::make('agri_detail_id')
                                 ->label('تفاصيل الزراعة')
 //                                ->searchable()
@@ -339,112 +339,112 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->defaultItems(1)
                         ->schema([
 //                            Grid::make(4)->schema([
-                                Select::make('crop_catalog_category_id')
-                                    ->label('طبيعة المحصول')
-                                    ->required()
-                                    ->reactive()
-                                    ->options(function (): array {
-                                        return CropCatalogCategory::query()
+                            Select::make('crop_catalog_category_id')
+                                ->label('طبيعة المحصول')
+                                ->required()
+                                ->reactive()
+                                ->options(function (): array {
+                                    return CropCatalogCategory::query()
 //                                            ->orderBy('sort_order')
-                                            ->pluck('name', 'id')
-                                            ->toArray();
-                                    })
-                                    ->columnSpan(['default' => 1, 'md' => 3])
-                                    ->afterStateUpdated(function (callable $set) {
-                                        $set('crop_catalog_item_id', null);
+                                        ->pluck('name', 'id')
+                                        ->toArray();
+                                })
+                                ->columnSpan(['default' => 1, 'md' => 3])
+                                ->afterStateUpdated(function (callable $set) {
+                                    $set('crop_catalog_item_id', null);
 
-                                    }),
-                                Select::make('crop_catalog_item_id')
-                                    ->label('نوع المحصول')
-                                    ->required()
-                                    ->searchable()
-                                    ->columnSpan(['default' => 1, 'md' => 2])
-                                    ->options(function (callable $get): array {
-                                        $categoryId = $get('crop_catalog_category_id');
-                                        $currentCropItemId = $get('crop_catalog_item_id');
+                                }),
+                            Select::make('crop_catalog_item_id')
+                                ->label('نوع المحصول')
+                                ->required()
+                                ->searchable()
+                                ->columnSpan(['default' => 1, 'md' => 2])
+                                ->options(function (callable $get): array {
+                                    $categoryId = $get('crop_catalog_category_id');
+                                    $currentCropItemId = $get('crop_catalog_item_id');
 
-                                        if (! $categoryId) {
-                                            return [];
-                                        }
+                                    if (! $categoryId) {
+                                        return [];
+                                    }
 
-                                        $selectedCropItemIds = collect($get('../../crop_composition_items') ?? [])
-                                            ->filter(function (array $row) use ($categoryId, $currentCropItemId): bool {
-                                                if (($row['crop_catalog_category_id'] ?? null) != $categoryId) {
-                                                    return false;
-                                                }
+                                    $selectedCropItemIds = collect($get('../../crop_composition_items') ?? [])
+                                        ->filter(function (array $row) use ($categoryId, $currentCropItemId): bool {
+                                            if (($row['crop_catalog_category_id'] ?? null) != $categoryId) {
+                                                return false;
+                                            }
 
-                                                return (string) ($row['crop_catalog_item_id'] ?? '') !== (string) $currentCropItemId;
-                                            })
-                                            ->pluck('crop_catalog_item_id')
-                                            ->filter()
-                                            ->values()
-                                            ->all();
+                                            return (string) ($row['crop_catalog_item_id'] ?? '') !== (string) $currentCropItemId;
+                                        })
+                                        ->pluck('crop_catalog_item_id')
+                                        ->filter()
+                                        ->values()
+                                        ->all();
 
-                                        $query = CropCatalogItem::query()
-                                            ->where('crop_catalog_category_id', $categoryId);
+                                    $query = CropCatalogItem::query()
+                                        ->where('crop_catalog_category_id', $categoryId);
 
-                                        if (count($selectedCropItemIds)) {
-                                            $query->whereNotIn('id', $selectedCropItemIds);
-                                        }
+                                    if (count($selectedCropItemIds)) {
+                                        $query->whereNotIn('id', $selectedCropItemIds);
+                                    }
 
-                                        return $query
+                                    return $query
 //                                            ->orderBy('sort_order')
-                                            ->pluck('name', 'id')
-                                            ->toArray();
-                                    }),
+                                        ->pluck('name', 'id')
+                                        ->toArray();
+                                }),
 
 
-                                TextInput::make('cycles_per_year')
-                                    ->label('عدد العروات/سنة')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(1)
-                                    ->columnSpan(['default' => 1, 'md' => 2])
-                                    ->rules(['integer', 'min:1']),
+                            TextInput::make('cycles_per_year')
+                                ->label('عدد العروات/سنة')
+                                ->required()
+                                ->numeric()
+                                ->default(1)
+                                ->columnSpan(['default' => 1, 'md' => 2])
+                                ->rules(['integer', 'min:1']),
 
-                                TextInput::make('total_area_hectares')
-                                    ->label('مساحة كل العروات (هـ)')
-                                    ->required()
-                                    ->numeric()
-                                    ->maxValue(9999999999.99)
-                                    ->columnSpan(['default' => 1, 'md' => 2])
-                                    ->rules(['numeric', 'min:0.01']),
+                            TextInput::make('total_area_hectares')
+                                ->label('مساحة كل العروات (هـ)')
+                                ->required()
+                                ->numeric()
+                                ->maxValue(9999999999.99)
+                                ->columnSpan(['default' => 1, 'md' => 2])
+                                ->rules(['numeric', 'min:0.01']),
 //                                Checkbox::make('show_tree_count')
 //                                    ->label('إضافة عدد الأشجار')
 //                                    ->reactive()
 //                                    ->default(false)
 //                                    ->columnSpan(4),
-                                TextInput::make('trees_count')
-                                    ->label('عدد الأشجار')
-                                    ->numeric()
-                                    ->maxValue(9999999999)
-                                    ->reactive()
-                                    ->hidden(function (callable $get): bool {
-                                        $catalogCategory = $get('crop_catalog_category_id');
+                            TextInput::make('trees_count')
+                                ->label('عدد الأشجار')
+                                ->numeric()
+                                ->maxValue(9999999999)
+                                ->reactive()
+                                ->hidden(function (callable $get): bool {
+                                    $catalogCategory = $get('crop_catalog_category_id');
 
-                                        if (! $catalogCategory) {
-                                            return true;
-                                        }
+                                    if (! $catalogCategory) {
+                                        return true;
+                                    }
 
-                                        return ! optional(CropCatalogCategory::find($catalogCategory))->has_trees;
-                                    })
+                                    return ! optional(CropCatalogCategory::find($catalogCategory))->has_trees;
+                                })
 //                                    ->rules(['nullable', 'numeric', 'min:0']),
 
-                        //                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
-                                    ->columnSpan(['default' => 1, 'md' => 2])
-                                    ->rules(['nullable', 'integer', 'min:0']),
+                                //                                    ->hidden(fn (callable $get): bool => ! $get('show_tree_count'))
+                                ->columnSpan(['default' => 1, 'md' => 2])
+                                ->rules(['nullable', 'integer', 'min:0']),
 //                            ]),
                         ]),
                 ]),
             Section::make('الملاحظات الختامية')
                 ->schema([
                     Grid::make(4)->schema([
-                    Textarea::make('opportunities')
-                        ->label('الفرص مع المزارع')
-                        ->rows(4),
-                    Textarea::make('challenges')
-                        ->label('التحديات مع المزارع')
-                        ->rows(4),
+                        Textarea::make('opportunities')
+                            ->label('الفرص مع المزارع')
+                            ->rows(4),
+                        Textarea::make('challenges')
+                            ->label('التحديات مع المزارع')
+                            ->rows(4),
                         Textarea::make('companies')
                             ->label('المؤسسات التي يتعامل معها')
                             ->rows(4),
@@ -526,10 +526,9 @@ class BranchCropCompositionCollectionResource extends Resource
                     ->label(static::getCustomerCodeFieldLabel($customerType))
                     ->columnSpan(['default' => 1, 'md' => 2])
                     ->searchable()
-//                    ->preload(false)
-                    ->preload()
-                    //->optionsLimit(50)
-                   ->optionsLimit(1000)
+                    ->preload(false)
+                    ->optionsLimit(50)
+                    // ->optionsLimit(10000)
                     ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
 //                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
@@ -833,7 +832,7 @@ class BranchCropCompositionCollectionResource extends Resource
                         ->formatStateUsing(function ($state, ?Model $record): string {
                             return (string) optional(optional($record)->userUpdate)->name;
                         }),
-                    ])
+                ])
         ];
     }
 
@@ -868,7 +867,6 @@ class BranchCropCompositionCollectionResource extends Resource
         );
 
         if ($customerType === static::CUSTOMER_TYPE_REDISTRIBUTION) {
-
             $customers = static::filterRedistributionCustomerRows($customers);
         }
 
@@ -1102,7 +1100,7 @@ class BranchCropCompositionCollectionResource extends Resource
     {
         return static::applyCollectionAccessScope(
             parent::getEloquentQuery()->with(['lead'])->withSum('cultivationTypes as cultivation_types_sum_total_area_hectares', 'total_area_hectares')
-            ->withSum('cropItems as items_sum_total_area_hectares', 'total_area_hectares' )
+                ->withSum('cropItems as items_sum_total_area_hectares', 'total_area_hectares' )
         );
     }
 
@@ -1487,7 +1485,6 @@ class BranchCropCompositionCollectionResource extends Resource
         $engineerName = $customer['slp_name'] ?? $record->engineer_name;
 
         return trim((string) $engineerName) === trim((string) $user->name);
-//          return (string) ($customer['slp_code'] ?? '') === (string) $user->emp_code;
     }
 
     protected static function userCanManageOthersCropRecords(): bool
@@ -1552,13 +1549,6 @@ class BranchCropCompositionCollectionResource extends Resource
         $customers = app(SapCustomerLookupServiceInterface::class)
             ->searchCustomerRows($search, $customerPrefixes, $limit);
 
-//        dd([
-//            'branchCode' => $branchCode,
-//            'search' => $search,
-//            'prefixes' => $customerPrefixes,
-//            'count_before_filters' => count($customers),
-//            'sample_before_filters' => array_slice($customers, 0, 5),
-//        ]);
         $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
         $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode);
         $customers = static::filterCustomerRowsForCreatePermission($customers);
@@ -1632,7 +1622,6 @@ class BranchCropCompositionCollectionResource extends Resource
                 }
 
                 return trim((string) $engineerName) === trim((string) $user->name);
-//                 return (string) ($customer['slp_code'] ?? '') === (string) $user->emp_code;
             })
             ->values()
             ->all();
@@ -1898,7 +1887,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
         return User::query()
             ->whereHas('user_group', function ($query) {
-                $query->whereIn('id', [7, 8]);
+                $query->whereIn('id', [7, 8, 12]);
             })
             ->where('sales_dept_code', $branchCode)
             ->where('is_active',1)
@@ -1922,7 +1911,7 @@ class BranchCropCompositionCollectionResource extends Resource
         $engineer = User::query()
             ->whereKey($engineerId)
             ->whereHas('user_group', function ($query) {
-                $query->whereIn('id', [7, 8]);
+                $query->whereIn('id', [7, 8 ,12]);
             })
             ->where('sales_dept_code', $branchCode)
             ->first(['id']);
@@ -1932,7 +1921,7 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static function syncLeadEngineerSelection(
         string $customerType,
-        $engineerId,
+               $engineerId,
         callable $set,
         callable $get
     ): void {

@@ -16,6 +16,31 @@
         margin: 0 !important;
         padding: 0 !important;
     }
+
+    html,
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    main,
+    .fi-main,
+    .fi-page,
+    .fi-page-content,
+    .fi-page-content > div,
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fi-layout,
+    .fi-main-ctn {
+        margin-inline-start: 0 !important;
+        width: 100% !important;
+    }
 }
 .container {
     width: 100%
