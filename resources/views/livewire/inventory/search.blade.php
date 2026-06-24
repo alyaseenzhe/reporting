@@ -103,6 +103,13 @@
                 </x-multiselect>
             </div>
 
+
+
+    </div>
+
+        </div>
+        <div class="w-full flex flex-col sm:flex-row gap-4">
+
             <div class="w-full">
                 <label class="block font-bold mb-2">الموردين</label>
                 <x-select_search wire:model="vendor_type">
@@ -132,8 +139,5 @@
                 </button>
             </div>
         </div>
-
-
-    </div>
 </div>
 </div>
