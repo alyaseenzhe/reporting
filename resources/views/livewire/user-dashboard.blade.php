@@ -1980,7 +1980,7 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
 <div>
     <div class="w-full flex flex-col sm:flex-row gap-4 mb-4">
 
-        @if ((Auth::user()->user_group->visits && in_array('stock-coverage', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
+        @if ((Auth::user()->user_group  && in_array('stock-coverage', json_decode(Auth::user()->user_group->report_type))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('stock.coverage') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">
@@ -2062,7 +2062,7 @@ c0,4.466-3.62,8.084-8.084,8.084h-54.331c-4.465,0-8.084-3.618-8.084-8.084C300.194
                 </div>
             </a>
         @endif
-        @if ((Auth::user()->user_group && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
+        @if ((Auth::user()->user_group && Auth::user()->user_group->visits && in_array('enter-visit', json_decode(Auth::user()->user_group->visits))) || Auth::user()->role == 'a')
             <a class="w-full" href="{{ route('visit-calendar') }}">
                 <div
                     class="hover-item w-full flex flex-col justify-center items-center col-span-full sm:col-span-6 xl:col-span-4 bg-white shadow-lg rounded-sm border border-gray-200 pb-8 pt-8">

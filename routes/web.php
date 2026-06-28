@@ -117,6 +117,14 @@ Route::middleware([
             return $e->getMessage();
         }
     });
+    Route::get('/test-sqlsrv', function () {
+        try {
+            DB::connection('sqlsrv')->getPdo();
+            return 'Connected';
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+    });
     Route::view('/offline-experiment', 'offline-experiment');
 
     Route::get('/stock-coverage', \App\Http\Livewire\StockCoverage::class)->name('stock.coverage');
