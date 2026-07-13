@@ -337,6 +337,7 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     {
         $cropRows = $this->getCustomerCropRows();
         $reportRows = $this->buildHierarchy($cropRows);
+        $distinctCollectionRows = $this->getDistinctCollectionRows($cropRows);
 
         return [
             'reportRows' => $reportRows,
@@ -349,9 +350,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                 ->unique()
                 ->count(),
 //            'totalAreaHectares' => collect($reportRows)->sum('total_area_hectares'),
-            'totalFarmAreaHectares' => collect($reportRows)->sum('total_farm_area_hectares'),
-            'totalCultivationAreaHectares' => collect($reportRows)->sum('total_cultivation_area_hectares'),
-            'totalCropAreaHectares' => collect($reportRows)->sum('total_crop_item_area_hectares'),
+            'totalFarmAreaHectares' => $this->sumAreaMetric($distinctCollectionRows, 'total_farm_area_hectares'),
+            'totalCultivationAreaHectares' => $this->sumAreaMetric($distinctCollectionRows, 'total_cultivation_area_hectares'),
+            'totalCropAreaHectares' => $this->sumAreaMetric($distinctCollectionRows, 'total_crop_item_area_hectares'),
         ];
     }
 
@@ -527,9 +528,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                             'key' => 'branch-' . $firstBranchRow['branch_id'],
                             'branch_name' => $firstBranchRow['branch_name'],
                             'customers_count' => collect($customers)->pluck('customer_code')->unique()->count(),
-                            'total_farm_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_farm_area_hectares'),
-                            'total_cultivation_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_cultivation_area_hectares'),
-                            'total_crop_item_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_crop_item_area_hectares'),
+                            'total_farm_area_hectares' => $this->sumDistinctCollectionAreaMetric($branchGroup, 'total_farm_area_hectares'),
+                            'total_cultivation_area_hectares' => $this->sumDistinctCollectionAreaMetric($branchGroup, 'total_cultivation_area_hectares'),
+                            'total_crop_item_area_hectares' => $this->sumAreaMetric($branchGroup, 'total_area_hectares'),
                             'total_area_hectares' => round((float) $branchGroup->sum('total_area_hectares'), 2),
                             'customers' => $customers,
                         ];
@@ -543,9 +544,9 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
                     'crop_category' => $firstRow['category_name'],
                     'crop_name' => $firstRow['crop_name'],
                     'customers_count' => $cropGroup->pluck('customer_code')->unique()->count(),
-                    'total_farm_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_farm_area_hectares'),
-                    'total_cultivation_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_cultivation_area_hectares'),
-                    'total_crop_item_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_crop_item_area_hectares'),
+                    'total_farm_area_hectares' => $this->sumDistinctCollectionAreaMetric($cropGroup, 'total_farm_area_hectares'),
+                    'total_cultivation_area_hectares' => $this->sumDistinctCollectionAreaMetric($cropGroup, 'total_cultivation_area_hectares'),
+                    'total_crop_item_area_hectares' => $this->sumAreaMetric($cropGroup, 'total_area_hectares'),
                     'total_area_hectares' => round((float) $cropGroup->sum('total_area_hectares'), 2),
                     'branches' => $branches,
                 ];
@@ -561,6 +562,19 @@ class BranchCropCompositionCollectionReport extends Page implements HasForms
     protected function sumAreaMetric(Collection $rows, string $key): float
     {
         return round((float) $rows->sum($key), 2);
+    }
+
+    protected function sumDistinctCollectionAreaMetric(Collection $rows, string $key): float
+    {
+        return $this->sumAreaMetric($this->getDistinctCollectionRows($rows), $key);
+    }
+
+    protected function getDistinctCollectionRows(Collection $rows): Collection
+    {
+        return $rows
+            ->filter(fn (array $row): bool => filled($row['collection_id'] ?? null))
+            ->unique('collection_id')
+            ->values();
     }
 
     protected function buildBranchAreaPieChartData(Collection $rows): array

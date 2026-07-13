@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
 
 class BranchCropCompositionCollectionResource extends Resource
@@ -531,9 +532,10 @@ class BranchCropCompositionCollectionResource extends Resource
                     // ->optionsLimit(10000)
                     ->hidden(fn (): bool => $customerType === static::CUSTOMER_TYPE_LEAD)
                     ->required(fn (): bool => $customerType !== static::CUSTOMER_TYPE_LEAD)
-//                    ->hidden(fn (): bool => in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
-//                    ->required(fn (): bool => ! in_array($customerType, [static::CUSTOMER_TYPE_LEAD, static::CUSTOMER_TYPE_REDISTRIBUTION], true))
-                    ->unique(ignoreRecord: true)
+                    ->rule(fn (callable $get, ?Model $record) => static::getCustomerCodeUniquenessRule(
+                        (string) ($get('type') ?: static::CUSTOMER_TYPE_REGISTERED),
+                        $record
+                    ))
                     ->reactive()
 //                    ->placeholder('اختر الفرع أولا ثم ابحث ')
                     ->placeholder('ابدأ بكتابة الكود للبحث ')
@@ -729,7 +731,8 @@ class BranchCropCompositionCollectionResource extends Resource
 //                    ->hidden(fn (): bool =>  $customerType == static::CUSTOMER_TYPE_REGISTERED)
                     ->hidden(fn (callable $get, string $context): bool =>
                         $context !== 'view'
-                        || $get('customer_type') == static::CUSTOMER_TYPE_REGISTERED
+//                        || $get('customer_type') == static::CUSTOMER_TYPE_REGISTERED
+                        || $customerType == static::CUSTOMER_TYPE_REGISTERED
                     ),
                 TextInput::make('lead_name')
                     ->label('اسم العميل ')
@@ -863,7 +866,8 @@ class BranchCropCompositionCollectionResource extends Resource
             $branchCode,
             $search,
             $currentCustomerCode,
-            $limit
+            $limit,
+            $customerType
         );
 
         if ($customerType === static::CUSTOMER_TYPE_REDISTRIBUTION) {
@@ -1534,7 +1538,8 @@ class BranchCropCompositionCollectionResource extends Resource
         ?string $branchCode,
         ?string $search,
         ?string $currentCustomerCode = null,
-        ?int $limit = 50
+        ?int $limit = 50,
+        ?string $customerType = null
     ): array {
         if (blank($branchCode)) {
             return [];
@@ -1550,7 +1555,7 @@ class BranchCropCompositionCollectionResource extends Resource
             ->searchCustomerRows($search, $customerPrefixes, $limit);
 
         $customers = static::filterCustomerRowsForSelectedBranch($customers, $branchCode);
-        $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode);
+        $customers = static::filterExistingCollectionCustomerRows($customers, $currentCustomerCode, $customerType);
         $customers = static::filterCustomerRowsForCreatePermission($customers);
 
         return $customers;
@@ -1720,8 +1725,13 @@ class BranchCropCompositionCollectionResource extends Resource
 
     protected static function filterExistingCollectionCustomerRows(
         array $customers,
-        ?string $currentCustomerCode = null
+        ?string $currentCustomerCode = null,
+        ?string $customerType = null
     ): array {
+        if (! static::shouldEnforceCustomerCodeUniqueness($customerType)) {
+            return $customers;
+        }
+
         $customerCodes = collect($customers)
             ->pluck('code')
             ->filter()
@@ -1751,6 +1761,23 @@ class BranchCropCompositionCollectionResource extends Resource
             ->reject(fn (array $customer): bool => in_array(trim((string) ($customer['code'] ?? '')), $existingCustomerCodes, true))
             ->values()
             ->all();
+    }
+
+    protected static function getCustomerCodeUniquenessRule(string $customerType, ?Model $record = null)
+    {
+        if (! static::shouldEnforceCustomerCodeUniqueness($customerType)) {
+            return function (): bool {
+                return true;
+            };
+        }
+
+        return Rule::unique('branch_crop_composition_collections', 'customer_code')
+            ->ignore($record?->getKey());
+    }
+
+    protected static function shouldEnforceCustomerCodeUniqueness(?string $customerType): bool
+    {
+        return $customerType !== static::CUSTOMER_TYPE_REDISTRIBUTION;
     }
 
     protected static function customerRowsToOptions(array $customers): array
