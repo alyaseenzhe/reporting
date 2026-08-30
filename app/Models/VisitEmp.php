@@ -16,6 +16,6 @@ class VisitEmp extends Model
     }
 
     public function user() {
-        return $this->belongsTo(User::class, 'user_id')->select(['id', 'emp_code', 'name', 'email', 'group','is_active']);
+        return $this->belongsTo(User::class, 'user_id')->select(['id', 'emp_code', 'name', 'email', 'group','is_active'])->where('is_active', 1);
     }
 }

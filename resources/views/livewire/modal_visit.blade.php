@@ -393,6 +393,7 @@
         <!-- Column 1 -->
         <div class="space-y-4">
             @foreach($record->emps_requester as $req_record)
+                @continue(!$req_record->user)
                 @php
                     $reviews = collect(json_decode($req_record->reviews, true)); // decode to collection
                 @endphp
@@ -471,6 +472,7 @@
         <!-- Column 2 -->
         <div class="space-y-4">
             @foreach($record->emps_recipients as $rec_record)
+                @continue(!$rec_record->user)
                 @php
                     $reviews = collect(json_decode($rec_record->reviews, true)); // decode to collection
                 @endphp
